@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>com.qfree.obo</groupId>
+	<artifactId>birt-viewer</artifactId>
+	<version>1.0-SNAPSHOT</version>
+	<packaging>war</packaging>
+	<name>OBO BIRT Viewer</name>
+	<description>Web project that integrates the BIRT Viewer and that can be deployed to a servlet container such as Tomcat</description>
+	
+	<properties>
+		<java-version>1.7</java-version>
+		<org.slf4j-version>1.7.10</org.slf4j-version>
+		<logback-version>1.1.2</logback-version>
+		<javax.servlet-servlet-api-version>3.1.0</javax.servlet-servlet-api-version>
+		<junit-version>4.11</junit-version>
+		<maven-compiler-plugin-version>3.1</maven-compiler-plugin-version>
+		<tomcat7-maven-plugin-version>2.2</tomcat7-maven-plugin-version>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+	</properties>
+	
+	<dependencies>
+		
+		
+		
+		<dependency>
+			<groupId>org.eclipse.birt.runtime</groupId>
+			<artifactId>org.eclipse.birt.runtime</artifactId>
+			<version>4.2.0</version>	<!-- INCREASE THIS!!!!!!!!!!!!!!!!!!!!!! -->
+		</dependency>
+		
+		<!-- REPLACE THIS DEPENDENCY WITH A REFERENCE TO THE STANDARD MAVEN REPOSITORY -->
+		<dependency>
+			<groupId>org.eclipse.birt.example</groupId>
+			<artifactId>viewer-servlet</artifactId>
+			<version>4.2.0</version>
+		</dependency>
+
+		<!-- CAN THIS BE DELETED??????????? -->
+		<dependency>
+			<groupId>org.apache.axis</groupId>
+			<artifactId>axis</artifactId>
+			<version>1.4</version>
+		</dependency>
+		
+		
+			
+		<!-- Logging facade: SLF4J -->
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+			<version>${org.slf4j-version}</version>
+		</dependency>
+		<dependency>
+			<!-- See: http://www.slf4j.org/legacy.html -->
+			<groupId>org.slf4j</groupId>
+			<artifactId>jcl-over-slf4j</artifactId>
+			<version>${org.slf4j-version}</version>
+			<scope>runtime</scope>
+		</dependency>
+		
+		<!-- Logging implementation: Logback -->
+		<dependency>
+			<groupId>ch.qos.logback</groupId>
+			<artifactId>logback-core</artifactId>
+			<version>${logback-version}</version>
+		</dependency>
+		<dependency>
+			<groupId>ch.qos.logback</groupId>
+			<artifactId>logback-classic</artifactId>
+			<version>${logback-version}</version>
+		</dependency>
+
+		<!-- Servlet -->
+		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>javax.servlet-api</artifactId>
+			<version>${javax.servlet-servlet-api-version}</version>
+		</dependency>
+
+		<!-- Test -->
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>${junit-version}</version>
+			<scope>test</scope>
+		</dependency>
+
+	</dependencies>
+
+	<build>
+		<!-- "finalName" sets the context root of the deployed web application.
+			Otherwise, the web app will be deployed at /<artifactId>-<version> -->
+		<finalName>report-viewer</finalName>
+		<plugins>
+
+			<!-- The Maven Compiler Plugin is used to compile the sources of your
+				 project. This <plugin> element is used here to set the JVM source
+				 and target compliance level, as well as to set other parameters
+				 used by this plug-in. -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>${maven-compiler-plugin-version}</version>
+				<configuration>
+					<source>${java-version}</source>
+					<target>${java-version}</target>
+					<compilerArgument>-Xlint:all</compilerArgument>
+					<showWarnings>true</showWarnings>
+					<showDeprecation>true</showDeprecation>
+				</configuration>
+			</plugin>
+
+			<!-- The Tomcat7 Maven Plugin provides goals so that we can deploy the app  
+				 to my local private Tomcat7 instance using "mvn tomcat7:[re]deploy.
+				 The <url> element *must* be ".../manager/text", *not* .../manager/html
+				 The name "myTomcat" in the <server> element  must match the same name in:
+					 /home/jeffreyz/.m2/settings.xml -->
+			<plugin>
+				<groupId>org.apache.tomcat.maven</groupId>
+				<artifactId>tomcat7-maven-plugin</artifactId>
+				<version>${tomcat7-maven-plugin-version}</version>
+				<configuration>
+					<url>http://localhost:8080/manager/text</url>
+					<server>myTomcat</server>
+					<path>/${project.build.finalName}</path>
+				</configuration>
+			</plugin>
+
+		</plugins>
+	</build>
+</project>
