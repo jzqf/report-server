@@ -1,19 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	
 	<modelVersion>4.0.0</modelVersion>
+	
 	<groupId>com.qfree.obo</groupId>
 	<artifactId>birt-viewer</artifactId>
 	<version>1.0-SNAPSHOT</version>
 	<packaging>war</packaging>
 	<name>OBO BIRT Viewer</name>
-	<description>Web project that integrates the BIRT Viewer and that can be deployed to a servlet container such as Tomcat</description>
+	<description>Web project that integrates the BIRT Viewer and that can be deployed in a servlet container such as Tomcat</description>
 	
 	<properties>
 		<java-version>1.7</java-version>
+		<birt-runtime-version>4.2.0</birt-runtime-version>
+		<javax.servlet-servlet-api-version>3.1.0</javax.servlet-servlet-api-version>
 		<org.slf4j-version>1.7.10</org.slf4j-version>
 		<logback-version>1.1.2</logback-version>
-		<javax.servlet-servlet-api-version>3.1.0</javax.servlet-servlet-api-version>
 		<junit-version>4.11</junit-version>
 		<maven-compiler-plugin-version>3.1</maven-compiler-plugin-version>
 		<tomcat7-maven-plugin-version>2.2</tomcat7-maven-plugin-version>
@@ -27,24 +30,29 @@
 		<dependency>
 			<groupId>org.eclipse.birt.runtime</groupId>
 			<artifactId>org.eclipse.birt.runtime</artifactId>
-			<version>4.2.0</version>	<!-- INCREASE THIS!!!!!!!!!!!!!!!!!!!!!! -->
+			<version>${birt-runtime-version}</version>
 		</dependency>
 		
-		<!-- REPLACE THIS DEPENDENCY WITH A REFERENCE TO THE STANDARD MAVEN REPOSITORY -->
-		<dependency>
+		<!-- This dependency is for an artifact created manually and stoed in 
+			 my local Maven repository.  Since there exists a Maven dependency 
+			 for this same content in the Maven Central Repository, I use it
+			 instead. -->
+		<!-- <dependency>
 			<groupId>org.eclipse.birt.example</groupId>
 			<artifactId>viewer-servlet</artifactId>
 			<version>4.2.0</version>
+		</dependency> -->
+		<dependency>
+			<groupId>org.eclipse.birt.runtime</groupId>
+			<artifactId>viewservlets</artifactId>
+			<version>${birt-runtime-version}</version>
 		</dependency>
 
-		<!-- CAN THIS BE DELETED??????????? -->
 		<dependency>
-			<groupId>org.apache.axis</groupId>
+			<groupId>axis</groupId>
 			<artifactId>axis</artifactId>
 			<version>1.4</version>
 		</dependency>
-		
-		
 			
 		<!-- Logging facade: SLF4J -->
 		<dependency>
@@ -77,6 +85,7 @@
 			<groupId>javax.servlet</groupId>
 			<artifactId>javax.servlet-api</artifactId>
 			<version>${javax.servlet-servlet-api-version}</version>
+			<scope>provided</scope>
 		</dependency>
 
 		<!-- Test -->
