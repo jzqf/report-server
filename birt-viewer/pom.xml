@@ -24,19 +24,17 @@
 	</properties>
 	
 	<dependencies>
-		
-		
-		
+
 		<dependency>
 			<groupId>org.eclipse.birt.runtime</groupId>
 			<artifactId>org.eclipse.birt.runtime</artifactId>
 			<version>${birt-runtime-version}</version>
 		</dependency>
 		
-		<!-- This dependency is for an artifact created manually and stoed in 
-			 my local Maven repository.  Since there exists a Maven dependency 
-			 for this same content in the Maven Central Repository, I use it
-			 instead. -->
+		<!-- This dependency is for an artifact created manually and stored in 
+			 my local Maven repository.  Since there exists a Maven artifact 
+			 for this same content in the Maven Central Repository, I use a
+			 dependency for it instead. -->
 		<!-- <dependency>
 			<groupId>org.eclipse.birt.example</groupId>
 			<artifactId>viewer-servlet</artifactId>
