@@ -2,16 +2,20 @@
 
 <configuration scan="true" scanPeriod="3 seconds" debug="true">
 
+	<!--
+		Logback ships with a StatusListener implementation called OnConsoleStatusListener
+		which, as its name indicates, prints all new incoming status messages on the console.
+	-->
 	<statusListener class="ch.qos.logback.core.status.OnConsoleStatusListener"/>
 
-	<appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+<!-- 	<appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
 		<encoder>
 			<pattern>
 				%d [%thread] %-5level %logger{32} - %msg%n
 			</pattern>
 		</encoder>
 	</appender>
-
+ -->
 	<appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
 		<!-- 
 		Logback expands ${catalina.base} using "variable substitution". This variable
@@ -25,39 +29,55 @@
 		variable named "catalina.base" to be defined that points to the directory
 		containing a "logs" directory where log files are to be written.
 		-->
-		<!-- On a default GlassFish 4 installation, this log file will be created in:
-			.../glassfish4/glassfish/domains/domain1/logs/ -->
+		<!--
+			On a default GlassFish 4 installation, this log file will be created
+			in: .../glassfish4/glassfish/domains/domain1/logs/
+		-->
 		<File>${catalina.base}/logs/obo-report-viewer/obo-report-viewer.log</File>
 		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+		
 			<FileNamePattern>
 				<!-- Log file will be archived in "archive" directory at the beginning of each minute: -->
-				<!-- ${catalina.base}/logs/contract-service/archive/logFile.%d{yyyy-MM-dd_HH-mm}.log.zip -->
+				<!-- ${catalina.base}/logs/obo-report-viewer/archive/obo-report-viewer.%d{yyyy-MM-dd_HH-mm}.log.zip -->
+
 				<!-- Default. Log file will be archived at midnight each day: -->
-				${catalina.base}/logs/contract-service/archive/logFile.%d{yyyy-MM-dd}.log.zip
-				<!-- ${catalina.base}/logs/contract-service/archive/logFile.%d{yyyy-MM}.log.zip -->
+				<!-- ${catalina.base}/logs/obo-report-viewer/archive/obo-report-viewer.%d{yyyy-MM-dd}.log.zip -->
+				${catalina.base}/logs/obo-report-viewer/archive/obo-report-viewer.%d{yyyy-MM-dd}.log
+				     
+				<!-- ${catalina.base}/logs/obo-report-viewer/archive/obo-report-viewer.%d{yyyy-MM}.log.zip -->
 			</FileNamePattern>
+
 			<maxHistory>365</maxHistory>	<!-- Maximum number of archive files to keep, deleting older files -->
+
 		</rollingPolicy>
+		
 		<encoder>
 			<Pattern>
+				<!--
+					%M:  outputs method name where logging request was issued. Slows down logging.
+					XXX: displays time zone as, e.g., "+01:00" for the time zone UTC+1hour. 
+				-->
 				<!-- %d{HH:mm:ss.SSS} [%thread] %-5level %logger{32} - %msg%n -->
-				<!-- This pattern includes also the name of the method. This slows down logging. -->
-				%d [%thread] %-5level %logger{32} %M - %msg%n
+				<!-- %d [%thread] %-5level %logger{32} %M - %msg%n -->
+				
+				<!-- ISO 8601 compliant datetime (e.g., 2014-12-04T16:00:26,432+01:00): -->
+				%d{"yyyy-MM-dd'T'HH:mm:ss,SSSXXX"} [%thread] %-5level %logger{32} %M - %msg%n
 			</Pattern>
 		</encoder>
+		
 	</appender>
 
 	<!-- Application Loggers -->
-	<logger name="com.qfree.cs.autopass"><level value="DEBUG" /></logger>
+	<!-- <logger name="com.qfree.cs.autopass"><level value="DEBUG" /></logger> -->
 	
 	<!-- 3rdparty Loggers -->
-	<logger name="org.springframework.core"><level value="INFO" /></logger>
-	<logger name="org.springframework.beans"><level value="INFO" /></logger>
-	<logger name="org.springframework.context"><level value="INFO" /></logger>
-	<logger name="org.springframework.web"><level value="INFO" /></logger>
+	<!-- <logger name="org.springframework.core"><level value="INFO" /></logger> -->
+	<!-- <logger name="org.springframework.beans"><level value="INFO" /></logger> -->
+	<!-- <logger name="org.springframework.context"><level value="INFO" /></logger> -->
+	<!-- <logger name="org.springframework.web"><level value="INFO" /></logger> -->
 
 	<root level="INFO">
-		<appender-ref ref="STDOUT"/>
+		<!-- <appender-ref ref="STDOUT"/> -->
 		<appender-ref ref="FILE"/>
 	</root>
 

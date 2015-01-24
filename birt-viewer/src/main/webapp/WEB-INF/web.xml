@@ -139,24 +139,11 @@
 		<url-pattern>/extract</url-pattern>
 	</servlet-mapping>
 
-	<!-- For Web module version higher than 2.3 -->
 	<jsp-config>
 		<taglib>
 			<taglib-uri>/birt.tld</taglib-uri>
 			<taglib-location>/WEB-INF/tlds/birt.tld</taglib-location>
 		</taglib>
 	</jsp-config>
-
-	<!-- For Web module version 2.3 -->
-	<!--
-	<taglib>
-		<taglib-uri>
-			/birt.tld
-		</taglib-uri>
-		<taglib-location>
-			/WEB-INF/tlds/birt.tld
-		</taglib-location>
-	</taglib>
-	-->
 
 </web-app>
