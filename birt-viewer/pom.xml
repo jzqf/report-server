@@ -12,7 +12,7 @@
 	<description>Web project that integrates the BIRT Viewer and that can be deployed in a servlet container such as Tomcat</description>
 	
 	<properties>
-		<java-version>1.7</java-version>
+		<java-version>1.8</java-version>
 		<birt-runtime-version>4.4.1</birt-runtime-version>
 		<javax.servlet-servlet-api-version>3.1.0</javax.servlet-servlet-api-version>
 		<org.slf4j-version>1.7.10</org.slf4j-version>
