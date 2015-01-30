@@ -10,7 +10,34 @@
 	<packaging>war</packaging>
 	<name>OBO BIRT Viewer</name>
 	<description>Web project that integrates the BIRT Viewer and that can be deployed in a servlet container such as Tomcat</description>
-	
+	<inceptionYear>2015</inceptionYear>
+	<organization>
+		<name>Q-Free ASA</name>
+		<url>http://www.q-free.com</url>
+	</organization>
+	<developers>
+		<developer>
+			<id>jeffreyz</id>
+			<name>Jeffrey Zelt</name>
+			<email>Jeffrey.Zelt@q-free.com</email>
+			<url>https://mysite.q-free.com/Person.aspx?accountname=Q-FREE%2ECOM%5CJeffreyZ</url>
+			<organization>Q-Free ASA</organization>
+			<organizationUrl>http://www.q-free.com</organizationUrl>
+			<roles>
+				<role>architect</role>
+				<role>developer</role>
+			</roles>
+			<timezone>+1</timezone>
+			<properties>
+				<skype>jeffreyz.q-free.com</skype>
+			</properties>
+		</developer>
+	</developers>
+	<issueManagement>
+		<system>JIRA</system>
+		<url>https://issues.q-free.com:8443/browse/QF15203</url>
+	</issueManagement>
+  
 	<properties>
 		<java-version>1.8</java-version>
 		<birt-runtime-version>4.4.1</birt-runtime-version>

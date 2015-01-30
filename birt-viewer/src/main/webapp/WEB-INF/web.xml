@@ -19,7 +19,7 @@
 	<!-- Report resources directory for preview. Defaults to ${birt home} -->
 	<context-param>
 		<param-name>BIRT_VIEWER_WORKING_FOLDER</param-name>
-		<param-value>report</param-value>
+		<param-value>reports</param-value>
 	</context-param>
 
 	<!-- Flag whether the report resources can be accessed only under the working folder. Defaults to true -->
