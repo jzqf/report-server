@@ -8,8 +8,8 @@
 	<artifactId>birt-viewer</artifactId>
 	<version>1.0-SNAPSHOT</version>
 	<packaging>war</packaging>
-	<name>OBO BIRT Viewer</name>
-	<description>Web project that integrates the BIRT Viewer and that can be deployed in a servlet container such as Tomcat</description>
+	<name>OBO Report Viewer</name>
+	<description>Web project for displaying OBO reports that integrates the BIRT Viewer and that can be deployed in a servlet container such as Tomcat</description>
 	<inceptionYear>2015</inceptionYear>
 	<organization>
 		<name>Q-Free ASA</name>

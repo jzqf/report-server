@@ -50,6 +50,9 @@
 				<a href="<%= request.getContextPath( ) + "/frameset?__report=test_db_config.rptdesign" %>">Report #2</a>
 				<br>
 				<a href="<%= request.getContextPath( ) + "/frameset?__report=test_db_config.rptdesign" %>">Report #3</a>
+				<br>
+				<br>
+				<a href="<%= request.getContextPath( ) + "/frameset?__report=dvdrental.rptdesign" %>">dvdrental.rptdesign</a>
 			</p>
 		</div>
 	
