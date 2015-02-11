@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <report xmlns="http://www.eclipse.org/birt/2005/design" version="3.2.23" id="1">
     <property name="createdBy">Eclipse BIRT Designer Version 4.4.1.v201408290142 Build &lt;4.4.1.v20140916-1320></property>
+    <list-property name="includeScripts">
+        <property>webcontent/qfree/js/jeff.js</property>
+    </list-property>
     <list-property name="propertyBindings">
         <structure>
             <property name="name">odaDriverClass</property>
@@ -115,7 +118,7 @@
                 </ex-property>
             </list-property>
             <property name="odaDriverClass">org.postgresql.Driver</property>
-            <property name="odaURL">jdbc:postgresql://jeffreyz.q-free.com:5432/dvdrental</property>
+            <property name="odaURL">jdbc:postgresql://192.168.7.27:5432/dvdrental</property>
             <property name="odaUser">jeffreyz</property>
             <encrypted-property name="odaPassword" encryptionID="base64">dHN1bmFtaSpKQVo2</encrypted-property>
             <property name="odaJndiName">java:comp/env/jdbc/obo_db</property>
@@ -2235,8 +2238,18 @@ ORDER BY
                 </cell>
             </row>
             <row id="125">
-                <property name="height">1cm</property>
-                <cell id="126"/>
+                <property name="height">1.5cm</property>
+                <cell id="126">
+                    <text-data id="127">
+                        <expression name="valueExpr">"birt.viewer.resource.path = " + reportContext.getAppContext().get("birt.viewer.resource.path");</expression>
+                        <property name="contentType">html</property>
+                    </text-data>
+                    <text-data id="128">
+                        <property name="display">none</property>
+                        <expression name="valueExpr">"somevarfromjeffjs = " + somevarfromjeffjs;</expression>
+                        <property name="contentType">html</property>
+                    </text-data>
+                </cell>
             </row>
         </grid>
         <table id="10">

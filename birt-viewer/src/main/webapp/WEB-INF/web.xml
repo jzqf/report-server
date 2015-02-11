@@ -16,6 +16,11 @@
 		<welcome-file>default.jsp</welcome-file>
 	</welcome-file-list>
 
+	<context-param>
+		<param-name>BIRT_VIEWER_LOG_LEVEL</param-name>
+		<param-value>FINEST</param-value>
+	</context-param>
+
 	<!-- Report resources directory for preview. Defaults to ${birt home} -->
 	<context-param>
 		<param-name>BIRT_VIEWER_WORKING_FOLDER</param-name>

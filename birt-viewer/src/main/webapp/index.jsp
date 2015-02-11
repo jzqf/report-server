@@ -55,6 +55,16 @@
 				<a href="<%= request.getContextPath( ) + "/frameset?__report=dvdrental.rptdesign" %>">dvdrental.rptdesign</a>
 			</p>
 		</div>
+
+		<div style="padding-right: 10px; padding-left: 10px; padding-bottom: 10px; padding-top: 10px" >
+			<!-- Content area -->
+			<p>Dashboards:</p>
+			<p>
+				<a href="dashboard-iframes.jsp">Dashboard (iframes)</a>
+				<br>
+				<a href="dashboard-birttags.jsp">Dashboard (BIRT JSP tags)</a>
+			</p>
+		</div>
 	
 		<div style="font-size:75%; padding-right: 10px; padding-left: 10px; padding-bottom: 10px; padding-top: 10px" >
 			<p>JRE version: <%= javaVersion  %></p>
