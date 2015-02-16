@@ -118,7 +118,7 @@
                 </ex-property>
             </list-property>
             <property name="odaDriverClass">org.postgresql.Driver</property>
-            <property name="odaURL">jdbc:postgresql://192.168.7.27:5432/dvdrental</property>
+            <property name="odaURL">jdbc:postgresql://jeffreyz.q-free.com:5432/dvdrental</property>
             <property name="odaUser">jeffreyz</property>
             <encrypted-property name="odaPassword" encryptionID="base64">dHN1bmFtaSpKQVo2</encrypted-property>
             <property name="odaJndiName">java:comp/env/jdbc/obo_db</property>
