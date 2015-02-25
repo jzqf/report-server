@@ -13,7 +13,6 @@ import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.WebTarget;
 
-import org.glassfish.jersey.jsonp.JsonProcessingFeature;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,22 +25,28 @@ public class UserTestRestDataSource {
 
 		List<UserTest> users = new ArrayList<>();
 
-		/*
-		 * Although this statement will execute OK, an exception will be thrown 
-		 * when a JSON object is requested from a JAX-RS call. To avoid this
-		 * problem, we need to register JSON-P as a provider, as done below.
-		 * 
-		 */
-		//	Client client = ClientBuilder.newClient();
-
 		/* This is the way to create a Client object as described here:
 		 * http://www.adam-bien.com/roller/abien/entry/configuring_jax_rs_2_01
 		 * 
 		 * JsonProcessingFeature is a feature to register JSON-P providers. This
 		 * enables a binding between JAX-RS and the Java API for JSON Processing,
-		 * which enables JAX-RS return JSON objects.
+		 * which enables JAX-RS return JSON objects. This JSON-Processing media 
+		 * module is one of the modules where you don't need to explicitly 
+		 * register it's feature (JsonProcessingFeature) in your client/server 
+		 * Configurable as this feature is automatically discovered and 
+		 * registered when you add jersey-media-json-processing module to your 
+		 * classpath. This is described here:
+		 * 
+		 * https://jersey.java.net/documentation/latest/user-guide.html#deployment.autodiscoverable
+		 * 
+		 * So the method call ".register(JsonProcessingFeature.class)" can be 
+		 * uncommented here, but it is not necessary to do so. What is necessary
+		 * is that the jersey-media-json-processing Maven artifact is specified
+		 * in pom.xml; otherwise, an exception will be thrown when a JSON object
+		 * is requested from a JAX-RS call.
 		 */
-		Client client = ClientBuilder.newBuilder().register(JsonProcessingFeature.class)
+		Client client = ClientBuilder.newBuilder()
+				// .register(JsonProcessingFeature.class)
 				.property(JsonGenerator.PRETTY_PRINTING, true).build();
 
 		WebTarget path = client.target(URL);

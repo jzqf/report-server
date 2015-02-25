@@ -1,0 +1,765 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<report xmlns="http://www.eclipse.org/birt/2005/design" version="3.2.23" id="1">
+    <property name="createdBy">Eclipse BIRT Designer Version 4.4.1.v201408290142 Build &lt;4.4.1.v20140916-1320></property>
+    <property name="units">in</property>
+    <property name="iconFile">/templates/blank_report.gif</property>
+    <property name="layoutPreference">auto layout</property>
+    <property name="bidiLayoutOrientation">ltr</property>
+    <property name="imageDPI">96</property>
+    <data-sources>
+        <oda-data-source extensionID="org.eclipse.birt.report.data.oda.jdbc" name="OBO_DB_DataSource" id="7">
+            <list-property name="privateDriverProperties">
+                <ex-property>
+                    <name>metadataBidiFormatStr</name>
+                    <value>ILYNN</value>
+                </ex-property>
+                <ex-property>
+                    <name>disabledMetadataBidiFormatStr</name>
+                </ex-property>
+                <ex-property>
+                    <name>contentBidiFormatStr</name>
+                    <value>ILYNN</value>
+                </ex-property>
+                <ex-property>
+                    <name>disabledContentBidiFormatStr</name>
+                </ex-property>
+            </list-property>
+            <property name="odaDriverClass">org.postgresql.Driver</property>
+            <property name="odaURL">jdbc:postgresql://jeffreyz.q-free.com:5432/OBO.OP</property>
+            <property name="odaUser">adam</property>
+            <encrypted-property name="odaPassword" encryptionID="base64">bWFkYW1hZGE=</encrypted-property>
+            <property name="odaJndiName">java:comp/env/jdbc/obo_db</property>
+        </oda-data-source>
+    </data-sources>
+    <data-sets>
+        <oda-data-set extensionID="org.eclipse.birt.report.data.oda.jdbc.JdbcSelectDataSet" name="TollDomainConfig_DataSet" id="8">
+            <list-property name="columnHints">
+                <structure>
+                    <property name="columnName">charging_point_id</property>
+                    <property name="analysis">measure</property>
+                    <text-property name="displayName">charging_point_id</text-property>
+                    <text-property name="heading">charging_point_id</text-property>
+                </structure>
+                <structure>
+                    <property name="columnName">charging_point</property>
+                    <property name="analysis">dimension</property>
+                    <text-property name="displayName">charging_point</text-property>
+                    <text-property name="heading">charging_point</text-property>
+                </structure>
+                <structure>
+                    <property name="columnName">charging_point_type</property>
+                    <property name="analysis">dimension</property>
+                    <text-property name="displayName">charging_point_type</text-property>
+                    <text-property name="heading">charging_point_type</text-property>
+                </structure>
+                <structure>
+                    <property name="columnName">charging_point_status</property>
+                    <property name="analysis">dimension</property>
+                    <text-property name="displayName">charging_point_status</text-property>
+                    <text-property name="heading">charging_point_status</text-property>
+                </structure>
+                <structure>
+                    <property name="columnName">concession</property>
+                    <property name="analysis">dimension</property>
+                    <text-property name="displayName">concession</text-property>
+                    <text-property name="heading">concession</text-property>
+                </structure>
+                <structure>
+                    <property name="columnName">lane_id</property>
+                    <property name="analysis">measure</property>
+                    <text-property name="displayName">lane_id</text-property>
+                    <text-property name="heading">lane_id</text-property>
+                </structure>
+                <structure>
+                    <property name="columnName">lane</property>
+                    <property name="analysis">dimension</property>
+                    <text-property name="displayName">lane</text-property>
+                    <text-property name="heading">lane</text-property>
+                </structure>
+                <structure>
+                    <property name="columnName">lane_type</property>
+                    <property name="analysis">dimension</property>
+                    <text-property name="displayName">lane_type</text-property>
+                    <text-property name="heading">lane_type</text-property>
+                </structure>
+                <structure>
+                    <property name="columnName">lane_direction</property>
+                    <property name="analysis">dimension</property>
+                    <text-property name="displayName">lane_direction</text-property>
+                    <text-property name="heading">lane_direction</text-property>
+                </structure>
+                <structure>
+                    <property name="columnName">lane_status</property>
+                    <property name="analysis">dimension</property>
+                    <text-property name="displayName">lane_status</text-property>
+                    <text-property name="heading">lane_status</text-property>
+                </structure>
+                <structure>
+                    <property name="columnName">front_cameras</property>
+                    <property name="analysis">measure</property>
+                    <text-property name="displayName">front_cameras</text-property>
+                    <text-property name="heading">front_cameras</text-property>
+                </structure>
+                <structure>
+                    <property name="columnName">rear_cameras</property>
+                    <property name="analysis">measure</property>
+                    <text-property name="displayName">rear_cameras</text-property>
+                    <text-property name="heading">rear_cameras</text-property>
+                </structure>
+            </list-property>
+            <list-property name="parameters"/>
+            <structure name="cachedMetaData">
+                <list-property name="resultSet">
+                    <structure>
+                        <property name="position">1</property>
+                        <property name="name">charging_point_id</property>
+                        <property name="dataType">integer</property>
+                    </structure>
+                    <structure>
+                        <property name="position">2</property>
+                        <property name="name">charging_point</property>
+                        <property name="dataType">string</property>
+                    </structure>
+                    <structure>
+                        <property name="position">3</property>
+                        <property name="name">charging_point_type</property>
+                        <property name="dataType">string</property>
+                    </structure>
+                    <structure>
+                        <property name="position">4</property>
+                        <property name="name">charging_point_status</property>
+                        <property name="dataType">string</property>
+                    </structure>
+                    <structure>
+                        <property name="position">5</property>
+                        <property name="name">concession</property>
+                        <property name="dataType">string</property>
+                    </structure>
+                    <structure>
+                        <property name="position">6</property>
+                        <property name="name">lane_id</property>
+                        <property name="dataType">integer</property>
+                    </structure>
+                    <structure>
+                        <property name="position">7</property>
+                        <property name="name">lane</property>
+                        <property name="dataType">string</property>
+                    </structure>
+                    <structure>
+                        <property name="position">8</property>
+                        <property name="name">lane_type</property>
+                        <property name="dataType">string</property>
+                    </structure>
+                    <structure>
+                        <property name="position">9</property>
+                        <property name="name">lane_direction</property>
+                        <property name="dataType">string</property>
+                    </structure>
+                    <structure>
+                        <property name="position">10</property>
+                        <property name="name">lane_status</property>
+                        <property name="dataType">string</property>
+                    </structure>
+                    <structure>
+                        <property name="position">11</property>
+                        <property name="name">front_cameras</property>
+                        <property name="dataType">integer</property>
+                    </structure>
+                    <structure>
+                        <property name="position">12</property>
+                        <property name="name">rear_cameras</property>
+                        <property name="dataType">integer</property>
+                    </structure>
+                </list-property>
+            </structure>
+            <property name="dataSource">OBO_DB_DataSource</property>
+            <list-property name="resultSet">
+                <structure>
+                    <property name="position">1</property>
+                    <property name="name">charging_point_id</property>
+                    <property name="nativeName">charging_point_id</property>
+                    <property name="dataType">integer</property>
+                    <property name="nativeDataType">5</property>
+                </structure>
+                <structure>
+                    <property name="position">2</property>
+                    <property name="name">charging_point</property>
+                    <property name="nativeName">charging_point</property>
+                    <property name="dataType">string</property>
+                    <property name="nativeDataType">12</property>
+                </structure>
+                <structure>
+                    <property name="position">3</property>
+                    <property name="name">charging_point_type</property>
+                    <property name="nativeName">charging_point_type</property>
+                    <property name="dataType">string</property>
+                    <property name="nativeDataType">12</property>
+                </structure>
+                <structure>
+                    <property name="position">4</property>
+                    <property name="name">charging_point_status</property>
+                    <property name="nativeName">charging_point_status</property>
+                    <property name="dataType">string</property>
+                    <property name="nativeDataType">12</property>
+                </structure>
+                <structure>
+                    <property name="position">5</property>
+                    <property name="name">concession</property>
+                    <property name="nativeName">concession</property>
+                    <property name="dataType">string</property>
+                    <property name="nativeDataType">12</property>
+                </structure>
+                <structure>
+                    <property name="position">6</property>
+                    <property name="name">lane_id</property>
+                    <property name="nativeName">lane_id</property>
+                    <property name="dataType">integer</property>
+                    <property name="nativeDataType">5</property>
+                </structure>
+                <structure>
+                    <property name="position">7</property>
+                    <property name="name">lane</property>
+                    <property name="nativeName">lane</property>
+                    <property name="dataType">string</property>
+                    <property name="nativeDataType">12</property>
+                </structure>
+                <structure>
+                    <property name="position">8</property>
+                    <property name="name">lane_type</property>
+                    <property name="nativeName">lane_type</property>
+                    <property name="dataType">string</property>
+                    <property name="nativeDataType">12</property>
+                </structure>
+                <structure>
+                    <property name="position">9</property>
+                    <property name="name">lane_direction</property>
+                    <property name="nativeName">lane_direction</property>
+                    <property name="dataType">string</property>
+                    <property name="nativeDataType">12</property>
+                </structure>
+                <structure>
+                    <property name="position">10</property>
+                    <property name="name">lane_status</property>
+                    <property name="nativeName">lane_status</property>
+                    <property name="dataType">string</property>
+                    <property name="nativeDataType">12</property>
+                </structure>
+                <structure>
+                    <property name="position">11</property>
+                    <property name="name">front_cameras</property>
+                    <property name="nativeName">front_cameras</property>
+                    <property name="dataType">integer</property>
+                    <property name="nativeDataType">5</property>
+                </structure>
+                <structure>
+                    <property name="position">12</property>
+                    <property name="name">rear_cameras</property>
+                    <property name="nativeName">rear_cameras</property>
+                    <property name="dataType">integer</property>
+                    <property name="nativeDataType">5</property>
+                </structure>
+            </list-property>
+            <xml-property name="queryText"><![CDATA[SELECT
+	cp.charging_point_id AS charging_point_id,
+	cp.abbreviation AS charging_point,
+	cp_type.abbreviation AS charging_point_type,
+	cp_status.abbreviation AS charging_point_status,
+	concession.abbreviation AS concession,
+	lane.lane_id AS lane_id, 
+	lane.abbreviation AS lane, 
+	lane_type.abbreviation AS lane_type,
+	lane_dir.abbreviation AS lane_direction,
+	lane_status.abbreviation AS lane_status,
+	lane.cp_lane_front_camera_count AS front_cameras, 
+	lane.cp_lane_rear_camera_count AS rear_cameras
+FROM
+	tolldomain.cp_lane lane
+INNER JOIN
+	tolldomain.charging_point cp ON cp.charging_point_id=lane.charging_point_id
+INNER JOIN
+	tolldomain.cp_type ON cp_type.cp_type_id=cp.cp_type_id
+INNER JOIN
+	tolldomain.cp_status ON cp_status.cp_status_id=cp.cp_status_id
+LEFT OUTER JOIN  -- currently,      charging_point.concession_id is null for all cp's
+-- INNER JOIN    -- uncomment after charging_point.concession_id is given values
+	tolldomain.service_provider concession ON concession.service_provider_id=cp.concession_id
+INNER JOIN
+	tolldomain.cp_lane_type lane_type ON lane_type.cp_lane_type_id=lane.cp_lane_type_id
+INNER JOIN
+	tolldomain.cp_lane_direction lane_dir ON lane_dir.cp_lane_direction_id=lane.cp_lane_direction_id
+INNER JOIN
+	tolldomain.cp_lane_status lane_status ON lane_status.cp_lane_status_id=lane.cp_lane_status_id
+ORDER BY
+	charging_point,
+	lane;]]></xml-property>
+            <xml-property name="designerValues"><![CDATA[<?xml version="1.0" encoding="UTF-8"?>
+<model:DesignValues xmlns:design="http://www.eclipse.org/datatools/connectivity/oda/design" xmlns:model="http://www.eclipse.org/birt/report/model/adapter/odaModel">
+  <Version>2.0</Version>
+  <design:ResultSets derivedMetaData="true">
+    <design:resultSetDefinitions>
+      <design:resultSetColumns>
+        <design:resultColumnDefinitions>
+          <design:attributes>
+            <design:identifier>
+              <design:name>charging_point</design:name>
+              <design:position>1</design:position>
+            </design:identifier>
+            <design:nativeDataTypeCode>12</design:nativeDataTypeCode>
+            <design:precision>16</design:precision>
+            <design:scale>0</design:scale>
+            <design:nullability>NotNullable</design:nullability>
+            <design:uiHints>
+              <design:displayName>charging_point</design:displayName>
+            </design:uiHints>
+          </design:attributes>
+          <design:usageHints>
+            <design:label>charging_point</design:label>
+            <design:formattingHints>
+              <design:displaySize>16</design:displaySize>
+            </design:formattingHints>
+          </design:usageHints>
+        </design:resultColumnDefinitions>
+        <design:resultColumnDefinitions>
+          <design:attributes>
+            <design:identifier>
+              <design:name>charging_point_type</design:name>
+              <design:position>2</design:position>
+            </design:identifier>
+            <design:nativeDataTypeCode>12</design:nativeDataTypeCode>
+            <design:precision>16</design:precision>
+            <design:scale>0</design:scale>
+            <design:nullability>NotNullable</design:nullability>
+            <design:uiHints>
+              <design:displayName>charging_point_type</design:displayName>
+            </design:uiHints>
+          </design:attributes>
+          <design:usageHints>
+            <design:label>charging_point_type</design:label>
+            <design:formattingHints>
+              <design:displaySize>16</design:displaySize>
+            </design:formattingHints>
+          </design:usageHints>
+        </design:resultColumnDefinitions>
+        <design:resultColumnDefinitions>
+          <design:attributes>
+            <design:identifier>
+              <design:name>charging_point_status</design:name>
+              <design:position>3</design:position>
+            </design:identifier>
+            <design:nativeDataTypeCode>12</design:nativeDataTypeCode>
+            <design:precision>16</design:precision>
+            <design:scale>0</design:scale>
+            <design:nullability>NotNullable</design:nullability>
+            <design:uiHints>
+              <design:displayName>charging_point_status</design:displayName>
+            </design:uiHints>
+          </design:attributes>
+          <design:usageHints>
+            <design:label>charging_point_status</design:label>
+            <design:formattingHints>
+              <design:displaySize>16</design:displaySize>
+            </design:formattingHints>
+          </design:usageHints>
+        </design:resultColumnDefinitions>
+        <design:resultColumnDefinitions>
+          <design:attributes>
+            <design:identifier>
+              <design:name>concession</design:name>
+              <design:position>4</design:position>
+            </design:identifier>
+            <design:nativeDataTypeCode>12</design:nativeDataTypeCode>
+            <design:precision>16</design:precision>
+            <design:scale>0</design:scale>
+            <design:nullability>NotNullable</design:nullability>
+            <design:uiHints>
+              <design:displayName>concession</design:displayName>
+            </design:uiHints>
+          </design:attributes>
+          <design:usageHints>
+            <design:label>concession</design:label>
+            <design:formattingHints>
+              <design:displaySize>16</design:displaySize>
+            </design:formattingHints>
+          </design:usageHints>
+        </design:resultColumnDefinitions>
+        <design:resultColumnDefinitions>
+          <design:attributes>
+            <design:identifier>
+              <design:name>lane</design:name>
+              <design:position>5</design:position>
+            </design:identifier>
+            <design:nativeDataTypeCode>12</design:nativeDataTypeCode>
+            <design:precision>16</design:precision>
+            <design:scale>0</design:scale>
+            <design:nullability>NotNullable</design:nullability>
+            <design:uiHints>
+              <design:displayName>lane</design:displayName>
+            </design:uiHints>
+          </design:attributes>
+          <design:usageHints>
+            <design:label>lane</design:label>
+            <design:formattingHints>
+              <design:displaySize>16</design:displaySize>
+            </design:formattingHints>
+          </design:usageHints>
+        </design:resultColumnDefinitions>
+        <design:resultColumnDefinitions>
+          <design:attributes>
+            <design:identifier>
+              <design:name>lane_type</design:name>
+              <design:position>6</design:position>
+            </design:identifier>
+            <design:nativeDataTypeCode>12</design:nativeDataTypeCode>
+            <design:precision>16</design:precision>
+            <design:scale>0</design:scale>
+            <design:nullability>NotNullable</design:nullability>
+            <design:uiHints>
+              <design:displayName>lane_type</design:displayName>
+            </design:uiHints>
+          </design:attributes>
+          <design:usageHints>
+            <design:label>lane_type</design:label>
+            <design:formattingHints>
+              <design:displaySize>16</design:displaySize>
+            </design:formattingHints>
+          </design:usageHints>
+        </design:resultColumnDefinitions>
+        <design:resultColumnDefinitions>
+          <design:attributes>
+            <design:identifier>
+              <design:name>lane_direction</design:name>
+              <design:position>7</design:position>
+            </design:identifier>
+            <design:nativeDataTypeCode>12</design:nativeDataTypeCode>
+            <design:precision>16</design:precision>
+            <design:scale>0</design:scale>
+            <design:nullability>NotNullable</design:nullability>
+            <design:uiHints>
+              <design:displayName>lane_direction</design:displayName>
+            </design:uiHints>
+          </design:attributes>
+          <design:usageHints>
+            <design:label>lane_direction</design:label>
+            <design:formattingHints>
+              <design:displaySize>16</design:displaySize>
+            </design:formattingHints>
+          </design:usageHints>
+        </design:resultColumnDefinitions>
+        <design:resultColumnDefinitions>
+          <design:attributes>
+            <design:identifier>
+              <design:name>lane_status</design:name>
+              <design:position>8</design:position>
+            </design:identifier>
+            <design:nativeDataTypeCode>12</design:nativeDataTypeCode>
+            <design:precision>16</design:precision>
+            <design:scale>0</design:scale>
+            <design:nullability>NotNullable</design:nullability>
+            <design:uiHints>
+              <design:displayName>lane_status</design:displayName>
+            </design:uiHints>
+          </design:attributes>
+          <design:usageHints>
+            <design:label>lane_status</design:label>
+            <design:formattingHints>
+              <design:displaySize>16</design:displaySize>
+            </design:formattingHints>
+          </design:usageHints>
+        </design:resultColumnDefinitions>
+        <design:resultColumnDefinitions>
+          <design:attributes>
+            <design:identifier>
+              <design:name>front_cameras</design:name>
+              <design:position>9</design:position>
+            </design:identifier>
+            <design:nativeDataTypeCode>5</design:nativeDataTypeCode>
+            <design:precision>5</design:precision>
+            <design:scale>0</design:scale>
+            <design:nullability>NotNullable</design:nullability>
+            <design:uiHints>
+              <design:displayName>front_cameras</design:displayName>
+            </design:uiHints>
+          </design:attributes>
+          <design:usageHints>
+            <design:label>front_cameras</design:label>
+            <design:formattingHints>
+              <design:displaySize>6</design:displaySize>
+            </design:formattingHints>
+          </design:usageHints>
+        </design:resultColumnDefinitions>
+        <design:resultColumnDefinitions>
+          <design:attributes>
+            <design:identifier>
+              <design:name>rear_cameras</design:name>
+              <design:position>10</design:position>
+            </design:identifier>
+            <design:nativeDataTypeCode>5</design:nativeDataTypeCode>
+            <design:precision>5</design:precision>
+            <design:scale>0</design:scale>
+            <design:nullability>NotNullable</design:nullability>
+            <design:uiHints>
+              <design:displayName>rear_cameras</design:displayName>
+            </design:uiHints>
+          </design:attributes>
+          <design:usageHints>
+            <design:label>rear_cameras</design:label>
+            <design:formattingHints>
+              <design:displaySize>6</design:displaySize>
+            </design:formattingHints>
+          </design:usageHints>
+        </design:resultColumnDefinitions>
+      </design:resultSetColumns>
+      <design:criteria/>
+    </design:resultSetDefinitions>
+  </design:ResultSets>
+</model:DesignValues>]]></xml-property>
+        </oda-data-set>
+    </data-sets>
+    <styles>
+        <style name="report" id="4">
+            <property name="fontFamily">sans-serif</property>
+            <property name="fontSize">10pt</property>
+        </style>
+        <style name="crosstab-cell" id="5">
+            <property name="borderBottomColor">#CCCCCC</property>
+            <property name="borderBottomStyle">solid</property>
+            <property name="borderBottomWidth">1pt</property>
+            <property name="borderLeftColor">#CCCCCC</property>
+            <property name="borderLeftStyle">solid</property>
+            <property name="borderLeftWidth">1pt</property>
+            <property name="borderRightColor">#CCCCCC</property>
+            <property name="borderRightStyle">solid</property>
+            <property name="borderRightWidth">1pt</property>
+            <property name="borderTopColor">#CCCCCC</property>
+            <property name="borderTopStyle">solid</property>
+            <property name="borderTopWidth">1pt</property>
+        </style>
+        <style name="crosstab" id="6">
+            <property name="borderBottomColor">#CCCCCC</property>
+            <property name="borderBottomStyle">solid</property>
+            <property name="borderBottomWidth">1pt</property>
+            <property name="borderLeftColor">#CCCCCC</property>
+            <property name="borderLeftStyle">solid</property>
+            <property name="borderLeftWidth">1pt</property>
+            <property name="borderRightColor">#CCCCCC</property>
+            <property name="borderRightStyle">solid</property>
+            <property name="borderRightWidth">1pt</property>
+            <property name="borderTopColor">#CCCCCC</property>
+            <property name="borderTopStyle">solid</property>
+            <property name="borderTopWidth">1pt</property>
+        </style>
+    </styles>
+    <page-setup>
+        <simple-master-page name="Simple MasterPage" id="2">
+            <page-footer>
+                <text id="3">
+                    <property name="contentType">html</property>
+                    <text-property name="content"><![CDATA[<value-of>new Date()</value-of>]]></text-property>
+                </text>
+            </page-footer>
+        </simple-master-page>
+        <simple-master-page name="A4 landscape" id="73">
+            <property name="type">a4</property>
+            <property name="orientation">landscape</property>
+        </simple-master-page>
+    </page-setup>
+    <body>
+        <table id="9">
+            <property name="dataSet">TollDomainConfig_DataSet</property>
+            <list-property name="boundDataColumns">
+                <structure>
+                    <property name="name">charging_point</property>
+                    <text-property name="displayName">charging_point</text-property>
+                    <expression name="expression" type="javascript">dataSetRow["charging_point"]</expression>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="name">charging_point_type</property>
+                    <text-property name="displayName">charging_point_type</text-property>
+                    <expression name="expression" type="javascript">dataSetRow["charging_point_type"]</expression>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="name">charging_point_status</property>
+                    <text-property name="displayName">charging_point_status</text-property>
+                    <expression name="expression" type="javascript">dataSetRow["charging_point_status"]</expression>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="name">concession</property>
+                    <text-property name="displayName">concession</text-property>
+                    <expression name="expression" type="javascript">dataSetRow["concession"]</expression>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="name">lane</property>
+                    <text-property name="displayName">lane</text-property>
+                    <expression name="expression" type="javascript">dataSetRow["lane"]</expression>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="name">lane_type</property>
+                    <text-property name="displayName">lane_type</text-property>
+                    <expression name="expression" type="javascript">dataSetRow["lane_type"]</expression>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="name">lane_direction</property>
+                    <text-property name="displayName">lane_direction</text-property>
+                    <expression name="expression" type="javascript">dataSetRow["lane_direction"]</expression>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="name">lane_status</property>
+                    <text-property name="displayName">lane_status</text-property>
+                    <expression name="expression" type="javascript">dataSetRow["lane_status"]</expression>
+                    <property name="dataType">string</property>
+                </structure>
+                <structure>
+                    <property name="name">front_cameras</property>
+                    <text-property name="displayName">front_cameras</text-property>
+                    <expression name="expression" type="javascript">dataSetRow["front_cameras"]</expression>
+                    <property name="dataType">integer</property>
+                </structure>
+                <structure>
+                    <property name="name">rear_cameras</property>
+                    <text-property name="displayName">rear_cameras</text-property>
+                    <expression name="expression" type="javascript">dataSetRow["rear_cameras"]</expression>
+                    <property name="dataType">integer</property>
+                </structure>
+            </list-property>
+            <column id="63"/>
+            <column id="64"/>
+            <column id="65"/>
+            <column id="66"/>
+            <column id="67"/>
+            <column id="68"/>
+            <column id="69"/>
+            <column id="70"/>
+            <column id="71"/>
+            <column id="72"/>
+            <header>
+                <row id="10">
+                    <cell id="11">
+                        <label id="12">
+                            <text-property name="text">charging_point</text-property>
+                        </label>
+                    </cell>
+                    <cell id="13">
+                        <label id="14">
+                            <text-property name="text">charging_point_type</text-property>
+                        </label>
+                    </cell>
+                    <cell id="15">
+                        <label id="16">
+                            <text-property name="text">charging_point_status</text-property>
+                        </label>
+                    </cell>
+                    <cell id="17">
+                        <label id="18">
+                            <text-property name="text">concession</text-property>
+                        </label>
+                    </cell>
+                    <cell id="19">
+                        <label id="20">
+                            <text-property name="text">lane</text-property>
+                        </label>
+                    </cell>
+                    <cell id="21">
+                        <label id="22">
+                            <text-property name="text">lane_type</text-property>
+                        </label>
+                    </cell>
+                    <cell id="23">
+                        <label id="24">
+                            <text-property name="text">lane_direction</text-property>
+                        </label>
+                    </cell>
+                    <cell id="25">
+                        <label id="26">
+                            <text-property name="text">lane_status</text-property>
+                        </label>
+                    </cell>
+                    <cell id="27">
+                        <label id="28">
+                            <text-property name="text">front_cameras</text-property>
+                        </label>
+                    </cell>
+                    <cell id="29">
+                        <label id="30">
+                            <text-property name="text">rear_cameras</text-property>
+                        </label>
+                    </cell>
+                </row>
+            </header>
+            <detail>
+                <row id="31">
+                    <cell id="32">
+                        <data id="33">
+                            <property name="resultSetColumn">charging_point</property>
+                        </data>
+                    </cell>
+                    <cell id="34">
+                        <data id="35">
+                            <property name="resultSetColumn">charging_point_type</property>
+                        </data>
+                    </cell>
+                    <cell id="36">
+                        <data id="37">
+                            <property name="resultSetColumn">charging_point_status</property>
+                        </data>
+                    </cell>
+                    <cell id="38">
+                        <data id="39">
+                            <property name="resultSetColumn">concession</property>
+                        </data>
+                    </cell>
+                    <cell id="40">
+                        <data id="41">
+                            <property name="resultSetColumn">lane</property>
+                        </data>
+                    </cell>
+                    <cell id="42">
+                        <data id="43">
+                            <property name="resultSetColumn">lane_type</property>
+                        </data>
+                    </cell>
+                    <cell id="44">
+                        <data id="45">
+                            <property name="resultSetColumn">lane_direction</property>
+                        </data>
+                    </cell>
+                    <cell id="46">
+                        <data id="47">
+                            <property name="resultSetColumn">lane_status</property>
+                        </data>
+                    </cell>
+                    <cell id="48">
+                        <data id="49">
+                            <property name="resultSetColumn">front_cameras</property>
+                        </data>
+                    </cell>
+                    <cell id="50">
+                        <data id="51">
+                            <property name="resultSetColumn">rear_cameras</property>
+                        </data>
+                    </cell>
+                </row>
+            </detail>
+            <footer>
+                <row id="52">
+                    <cell id="53"/>
+                    <cell id="54"/>
+                    <cell id="55"/>
+                    <cell id="56"/>
+                    <cell id="57"/>
+                    <cell id="58"/>
+                    <cell id="59"/>
+                    <cell id="60"/>
+                    <cell id="61"/>
+                    <cell id="62"/>
+                </row>
+            </footer>
+        </table>
+    </body>
+</report>

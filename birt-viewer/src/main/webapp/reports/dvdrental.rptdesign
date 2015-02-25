@@ -121,7 +121,7 @@
             <property name="odaURL">jdbc:postgresql://jeffreyz.q-free.com:5432/dvdrental</property>
             <property name="odaUser">jeffreyz</property>
             <encrypted-property name="odaPassword" encryptionID="base64">dHN1bmFtaSpKQVo2</encrypted-property>
-            <property name="odaJndiName">java:comp/env/jdbc/obo_db</property>
+            <property name="odaJndiName">java:comp/env/jdbc/dvdrental_db</property>
         </oda-data-source>
     </data-sources>
     <data-sets>
