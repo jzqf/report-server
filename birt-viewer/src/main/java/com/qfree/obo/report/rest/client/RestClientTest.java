@@ -7,8 +7,6 @@ import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.WebTarget;
 
-import org.glassfish.jersey.jsonp.JsonProcessingFeature;
-
 // For this, we must uncomment "jersey-media-json-processing" Maven depenency:
 //import org.glassfish.jersey.jsonp.JsonProcessingFeature;
 
@@ -19,7 +17,8 @@ public class RestClientTest {
 		/* This is the way to create a Client object as described here:
 		 * http://www.adam-bien.com/roller/abien/entry/configuring_jax_rs_2_01
 		 */
-		Client client = ClientBuilder.newBuilder().register(JsonProcessingFeature.class)
+		Client client = ClientBuilder.newBuilder()
+				//	.register(JsonProcessingFeature.class)
 				.property(JsonGenerator.PRETTY_PRINTING, true).build();
 
 		//		Client client = ClientBuilder.newClient();	// <-- Exception thrown!!!!!!!!!!!!!!
