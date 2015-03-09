@@ -116,7 +116,6 @@
 			<version>${jax-rs-version}</version>
 		</dependency>
 
-
 	</dependencies>
 
 	<build>
@@ -157,15 +156,16 @@
 				<artifactId>maven-war-plugin</artifactId>
 				<version>2.6</version>
 				<configuration>
-					<!-- When the WAR file birt-viewer-1.0-SNAPSHOT.was is generated, 
-						 this tells this plugin to also create a JAR artifact named
-						 birt-viewer-<version>-classes.jar. This enables another 
-						 Maven project to create a dependency on the Java code in 
-						 this project (since it does not work to make a dependency
-						 on a WAR file). This JAR file is currently used as a 
-						 dependency in the "birt-reports" project. This is needed
-						 so that BIRT POJO data sources will be able to execute code
-						 from this project to create a data set in that project.  -->
+					<!-- When the WAR file birt-viewer-${project.version}.war is 
+						 generated, this tells this plugin to also create a JAR 
+						 artifact named birt-viewer-${project.version}-classes.jar.
+						 This enables another Maven project to create a dependency 
+						 on the Java code in this project (since it does not work 
+						 to make a dependency on a WAR file). This JAR file is 
+						 currently used as a dependency in the "birt-reports" 
+						 project. This is needed so that BIRT POJO data sources 
+						 will be able to execute code from this project to create 
+						 a data set in that project.  -->
 					<attachClasses>true</attachClasses>
 				</configuration>
 			</plugin>
