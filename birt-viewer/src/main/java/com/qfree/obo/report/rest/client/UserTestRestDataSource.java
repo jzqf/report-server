@@ -24,6 +24,11 @@ public class UserTestRestDataSource {
 
 	private static final Logger logger = LoggerFactory.getLogger(UserTestRestDataSource.class);
 
+	/*
+	 * TODO This URI should be loaded from a properties file or from a database.
+	 */
+	private static final String REST_URI = "http://jsonplaceholder.typicode.com/users";
+
 	private List<UserTest> getUsers(String restURI) {
 
 		logger.info("restURI=\"{}\"", restURI);
@@ -133,7 +138,7 @@ public class UserTestRestDataSource {
 	 * is invoked. It is a mandatory method.
 	 */
 	public void open(Object appContext, Map<String, Object> dataSetParamValues) {
-		List<UserTest> users = getUsers("http://jsonplaceholder.typicode.com/users");
+		List<UserTest> users = getUsers(REST_URI);
 		this.iterator = users.iterator();
 	}
 
