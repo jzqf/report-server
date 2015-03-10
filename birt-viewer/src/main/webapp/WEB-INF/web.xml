@@ -7,15 +7,52 @@
 
 	<display-name>OBO Report Viewer</display-name>
 
-	<welcome-file-list>
-		<welcome-file>index.html</welcome-file>
-		<welcome-file>index.htm</welcome-file>
-		<welcome-file>index.jsp</welcome-file>
-		<welcome-file>default.html</welcome-file>
-		<welcome-file>default.htm</welcome-file>
-		<welcome-file>default.jsp</welcome-file>
-	</welcome-file-list>
 
+	<listener>
+		<listener-class>
+			org.springframework.web.context.ContextLoaderListener
+		</listener-class>
+	</listener>
+	<context-param>
+		<param-name>contextConfigLocation</param-name>
+		<param-value>
+		    classpath:spring/applicationContext.xml
+<!-- 		    classpath:spring/security-context.xml -->
+		</param-value>
+	</context-param>
+
+
+	<!-- JAX-RS/Jersey ReST server configuration:
+	
+		 The servlet mapping here appears to be necessary. Although normally it
+		 seems that Jersey can automatically locate a class annotated with
+		 @javax.ws.rs.ApplicationPath that specifies this mapping, my testing
+		 indicates that this can fail if other servlets are registered 
+		 elsewhere. If this servlet mapping here is removed, an exception is 
+		 thrown when an HTTP request is received that should be mapped to this
+		 servlet:
+		 	jax-rs java.lang.IllegalStateException: The resource configuration 
+		 	is not modifiable in this context
+		 	...
+	-->
+	<servlet>
+		<servlet-name>jersey-servlet</servlet-name>
+		<servlet-class>
+			org.glassfish.jersey.servlet.ServletContainer
+		</servlet-class>
+		<init-param>
+			<param-name>javax.ws.rs.Application</param-name>
+			<param-value>com.qfree.obo.report.rest.server.JAXRSConfiguration</param-value>			
+		</init-param>		
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>jersey-servlet</servlet-name>
+		<url-pattern>/rest/*</url-pattern>
+	</servlet-mapping>
+
+	<!-- BIRT Viewer configuration: -->
+	
 	<context-param>
 		<param-name>BIRT_VIEWER_LOG_LEVEL</param-name>
 		<param-value>FINEST</param-value>
@@ -151,5 +188,15 @@
 			<taglib-location>/WEB-INF/tlds/birt.tld</taglib-location>
 		</taglib>
 	</jsp-config>
+
+
+	<welcome-file-list>
+		<welcome-file>index.html</welcome-file>
+		<welcome-file>index.htm</welcome-file>
+		<welcome-file>index.jsp</welcome-file>
+		<welcome-file>default.html</welcome-file>
+		<welcome-file>default.htm</welcome-file>
+		<welcome-file>default.jsp</welcome-file>
+	</welcome-file-list>
 
 </web-app>
