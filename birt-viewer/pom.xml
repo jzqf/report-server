@@ -154,6 +154,7 @@
 		
 		
 		<!-- Spring: -->
+		<!-- TODO Try removing some of these Spring dependencies? They may not all be needed. -->
 		
 		<dependency>
 			<groupId>org.springframework</groupId>
@@ -190,6 +191,7 @@
 			<artifactId>spring-tx</artifactId>
 			<version>${spring.version}</version>
 		</dependency>
+		
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-orm</artifactId>
@@ -197,13 +199,27 @@
 		</dependency>
 
 
+		<!-- Apache Commons DBCP 2.x -->
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-dbcp2</artifactId>
+			<version>2.1</version>
+			<!-- <scope>provided</scope> -->
+			<exclusions>
+				<exclusion>
+					<groupId>commons-logging</groupId>
+					<artifactId>commons-logging</artifactId>
+				 </exclusion>
+			</exclusions>
+		</dependency>
+
 	</dependencies>
 
 	<build>
 	
 		<!-- "finalName" sets the context root of the deployed web application.
 			Otherwise, the web app will be deployed at /<artifactId>-<version> -->
-		<finalName>report-viewer</finalName>
+		<finalName>report-server</finalName>
 		
 		<plugins>
 

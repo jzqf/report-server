@@ -11,4 +11,7 @@
 		 
 		http://www.springframework.org/schema/context
 		http://www.springframework.org/schema/context/spring-context.xsd">
+	
+	<!-- This file is not used if JavaConfig is enabled in web.xml -->
+	
  </beans>

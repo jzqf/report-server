@@ -33,18 +33,18 @@
 			On a default GlassFish 4 installation, this log file will be created
 			in: .../glassfish4/glassfish/domains/domain1/logs/
 		-->
-		<File>${catalina.base}/logs/obo-report-viewer/obo-report-viewer.log</File>
+		<File>${catalina.base}/logs/obo-report-server/obo-report-server.log</File>
 		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
 		
 			<FileNamePattern>
 				<!-- Log file will be archived in "archive" directory at the beginning of each minute: -->
-				<!-- ${catalina.base}/logs/obo-report-viewer/archive/obo-report-viewer.%d{yyyy-MM-dd_HH-mm}.log.zip -->
+				<!-- ${catalina.base}/logs/obo-report-server/archive/obo-report-server.%d{yyyy-MM-dd_HH-mm}.log.zip -->
 
 				<!-- Default. Log file will be archived at midnight each day: -->
-				<!-- ${catalina.base}/logs/obo-report-viewer/archive/obo-report-viewer.%d{yyyy-MM-dd}.log.zip -->
-				${catalina.base}/logs/obo-report-viewer/archive/obo-report-viewer.%d{yyyy-MM-dd}.log
+				<!-- ${catalina.base}/logs/obo-report-server/archive/obo-report-server.%d{yyyy-MM-dd}.log.zip -->
+				${catalina.base}/logs/obo-report-server/archive/obo-report-server.%d{yyyy-MM-dd}.log
 				     
-				<!-- ${catalina.base}/logs/obo-report-viewer/archive/obo-report-viewer.%d{yyyy-MM}.log.zip -->
+				<!-- ${catalina.base}/logs/obo-report-server/archive/obo-report-server.%d{yyyy-MM}.log.zip -->
 			</FileNamePattern>
 
 			<maxHistory>365</maxHistory>	<!-- Maximum number of archive files to keep, deleting older files -->

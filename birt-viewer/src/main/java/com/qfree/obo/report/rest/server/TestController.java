@@ -17,7 +17,7 @@ public class TestController {
 	@Produces("text/plain")
 	public String numConsumers(@HeaderParam("Accept") String acceptHeader) {
 		String apiVersion = ReST.extractAPIVersion(acceptHeader);
-		return "test";
+		return "/test";
 	}
 
 	//	@GET
