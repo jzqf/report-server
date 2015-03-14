@@ -49,6 +49,7 @@
 		<javax.servlet-api.version>3.1.0</javax.servlet-api.version>
 		<jersey.version>2.16</jersey.version>
 		<spring.version>4.1.5.RELEASE</spring.version>
+		<hibernate.version>4.3.8.Final</hibernate.version>
 		<tomcat7.maven.plugin.version>2.2</tomcat7.maven.plugin.version>
 	</properties>
 	
@@ -199,6 +200,14 @@
 		</dependency>
 
 
+		<!-- Hibernate 4 -->
+		<dependency>
+			<groupId>org.hibernate</groupId>
+			<artifactId>hibernate-core</artifactId>
+			<version>${hibernate.version}</version>
+		</dependency>
+		
+
 		<!-- Apache Commons DBCP 2.x -->
 		<dependency>
 			<groupId>org.apache.commons</groupId>
@@ -212,6 +221,14 @@
 				 </exclusion>
 			</exclusions>
 		</dependency>
+		
+		<!-- PostgreSQL JDBC driver -->
+		<dependency>
+			<groupId>org.postgresql</groupId>
+			<artifactId>postgresql</artifactId>
+			<version>9.4-1201-jdbc41</version>
+		</dependency>
+		
 
 	</dependencies>
 

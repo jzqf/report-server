@@ -9,6 +9,25 @@
 	<link href="webcontent/qfree/images/favicon.ico" type=image/x-icon rel="shortcut icon">
 </head>
 <body>
+
+	<script>
+		//window.setInterval(function(){ alert("Hello"); }, 5000);
+		//window.setInterval(function(){ reloadIFrame(); }, 5000);
+		//window.setInterval(function(){ loadViewerdashboardElement_r1c1(); loadViewerdashboardElement_r1c2(); }, 5000);
+		//window.setInterval(function(){ loadViewerdashboardElement_r2c1(); loadViewerdashboardElement_r2c2(); }, 10000);
+		//function reloadIFrame() {
+		//	// This does not work, probably because each iFrame that displays a 
+		//	// report is loaded initially via a script, not via a URL.
+		//	document.frames["dashboardElement_r1c1"].location.reload();
+		//}
+		window.setInterval(function(){ reloadIFrames(); }, 5000);
+		function reloadIFrames() {
+			loadViewerdashboardElement_r1c1();
+			loadViewerdashboardElement_r1c2();
+			loadViewerdashboardElement_r2c1();
+			loadViewerdashboardElement_r2c2();
+		}
+	</script>
 		
 	<h2 style="text-align: center;">Q-Free OBO Dashboard (BIRT JSP tags)</h2>
 
