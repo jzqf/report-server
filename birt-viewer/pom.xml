@@ -49,7 +49,9 @@
 		<javax.servlet-api.version>3.1.0</javax.servlet-api.version>
 		<jersey.version>2.16</jersey.version>
 		<spring.version>4.1.5.RELEASE</spring.version>
+		<spring.data.jpa.version>1.7.2.RELEASE</spring.data.jpa.version>
 		<hibernate.version>4.3.8.Final</hibernate.version>
+		<junit.version>4.12</junit.version>
 		<tomcat7.maven.plugin.version>2.2</tomcat7.maven.plugin.version>
 	</properties>
 	
@@ -81,14 +83,6 @@
 			<version>${javax.servlet-api.version}</version>
 			<scope>provided</scope>
 		</dependency>
-
-		<!-- Testing -->
-		<!-- <dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<version>${junit-version}</version>
-			<scope>test</scope>
-		</dependency> -->
 		
 		<!-- JAX-RS client (javax.ws.rs.client.Client, ...) -->
 		<dependency>
@@ -117,7 +111,6 @@
 			<artifactId>jersey-media-json-processing</artifactId>
 			<version>${jersey.version}</version>
 		</dependency>
-		
 		
 		<!-- JAX-RS server -->
 		<dependency>
@@ -200,14 +193,39 @@
 		</dependency>
 
 
+		<!-- Spring Data JPA -->
+		<dependency>
+			<groupId>org.springframework.data</groupId>
+			<artifactId>spring-data-jpa</artifactId>
+			<version>${spring.data.jpa.version}</version>
+		</dependency>
+
+		<!-- Testing -->
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-test</artifactId>
+			<version>${spring.version}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>${junit.version}</version>
+			<scope>test</scope>
+		</dependency>
+
 		<!-- Hibernate 4 -->
 		<dependency>
 			<groupId>org.hibernate</groupId>
 			<artifactId>hibernate-core</artifactId>
 			<version>${hibernate.version}</version>
 		</dependency>
+		<dependency>
+			<groupId>org.hibernate</groupId>
+			<artifactId>hibernate-entitymanager</artifactId>
+			<version>${hibernate.version}</version>
+		</dependency>
 		
-
 		<!-- Apache Commons DBCP 2.x -->
 		<dependency>
 			<groupId>org.apache.commons</groupId>
@@ -227,6 +245,13 @@
 			<groupId>org.postgresql</groupId>
 			<artifactId>postgresql</artifactId>
 			<version>9.4-1201-jdbc41</version>
+		</dependency>
+		
+		<!-- H2 JDBC driver. Used for testing with embedded DB. -->
+		<dependency>
+			<groupId>com.h2database</groupId>
+			<artifactId>h2</artifactId>
+			<version>1.4.186</version>
 		</dependency>
 		
 
