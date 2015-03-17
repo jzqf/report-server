@@ -4,8 +4,11 @@ import javax.inject.Inject;
 import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.core.env.Environment;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabase;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
@@ -20,17 +23,40 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 @Configuration
 @EnableJpaRepositories(basePackages = "com.qfree.obo.report.db")
+@PropertySource("classpath:config.properties")
+//This is for *multiple* properties files (Spring 4+). The @PropertySource 
+//elements must be comma-separated:
+//@PropertySources({
+//		@PropertySource("classpath:config.properties")
+//})
 public class JpaConfig {
+	/*
+	 * The injected "env" object here will contain key/value pairs for each 
+	 * property in the properties files specified above in the @PropertySource
+	 * or @PropertySources annotation above.
+	 */
+	@Autowired
+	private Environment env;
 
-  @Bean
-  public DataSource dataSource() {
-    EmbeddedDatabaseBuilder edb = new EmbeddedDatabaseBuilder();
-    edb.setType(EmbeddedDatabaseType.H2);
+	@Bean
+	public DataSource dataSource() {
+		EmbeddedDatabaseBuilder edb = new EmbeddedDatabaseBuilder();
+		edb.setType(EmbeddedDatabaseType.H2);
 		edb.addScript("classpath:db/schema.sql");
 		edb.addScript("classpath:db/test-data.sql");
-    EmbeddedDatabase embeddedDatabase = edb.build();
-    return embeddedDatabase;
-  }
+		EmbeddedDatabase embeddedDatabase = edb.build();
+		return embeddedDatabase;
+	}
+
+	@Bean
+	public JpaVendorAdapter jpaVendorAdapter() {
+		HibernateJpaVendorAdapter adapter = new HibernateJpaVendorAdapter();
+		adapter.setDatabase(Database.H2);
+		adapter.setShowSql(true);
+		adapter.setGenerateDdl(false);
+		adapter.setDatabasePlatform("org.hibernate.dialect.H2Dialect");
+		return adapter;
+	}
 
 	@Bean
 	public LocalContainerEntityManagerFactoryBean
@@ -42,17 +68,15 @@ public class JpaConfig {
 		emf.setPackagesToScan("com.qfree.obo.report.domain");
 		return emf;
 	}
-  
-  @Bean
-  public JpaVendorAdapter jpaVendorAdapter() {
-    HibernateJpaVendorAdapter adapter = new HibernateJpaVendorAdapter();
-    adapter.setDatabase(Database.H2);
-    adapter.setShowSql(true);
-    adapter.setGenerateDdl(false);
-    adapter.setDatabasePlatform("org.hibernate.dialect.H2Dialect");
-    return adapter;
-  }
-  
+
+	//	Properties additionalProperties() {
+	//		Properties properties = new Properties();
+	//		properties.setProperty("hibernate.dialect", env.getProperty("hibernate.dialect"));
+	//		properties.setProperty("hibernate.show_sql", env.getProperty("hibernate.show_sql"));
+	//		properties.setProperty("hibernate.hbm2ddl.auto", env.getProperty("hibernate.hbm2ddl.auto"));
+	//
+	//		return properties;
+	//	}
 
   @Configuration
   @EnableTransactionManagement
@@ -68,5 +92,4 @@ public class JpaConfig {
       return transactionManager;
     }    
   }
-  
 }
