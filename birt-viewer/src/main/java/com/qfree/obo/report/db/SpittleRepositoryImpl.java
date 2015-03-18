@@ -17,7 +17,7 @@ public class SpittleRepositoryImpl implements SpittleRepositoryCustom {
   }
 
   public List<Report> findRecent(int count) {
-		return (List<Report>) entityManager.createQuery("select r from Report r order by r.postedTime desc")
+		return (List<Report>) entityManager.createQuery("select r from Report r order by r.createdOn desc")
         .setMaxResults(count)
         .getResultList();
   }

@@ -53,7 +53,7 @@ public class SpittleRepositoryTest {
 		Report thirteen = spittleRepository.findOne(13L);
 		assertEquals(13, thirteen.getReportId().longValue());
 		assertEquals("Bonjour from Art!", thirteen.getName());
-		assertEquals(1332682500000L, thirteen.getPostedTime().getTime());
+		assertEquals(1332682500000L, thirteen.getCreatedOn().getTime());
 		assertEquals(4, thirteen.getReportCategory().getReportCategoryId().longValue());
 		assertEquals("artnames", thirteen.getReportCategory().getDescription());
 		assertEquals("password", thirteen.getReportCategory().getUnusedReportCategoryField1());

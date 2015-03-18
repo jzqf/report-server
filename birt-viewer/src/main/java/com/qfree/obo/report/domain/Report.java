@@ -27,17 +27,17 @@ public class Report {
 	@Column(name = "name")
 	private String name;
 
-	@Column
-	private Date postedTime;
+	@Column(name = "createdOn")
+	private Date createdOn;
 
 	private Report() {
 	}
 
-	public Report(Long reportId, ReportCategory reportCategory, String name, Date postedTime) {
+	public Report(Long reportId, ReportCategory reportCategory, String name, Date createdOn) {
 		this.reportId = reportId;
 		this.reportCategory = reportCategory;
 		this.name = name;
-		this.postedTime = postedTime;
+		this.createdOn = createdOn;
 	}
 
 	public Long getReportId() {
@@ -48,8 +48,8 @@ public class Report {
 		return this.name;
 	}
 
-	public Date getPostedTime() {
-		return this.postedTime;
+	public Date getCreatedOn() {
+		return this.createdOn;
 	}
 
 	public ReportCategory getReportCategory() {
