@@ -20,15 +20,15 @@ import com.qfree.obo.report.domain.ReportCategory;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes=JpaConfig.class)
-public class SpittleRepositoryTest {
+public class ReportRepositoryTest {
 	
 	@Autowired
-	SpittleRepository spittleRepository;
+	SpittleRepository reportRepository;
 
 	@Test
 	@Transactional
 	public void count() {
-		assertEquals(15, spittleRepository.count());
+		assertEquals(15, reportRepository.count());
 	}
 
 	@Test
@@ -36,13 +36,13 @@ public class SpittleRepositoryTest {
 	public void findRecent() {
 		// default case
 		{
-			List<Report> recent = spittleRepository.findRecentlyCreated();
+			List<Report> recent = reportRepository.findRecentlyCreated();
 			assertRecent(recent, 10);
 		}
 		
 		// specific count case
 		{
-			List<Report> recent = spittleRepository.findRecentlyCreated(5);
+			List<Report> recent = reportRepository.findRecentlyCreated(5);
 			assertRecent(recent, 5);
 		}
 	}
@@ -50,7 +50,7 @@ public class SpittleRepositoryTest {
 	@Test
 	@Transactional
 	public void findOne() {
-		Report thirteen = spittleRepository.findOne(13L);
+		Report thirteen = reportRepository.findOne(13L);
 		assertEquals(13, thirteen.getReportId().longValue());
 		assertEquals("Bonjour from Art!", thirteen.getName());
 		assertEquals(1332682500000L, thirteen.getCreatedOn().getTime());
@@ -64,8 +64,8 @@ public class SpittleRepositoryTest {
 
 	@Test
 	@Transactional
-	public void findBySpitter() {
-		List<Report> reports = spittleRepository.findByReportCategoryReportCategoryId(4L);
+	public void findByReportCategory() {
+		List<Report> reports = reportRepository.findByReportCategoryReportCategoryId(4L);
 		assertEquals(11, reports.size());
 		for (int i = 0; i < 11; i++) {
 			assertEquals(i+5, reports.get(i).getReportId().longValue());
@@ -75,23 +75,23 @@ public class SpittleRepositoryTest {
 	@Test
 	@Transactional
 	public void save() {
-		assertEquals(15, spittleRepository.count());
-		ReportCategory spitter = spittleRepository.findOne(13L).getReportCategory();
-		Report spittle = new Report(null, spitter, "Un Nuevo Spittle from Art", new Date());
-		Report saved = spittleRepository.save(spittle);
-		assertEquals(16, spittleRepository.count());
-		assertNewSpittle(saved);
-		assertNewSpittle(spittleRepository.findOne(16L));
+		assertEquals(15, reportRepository.count());
+		ReportCategory reportCategory = reportRepository.findOne(13L).getReportCategory();
+		Report report = new Report(null, reportCategory, "Un Nuevo Spittle from Art", new Date());
+		Report saved = reportRepository.save(report);
+		assertEquals(16, reportRepository.count());
+		assertNewReport(saved);
+		assertNewReport(reportRepository.findOne(16L));
 	}
 
 	@Test
 	@Transactional
 	public void delete() {
-		assertEquals(15, spittleRepository.count());
-		assertNotNull(spittleRepository.findOne(13L));
-		spittleRepository.delete(13L);
-		assertEquals(14, spittleRepository.count());
-		assertNull(spittleRepository.findOne(13L));
+		assertEquals(15, reportRepository.count());
+		assertNotNull(reportRepository.findOne(13L));
+		reportRepository.delete(13L);
+		assertEquals(14, reportRepository.count());
+		assertNull(reportRepository.findOne(13L));
 	}
 	
 	private void assertRecent(List<Report> recent, int count) {
@@ -102,8 +102,8 @@ public class SpittleRepositoryTest {
 		}
 	}
 	
-	private void assertNewSpittle(Report spittle) {
-		assertEquals(16, spittle.getReportId().longValue());
+	private void assertNewReport(Report report) {
+		assertEquals(16, report.getReportId().longValue());
 	}
 	
 }
