@@ -54,18 +54,18 @@ public class SpittleRepositoryTest {
 		assertEquals(13, thirteen.getReportId().longValue());
 		assertEquals("Bonjour from Art!", thirteen.getMessage());
 		assertEquals(1332682500000L, thirteen.getPostedTime().getTime());
-		assertEquals(4, thirteen.getSpitter().getReportCategoryId().longValue());
-		assertEquals("artnames", thirteen.getSpitter().getDescription());
-		assertEquals("password", thirteen.getSpitter().getUnusedReportCategoryField1());
-		assertEquals("Art Names", thirteen.getSpitter().getAbbreviation());
-		assertEquals("art@habuma.com", thirteen.getSpitter().getUnusedReportCategoryField2());
-		assertTrue(thirteen.getSpitter().isActive());
+		assertEquals(4, thirteen.getReportCategory().getReportCategoryId().longValue());
+		assertEquals("artnames", thirteen.getReportCategory().getDescription());
+		assertEquals("password", thirteen.getReportCategory().getUnusedReportCategoryField1());
+		assertEquals("Art Names", thirteen.getReportCategory().getAbbreviation());
+		assertEquals("art@habuma.com", thirteen.getReportCategory().getUnusedReportCategoryField2());
+		assertTrue(thirteen.getReportCategory().isActive());
 	}
 
 	@Test
 	@Transactional
 	public void findBySpitter() {
-		List<Report> reports = spittleRepository.findBySpitterReportCategoryId(4L);
+		List<Report> reports = spittleRepository.findByReportCategoryReportCategoryId(4L);
 		assertEquals(11, reports.size());
 		for (int i = 0; i < 11; i++) {
 			assertEquals(i+5, reports.get(i).getReportId().longValue());
@@ -76,7 +76,7 @@ public class SpittleRepositoryTest {
 	@Transactional
 	public void save() {
 		assertEquals(15, spittleRepository.count());
-		ReportCategory spitter = spittleRepository.findOne(13L).getSpitter();
+		ReportCategory spitter = spittleRepository.findOne(13L).getReportCategory();
 		Report spittle = new Report(null, spitter, "Un Nuevo Spittle from Art", new Date());
 		Report saved = spittleRepository.save(spittle);
 		assertEquals(16, spittleRepository.count());

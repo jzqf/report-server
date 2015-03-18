@@ -13,8 +13,8 @@ create table report_category (
 
 create table report (
   report_id integer identity primary key,
-  spitter integer not null,
+  report_category_id integer not null,
   message varchar(2000) not null,
   postedTime datetime not null,
-  foreign key (spitter) references report_category(report_category_id)
+  foreign key (report_category_id) references report_category(report_category_id)
 );

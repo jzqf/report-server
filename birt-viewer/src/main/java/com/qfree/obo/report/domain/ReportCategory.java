@@ -41,7 +41,7 @@ public class ReportCategory {
 	@Column(name = "unused_report_category_field_3")
 	private String unusedReportCategoryField3;
 
-	@OneToMany(targetEntity = Report.class, fetch = FetchType.EAGER, mappedBy = "spitter")
+	@OneToMany(targetEntity = Report.class, fetch = FetchType.EAGER, mappedBy = "reportCategory")
 	private List<Report> reports;
 
 	public ReportCategory(Long reportCategoryId, String description, String unusedReportCategoryField1,

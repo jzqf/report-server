@@ -21,8 +21,8 @@ public class Report {
 	private Long reportId;
 
 	@ManyToOne
-	@JoinColumn(name = "spitter")
-	private ReportCategory spitter;
+	@JoinColumn(name = "report_category_id")
+	private ReportCategory reportCategory;
 
 	@Column
 	private String message;
@@ -33,9 +33,9 @@ public class Report {
 	private Report() {
 	}
 
-	public Report(Long reportId, ReportCategory spitter, String message, Date postedTime) {
+	public Report(Long reportId, ReportCategory reportCategory, String message, Date postedTime) {
 		this.reportId = reportId;
-		this.spitter = spitter;
+		this.reportCategory = reportCategory;
 		this.message = message;
 		this.postedTime = postedTime;
 	}
@@ -52,8 +52,8 @@ public class Report {
 		return this.postedTime;
 	}
 
-	public ReportCategory getSpitter() {
-		return this.spitter;
+	public ReportCategory getReportCategory() {
+		return this.reportCategory;
 	}
 
 }
