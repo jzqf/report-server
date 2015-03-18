@@ -41,11 +41,11 @@ public class SpitterRepositoryTest {
 	
 	@Test
 	@Transactional
-	public void findByUsername() {
-		assertSpitter(0, spitterRepository.findByUsername("habuma"));
-		assertSpitter(1, spitterRepository.findByUsername("mwalls"));
-		assertSpitter(2, spitterRepository.findByUsername("chuck"));
-		assertSpitter(3, spitterRepository.findByUsername("artnames"));
+	public void findByDescription() {
+		assertSpitter(0, spitterRepository.findByDescription("habuma"));
+		assertSpitter(1, spitterRepository.findByDescription("mwalls"));
+		assertSpitter(2, spitterRepository.findByDescription("chuck"));
+		assertSpitter(3, spitterRepository.findByDescription("artnames"));
 	}
 	
 	@Test
@@ -88,7 +88,7 @@ public class SpitterRepositoryTest {
 	private static void assertSpitter(int expectedSpitterIndex, ReportCategory actual, String expectedUnusedReportCategoryField3) {
 		ReportCategory expected = SPITTERS[expectedSpitterIndex];
 		assertEquals(expected.getReportCategoryId(), actual.getReportCategoryId());
-		assertEquals(expected.getUsername(), actual.getUsername());
+		assertEquals(expected.getDescription(), actual.getDescription());
 		assertEquals(expected.getUnusedReportCategoryField1(), actual.getUnusedReportCategoryField1());
 		assertEquals(expected.getFullName(), actual.getFullName());
 		assertEquals(expected.getUnusedReportCategoryField2(), actual.getUnusedReportCategoryField2());

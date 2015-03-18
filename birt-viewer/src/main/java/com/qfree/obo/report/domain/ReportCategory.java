@@ -23,8 +23,8 @@ public class ReportCategory {
 	@Column(name = "report_category_id")
 	private Long reportCategoryId;
 
-	@Column(name = "username")
-	private String username;
+	@Column(name = "description")
+	private String description;
 
 	@Column(name = "unused_report_category_field_1")
 	private String unusedReportCategoryField1;
@@ -44,10 +44,11 @@ public class ReportCategory {
 	@OneToMany(targetEntity = Report.class, fetch = FetchType.EAGER, mappedBy = "spitter")
 	private List<Report> spittles;
 
-	public ReportCategory(Long reportCategoryId, String username, String unusedReportCategoryField1, String fullName,
+	public ReportCategory(Long reportCategoryId, String description, String unusedReportCategoryField1,
+			String fullName,
 			String unusedReportCategoryField2, boolean updateByEmail) {
 		this.reportCategoryId = reportCategoryId;
-		this.username = username;
+		this.description = description;
 		this.unusedReportCategoryField1 = unusedReportCategoryField1;
 		this.fullName = fullName;
 		this.unusedReportCategoryField2 = unusedReportCategoryField2;
@@ -59,8 +60,8 @@ public class ReportCategory {
 		return reportCategoryId;
 	}
 
-	public String getUsername() {
-		return username;
+	public String getDescription() {
+		return description;
 	}
 
 	public String getUnusedReportCategoryField1() {

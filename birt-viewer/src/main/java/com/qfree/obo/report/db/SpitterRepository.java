@@ -12,8 +12,8 @@ import com.qfree.obo.report.domain.ReportCategory;
  */
 public interface SpitterRepository extends JpaRepository<ReportCategory, Long>, SpitterSweeper {
 	  
-	ReportCategory findByUsername(String username);
+	ReportCategory findByDescription(String description);
 	
-	List<ReportCategory> findByUsernameOrFullNameLike(String username, String fullName);
+	List<ReportCategory> findByDescriptionOrFullNameLike(String description, String fullName);
 
 }
