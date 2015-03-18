@@ -4,16 +4,16 @@ import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import com.qfree.obo.report.domain.Spitter;
+import com.qfree.obo.report.domain.ReportCategory;
 
 /**
- * Repository interface with operations for {@link Spitter} persistence.
+ * Repository interface with operations for {@link ReportCategory} persistence.
  * @author habuma
  */
-public interface SpitterRepository extends JpaRepository<Spitter, Long>, SpitterSweeper {
+public interface SpitterRepository extends JpaRepository<ReportCategory, Long>, SpitterSweeper {
 	  
-	Spitter findByUsername(String username);
+	ReportCategory findByUsername(String username);
 	
-	List<Spitter> findByUsernameOrFullNameLike(String username, String fullName);
+	List<ReportCategory> findByUsernameOrFullNameLike(String username, String fullName);
 
 }

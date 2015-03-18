@@ -1,7 +1,7 @@
-drop table if exists spittle;
-drop table if exists spitter;
+drop table if exists report;
+drop table if exists report_category;
 
-create table spitter (
+create table report_category (
   id identity,
   username varchar(25) not null,
   password varchar(25) not null,
@@ -11,10 +11,10 @@ create table spitter (
   status varchar(10) not null
 );
 
-create table spittle (
+create table report (
   id integer identity primary key,
   spitter integer not null,
   message varchar(2000) not null,
   postedTime datetime not null,
-  foreign key (spitter) references spitter(id)
+  foreign key (spitter) references report_category(id)
 );

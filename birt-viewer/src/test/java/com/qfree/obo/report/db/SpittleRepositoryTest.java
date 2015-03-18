@@ -15,8 +15,8 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.qfree.obo.report.domain.Spitter;
-import com.qfree.obo.report.domain.Spittle;
+import com.qfree.obo.report.domain.ReportCategory;
+import com.qfree.obo.report.domain.Report;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes=JpaConfig.class)
@@ -36,13 +36,13 @@ public class SpittleRepositoryTest {
 	public void findRecent() {
 		// default case
 		{
-			List<Spittle> recent = spittleRepository.findRecent();
+			List<Report> recent = spittleRepository.findRecent();
 			assertRecent(recent, 10);
 		}
 		
 		// specific count case
 		{
-			List<Spittle> recent = spittleRepository.findRecent(5);
+			List<Report> recent = spittleRepository.findRecent(5);
 			assertRecent(recent, 5);
 		}
 	}
@@ -50,7 +50,7 @@ public class SpittleRepositoryTest {
 	@Test
 	@Transactional
 	public void findOne() {
-		Spittle thirteen = spittleRepository.findOne(13L);
+		Report thirteen = spittleRepository.findOne(13L);
 		assertEquals(13, thirteen.getId().longValue());
 		assertEquals("Bonjour from Art!", thirteen.getMessage());
 		assertEquals(1332682500000L, thirteen.getPostedTime().getTime());
@@ -65,7 +65,7 @@ public class SpittleRepositoryTest {
 	@Test
 	@Transactional
 	public void findBySpitter() {
-		List<Spittle> spittles = spittleRepository.findBySpitterId(4L);
+		List<Report> spittles = spittleRepository.findBySpitterId(4L);
 		assertEquals(11, spittles.size());
 		for (int i = 0; i < 11; i++) {
 			assertEquals(i+5, spittles.get(i).getId().longValue());
@@ -76,9 +76,9 @@ public class SpittleRepositoryTest {
 	@Transactional
 	public void save() {
 		assertEquals(15, spittleRepository.count());
-		Spitter spitter = spittleRepository.findOne(13L).getSpitter();
-		Spittle spittle = new Spittle(null, spitter, "Un Nuevo Spittle from Art", new Date());
-		Spittle saved = spittleRepository.save(spittle);
+		ReportCategory spitter = spittleRepository.findOne(13L).getSpitter();
+		Report spittle = new Report(null, spitter, "Un Nuevo Spittle from Art", new Date());
+		Report saved = spittleRepository.save(spittle);
 		assertEquals(16, spittleRepository.count());
 		assertNewSpittle(saved);
 		assertNewSpittle(spittleRepository.findOne(16L));
@@ -94,7 +94,7 @@ public class SpittleRepositoryTest {
 		assertNull(spittleRepository.findOne(13L));
 	}
 	
-	private void assertRecent(List<Spittle> recent, int count) {
+	private void assertRecent(List<Report> recent, int count) {
 		long[] recentIds = new long[] {3,2,1,15,14,13,12,11,10,9};
 		assertEquals(count, recent.size());
 		for (int i = 0; i < count; i++) {
@@ -102,7 +102,7 @@ public class SpittleRepositoryTest {
 		}
 	}
 	
-	private void assertNewSpittle(Spittle spittle) {
+	private void assertNewSpittle(Report spittle) {
 		assertEquals(16, spittle.getId().longValue());
 	}
 	

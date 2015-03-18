@@ -5,19 +5,19 @@ import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
-import com.qfree.obo.report.domain.Spittle;
+import com.qfree.obo.report.domain.Report;
 
 public class SpittleRepositoryImpl implements SpittleRepositoryCustom {
 
   @PersistenceContext
   private EntityManager entityManager;
 
-  public List<Spittle> findRecent() {
+  public List<Report> findRecent() {
     return findRecent(10);
   }
 
-  public List<Spittle> findRecent(int count) {
-    return (List<Spittle>) entityManager.createQuery("select s from Spittle s order by s.postedTime desc")
+  public List<Report> findRecent(int count) {
+		return (List<Report>) entityManager.createQuery("select r from Report r order by r.postedTime desc")
         .setMaxResults(count)
         .getResultList();
   }

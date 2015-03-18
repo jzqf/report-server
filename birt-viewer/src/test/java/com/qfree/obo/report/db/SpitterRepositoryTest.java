@@ -13,7 +13,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.qfree.obo.report.domain.Spitter;
+import com.qfree.obo.report.domain.ReportCategory;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = JpaConfig.class)
@@ -31,7 +31,7 @@ public class SpitterRepositoryTest {
 	@Test
 	@Transactional
 	public void findAll() {
-		List<Spitter> spitters = spitterRepository.findAll();
+		List<ReportCategory> spitters = spitterRepository.findAll();
 		assertEquals(4, spitters.size());
 		assertSpitter(0, spitters.get(0));
 		assertSpitter(1, spitters.get(1));
@@ -61,8 +61,8 @@ public class SpitterRepositoryTest {
 	@Transactional
 	public void save_newSpitter() {
 		assertEquals(4, spitterRepository.count());
-		Spitter spitter = new Spitter(null, "newbee", "letmein", "New Bee", "newbee@habuma.com", true);
-		Spitter saved = spitterRepository.save(spitter);
+		ReportCategory spitter = new ReportCategory(null, "newbee", "letmein", "New Bee", "newbee@habuma.com", true);
+		ReportCategory saved = spitterRepository.save(spitter);
 		assertEquals(5, spitterRepository.count());
 		assertSpitter(4, saved);
 		assertSpitter(4, spitterRepository.findOne(5L));
@@ -73,20 +73,20 @@ public class SpitterRepositoryTest {
 	@Ignore
 	public void save_existingSpitter() {
 		assertEquals(4, spitterRepository.count());
-		Spitter spitter = new Spitter(4L, "arthur", "letmein", "Arthur Names", "arthur@habuma.com", false);
-		Spitter saved = spitterRepository.save(spitter);
+		ReportCategory spitter = new ReportCategory(4L, "arthur", "letmein", "Arthur Names", "arthur@habuma.com", false);
+		ReportCategory saved = spitterRepository.save(spitter);
 		assertSpitter(5, saved);
 		assertEquals(4, spitterRepository.count());
-		Spitter updated = spitterRepository.findOne(4L);
+		ReportCategory updated = spitterRepository.findOne(4L);
 		assertSpitter(5, updated);
 	}
 
-	private static void assertSpitter(int expectedSpitterIndex, Spitter actual) {
+	private static void assertSpitter(int expectedSpitterIndex, ReportCategory actual) {
 		assertSpitter(expectedSpitterIndex, actual, "Newbie");
 	}
 	
-	private static void assertSpitter(int expectedSpitterIndex, Spitter actual, String expectedStatus) {
-		Spitter expected = SPITTERS[expectedSpitterIndex];
+	private static void assertSpitter(int expectedSpitterIndex, ReportCategory actual, String expectedStatus) {
+		ReportCategory expected = SPITTERS[expectedSpitterIndex];
 		assertEquals(expected.getId(), actual.getId());
 		assertEquals(expected.getUsername(), actual.getUsername());
 		assertEquals(expected.getPassword(), actual.getPassword());
@@ -95,16 +95,16 @@ public class SpitterRepositoryTest {
 		assertEquals(expected.isUpdateByEmail(), actual.isUpdateByEmail());
 	}
 	
-	private static Spitter[] SPITTERS = new Spitter[6];
+	private static ReportCategory[] SPITTERS = new ReportCategory[6];
 	
 	@BeforeClass
 	public static void before() {
-		SPITTERS[0] = new Spitter(1L, "habuma", "password", "Craig Walls", "craig@habuma.com", false);
-		SPITTERS[1] = new Spitter(2L, "mwalls", "password", "Michael Walls", "mwalls@habuma.com", true);
-		SPITTERS[2] = new Spitter(3L, "chuck", "password", "Chuck Wagon", "chuck@habuma.com", false);
-		SPITTERS[3] = new Spitter(4L, "artnames", "password", "Art Names", "art@habuma.com", true);
-		SPITTERS[4] = new Spitter(5L, "newbee", "letmein", "New Bee", "newbee@habuma.com", true);		
-		SPITTERS[5] = new Spitter(4L, "arthur", "letmein", "Arthur Names", "arthur@habuma.com", false);		
+		SPITTERS[0] = new ReportCategory(1L, "habuma", "password", "Craig Walls", "craig@habuma.com", false);
+		SPITTERS[1] = new ReportCategory(2L, "mwalls", "password", "Michael Walls", "mwalls@habuma.com", true);
+		SPITTERS[2] = new ReportCategory(3L, "chuck", "password", "Chuck Wagon", "chuck@habuma.com", false);
+		SPITTERS[3] = new ReportCategory(4L, "artnames", "password", "Art Names", "art@habuma.com", true);
+		SPITTERS[4] = new ReportCategory(5L, "newbee", "letmein", "New Bee", "newbee@habuma.com", true);		
+		SPITTERS[5] = new ReportCategory(4L, "arthur", "letmein", "Arthur Names", "arthur@habuma.com", false);		
 	}
 	
 }

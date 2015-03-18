@@ -9,9 +9,11 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 
 @Entity
-public class Spittle {
+@Table(name = "report")
+public class Report {
 
   @Id	
   @GeneratedValue(strategy=GenerationType.IDENTITY)
@@ -19,7 +21,7 @@ public class Spittle {
   
   @ManyToOne
   @JoinColumn(name="spitter")
-  private Spitter spitter;
+  private ReportCategory spitter;
   
   @Column
   private String message;
@@ -27,9 +29,9 @@ public class Spittle {
   @Column
   private Date postedTime;
 
-  private Spittle() {}
+  private Report() {}
   
-  public Spittle(Long id, Spitter spitter, String message, Date postedTime) {
+  public Report(Long id, ReportCategory spitter, String message, Date postedTime) {
 	this.id = id;
 	this.spitter = spitter;
 	this.message = message;
@@ -48,7 +50,7 @@ public class Spittle {
     return this.postedTime;
   }
 
-  public Spitter getSpitter() {
+  public ReportCategory getSpitter() {
     return this.spitter;
   }
 
