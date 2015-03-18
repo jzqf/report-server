@@ -24,8 +24,8 @@ public class Report {
 	@JoinColumn(name = "report_category_id")
 	private ReportCategory reportCategory;
 
-	@Column
-	private String message;
+	@Column(name = "name")
+	private String name;
 
 	@Column
 	private Date postedTime;
@@ -33,10 +33,10 @@ public class Report {
 	private Report() {
 	}
 
-	public Report(Long reportId, ReportCategory reportCategory, String message, Date postedTime) {
+	public Report(Long reportId, ReportCategory reportCategory, String name, Date postedTime) {
 		this.reportId = reportId;
 		this.reportCategory = reportCategory;
-		this.message = message;
+		this.name = name;
 		this.postedTime = postedTime;
 	}
 
@@ -44,8 +44,8 @@ public class Report {
 		return this.reportId;
 	}
 
-	public String getMessage() {
-		return this.message;
+	public String getName() {
+		return this.name;
 	}
 
 	public Date getPostedTime() {

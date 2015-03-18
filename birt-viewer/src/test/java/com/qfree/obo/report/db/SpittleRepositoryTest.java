@@ -52,7 +52,7 @@ public class SpittleRepositoryTest {
 	public void findOne() {
 		Report thirteen = spittleRepository.findOne(13L);
 		assertEquals(13, thirteen.getReportId().longValue());
-		assertEquals("Bonjour from Art!", thirteen.getMessage());
+		assertEquals("Bonjour from Art!", thirteen.getName());
 		assertEquals(1332682500000L, thirteen.getPostedTime().getTime());
 		assertEquals(4, thirteen.getReportCategory().getReportCategoryId().longValue());
 		assertEquals("artnames", thirteen.getReportCategory().getDescription());
