@@ -92,7 +92,7 @@ public class SpitterRepositoryTest {
 		assertEquals(expected.getUnusedReportCategoryField1(), actual.getUnusedReportCategoryField1());
 		assertEquals(expected.getAbbreviation(), actual.getAbbreviation());
 		assertEquals(expected.getUnusedReportCategoryField2(), actual.getUnusedReportCategoryField2());
-		assertEquals(expected.isUpdateByEmail(), actual.isUpdateByEmail());
+		assertEquals(expected.isActive(), actual.isActive());
 	}
 	
 	private static ReportCategory[] SPITTERS = new ReportCategory[6];

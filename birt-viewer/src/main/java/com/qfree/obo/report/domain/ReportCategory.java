@@ -35,8 +35,8 @@ public class ReportCategory {
 	@Column(name = "unused_report_category_field_2")
 	private String unusedReportCategoryField2;
 
-	@Column(name = "updateByEmail")
-	private boolean updateByEmail;
+	@Column(name = "active")
+	private boolean active;
 
 	@Column(name = "unused_report_category_field_3")
 	private String unusedReportCategoryField3;
@@ -46,13 +46,13 @@ public class ReportCategory {
 
 	public ReportCategory(Long reportCategoryId, String description, String unusedReportCategoryField1,
 			String abbreviation,
-			String unusedReportCategoryField2, boolean updateByEmail) {
+			String unusedReportCategoryField2, boolean active) {
 		this.reportCategoryId = reportCategoryId;
 		this.description = description;
 		this.unusedReportCategoryField1 = unusedReportCategoryField1;
 		this.abbreviation = abbreviation;
 		this.unusedReportCategoryField2 = unusedReportCategoryField2;
-		this.updateByEmail = updateByEmail;
+		this.active = active;
 		this.unusedReportCategoryField3 = "Newbie";
 	}
 
@@ -76,8 +76,8 @@ public class ReportCategory {
 		return unusedReportCategoryField2;
 	}
 
-	public boolean isUpdateByEmail() {
-		return updateByEmail;
+	public boolean isActive() {
+		return active;
 	}
 
 	public String getUnusedReportCategoryField3() {

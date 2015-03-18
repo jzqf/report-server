@@ -59,7 +59,7 @@ public class SpittleRepositoryTest {
 		assertEquals("password", thirteen.getSpitter().getUnusedReportCategoryField1());
 		assertEquals("Art Names", thirteen.getSpitter().getAbbreviation());
 		assertEquals("art@habuma.com", thirteen.getSpitter().getUnusedReportCategoryField2());
-		assertTrue(thirteen.getSpitter().isUpdateByEmail());
+		assertTrue(thirteen.getSpitter().isActive());
 	}
 
 	@Test
