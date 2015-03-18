@@ -54,7 +54,7 @@ public class SpittleRepositoryTest {
 		assertEquals(13, thirteen.getId().longValue());
 		assertEquals("Bonjour from Art!", thirteen.getMessage());
 		assertEquals(1332682500000L, thirteen.getPostedTime().getTime());
-		assertEquals(4, thirteen.getSpitter().getId().longValue());
+		assertEquals(4, thirteen.getSpitter().getReportCategoryId().longValue());
 		assertEquals("artnames", thirteen.getSpitter().getUsername());
 		assertEquals("password", thirteen.getSpitter().getUnusedReportCategoryField1());
 		assertEquals("Art Names", thirteen.getSpitter().getFullName());
@@ -65,7 +65,7 @@ public class SpittleRepositoryTest {
 	@Test
 	@Transactional
 	public void findBySpitter() {
-		List<Report> spittles = spittleRepository.findBySpitterId(4L);
+		List<Report> spittles = spittleRepository.findBySpitterReportCategoryId(4L);
 		assertEquals(11, spittles.size());
 		for (int i = 0; i < 11; i++) {
 			assertEquals(i+5, spittles.get(i).getId().longValue());

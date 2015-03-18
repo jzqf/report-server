@@ -2,7 +2,7 @@ drop table if exists report;
 drop table if exists report_category;
 
 create table report_category (
-  id identity,
+  report_category_id identity,
   username varchar(25) not null,
   unused_report_category_field_1 varchar(25) not null,
   fullName varchar(100) not null,
@@ -16,5 +16,5 @@ create table report (
   spitter integer not null,
   message varchar(2000) not null,
   postedTime datetime not null,
-  foreign key (spitter) references report_category(id)
+  foreign key (spitter) references report_category(report_category_id)
 );

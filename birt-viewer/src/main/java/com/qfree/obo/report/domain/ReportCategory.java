@@ -20,7 +20,8 @@ public class ReportCategory {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long id;
+	@Column(name = "report_category_id")
+	private Long reportCategoryId;
 
 	@Column(name = "username")
 	private String username;
@@ -43,9 +44,9 @@ public class ReportCategory {
 	@OneToMany(targetEntity = Report.class, fetch = FetchType.EAGER, mappedBy = "spitter")
 	private List<Report> spittles;
 
-	public ReportCategory(Long id, String username, String unusedReportCategoryField1, String fullName,
+	public ReportCategory(Long reportCategoryId, String username, String unusedReportCategoryField1, String fullName,
 			String unusedReportCategoryField2, boolean updateByEmail) {
-		this.id = id;
+		this.reportCategoryId = reportCategoryId;
 		this.username = username;
 		this.unusedReportCategoryField1 = unusedReportCategoryField1;
 		this.fullName = fullName;
@@ -54,8 +55,8 @@ public class ReportCategory {
 		this.unusedReportCategoryField3 = "Newbie";
 	}
 
-	public Long getId() {
-		return id;
+	public Long getReportCategoryId() {
+		return reportCategoryId;
 	}
 
 	public String getUsername() {

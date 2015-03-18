@@ -87,7 +87,7 @@ public class SpitterRepositoryTest {
 	
 	private static void assertSpitter(int expectedSpitterIndex, ReportCategory actual, String expectedUnusedReportCategoryField3) {
 		ReportCategory expected = SPITTERS[expectedSpitterIndex];
-		assertEquals(expected.getId(), actual.getId());
+		assertEquals(expected.getReportCategoryId(), actual.getReportCategoryId());
 		assertEquals(expected.getUsername(), actual.getUsername());
 		assertEquals(expected.getUnusedReportCategoryField1(), actual.getUnusedReportCategoryField1());
 		assertEquals(expected.getFullName(), actual.getFullName());
