@@ -42,7 +42,7 @@ public class ReportCategory {
 	private String unusedReportCategoryField3;
 
 	@OneToMany(targetEntity = Report.class, fetch = FetchType.EAGER, mappedBy = "spitter")
-	private List<Report> spittles;
+	private List<Report> reports;
 
 	public ReportCategory(Long reportCategoryId, String description, String unusedReportCategoryField1,
 			String abbreviation,
@@ -84,7 +84,7 @@ public class ReportCategory {
 		return unusedReportCategoryField3;
 	}
 
-	public List<Report> getSpittles() {
-		return spittles;
+	public List<Report> getReports() {
+		return reports;
 	}
 }

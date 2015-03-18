@@ -65,10 +65,10 @@ public class SpittleRepositoryTest {
 	@Test
 	@Transactional
 	public void findBySpitter() {
-		List<Report> spittles = spittleRepository.findBySpitterReportCategoryId(4L);
-		assertEquals(11, spittles.size());
+		List<Report> reports = spittleRepository.findBySpitterReportCategoryId(4L);
+		assertEquals(11, reports.size());
 		for (int i = 0; i < 11; i++) {
-			assertEquals(i+5, spittles.get(i).getId().longValue());
+			assertEquals(i+5, reports.get(i).getId().longValue());
 		}
 	}
 	
