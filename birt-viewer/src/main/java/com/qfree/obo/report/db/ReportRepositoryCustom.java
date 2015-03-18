@@ -6,8 +6,8 @@ import com.qfree.obo.report.domain.Report;
 
 public interface ReportRepositoryCustom {
 
-  List<Report> findRecent();
+  List<Report> findRecentlyCreated();
 
-  List<Report> findRecent(int count);
+  List<Report> findRecentlyCreated(int count);
 
 }

@@ -36,13 +36,13 @@ public class SpittleRepositoryTest {
 	public void findRecent() {
 		// default case
 		{
-			List<Report> recent = spittleRepository.findRecent();
+			List<Report> recent = spittleRepository.findRecentlyCreated();
 			assertRecent(recent, 10);
 		}
 		
 		// specific count case
 		{
-			List<Report> recent = spittleRepository.findRecent(5);
+			List<Report> recent = spittleRepository.findRecentlyCreated(5);
 			assertRecent(recent, 5);
 		}
 	}

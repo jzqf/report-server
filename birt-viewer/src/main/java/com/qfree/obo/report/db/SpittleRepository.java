@@ -16,7 +16,6 @@ import com.qfree.obo.report.domain.Report;
  */
 public interface SpittleRepository extends JpaRepository<Report, Long>, ReportRepositoryCustom {
   
-	//	List<Report> findBySpitterReportCategoryId(long spitterId);
-	List<Report> findByReportCategoryReportCategoryId(long spitterId);
+	List<Report> findByReportCategoryReportCategoryId(long reportCategoryId);
   
 }
