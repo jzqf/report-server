@@ -12,7 +12,7 @@ create table report_category (
 );
 
 create table report (
-  id integer identity primary key,
+  report_id integer identity primary key,
   spitter integer not null,
   message varchar(2000) not null,
   postedTime datetime not null,

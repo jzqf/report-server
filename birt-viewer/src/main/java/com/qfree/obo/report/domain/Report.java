@@ -15,43 +15,45 @@ import javax.persistence.Table;
 @Table(name = "report")
 public class Report {
 
-  @Id	
-  @GeneratedValue(strategy=GenerationType.IDENTITY)
-  private Long id;
-  
-  @ManyToOne
-  @JoinColumn(name="spitter")
-  private ReportCategory spitter;
-  
-  @Column
-  private String message;
-  
-  @Column
-  private Date postedTime;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "report_id")
+	private Long reportId;
 
-  private Report() {}
-  
-  public Report(Long id, ReportCategory spitter, String message, Date postedTime) {
-	this.id = id;
-	this.spitter = spitter;
-	this.message = message;
-	this.postedTime = postedTime;
-  }
-  
-  public Long getId() {
-    return this.id;
-  }
-  
-  public String getMessage() {
-    return this.message;
-  }
-  
-  public Date getPostedTime() {
-    return this.postedTime;
-  }
+	@ManyToOne
+	@JoinColumn(name = "spitter")
+	private ReportCategory spitter;
 
-  public ReportCategory getSpitter() {
-    return this.spitter;
-  }
+	@Column
+	private String message;
+
+	@Column
+	private Date postedTime;
+
+	private Report() {
+	}
+
+	public Report(Long reportId, ReportCategory spitter, String message, Date postedTime) {
+		this.reportId = reportId;
+		this.spitter = spitter;
+		this.message = message;
+		this.postedTime = postedTime;
+	}
+
+	public Long getReportId() {
+		return this.reportId;
+	}
+
+	public String getMessage() {
+		return this.message;
+	}
+
+	public Date getPostedTime() {
+		return this.postedTime;
+	}
+
+	public ReportCategory getSpitter() {
+		return this.spitter;
+	}
 
 }

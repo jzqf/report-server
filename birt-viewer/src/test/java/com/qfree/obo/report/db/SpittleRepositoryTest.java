@@ -51,7 +51,7 @@ public class SpittleRepositoryTest {
 	@Transactional
 	public void findOne() {
 		Report thirteen = spittleRepository.findOne(13L);
-		assertEquals(13, thirteen.getId().longValue());
+		assertEquals(13, thirteen.getReportId().longValue());
 		assertEquals("Bonjour from Art!", thirteen.getMessage());
 		assertEquals(1332682500000L, thirteen.getPostedTime().getTime());
 		assertEquals(4, thirteen.getSpitter().getReportCategoryId().longValue());
@@ -68,7 +68,7 @@ public class SpittleRepositoryTest {
 		List<Report> reports = spittleRepository.findBySpitterReportCategoryId(4L);
 		assertEquals(11, reports.size());
 		for (int i = 0; i < 11; i++) {
-			assertEquals(i+5, reports.get(i).getId().longValue());
+			assertEquals(i+5, reports.get(i).getReportId().longValue());
 		}
 	}
 	
@@ -98,12 +98,12 @@ public class SpittleRepositoryTest {
 		long[] recentIds = new long[] {3,2,1,15,14,13,12,11,10,9};
 		assertEquals(count, recent.size());
 		for (int i = 0; i < count; i++) {
-			assertEquals(recentIds[i], recent.get(i).getId().longValue());
+			assertEquals(recentIds[i], recent.get(i).getReportId().longValue());
 		}
 	}
 	
 	private void assertNewSpittle(Report spittle) {
-		assertEquals(16, spittle.getId().longValue());
+		assertEquals(16, spittle.getReportId().longValue());
 	}
 	
 }
