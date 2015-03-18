@@ -1,6 +1,6 @@
 package com.qfree.obo.report.db;
 
-public interface SpitterSweeper {
+public interface ReportCategoryCustom {
 
 	//	int eliteSweep();
 

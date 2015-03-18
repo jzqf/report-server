@@ -7,7 +7,7 @@ import javax.persistence.PersistenceContext;
 
 import com.qfree.obo.report.domain.Report;
 
-public class SpittleRepositoryImpl implements SpittleRepositoryCustom {
+public class SpittleRepositoryImpl implements ReportRepositoryCustom {
 
   @PersistenceContext
   private EntityManager entityManager;

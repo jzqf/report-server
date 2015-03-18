@@ -4,7 +4,7 @@ import java.util.List;
 
 import com.qfree.obo.report.domain.Report;
 
-public interface SpittleRepositoryCustom {
+public interface ReportRepositoryCustom {
 
   List<Report> findRecent();
 
