@@ -14,6 +14,6 @@ public interface SpitterRepository extends JpaRepository<ReportCategory, Long>, 
 	  
 	ReportCategory findByDescription(String description);
 	
-	List<ReportCategory> findByDescriptionOrFullNameLike(String description, String fullName);
+	List<ReportCategory> findByDescriptionOrAbbreviationLike(String description, String abbreviation);
 
 }

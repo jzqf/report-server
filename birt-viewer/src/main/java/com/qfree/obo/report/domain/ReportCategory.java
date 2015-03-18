@@ -29,8 +29,8 @@ public class ReportCategory {
 	@Column(name = "unused_report_category_field_1")
 	private String unusedReportCategoryField1;
 
-	@Column(name = "fullname")
-	private String fullName;
+	@Column(name = "abbreviation")
+	private String abbreviation;
 
 	@Column(name = "unused_report_category_field_2")
 	private String unusedReportCategoryField2;
@@ -45,12 +45,12 @@ public class ReportCategory {
 	private List<Report> spittles;
 
 	public ReportCategory(Long reportCategoryId, String description, String unusedReportCategoryField1,
-			String fullName,
+			String abbreviation,
 			String unusedReportCategoryField2, boolean updateByEmail) {
 		this.reportCategoryId = reportCategoryId;
 		this.description = description;
 		this.unusedReportCategoryField1 = unusedReportCategoryField1;
-		this.fullName = fullName;
+		this.abbreviation = abbreviation;
 		this.unusedReportCategoryField2 = unusedReportCategoryField2;
 		this.updateByEmail = updateByEmail;
 		this.unusedReportCategoryField3 = "Newbie";
@@ -68,8 +68,8 @@ public class ReportCategory {
 		return unusedReportCategoryField1;
 	}
 
-	public String getFullName() {
-		return fullName;
+	public String getAbbreviation() {
+		return abbreviation;
 	}
 
 	public String getUnusedReportCategoryField2() {

@@ -5,7 +5,7 @@ create table report_category (
   report_category_id identity,
   description varchar(25) not null,
   unused_report_category_field_1 varchar(25) not null,
-  fullName varchar(100) not null,
+  abbreviation varchar(100) not null,
   unused_report_category_field_2 varchar(50) not null,
   updateByEmail boolean not null,
   unused_report_category_field_3 varchar(10) not null
