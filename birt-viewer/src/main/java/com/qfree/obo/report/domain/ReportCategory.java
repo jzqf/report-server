@@ -25,33 +25,33 @@ public class ReportCategory {
 	@Column(name = "username")
 	private String username;
 
-	@Column(name = "password")
-	private String password;
+	@Column(name = "unused_report_category_field_1")
+	private String unusedReportCategoryField1;
 
 	@Column(name = "fullname")
 	private String fullName;
 
-	@Column(name = "email")
-	private String email;
+	@Column(name = "unused_report_category_field_2")
+	private String unusedReportCategoryField2;
 
 	@Column(name = "updateByEmail")
 	private boolean updateByEmail;
 
-	@Column(name = "status")
-	private String status;
+	@Column(name = "unused_report_category_field_3")
+	private String unusedReportCategoryField3;
 
 	@OneToMany(targetEntity = Report.class, fetch = FetchType.EAGER, mappedBy = "spitter")
 	private List<Report> spittles;
 
-	public ReportCategory(Long id, String username, String password, String fullName,
-			String email, boolean updateByEmail) {
+	public ReportCategory(Long id, String username, String unusedReportCategoryField1, String fullName,
+			String unusedReportCategoryField2, boolean updateByEmail) {
 		this.id = id;
 		this.username = username;
-		this.password = password;
+		this.unusedReportCategoryField1 = unusedReportCategoryField1;
 		this.fullName = fullName;
-		this.email = email;
+		this.unusedReportCategoryField2 = unusedReportCategoryField2;
 		this.updateByEmail = updateByEmail;
-		this.status = "Newbie";
+		this.unusedReportCategoryField3 = "Newbie";
 	}
 
 	public Long getId() {
@@ -62,24 +62,24 @@ public class ReportCategory {
 		return username;
 	}
 
-	public String getPassword() {
-		return password;
+	public String getUnusedReportCategoryField1() {
+		return unusedReportCategoryField1;
 	}
 
 	public String getFullName() {
 		return fullName;
 	}
 
-	public String getEmail() {
-		return email;
+	public String getUnusedReportCategoryField2() {
+		return unusedReportCategoryField2;
 	}
 
 	public boolean isUpdateByEmail() {
 		return updateByEmail;
 	}
 
-	public String getStatus() {
-		return status;
+	public String getUnusedReportCategoryField3() {
+		return unusedReportCategoryField3;
 	}
 
 	public List<Report> getSpittles() {

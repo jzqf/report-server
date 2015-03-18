@@ -85,13 +85,13 @@ public class SpitterRepositoryTest {
 		assertSpitter(expectedSpitterIndex, actual, "Newbie");
 	}
 	
-	private static void assertSpitter(int expectedSpitterIndex, ReportCategory actual, String expectedStatus) {
+	private static void assertSpitter(int expectedSpitterIndex, ReportCategory actual, String expectedUnusedReportCategoryField3) {
 		ReportCategory expected = SPITTERS[expectedSpitterIndex];
 		assertEquals(expected.getId(), actual.getId());
 		assertEquals(expected.getUsername(), actual.getUsername());
-		assertEquals(expected.getPassword(), actual.getPassword());
+		assertEquals(expected.getUnusedReportCategoryField1(), actual.getUnusedReportCategoryField1());
 		assertEquals(expected.getFullName(), actual.getFullName());
-		assertEquals(expected.getEmail(), actual.getEmail());
+		assertEquals(expected.getUnusedReportCategoryField2(), actual.getUnusedReportCategoryField2());
 		assertEquals(expected.isUpdateByEmail(), actual.isUpdateByEmail());
 	}
 	

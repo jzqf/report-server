@@ -15,8 +15,8 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.qfree.obo.report.domain.ReportCategory;
 import com.qfree.obo.report.domain.Report;
+import com.qfree.obo.report.domain.ReportCategory;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes=JpaConfig.class)
@@ -56,9 +56,9 @@ public class SpittleRepositoryTest {
 		assertEquals(1332682500000L, thirteen.getPostedTime().getTime());
 		assertEquals(4, thirteen.getSpitter().getId().longValue());
 		assertEquals("artnames", thirteen.getSpitter().getUsername());
-		assertEquals("password", thirteen.getSpitter().getPassword());
+		assertEquals("password", thirteen.getSpitter().getUnusedReportCategoryField1());
 		assertEquals("Art Names", thirteen.getSpitter().getFullName());
-		assertEquals("art@habuma.com", thirteen.getSpitter().getEmail());
+		assertEquals("art@habuma.com", thirteen.getSpitter().getUnusedReportCategoryField2());
 		assertTrue(thirteen.getSpitter().isUpdateByEmail());
 	}
 

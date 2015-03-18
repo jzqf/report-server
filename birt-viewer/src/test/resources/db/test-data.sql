@@ -1,7 +1,7 @@
-insert into report_category (username, password, fullname, email, updateByEmail, status) values ('habuma', 'password', 'Craig Walls', 'craig@habuma.com', false, 'Newbie');
-insert into report_category (username, password, fullname, email, updateByEmail, status) values ('mwalls', 'password', 'Michael Walls', 'mwalls@habuma.com', true, 'Newbie');
-insert into report_category (username, password, fullname, email, updateByEmail, status) values ('chuck', 'password', 'Chuck Wagon', 'chuck@habuma.com', false, 'Newbie');
-insert into report_category (username, password, fullname, email, updateByEmail, status) values ('artnames', 'password', 'Art Names', 'art@habuma.com', true, 'Newbie');
+insert into report_category (username, unused_report_category_field_1, fullname, unused_report_category_field_2, updateByEmail, unused_report_category_field_3) values ('habuma', 'password', 'Craig Walls', 'craig@habuma.com', false, 'Newbie');
+insert into report_category (username, unused_report_category_field_1, fullname, unused_report_category_field_2, updateByEmail, unused_report_category_field_3) values ('mwalls', 'password', 'Michael Walls', 'mwalls@habuma.com', true, 'Newbie');
+insert into report_category (username, unused_report_category_field_1, fullname, unused_report_category_field_2, updateByEmail, unused_report_category_field_3) values ('chuck', 'password', 'Chuck Wagon', 'chuck@habuma.com', false, 'Newbie');
+insert into report_category (username, unused_report_category_field_1, fullname, unused_report_category_field_2, updateByEmail, unused_report_category_field_3) values ('artnames', 'password', 'Art Names', 'art@habuma.com', true, 'Newbie');
 
 insert into report (spitter, message, postedTime) values (1, 'This is a test spittle message', '2012-06-09 22:00:00Z');
 insert into report (spitter, message, postedTime) values (1, 'This is another test spittle message', '2012-06-09 22:10:00Z');
