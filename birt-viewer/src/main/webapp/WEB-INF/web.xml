@@ -5,17 +5,79 @@
 						http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd"
 	id="WebApp_ID" version="3.1">
 
-	<display-name>OBO Report Viewer</display-name>
+	<display-name>OBO Report Server</display-name>
 
-	<welcome-file-list>
-		<welcome-file>index.html</welcome-file>
-		<welcome-file>index.htm</welcome-file>
-		<welcome-file>index.jsp</welcome-file>
-		<welcome-file>default.html</welcome-file>
-		<welcome-file>default.htm</welcome-file>
-		<welcome-file>default.jsp</welcome-file>
-	</welcome-file-list>
 
+	<!-- Spring: -->
+
+	<!-- This is the bootstrap listener to start up and shut down Spring's root 
+		 WebApplicationContext. It creates the Spring container shared by all 
+		 servlets and filters.
+	-->
+	<listener>
+		<listener-class>
+			org.springframework.web.context.ContextLoaderListener
+		</listener-class>
+	</listener>
+	<!-- This is for the old XML configuration. Instead, I use JavaConfig below.
+	<context-param>
+		<param-name>contextConfigLocation</param-name>
+		<param-value>
+		    classpath:spring/applicationContext.xml
+		</param-value>
+	</context-param> -->
+	<!-- Configure ContextLoaderListener to use AnnotationConfigWebApplicationContext
+		 instead of the default XmlWebApplicationContext. This enables "JavaConfig". -->
+	<context-param>
+		<param-name>contextClass</param-name>
+		<param-value>
+			org.springframework.web.context.support.AnnotationConfigWebApplicationContext
+		</param-value>
+	</context-param>
+	<!-- Configuration location for the root Spring container shared by all servlets
+		 and filters. I could also specify a package and all classes within it
+		 will be candidates for Spring processing (I think the classes need to be
+		 annotated with @Component or a similar stereotype annotation. -->
+	<context-param>
+		<param-name>contextConfigLocation</param-name>
+		<param-value>
+			com.qfree.obo.report.spring.config.RootConfig
+		</param-value>
+	</context-param>
+
+
+	<!-- JAX-RS/Jersey ReST server configuration:
+	
+		 The servlet mapping here appears to be necessary. Although normally it
+		 seems that Jersey can automatically locate a class annotated with
+		 @javax.ws.rs.ApplicationPath that specifies this mapping, my testing
+		 indicates that this can fail if other servlets are registered 
+		 elsewhere. If this servlet mapping here is removed, an exception is 
+		 thrown when an HTTP request is received that should be mapped to this
+		 servlet:
+		 	jax-rs java.lang.IllegalStateException: The resource configuration 
+		 	is not modifiable in this context
+		 	...
+	-->
+	<servlet>
+		<servlet-name>jersey-servlet</servlet-name>
+		<servlet-class>
+			org.glassfish.jersey.servlet.ServletContainer
+		</servlet-class>
+		<init-param>
+			<param-name>javax.ws.rs.Application</param-name>
+			<param-value>com.qfree.obo.report.rest.server.JAXRSConfiguration</param-value>			
+		</init-param>		
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>jersey-servlet</servlet-name>
+		<url-pattern>/rest/*</url-pattern>
+	</servlet-mapping>
+
+
+	<!-- Start of BIRT Viewer configuration: -->
+	
 	<context-param>
 		<param-name>BIRT_VIEWER_LOG_LEVEL</param-name>
 		<param-value>FINEST</param-value>
@@ -151,5 +213,36 @@
 			<taglib-location>/WEB-INF/tlds/birt.tld</taglib-location>
 		</taglib>
 	</jsp-config>
+
+	<!-- End of BIRT Viewer configuration -->
+
+
+	<!-- Length of time in minutes that a session lasts before the server 
+		 invalidates the session and unbinds any of its objects. The default
+		 for Tomcat 8 is 30 minutes.
+	-->
+	<session-config>
+		<session-timeout>30</session-timeout>
+	</session-config>
+
+	<!-- The webAppRootKey is a context parameter that exposes the webapp root 
+		 as a system property that can be used elsewhere such as in a logging
+		 configuration file. For example, in logback.xml it should be possible 
+		 to use ${report-server.root} instead of ${catalina.base}. On Tomcat, 
+		 it will have a value of ${CATALINA_HOME}/webapp/<webapp-name> .
+	-->
+	<context-param>
+		<param-name>webAppRootKey</param-name>
+		<param-value>report-server.root</param-value>
+	</context-param>
+
+	<welcome-file-list>
+		<welcome-file>index.html</welcome-file>
+		<welcome-file>index.htm</welcome-file>
+		<welcome-file>index.jsp</welcome-file>
+		<welcome-file>default.html</welcome-file>
+		<welcome-file>default.htm</welcome-file>
+		<welcome-file>default.jsp</welcome-file>
+	</welcome-file-list>
 
 </web-app>

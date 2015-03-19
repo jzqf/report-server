@@ -45,10 +45,14 @@
 	</issueManagement>
 
 	<properties>
-		<birt-runtime-version>4.4.1</birt-runtime-version>
-		<javax.servlet-servlet-api-version>3.1.0</javax.servlet-servlet-api-version>
-		<jax-rs-version>2.15</jax-rs-version>
-		<tomcat7-maven-plugin-version>2.2</tomcat7-maven-plugin-version>
+		<birt-runtime.version>4.4.1</birt-runtime.version>
+		<javax.servlet-api.version>3.1.0</javax.servlet-api.version>
+		<jersey.version>2.16</jersey.version>
+		<spring.version>4.1.5.RELEASE</spring.version>
+		<spring.data.jpa.version>1.7.2.RELEASE</spring.data.jpa.version>
+		<hibernate.version>4.3.8.Final</hibernate.version>
+		<junit.version>4.12</junit.version>
+		<tomcat7.maven.plugin.version>2.2</tomcat7.maven.plugin.version>
 	</properties>
 	
 	<dependencies>
@@ -56,13 +60,13 @@
 		<dependency>
 			<groupId>org.eclipse.birt.runtime</groupId>
 			<artifactId>org.eclipse.birt.runtime</artifactId>
-			<version>${birt-runtime-version}</version>
+			<version>${birt-runtime.version}</version>
 		</dependency>
 		
 		<dependency>
 			<groupId>org.eclipse.birt.runtime</groupId>
 			<artifactId>viewservlets</artifactId>
-			<version>${birt-runtime-version}</version>
+			<version>${birt-runtime.version}</version>
 		</dependency>
 
 		<dependency>
@@ -76,28 +80,20 @@
 		<dependency>
 			<groupId>javax.servlet</groupId>
 			<artifactId>javax.servlet-api</artifactId>
-			<version>${javax.servlet-servlet-api-version}</version>
+			<version>${javax.servlet-api.version}</version>
 			<scope>provided</scope>
 		</dependency>
-
-		<!-- Testing -->
-		<!-- <dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<version>${junit-version}</version>
-			<scope>test</scope>
-		</dependency> -->
 		
-		<!-- JAX-RS (javax.ws.rs.client.Client, ...) -->
+		<!-- JAX-RS client (javax.ws.rs.client.Client, ...) -->
 		<dependency>
 			<groupId>org.glassfish.jersey.core</groupId>
 			<artifactId>jersey-client</artifactId>
-			<version>${jax-rs-version}</version>
+			<version>${jersey.version}</version>
 		</dependency>
 		<!-- <dependency>
 			<groupId>org.glassfish.jersey.connectors</groupId>
 			<artifactId>jersey-apache-connector</artifactId>
-			<version>${jax-rs-version}</version>
+			<version>${jersey.version}</version>
 		</dependency> -->
 		
 		<!-- Java API for JSON Processing (javax.json.JsonArray, ...) -->
@@ -113,8 +109,151 @@
 		<dependency>
 			<groupId>org.glassfish.jersey.media</groupId>
 			<artifactId>jersey-media-json-processing</artifactId>
-			<version>${jax-rs-version}</version>
+			<version>${jersey.version}</version>
 		</dependency>
+		
+		<!-- JAX-RS server -->
+		<dependency>
+			<groupId>org.glassfish.jersey.containers</groupId>
+			<artifactId>jersey-container-servlet</artifactId>
+			<version>${jersey.version}</version>
+		</dependency>
+
+		<!-- JAX-RS - Spring integration.
+			 The jersey-spring3.jar has its own dependencies on Spring libraries
+			 (see: 
+			 https://jersey.java.net/project-info/2.16/jersey/project/jersey-spring3/dependencies.html),
+			 so in order to specify a different version here, ${spring.version},
+			 it is necessary to exclude those libraries manually here.
+		-->
+		<dependency>
+			<groupId>org.glassfish.jersey.ext</groupId>
+			<artifactId>jersey-spring3</artifactId>
+			<version>${jersey.version}</version>
+			<exclusions>
+				<exclusion>
+					<groupId>org.springframework</groupId>
+					<artifactId>spring-core</artifactId>
+				</exclusion>			
+				<exclusion>
+					<groupId>org.springframework</groupId>
+					<artifactId>spring-web</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.springframework</groupId>
+					<artifactId>spring-beans</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		
+		
+		<!-- Spring: -->
+		<!-- TODO Try removing some of these Spring dependencies? They may not all be needed. -->
+		
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-core</artifactId>
+			<version>${spring.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-context</artifactId>
+			<version>${spring.version}</version>
+			<exclusions>
+			   <exclusion>
+			      <groupId>commons-logging</groupId>
+			      <artifactId>commons-logging</artifactId>
+			   </exclusion>
+			</exclusions>			
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-web</artifactId>
+			<version>${spring.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-jdbc</artifactId>
+			<version>${spring.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-tx</artifactId>
+			<version>${spring.version}</version>
+		</dependency>
+		
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-orm</artifactId>
+			<version>${spring.version}</version>
+		</dependency>
+
+
+		<!-- Spring Data JPA -->
+		<dependency>
+			<groupId>org.springframework.data</groupId>
+			<artifactId>spring-data-jpa</artifactId>
+			<version>${spring.data.jpa.version}</version>
+		</dependency>
+
+		<!-- Testing -->
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-test</artifactId>
+			<version>${spring.version}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>${junit.version}</version>
+			<scope>test</scope>
+		</dependency>
+
+		<!-- Hibernate 4 -->
+		<dependency>
+			<groupId>org.hibernate</groupId>
+			<artifactId>hibernate-core</artifactId>
+			<version>${hibernate.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.hibernate</groupId>
+			<artifactId>hibernate-entitymanager</artifactId>
+			<version>${hibernate.version}</version>
+		</dependency>
+		
+		<!-- Apache Commons DBCP 2.x -->
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-dbcp2</artifactId>
+			<version>2.1</version>
+			<!-- <scope>provided</scope> -->
+			<exclusions>
+				<exclusion>
+					<groupId>commons-logging</groupId>
+					<artifactId>commons-logging</artifactId>
+				 </exclusion>
+			</exclusions>
+		</dependency>
+		
+		<!-- PostgreSQL JDBC driver -->
+		<dependency>
+			<groupId>org.postgresql</groupId>
+			<artifactId>postgresql</artifactId>
+			<version>9.4-1201-jdbc41</version>
+		</dependency>
+		
+		<!-- H2 JDBC driver. Used for testing with embedded DB. -->
+		<dependency>
+			<groupId>com.h2database</groupId>
+			<artifactId>h2</artifactId>
+			<version>1.4.186</version>
+		</dependency>
+		
 
 	</dependencies>
 
@@ -122,7 +261,7 @@
 	
 		<!-- "finalName" sets the context root of the deployed web application.
 			Otherwise, the web app will be deployed at /<artifactId>-<version> -->
-		<finalName>report-viewer</finalName>
+		<finalName>report-server</finalName>
 		
 		<plugins>
 
@@ -143,9 +282,9 @@
 			<plugin>
 				<groupId>org.apache.tomcat.maven</groupId>
 				<artifactId>tomcat7-maven-plugin</artifactId>
-				<version>${tomcat7-maven-plugin-version}</version>
+				<version>${tomcat7.maven.plugin.version}</version>
 				<configuration>
-					<url>http://localhost:8080/manager/text</url>
+					<url>http://localhost:8081/manager/text</url>
 					<server>myTomcat</server>
 					<path>/${project.build.finalName}</path>
 				</configuration>
