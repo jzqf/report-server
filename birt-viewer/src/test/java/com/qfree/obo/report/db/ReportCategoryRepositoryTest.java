@@ -1,6 +1,7 @@
 package com.qfree.obo.report.db;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 import java.util.List;
 
@@ -21,24 +22,20 @@ public class ReportCategoryRepositoryTest {
 
 	@Autowired
 	ReportCategoryRepository reportCategoryRepository;
-	
+
 	@Test
 	@Transactional
 	public void count() {
 		assertEquals(4, reportCategoryRepository.count());
 	}
-	
+
 	@Test
 	@Transactional
 	public void findAll() {
 		List<ReportCategory> reportCategories = reportCategoryRepository.findAll();
 		assertEquals(4, reportCategories.size());
-		assertReportCategory(0, reportCategories.get(0));
-		assertReportCategory(1, reportCategories.get(1));
-		assertReportCategory(2, reportCategories.get(2));
-		assertReportCategory(3, reportCategories.get(3));
 	}
-	
+
 	@Test
 	@Transactional
 	public void findByDescription() {
@@ -47,7 +44,37 @@ public class ReportCategoryRepositoryTest {
 		assertReportCategory(2, reportCategoryRepository.findByDescription("chuck"));
 		assertReportCategory(3, reportCategoryRepository.findByDescription("artnames"));
 	}
-	
+
+	@Test
+	@Transactional
+	public void findByAbbreviation() {
+		assertReportCategory(0, reportCategoryRepository.findByAbbreviation("Craig Walls"));
+		assertReportCategory(1, reportCategoryRepository.findByAbbreviation("Michael Walls"));
+		assertReportCategory(2, reportCategoryRepository.findByAbbreviation("Chuck Wagon"));
+		assertReportCategory(3, reportCategoryRepository.findByAbbreviation("Art Names"));
+	}
+
+	@Test
+	@Transactional
+	public void findByDescriptionLikeOrAbbreviationLike() {
+		List<ReportCategory> reportCategories;
+		reportCategories = reportCategoryRepository.findByDescriptionLikeOrAbbreviationLike("hab%", "");
+		assertEquals(1, reportCategories.size());
+		assertReportCategory(0, reportCategories.get(0));
+		reportCategories = reportCategoryRepository.findByDescriptionLikeOrAbbreviationLike("", "%Names");
+		assertEquals(1, reportCategories.size());
+		assertReportCategory(3, reportCategories.get(0));
+		reportCategories = reportCategoryRepository.findByDescriptionLikeOrAbbreviationLike("hab%", "%Names");
+		assertEquals(2, reportCategories.size());
+	}
+
+	@Test
+	@Transactional
+	public void findByActiveIsTrue() {
+		List<ReportCategory> reportCategories = reportCategoryRepository.findByActiveIsTrue();
+		assertEquals(2, reportCategories.size());
+	}
+
 	@Test
 	@Transactional
 	public void findOne() {
@@ -56,12 +83,13 @@ public class ReportCategoryRepositoryTest {
 		assertReportCategory(2, reportCategoryRepository.findOne(3L));
 		assertReportCategory(3, reportCategoryRepository.findOne(4L));
 	}
-	
+
 	@Test
 	@Transactional
 	public void save_newReportCategory() {
 		assertEquals(4, reportCategoryRepository.count());
-		ReportCategory reportCategory = new ReportCategory(null, "newbee", "letmein", "New Bee", "newbee@habuma.com", true);
+		ReportCategory reportCategory = new ReportCategory(null, "newbee", "letmein", "New Bee", "newbee@habuma.com",
+				true);
 		ReportCategory saved = reportCategoryRepository.save(reportCategory);
 		assertEquals(5, reportCategoryRepository.count());
 		assertReportCategory(4, saved);
@@ -73,7 +101,8 @@ public class ReportCategoryRepositoryTest {
 	@Ignore
 	public void save_existingReportCategory() {
 		assertEquals(4, reportCategoryRepository.count());
-		ReportCategory reportCategory = new ReportCategory(4L, "arthur", "letmein", "Arthur Names", "arthur@habuma.com", false);
+		ReportCategory reportCategory = new ReportCategory(4L, "arthur", "letmein", "Arthur Names",
+				"arthur@habuma.com", false);
 		ReportCategory saved = reportCategoryRepository.save(reportCategory);
 		assertReportCategory(5, saved);
 		assertEquals(4, reportCategoryRepository.count());
@@ -81,30 +110,35 @@ public class ReportCategoryRepositoryTest {
 		assertReportCategory(5, updated);
 	}
 
-	private static void assertReportCategory(int expectedReportCategoryIndex, ReportCategory actual) {
-		assertReportCategory(expectedReportCategoryIndex, actual, "Newbie");
-	}
-	
-	private static void assertReportCategory(int expectedReportCategoryIndex, ReportCategory actual, String expectedUnusedReportCategoryField3) {
+	/**
+	 * Checks that the {@link ReportCategory} instance passed to this method is 
+	 * found at a specified index within the REPORT_CATEGORIES array.
+	 * 
+	 * @param expectedReportCategoryIndex
+	 * @param reportCategory
+	 */
+	private static void assertReportCategory(int expectedReportCategoryIndex, ReportCategory reportCategory) {
+		assertNotNull(reportCategory);
 		ReportCategory expected = REPORT_CATEGORIES[expectedReportCategoryIndex];
-		assertEquals(expected.getReportCategoryId(), actual.getReportCategoryId());
-		assertEquals(expected.getDescription(), actual.getDescription());
-		assertEquals(expected.getUnusedReportCategoryField1(), actual.getUnusedReportCategoryField1());
-		assertEquals(expected.getAbbreviation(), actual.getAbbreviation());
-		assertEquals(expected.getUnusedReportCategoryField2(), actual.getUnusedReportCategoryField2());
-		assertEquals(expected.isActive(), actual.isActive());
+		//		ReportCategory expected = REPORT_CATEGORIES.get(expectedReportCategoryIndex);
+		assertEquals(expected.getReportCategoryId(), reportCategory.getReportCategoryId());
+		assertEquals(expected.getDescription(), reportCategory.getDescription());
+		assertEquals(expected.getUnusedReportCategoryField1(), reportCategory.getUnusedReportCategoryField1());
+		assertEquals(expected.getAbbreviation(), reportCategory.getAbbreviation());
+		assertEquals(expected.getUnusedReportCategoryField2(), reportCategory.getUnusedReportCategoryField2());
+		assertEquals(expected.isActive(), reportCategory.isActive());
 	}
-	
+
 	private static ReportCategory[] REPORT_CATEGORIES = new ReportCategory[6];
-	
+
 	@BeforeClass
 	public static void before() {
 		REPORT_CATEGORIES[0] = new ReportCategory(1L, "habuma", "password", "Craig Walls", "craig@habuma.com", false);
 		REPORT_CATEGORIES[1] = new ReportCategory(2L, "mwalls", "password", "Michael Walls", "mwalls@habuma.com", true);
 		REPORT_CATEGORIES[2] = new ReportCategory(3L, "chuck", "password", "Chuck Wagon", "chuck@habuma.com", false);
 		REPORT_CATEGORIES[3] = new ReportCategory(4L, "artnames", "password", "Art Names", "art@habuma.com", true);
-		REPORT_CATEGORIES[4] = new ReportCategory(5L, "newbee", "letmein", "New Bee", "newbee@habuma.com", true);		
-		REPORT_CATEGORIES[5] = new ReportCategory(4L, "arthur", "letmein", "Arthur Names", "arthur@habuma.com", false);		
+		REPORT_CATEGORIES[4] = new ReportCategory(5L, "newbee", "letmein", "New Bee", "newbee@habuma.com", true);
+		REPORT_CATEGORIES[5] = new ReportCategory(4L, "arthur", "letmein", "Arthur Names", "arthur@habuma.com", false);
 	}
-	
+
 }

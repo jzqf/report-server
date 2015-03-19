@@ -20,8 +20,8 @@ public interface ReportCategoryRepository extends JpaRepository<ReportCategory, 
 
 	ReportCategory findByDescription(String description);
 	
-	List<ReportCategory> findByDescriptionOrAbbreviationLike(String description, String abbreviation);
+	List<ReportCategory> findByDescriptionLikeOrAbbreviationLike(String description, String abbreviation);
 
-	ReportCategory findByActiveIsTrue();
+	List<ReportCategory> findByActiveIsTrue();
 
 }
