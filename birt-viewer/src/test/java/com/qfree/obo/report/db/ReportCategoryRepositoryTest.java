@@ -20,7 +20,7 @@ import com.qfree.obo.report.domain.ReportCategory;
 public class ReportCategoryRepositoryTest {
 
 	@Autowired
-	SpitterRepository reportCategoryRepository;
+	ReportCategoryRepository reportCategoryRepository;
 	
 	@Test
 	@Transactional

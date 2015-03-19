@@ -13,9 +13,8 @@ import com.qfree.obo.report.domain.ReportCategory;
  * domain-specific language should be declared here.
  * 
  * @author Jeffrey Zelt
- *
  */
-public interface SpitterRepository extends JpaRepository<ReportCategory, Long>, ReportCategoryCustom {
+public interface ReportCategoryRepository extends JpaRepository<ReportCategory, Long>, ReportCategoryRepositoryCustom {
 	  
 	ReportCategory findByAbbreviation(String abbreviation);
 
