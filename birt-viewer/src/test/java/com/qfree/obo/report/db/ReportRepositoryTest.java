@@ -52,11 +52,11 @@ public class ReportRepositoryTest {
 	public void findOne() {
 		Report thirteen = reportRepository.findOne(13L);
 		assertEquals(13, thirteen.getReportId().longValue());
-		assertEquals("Bonjour from Art!", thirteen.getName());
+		assertEquals("Report name #13", thirteen.getName());
 		assertEquals(1332682500000L, thirteen.getCreatedOn().getTime());
 		assertEquals(4, thirteen.getReportCategory().getReportCategoryId().longValue());
-		assertEquals("artnames", thirteen.getReportCategory().getDescription());
-		assertEquals("Art Names", thirteen.getReportCategory().getAbbreviation());
+		assertEquals("Traffic", thirteen.getReportCategory().getDescription());
+		assertEquals("TRA", thirteen.getReportCategory().getAbbreviation());
 		assertTrue(thirteen.getReportCategory().isActive());
 	}
 

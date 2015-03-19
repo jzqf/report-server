@@ -39,32 +39,35 @@ public class ReportCategoryRepositoryTest {
 	@Test
 	@Transactional
 	public void findByDescription() {
-		assertReportCategory(0, reportCategoryRepository.findByDescription("habuma"));
-		assertReportCategory(1, reportCategoryRepository.findByDescription("mwalls"));
-		assertReportCategory(2, reportCategoryRepository.findByDescription("chuck"));
-		assertReportCategory(3, reportCategoryRepository.findByDescription("artnames"));
+		assertReportCategory(0, reportCategoryRepository.findByDescription("Accounting"));
+		assertReportCategory(1, reportCategoryRepository.findByDescription("Q-Free internal"));
+		assertReportCategory(2, reportCategoryRepository.findByDescription("Manual validation"));
+		assertReportCategory(3, reportCategoryRepository.findByDescription("Traffic"));
 	}
 
 	@Test
 	@Transactional
 	public void findByAbbreviation() {
-		assertReportCategory(0, reportCategoryRepository.findByAbbreviation("Craig Walls"));
-		assertReportCategory(1, reportCategoryRepository.findByAbbreviation("Michael Walls"));
-		assertReportCategory(2, reportCategoryRepository.findByAbbreviation("Chuck Wagon"));
-		assertReportCategory(3, reportCategoryRepository.findByAbbreviation("Art Names"));
+		assertReportCategory(0, reportCategoryRepository.findByAbbreviation("ACCT"));
+		assertReportCategory(1, reportCategoryRepository.findByAbbreviation("QFREE"));
+		assertReportCategory(2, reportCategoryRepository.findByAbbreviation("MIR"));
+		assertReportCategory(3, reportCategoryRepository.findByAbbreviation("TRA"));
 	}
 
 	@Test
 	@Transactional
 	public void findByDescriptionLikeOrAbbreviationLike() {
 		List<ReportCategory> reportCategories;
-		reportCategories = reportCategoryRepository.findByDescriptionLikeOrAbbreviationLike("hab%", "");
+
+		reportCategories = reportCategoryRepository.findByDescriptionLikeOrAbbreviationLike("Accoun%", "");
 		assertEquals(1, reportCategories.size());
 		assertReportCategory(0, reportCategories.get(0));
-		reportCategories = reportCategoryRepository.findByDescriptionLikeOrAbbreviationLike("", "%Names");
+
+		reportCategories = reportCategoryRepository.findByDescriptionLikeOrAbbreviationLike("", "%FREE");
 		assertEquals(1, reportCategories.size());
-		assertReportCategory(3, reportCategories.get(0));
-		reportCategories = reportCategoryRepository.findByDescriptionLikeOrAbbreviationLike("hab%", "%Names");
+		assertReportCategory(1, reportCategories.get(0));
+
+		reportCategories = reportCategoryRepository.findByDescriptionLikeOrAbbreviationLike("Accoun%", "%FREE");
 		assertEquals(2, reportCategories.size());
 	}
 
@@ -88,7 +91,7 @@ public class ReportCategoryRepositoryTest {
 	@Transactional
 	public void save_newReportCategory() {
 		assertEquals(4, reportCategoryRepository.count());
-		ReportCategory reportCategory = new ReportCategory(null, "newbee", "New Bee", true);
+		ReportCategory reportCategory = new ReportCategory(null, "Image processing", "OCR", true);
 		ReportCategory saved = reportCategoryRepository.save(reportCategory);
 		assertEquals(5, reportCategoryRepository.count());
 		assertReportCategory(4, saved);
@@ -125,16 +128,16 @@ public class ReportCategoryRepositoryTest {
 		assertEquals(expected.isActive(), reportCategory.isActive());
 	}
 
-	private static ReportCategory[] REPORT_CATEGORIES = new ReportCategory[6];
+	private static ReportCategory[] REPORT_CATEGORIES = new ReportCategory[5];
 
 	@BeforeClass
 	public static void before() {
-		REPORT_CATEGORIES[0] = new ReportCategory(1L, "habuma", "Craig Walls", false);
-		REPORT_CATEGORIES[1] = new ReportCategory(2L, "mwalls", "Michael Walls", true);
-		REPORT_CATEGORIES[2] = new ReportCategory(3L, "chuck", "Chuck Wagon", false);
-		REPORT_CATEGORIES[3] = new ReportCategory(4L, "artnames", "Art Names", true);
-		REPORT_CATEGORIES[4] = new ReportCategory(5L, "newbee", "New Bee", true);
-		REPORT_CATEGORIES[5] = new ReportCategory(4L, "arthur", "Arthur Names", false);
+		REPORT_CATEGORIES[0] = new ReportCategory(1L, "Accounting", "ACCT", false);
+		REPORT_CATEGORIES[1] = new ReportCategory(2L, "Q-Free internal", "QFREE", true);
+		REPORT_CATEGORIES[2] = new ReportCategory(3L, "Manual validation", "MIR", false);
+		REPORT_CATEGORIES[3] = new ReportCategory(4L, "Traffic", "TRA", true);
+		REPORT_CATEGORIES[4] = new ReportCategory(5L, "Image processing", "OCR", true);
+		//		REPORT_CATEGORIES[5] = new ReportCategory(4L, "description", "abbreviation", false);
 	}
 
 }
