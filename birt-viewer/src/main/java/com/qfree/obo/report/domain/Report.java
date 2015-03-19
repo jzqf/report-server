@@ -27,7 +27,7 @@ public class Report {
 	@Column(name = "name")
 	private String name;
 
-	@Column(name = "createdOn")
+	@Column(name = "created_on")
 	private Date createdOn;
 
 	private Report() {

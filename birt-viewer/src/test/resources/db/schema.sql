@@ -12,6 +12,6 @@ create table report (
   report_id           integer      identity primary key,
   report_category_id  integer      not null,
   name                varchar(80)  not null,
-  createdOn           timestamp    not null,
+  created_on          timestamp    not null,
   foreign key (report_category_id) references report_category(report_category_id)
 );
