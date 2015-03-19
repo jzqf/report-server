@@ -4,11 +4,8 @@ drop table if exists report_category;
 create table report_category (
   report_category_id  identity,
   description         varchar(25)  not null,
-  unused_report_category_field_1 varchar(25) not null,
   abbreviation        varchar(20)  not null,
-  unused_report_category_field_2 varchar(50) not null,
-  active              boolean      not null,
-  unused_report_category_field_3   varchar(10) not null
+  active              boolean      not null
 );
 
 create table report (

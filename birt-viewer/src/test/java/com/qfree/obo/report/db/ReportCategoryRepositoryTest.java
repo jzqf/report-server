@@ -88,8 +88,7 @@ public class ReportCategoryRepositoryTest {
 	@Transactional
 	public void save_newReportCategory() {
 		assertEquals(4, reportCategoryRepository.count());
-		ReportCategory reportCategory = new ReportCategory(null, "newbee", "letmein", "New Bee", "newbee@habuma.com",
-				true);
+		ReportCategory reportCategory = new ReportCategory(null, "newbee", "New Bee", true);
 		ReportCategory saved = reportCategoryRepository.save(reportCategory);
 		assertEquals(5, reportCategoryRepository.count());
 		assertReportCategory(4, saved);
@@ -101,8 +100,7 @@ public class ReportCategoryRepositoryTest {
 	@Ignore
 	public void save_existingReportCategory() {
 		assertEquals(4, reportCategoryRepository.count());
-		ReportCategory reportCategory = new ReportCategory(4L, "arthur", "letmein", "Arthur Names",
-				"arthur@habuma.com", false);
+		ReportCategory reportCategory = new ReportCategory(4L, "arthur", "Arthur Names", false);
 		ReportCategory saved = reportCategoryRepository.save(reportCategory);
 		assertReportCategory(5, saved);
 		assertEquals(4, reportCategoryRepository.count());
@@ -123,9 +121,7 @@ public class ReportCategoryRepositoryTest {
 		//		ReportCategory expected = REPORT_CATEGORIES.get(expectedReportCategoryIndex);
 		assertEquals(expected.getReportCategoryId(), reportCategory.getReportCategoryId());
 		assertEquals(expected.getDescription(), reportCategory.getDescription());
-		assertEquals(expected.getUnusedReportCategoryField1(), reportCategory.getUnusedReportCategoryField1());
 		assertEquals(expected.getAbbreviation(), reportCategory.getAbbreviation());
-		assertEquals(expected.getUnusedReportCategoryField2(), reportCategory.getUnusedReportCategoryField2());
 		assertEquals(expected.isActive(), reportCategory.isActive());
 	}
 
@@ -133,12 +129,12 @@ public class ReportCategoryRepositoryTest {
 
 	@BeforeClass
 	public static void before() {
-		REPORT_CATEGORIES[0] = new ReportCategory(1L, "habuma", "password", "Craig Walls", "craig@habuma.com", false);
-		REPORT_CATEGORIES[1] = new ReportCategory(2L, "mwalls", "password", "Michael Walls", "mwalls@habuma.com", true);
-		REPORT_CATEGORIES[2] = new ReportCategory(3L, "chuck", "password", "Chuck Wagon", "chuck@habuma.com", false);
-		REPORT_CATEGORIES[3] = new ReportCategory(4L, "artnames", "password", "Art Names", "art@habuma.com", true);
-		REPORT_CATEGORIES[4] = new ReportCategory(5L, "newbee", "letmein", "New Bee", "newbee@habuma.com", true);
-		REPORT_CATEGORIES[5] = new ReportCategory(4L, "arthur", "letmein", "Arthur Names", "arthur@habuma.com", false);
+		REPORT_CATEGORIES[0] = new ReportCategory(1L, "habuma", "Craig Walls", false);
+		REPORT_CATEGORIES[1] = new ReportCategory(2L, "mwalls", "Michael Walls", true);
+		REPORT_CATEGORIES[2] = new ReportCategory(3L, "chuck", "Chuck Wagon", false);
+		REPORT_CATEGORIES[3] = new ReportCategory(4L, "artnames", "Art Names", true);
+		REPORT_CATEGORIES[4] = new ReportCategory(5L, "newbee", "New Bee", true);
+		REPORT_CATEGORIES[5] = new ReportCategory(4L, "arthur", "Arthur Names", false);
 	}
 
 }

@@ -56,9 +56,7 @@ public class ReportRepositoryTest {
 		assertEquals(1332682500000L, thirteen.getCreatedOn().getTime());
 		assertEquals(4, thirteen.getReportCategory().getReportCategoryId().longValue());
 		assertEquals("artnames", thirteen.getReportCategory().getDescription());
-		assertEquals("password", thirteen.getReportCategory().getUnusedReportCategoryField1());
 		assertEquals("Art Names", thirteen.getReportCategory().getAbbreviation());
-		assertEquals("art@habuma.com", thirteen.getReportCategory().getUnusedReportCategoryField2());
 		assertTrue(thirteen.getReportCategory().isActive());
 	}
 

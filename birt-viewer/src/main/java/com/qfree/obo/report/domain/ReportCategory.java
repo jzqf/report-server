@@ -26,34 +26,20 @@ public class ReportCategory {
 	@Column(name = "description")
 	private String description;
 
-	@Column(name = "unused_report_category_field_1")
-	private String unusedReportCategoryField1;
-
 	@Column(name = "abbreviation")
 	private String abbreviation;
-
-	@Column(name = "unused_report_category_field_2")
-	private String unusedReportCategoryField2;
 
 	@Column(name = "active")
 	private boolean active;
 
-	@Column(name = "unused_report_category_field_3")
-	private String unusedReportCategoryField3;
-
 	@OneToMany(targetEntity = Report.class, fetch = FetchType.EAGER, mappedBy = "reportCategory")
 	private List<Report> reports;
 
-	public ReportCategory(Long reportCategoryId, String description, String unusedReportCategoryField1,
-			String abbreviation,
-			String unusedReportCategoryField2, boolean active) {
+	public ReportCategory(Long reportCategoryId, String description, String abbreviation, boolean active) {
 		this.reportCategoryId = reportCategoryId;
 		this.description = description;
-		this.unusedReportCategoryField1 = unusedReportCategoryField1;
 		this.abbreviation = abbreviation;
-		this.unusedReportCategoryField2 = unusedReportCategoryField2;
 		this.active = active;
-		this.unusedReportCategoryField3 = "Newbie";
 	}
 
 	public Long getReportCategoryId() {
@@ -64,24 +50,12 @@ public class ReportCategory {
 		return description;
 	}
 
-	public String getUnusedReportCategoryField1() {
-		return unusedReportCategoryField1;
-	}
-
 	public String getAbbreviation() {
 		return abbreviation;
 	}
 
-	public String getUnusedReportCategoryField2() {
-		return unusedReportCategoryField2;
-	}
-
 	public boolean isActive() {
 		return active;
-	}
-
-	public String getUnusedReportCategoryField3() {
-		return unusedReportCategoryField3;
 	}
 
 	public List<Report> getReports() {

@@ -1,7 +1,7 @@
-insert into report_category (description, unused_report_category_field_1, abbreviation, unused_report_category_field_2, active, unused_report_category_field_3) values ('habuma', 'password', 'Craig Walls', 'craig@habuma.com', false, 'Newbie');
-insert into report_category (description, unused_report_category_field_1, abbreviation, unused_report_category_field_2, active, unused_report_category_field_3) values ('mwalls', 'password', 'Michael Walls', 'mwalls@habuma.com', true, 'Newbie');
-insert into report_category (description, unused_report_category_field_1, abbreviation, unused_report_category_field_2, active, unused_report_category_field_3) values ('chuck', 'password', 'Chuck Wagon', 'chuck@habuma.com', false, 'Newbie');
-insert into report_category (description, unused_report_category_field_1, abbreviation, unused_report_category_field_2, active, unused_report_category_field_3) values ('artnames', 'password', 'Art Names', 'art@habuma.com', true, 'Newbie');
+insert into report_category (description, abbreviation, active) values ('habuma', 'Craig Walls', false);
+insert into report_category (description, abbreviation, active) values ('mwalls', 'Michael Walls', true);
+insert into report_category (description, abbreviation, active) values ('chuck', 'Chuck Wagon', false);
+insert into report_category (description, abbreviation, active) values ('artnames', 'Art Names', true);
 
 insert into report (report_category_id, name, createdOn) values (1, 'This is a test spittle message', '2012-06-09 22:00:00Z');
 insert into report (report_category_id, name, createdOn) values (1, 'This is another test spittle message', '2012-06-09 22:10:00Z');
