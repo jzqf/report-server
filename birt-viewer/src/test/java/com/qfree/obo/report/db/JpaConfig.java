@@ -42,8 +42,8 @@ public class JpaConfig {
 	public DataSource dataSource() {
 		EmbeddedDatabaseBuilder edb = new EmbeddedDatabaseBuilder();
 		edb.setType(EmbeddedDatabaseType.H2);
-		edb.addScript("classpath:db/schema.sql");
-		edb.addScript("classpath:db/test-data.sql");
+		edb.addScript("classpath:db/h2/schema.sql");
+		edb.addScript("classpath:db/h2/test-data.sql");
 		EmbeddedDatabase embeddedDatabase = edb.build();
 		return embeddedDatabase;
 	}

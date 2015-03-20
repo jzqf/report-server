@@ -20,8 +20,8 @@ public class SpringDataJpaConfig {
 	@Bean
 	public DataSource dataSource() {
 		return new EmbeddedDatabaseBuilder()
-				.addScript("classpath:db/schema.sql")
-				.addScript("classpath:db/test-data.sql")
+				.addScript("classpath:db/??????/schema.sql")
+				.addScript("classpath:db/??????/test-data.sql")
 				.build();
 	}
 
