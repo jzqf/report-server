@@ -1,17 +1,24 @@
-drop table if exists report;
-drop table if exists report_category;
+-- H2:
 
-create table report_category (
+-- This commands are not necessary because we create a new embedded datbase on
+-- each run.
+--DROP TABLE IF EXISTS reporting.report;
+--DROP TABLE IF EXISTS reporting.report_category;
+--DROP SCHEMA IF EXISTS reporting;
+
+CREATE SCHEMA reporting;
+
+CREATE TABLE reporting.report_category (
   report_category_id  identity,
   description         varchar(25)  not null,
   abbreviation        varchar(20)  not null,
   active              boolean      not null
 );
 
-create table report (
+CREATE TABLE reporting.report (
   report_id           integer      identity primary key,
   report_category_id  integer      not null,
   name                varchar(80)  not null,
   created_on          timestamp    not null,
-  foreign key (report_category_id) references report_category(report_category_id)
+  FOREIGN KEY (report_category_id) REFERENCES report_category(report_category_id)
 );

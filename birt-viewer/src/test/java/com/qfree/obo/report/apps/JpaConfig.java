@@ -113,6 +113,9 @@ public class JpaConfig {
 		emf.setPersistenceUnitName("reportServer");
 		emf.setJpaVendorAdapter(jpaVendorAdapter);
 		emf.setPackagesToScan("com.qfree.obo.report.domain");
+
+		//		emf.setPackagesToScan("com.qfree.obo.report.domain_generated");
+
 		emf.setJpaProperties(additionalProperties());
 		return emf;
 	}
@@ -122,8 +125,11 @@ public class JpaConfig {
 		properties.setProperty("hibernate.dialect", env.getProperty("hibernate.dialect"));
 		properties.setProperty("hibernate.show_sql", env.getProperty("hibernate.show_sql"));
 		properties.setProperty("hibernate.hbm2ddl.auto", env.getProperty("hibernate.hbm2ddl.auto"));
-
-		properties.setProperty("hibernate.hbm2ddl.import_files", "/db/test-data.sql");	// HARDWIRED!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+		/*
+		 * Hardwired settings.
+		 */
+		//		properties.setProperty("hibernate.default_schema", "reporting");
+		//		properties.setProperty("hibernate.hbm2ddl.import_files", "/db/test-data.sql");	// HARDWIRED!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 		return properties;
 	}

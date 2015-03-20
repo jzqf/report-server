@@ -12,7 +12,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 @Entity
-@Table(name = "report_category")
+@Table(name = "report_category", schema = "reporting")
 public class ReportCategory {
 
 	private ReportCategory() {
