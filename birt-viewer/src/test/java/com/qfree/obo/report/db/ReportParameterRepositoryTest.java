@@ -16,7 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.qfree.obo.report.domain.ReportParameter;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = JpaConfigTestEnv.class)
+@ContextConfiguration(classes = PersistenceConfigTestEnv.class)
 //@ContextConfiguration(classes = com.qfree.obo.report.apps.JpaConfig.class)
 public class ReportParameterRepositoryTest {
 

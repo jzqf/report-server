@@ -3,20 +3,16 @@ package com.qfree.obo.report.spring.config;
 //import javax.naming.Context;
 //import javax.naming.InitialContext;
 //import javax.naming.NamingException;
-import javax.sql.DataSource;
-
-import org.apache.commons.dbcp2.BasicDataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.ImportResource;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
 
-import com.qfree.obo.report.db.SpringDataJpaConfig;
+import com.qfree.obo.report.db.PersistenceConfig;
 
 //import com.borgsoftware.springmvc.spring.web.PropertyTest;
 
@@ -25,7 +21,7 @@ import com.qfree.obo.report.db.SpringDataJpaConfig;
  * container shared by all servlets and filters.
  */
 @Configuration
-@Import({ SpringDataJpaConfig.class })
+@Import({ PersistenceConfig.class })
 @ImportResource("classpath:spring/root-context.xml")
 //@ImportResource("/WEB-INF/spring/root-context.xml")
 // This is for a *single* properties file:
@@ -37,8 +33,6 @@ import com.qfree.obo.report.db.SpringDataJpaConfig;
 //})
 //@ComponentScan(basePackageClasses={com.qfree...PackageMarker.class, ...}
 public class RootConfig {
-
-	//TODO Remove all content and only include annotations. See page 60 of Spring in Action.
 
 	private static final Logger logger = LoggerFactory.getLogger(RootConfig.class);
 
@@ -110,70 +104,5 @@ public class RootConfig {
 	//	//        p.setLocations(resourceLocations);
 	//	//        return p;
 	//	//    }
-
-	/* This is a simple DataSource provided by Spring. Not suitable for 
-	 * production, but can be used for testing. Returns a new connection each
-	 * time a connection is requested.
-	 */
-	//	@Bean
-	//	public DataSource dataSource() {
-	//		DriverManagerDataSource dataSource = new DriverManagerDataSource();
-	//		dataSource.setDriverClassName(env.getProperty("db.jdbc.driverclass"));
-	//		dataSource.setUrl(env.getProperty("db.jdbc.url"));
-	//		dataSource.setUsername(env.getProperty("db.username"));
-	//		dataSource.setPassword(env.getProperty("db.password"));
-	//		return dataSource;
-	//	}
-
-	/*
-	 * Apache Commons DBCP 2.x pooled DataSource
-	 */
-	@Bean
-	public DataSource dataSource() {
-		//TODO Review all parameters for this class and update this setup as appropriate
-		BasicDataSource dataSource = new BasicDataSource();
-		dataSource.setDriverClassName(env.getProperty("db.jdbc.driverclass"));
-		dataSource.setUrl(env.getProperty("db.jdbc.url"));
-		dataSource.setUsername(env.getProperty("db.username"));
-		dataSource.setPassword(env.getProperty("db.password"));
-		//dataSource.setDefaultCatalog("ServerCommon");
-		dataSource.setInitialSize(0);
-		//dataSource.setMaxActive(this.dbConcurrentCallsMaxCalls + 8);  // This is for DBCB v1.4
-		dataSource.setMaxTotal(10);                                     // This is for DBCB v2.0 (API change)
-		//		dataSource.setMaxIdle(this.dbConcurrentCallsMaxCalls / 2 + 8);
-		dataSource.setMinIdle(0);
-		//dataSource.setRemoveAbandoned(true);		// Can help to reduce chance of memory leaks // This is for DBCB v1.4
-		dataSource.setRemoveAbandonedTimeout(300);	// this is the default (5 minutes)
-		return dataSource;
-	}
-
-	/* JNDI DataSource. 
-	 * 
-	 * This may be a Apache Commons DBCP 2.x pooled DataSource, but we don't 
-	 * really know or care here.
-	 *
-	 * The required JDBC driver must be present in the local Maven
-	 * repository as well as in the application server, e.g., the Tomcat 
-	 * $CATALINA_HOME/lib directory.  The DataSource object is created by the 
-	 * container, e.g., Tomcat.  Tomcat has, by default, the Apache Commons 
-	 * "dbcp" & "pool" libraries installed in 
-	 * $CATALINA_HOME/lib/tomcat-dbcp.jar.
-	 * 
-	 *	TODO See page 289 of Spring in Action for Spring-specific code!!!!!!!!!!!!!!!!!!!
-	 */
-	//	@Bean
-	//	public DataSource dataSource() {
-	//		DataSource dataSource = null;
-	//		//			JndiTemplate jndi = new JndiTemplate();
-	//		try {
-	//			//			dataSource = (DataSource) jndi.lookup("java:comp/env/jdbc/autopass");
-	//			Context initContext = new InitialContext();
-	//			Context envContext = (Context) initContext.lookup("java:comp/env");
-	//			dataSource = (DataSource) envContext.lookup("jdbc/autopass");
-	//		} catch (NamingException e) {
-	//			logger.error("NamingException for java:comp/env/jdbc/autopass", e);
-	//		}
-	//		return dataSource;
-	//	}
 
 }

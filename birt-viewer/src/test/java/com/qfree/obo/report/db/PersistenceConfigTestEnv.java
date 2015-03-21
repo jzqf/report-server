@@ -4,6 +4,8 @@ import javax.inject.Inject;
 import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -29,7 +31,10 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 //@PropertySources({
 //		@PropertySource("classpath:config.properties")
 //})
-public class JpaConfigTestEnv {
+public class PersistenceConfigTestEnv {
+
+	private static final Logger logger = LoggerFactory.getLogger(PersistenceConfigTestEnv.class);
+
 	/*
 	 * The injected "env" object here will contain key/value pairs for each 
 	 * property in the properties files specified above in the @PropertySource
