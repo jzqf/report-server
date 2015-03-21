@@ -25,14 +25,14 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @Configuration
 @EnableJpaRepositories(basePackages = "com.qfree.obo.report.db")
 @PropertySource("classpath:config.properties")
-//This is for *multiple* properties files (Spring 4+). The @PropertySource 
-//elements must be comma-separated:
+//This is for *multiple* properties files. The @PropertySource elements must be
+//comma-separated:
 //@PropertySources({
 //		@PropertySource("classpath:config.properties")
 //})
-public class JpaConfig {
+public class RootConfigDesktopApp {
 
-	private static final Logger logger = LoggerFactory.getLogger(JpaConfig.class);
+	private static final Logger logger = LoggerFactory.getLogger(RootConfigDesktopApp.class);
 
 	/*
 	 * The injected "env" object here will contain key/value pairs for each 
@@ -41,37 +41,6 @@ public class JpaConfig {
 	 */
 	@Autowired
 	private Environment env;
-
-	//	@Bean
-	//	public DataSource dataSource() {
-	//		EmbeddedDatabaseBuilder edb = new EmbeddedDatabaseBuilder();
-	//		edb.setType(EmbeddedDatabaseType.H2);
-	//		edb.addScript("classpath:db/??????/schema.sql");
-	//		edb.addScript("classpath:db/??????/test-data.sql");
-	//		EmbeddedDatabase embeddedDatabase = edb.build();
-	//		return embeddedDatabase;
-	//	}
-	//
-	//	@Bean
-	//	public JpaVendorAdapter jpaVendorAdapter() {
-	//		HibernateJpaVendorAdapter adapter = new HibernateJpaVendorAdapter();
-	//		adapter.setDatabase(Database.H2);
-	//		adapter.setShowSql(true);
-	//		adapter.setGenerateDdl(false);
-	//		adapter.setDatabasePlatform("org.hibernate.dialect.H2Dialect");
-	//		return adapter;
-	//	}
-	//
-	//	@Bean
-	//	public LocalContainerEntityManagerFactoryBean
-	//			entityManagerFactory(DataSource dataSource, JpaVendorAdapter jpaVendorAdapter) {
-	//		LocalContainerEntityManagerFactoryBean emf = new LocalContainerEntityManagerFactoryBean();
-	//		emf.setDataSource(dataSource);
-	//		emf.setPersistenceUnitName("reportServer");
-	//		emf.setJpaVendorAdapter(jpaVendorAdapter);
-	//		emf.setPackagesToScan("com.qfree.obo.report.domain");
-	//		return emf;
-	//	}
 
 	/*
 	 * Apache Commons DBCP 2.x pooled DataSource
@@ -130,7 +99,10 @@ public class JpaConfig {
 		 * Hardwired settings.
 		 */
 		//		properties.setProperty("hibernate.default_schema", "reporting");
-		//properties.setProperty("hibernate.hbm2ddl.import_files", "/db/postgresql/test-data.sql");	// HARDWIRED!!!!!!!!!!!!!!!!!!!!!!!
+		/* The "import_files" scripts are only executed if the schema is created, 
+		 * i.e., if hibernate.hbm2ddl.auto is set to "create" or "create-drop".
+		 */
+		//properties.setProperty("hibernate.hbm2ddl.import_files", "/db/postgresql/test-data.sql");
 
 		return properties;
 	}

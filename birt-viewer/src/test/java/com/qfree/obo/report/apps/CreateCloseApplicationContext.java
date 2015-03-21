@@ -10,7 +10,7 @@ public class CreateCloseApplicationContext {
 	 * "hibernate.hbm2ddl.auto" property.
 	 */
 	public static void main(String[] args) throws Exception {
-		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(JpaConfig.class);
+		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(RootConfigDesktopApp.class);
 		context.close();
 	}
 

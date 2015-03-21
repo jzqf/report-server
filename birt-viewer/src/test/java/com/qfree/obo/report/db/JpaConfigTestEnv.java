@@ -29,7 +29,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 //@PropertySources({
 //		@PropertySource("classpath:config.properties")
 //})
-public class JpaConfig {
+public class JpaConfigTestEnv {
 	/*
 	 * The injected "env" object here will contain key/value pairs for each 
 	 * property in the properties files specified above in the @PropertySource

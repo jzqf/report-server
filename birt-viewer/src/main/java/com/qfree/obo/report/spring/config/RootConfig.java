@@ -11,9 +11,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.ImportResource;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
+
+import com.qfree.obo.report.db.SpringDataJpaConfig;
 
 //import com.borgsoftware.springmvc.spring.web.PropertyTest;
 
@@ -22,6 +25,7 @@ import org.springframework.core.env.Environment;
  * container shared by all servlets and filters.
  */
 @Configuration
+@Import({ SpringDataJpaConfig.class })
 @ImportResource("classpath:spring/root-context.xml")
 //@ImportResource("/WEB-INF/spring/root-context.xml")
 // This is for a *single* properties file:
@@ -31,6 +35,7 @@ import org.springframework.core.env.Environment;
 //@PropertySources({
 //		@PropertySource("classpath:config.properties")
 //})
+//@ComponentScan(basePackageClasses={com.qfree...PackageMarker.class, ...}
 public class RootConfig {
 
 	//TODO Remove all content and only include annotations. See page 60 of Spring in Action.
@@ -106,19 +111,6 @@ public class RootConfig {
 	//	//        return p;
 	//	//    }
 
-	//	// Only used with ContractServiceJdbcRaw:
-	//	@Bean
-	//	public AppConfigParams appConfigParams() {
-	//		final AppConfigParams object = new AppConfigParams();
-	//		object.setJdbcDriverClass(env.getProperty("db.jdbc.driverclass"));
-	//		object.setJdbcUrl(env.getProperty("db.jdbc.url"));
-	//		object.setDbUsername(env.getProperty("db.username"));
-	//		object.setDbPassword(env.getProperty("db.password"));
-	//		object.setConcurrentCalls_permits(this.dbConcurrentCallsMaxCalls);
-	//		object.setConcurrentCalls_timeoutsecs(this.dbConcurrentCallsWaitSecs);
-	//		return object;
-	//	}
-
 	/* This is a simple DataSource provided by Spring. Not suitable for 
 	 * production, but can be used for testing. Returns a new connection each
 	 * time a connection is requested.
@@ -182,12 +174,6 @@ public class RootConfig {
 	//			logger.error("NamingException for java:comp/env/jdbc/autopass", e);
 	//		}
 	//		return dataSource;
-	//	}
-
-	//	@Bean
-	//	public JdbcTemplate jdbcTemplate() {
-	//		//		return new JdbcTemplate(this.ds);
-	//		return new JdbcTemplate(this.dataSource());
 	//	}
 
 }

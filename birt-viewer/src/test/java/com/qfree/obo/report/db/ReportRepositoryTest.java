@@ -19,7 +19,7 @@ import com.qfree.obo.report.domain.Report;
 import com.qfree.obo.report.domain.ReportCategory;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes=JpaConfig.class)
+@ContextConfiguration(classes=JpaConfigTestEnv.class)
 public class ReportRepositoryTest {
 	
 	@Autowired

@@ -17,7 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.qfree.obo.report.domain.ReportCategory;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = JpaConfig.class)
+@ContextConfiguration(classes = JpaConfigTestEnv.class)
 public class ReportCategoryRepositoryTest {
 
 	@Autowired
