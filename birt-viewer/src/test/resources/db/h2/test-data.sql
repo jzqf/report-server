@@ -3,6 +3,11 @@ insert into reporting.report_category (description, abbreviation, active) values
 insert into reporting.report_category (description, abbreviation, active) values ('Manual validation', 'MIR', false);
 insert into reporting.report_category (description, abbreviation, active) values ('Traffic', 'TRA', true);
 
+insert into reporting.report_parameter (description, abbreviation, active) values ('Accounting', 'ACCT', false);
+insert into reporting.report_parameter (description, abbreviation, active) values ('Q-Free internal', 'QFREE', true);
+insert into reporting.report_parameter (description, abbreviation, active) values ('Manual validation', 'MIR', true);
+insert into reporting.report_parameter (description, abbreviation, active) values ('Traffic', 'TRA', true);
+
 insert into reporting.report (report_category_id, name, created_on) values (1, 'Report name #01', '2012-06-09 22:00:00Z');
 insert into reporting.report (report_category_id, name, created_on) values (1, 'Report name #02', '2012-06-09 22:10:00Z');
 insert into reporting.report (report_category_id, name, created_on) values (1, 'Report name #03', '2012-07-04 23:30:00Z');

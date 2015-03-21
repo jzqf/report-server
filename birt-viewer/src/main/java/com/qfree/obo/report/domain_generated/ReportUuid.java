@@ -2,16 +2,18 @@ package com.qfree.obo.report.domain_generated;
 
 import java.io.Serializable;
 import java.sql.Timestamp;
+import java.util.UUID;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.validation.constraints.NotNull;
 
+import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.Type;
 
 /**
  * The persistent class for the report database table.
@@ -23,9 +25,12 @@ public class ReportUuid implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
-	@Column(name="report_id", unique=true, nullable=false)
-	private String reportId;
+	@NotNull
+	// type="pg-uuid" only works for postgresql
+	@Type(type = "pg-uuid")
+	@GenericGenerator(name = "uuid2", strategy = "uuid2")
+	@Column(name = "report_id", columnDefinition = "uuid", unique = true, nullable = false)
+	private UUID reportId;
 
 	@Column(name="created_on", nullable=false)
 	private Timestamp createdOn;
@@ -41,11 +46,11 @@ public class ReportUuid implements Serializable {
 	public ReportUuid() {
 	}
 
-	public String getReportId() {
+	public UUID getReportId() {
 		return this.reportId;
 	}
 
-	public void setReportId(String reportId) {
+	public void setReportId(UUID reportId) {
 		this.reportId = reportId;
 	}
 

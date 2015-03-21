@@ -124,28 +124,29 @@ public class JpaConfig {
 		Properties properties = new Properties();
 		properties.setProperty("hibernate.dialect", env.getProperty("hibernate.dialect"));
 		properties.setProperty("hibernate.show_sql", env.getProperty("hibernate.show_sql"));
-		properties.setProperty("hibernate.hbm2ddl.auto", env.getProperty("hibernate.hbm2ddl.auto"));
+		//TODO REMEMBER TO UNDO THIS IF I COMMENT IT OUT: !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+		//		properties.setProperty("hibernate.hbm2ddl.auto", env.getProperty("hibernate.hbm2ddl.auto"));
 		/*
 		 * Hardwired settings.
 		 */
 		//		properties.setProperty("hibernate.default_schema", "reporting");
-		//		properties.setProperty("hibernate.hbm2ddl.import_files", "/db/test-data.sql");	// HARDWIRED!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+		//properties.setProperty("hibernate.hbm2ddl.import_files", "/db/postgresql/test-data.sql");	// HARDWIRED!!!!!!!!!!!!!!!!!!!!!!!
 
 		return properties;
 	}
 
-  @Configuration
-  @EnableTransactionManagement
-  public static class TransactionConfig {
+	@Configuration
+	@EnableTransactionManagement
+	public static class TransactionConfig {
 
-    @Inject
-    private EntityManagerFactory emf;
+		@Inject
+		private EntityManagerFactory emf;
 
-    @Bean
-    public PlatformTransactionManager transactionManager() {
-      JpaTransactionManager transactionManager = new JpaTransactionManager();
-      transactionManager.setEntityManagerFactory(emf);
-      return transactionManager;
-    }    
-  }
+		@Bean
+		public PlatformTransactionManager transactionManager() {
+			JpaTransactionManager transactionManager = new JpaTransactionManager();
+			transactionManager.setEntityManagerFactory(emf);
+			return transactionManager;
+		}
+	}
 }

@@ -2,15 +2,17 @@ package com.qfree.obo.report.domain_generated;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.UUID;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.validation.constraints.NotNull;
 
+import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.Type;
 
 /**
  * The persistent class for the report_category database table.
@@ -22,9 +24,12 @@ public class ReportCategoryUuid implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
-	@Column(name="report_category_id", unique=true, nullable=false)
-	private String reportCategoryId;
+	@NotNull
+	// type="pg-uuid" only works for postgresql
+	@Type(type = "pg-uuid")
+	@GenericGenerator(name = "uuid2", strategy = "uuid2")
+	@Column(name = "report_category_id", columnDefinition = "uuid", unique = true, nullable = false)
+	private UUID reportCategoryId;
 
 	@Column(nullable=false, length=20)
 	private String abbreviation;
@@ -42,11 +47,11 @@ public class ReportCategoryUuid implements Serializable {
 	public ReportCategoryUuid() {
 	}
 
-	public String getReportCategoryId() {
+	public UUID getReportCategoryId() {
 		return this.reportCategoryId;
 	}
 
-	public void setReportCategoryId(String reportCategoryId) {
+	public void setReportCategoryId(UUID reportCategoryId) {
 		this.reportCategoryId = reportCategoryId;
 	}
 
