@@ -9,6 +9,8 @@ import java.util.UUID;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -18,7 +20,10 @@ import com.qfree.obo.report.domain.ReportCategory;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = PersistenceConfigTestEnv.class)
+//@ContextConfiguration(classes = com.qfree.obo.report.apps.RootConfigDesktopApp.class)
 public class ReportCategoryRepositoryTest {
+
+	private static final Logger logger = LoggerFactory.getLogger(ReportParameterRepositoryTest.class);
 
 	@Autowired
 	ReportCategoryRepository reportCategoryRepository;

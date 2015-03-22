@@ -30,9 +30,9 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 //@PropertySources({
 //		@PropertySource("classpath:config.properties")
 //})
-public class RootConfigDesktopApp {
+public class RootConfigDesktopAppTestEnv {
 
-	private static final Logger logger = LoggerFactory.getLogger(RootConfigDesktopApp.class);
+	private static final Logger logger = LoggerFactory.getLogger(RootConfigDesktopAppTestEnv.class);
 
 	/*
 	 * The injected "env" object here will contain key/value pairs for each 

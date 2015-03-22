@@ -5,12 +5,17 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -20,9 +25,12 @@ import com.qfree.obo.report.domain.Report;
 import com.qfree.obo.report.domain.ReportCategory;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes=PersistenceConfigTestEnv.class)
+@ContextConfiguration(classes = PersistenceConfigTestEnv.class)
+//@ContextConfiguration(classes = com.qfree.obo.report.apps.RootConfigDesktopApp.class)
 public class ReportRepositoryTest {
-	
+
+	private static final Logger logger = LoggerFactory.getLogger(ReportParameterRepositoryTest.class);
+
 	@Autowired
 	ReportRepository reportRepository;
 
@@ -55,7 +63,23 @@ public class ReportRepositoryTest {
 		Report thirteen = reportRepository.findOne(uuidOf13thRow);
 		assertEquals("75162a48-3031-4e46-a1b5-5fb09248e01e", thirteen.getReportId().toString());
 		assertEquals("Report name #13", thirteen.getName());
-		assertEquals(1332682500000L, thirteen.getCreatedOn().getTime());
+
+		//		DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
+		//		DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
+		DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+		dateFormat.setLenient(false);
+		Date date = null;
+		try {
+			date = dateFormat.parse("2012-03-25T13:35:00");
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
+		//		logger.info("date = {}", date);
+		//		logger.info("thirteen.getCreatedOn() = {}", thirteen.getCreatedOn());
+		//		logger.info("thirteen.getCreatedOn().getTime() = {}", thirteen.getCreatedOn().getTime());
+
+		assertEquals(date.getTime(), thirteen.getCreatedOn().getTime());
+		//		assertEquals(1332682500000L, thirteen.getCreatedOn().getTime());
 		assertEquals("72d7cb27-1770-4cc7-b301-44d39ccf1e76",
 				thirteen.getReportCategory().getReportCategoryId().toString());
 		assertEquals("Traffic", thirteen.getReportCategory().getDescription());

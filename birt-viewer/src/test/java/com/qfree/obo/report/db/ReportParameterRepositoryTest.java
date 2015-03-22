@@ -18,7 +18,7 @@ import com.qfree.obo.report.domain.ReportParameter;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = PersistenceConfigTestEnv.class)
-//@ContextConfiguration(classes = com.qfree.obo.report.apps.JpaConfig.class)
+//@ContextConfiguration(classes = com.qfree.obo.report.apps.RootConfigDesktopApp.class)
 public class ReportParameterRepositoryTest {
 
 	private static final Logger logger = LoggerFactory.getLogger(ReportParameterRepositoryTest.class);
