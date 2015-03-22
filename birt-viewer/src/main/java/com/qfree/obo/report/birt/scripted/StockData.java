@@ -1,7 +1,14 @@
-package jeffthegreat.stocks.model;
+package com.qfree.obo.report.birt.scripted;
 
 import java.util.Date;
 
+/**
+ * Data model class for demonstrating how to create BIRT a "scripted data source".
+ * Instances of this class are associated with rows that are returned by the 
+ * next() method of {@link StockScriptedDataSet}.
+ * 
+ * @author Jeffrey Zelt
+ */
 public class StockData {
 	private Date date;
 	private double open;

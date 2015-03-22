@@ -4,6 +4,8 @@ import javax.inject.Inject;
 import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -29,7 +31,10 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 //@PropertySources({
 //		@PropertySource("classpath:config.properties")
 //})
-public class JpaConfig {
+public class PersistenceConfigTestEnv {
+
+	private static final Logger logger = LoggerFactory.getLogger(PersistenceConfigTestEnv.class);
+
 	/*
 	 * The injected "env" object here will contain key/value pairs for each 
 	 * property in the properties files specified above in the @PropertySource
@@ -38,12 +43,19 @@ public class JpaConfig {
 	@Autowired
 	private Environment env;
 
+	//	@Bean
+	//	public org.hibernate.cfg.Configuration configuration() {
+	//		org.hibernate.cfg.Configuration configuration = new org.hibernate.cfg.Configuration();
+	//		configuration.registerTypeOverride(      );
+	//		return configuration;
+	//	}
+
 	@Bean
 	public DataSource dataSource() {
 		EmbeddedDatabaseBuilder edb = new EmbeddedDatabaseBuilder();
 		edb.setType(EmbeddedDatabaseType.H2);
-		edb.addScript("classpath:db/schema.sql");
-		edb.addScript("classpath:db/test-data.sql");
+		edb.addScript("classpath:db/h2/schema.sql");
+		edb.addScript("classpath:db/h2/test-data.sql");
 		EmbeddedDatabase embeddedDatabase = edb.build();
 		return embeddedDatabase;
 	}
@@ -74,6 +86,10 @@ public class JpaConfig {
 	//		properties.setProperty("hibernate.dialect", env.getProperty("hibernate.dialect"));
 	//		properties.setProperty("hibernate.show_sql", env.getProperty("hibernate.show_sql"));
 	//		properties.setProperty("hibernate.hbm2ddl.auto", env.getProperty("hibernate.hbm2ddl.auto"));
+	//	/*
+	//	 * Hardwired settings.
+	//	 */
+	//	properties.setProperty("hibernate.default_schema", "reporting");
 	//
 	//		return properties;
 	//	}

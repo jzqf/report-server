@@ -8,7 +8,7 @@ import com.qfree.obo.report.domain.ReportCategory;
  * Only query methods that are implemented in 
  * {@link ReportCategoryRepositoryImpl} should be declared here.
  * 
- * @author jeffreyz
+ * @author Jeffrey Zelt
  */
 public interface ReportCategoryRepositoryCustom {
 

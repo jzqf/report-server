@@ -1,6 +1,7 @@
 package com.qfree.obo.report.db;
 
 import java.util.List;
+import java.util.UUID;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
@@ -14,8 +15,8 @@ import com.qfree.obo.report.domain.Report;
  * 
  * @author Jeffrey Zelt
  */
-public interface ReportRepository extends JpaRepository<Report, Long>, ReportRepositoryCustom {
+public interface ReportRepository extends JpaRepository<Report, UUID>, ReportRepositoryCustom {
   
-	List<Report> findByReportCategoryReportCategoryId(long reportCategoryId);
+	List<Report> findByReportCategoryReportCategoryId(UUID reportCategoryId);
   
 }

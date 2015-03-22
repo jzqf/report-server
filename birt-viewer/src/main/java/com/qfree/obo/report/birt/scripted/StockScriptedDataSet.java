@@ -1,4 +1,4 @@
-package jeffthegreat.stocks.dao;
+package com.qfree.obo.report.birt.scripted;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -6,9 +6,14 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import jeffthegreat.stocks.model.StockData;
-
-public class StockDataDao {
+/**
+ * Example of how to create a BIRT "scripted data source". The next() method of
+ * this class returns {@link StockData} instances, each of which generates a
+ * row of the data set.
+ * 
+ * @author Jeffrey Zelt
+ */
+public class StockScriptedDataSet {
 
 	public List<StockData> getStockValues(String company) {
 		// Ignore the company and always return the data
@@ -47,7 +52,7 @@ public class StockDataDao {
 	 * is invoked. It is a mandatory method.
 	 */
 	public void open(Object appContext, Map<String, Object> dataSetParamValues) {
-		List<StockData> stockDataList = new StockDataDao().getStockValues("Not Used");
+		List<StockData> stockDataList = new StockScriptedDataSet().getStockValues("Not Used");
 		this.iterator = stockDataList.iterator();
 	}
 
