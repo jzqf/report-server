@@ -10,7 +10,7 @@ import com.qfree.obo.report.domain.Report;
  * Only query methods that are implemented in 
  * {@link ReportRepositoryImpl} should be declared here.
  * 
- * @author jeffreyz
+ * @author Jeffrey Zelt
  */
 public interface ReportRepositoryCustom {
 

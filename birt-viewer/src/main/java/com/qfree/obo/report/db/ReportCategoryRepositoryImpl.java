@@ -15,7 +15,7 @@ import com.qfree.obo.report.domain.ReportCategory;
  * language. Query methods created using Spring Data's domain specific language
  * are declared in {@link ReportCategoryRepository}.
  * 
- * @author jeffreyz
+ * @author Jeffrey Zelt
  */
 public class ReportCategoryRepositoryImpl implements ReportCategoryRepositoryCustom {
 

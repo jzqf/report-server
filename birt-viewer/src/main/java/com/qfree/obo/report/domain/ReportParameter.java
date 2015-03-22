@@ -12,20 +12,19 @@ import javax.validation.constraints.NotNull;
 
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Type;
+import org.hibernate.annotations.TypeDef;
 
-/**
- * The persistent class for the report_parameter database table.
- * 
- */
 @Entity
 @Table(name = "report_parameter", schema = "reporting")
+@TypeDef(name = "uuid-custom", defaultForType = UUID.class, typeClass = UUIDCustomType.class)
 public class ReportParameter implements Serializable {
+
 	private static final long serialVersionUID = 1L;
 
 	@Id
 	@NotNull
-	// type="pg-uuid" only works for postgresql
-	@Type(type = "pg-uuid")
+	@Type(type = "uuid-custom")
+	//	@Type(type = "pg-uuid")
 	@GeneratedValue(generator = "uuid2")
 	@GenericGenerator(name = "uuid2", strategy = "uuid2")
 	@Column(name = "report_parameter_id", columnDefinition = "uuid", unique = true, nullable = false)
@@ -47,22 +46,28 @@ public class ReportParameter implements Serializable {
 	public ReportParameter() {
 	}
 
-	public ReportParameter(UUID reportParameterId, String abbreviation, String description, Boolean active) {
-		//super();
-		//		if (reportParameterId == null) {
-		//			reportParameterId = java.util.UUID.randomUUID();
-		//		}
-		this.reportParameterId = reportParameterId;
+	public ReportParameter(String abbreviation, String description, Boolean active) {
 		this.abbreviation = abbreviation;
 		this.description = description;
 		this.active = active;
 	}
 
-	public UUID getreportParameterId() {
+	//	public ReportParameter(UUID reportParameterId, String abbreviation, String description, Boolean active) {
+	//		//super();
+	//		//		if (reportParameterId == null) {
+	//		//			reportParameterId = java.util.UUID.randomUUID();
+	//		//		}
+	//		this.reportParameterId = reportParameterId;
+	//		this.abbreviation = abbreviation;
+	//		this.description = description;
+	//		this.active = active;
+	//	}
+
+	public UUID getReportParameterId() {
 		return this.reportParameterId;
 	}
 
-	public void setreportParameterId(UUID reportParameterId) {
+	public void setReportParameterId(UUID reportParameterId) {
 		this.reportParameterId = reportParameterId;
 	}
 

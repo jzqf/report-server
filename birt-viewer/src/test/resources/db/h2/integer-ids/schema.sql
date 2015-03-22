@@ -1,7 +1,7 @@
 -- H2:
 
--- These commands are not necessary because we create a new embedded datbase on
--- each run.
+-- These commands are not necessary for an embedded database that is used for
+-- testing because we create a new datbase on each run.
 --DROP TABLE IF EXISTS reporting.report;
 --DROP TABLE IF EXISTS reporting.report_category;
 --DROP SCHEMA IF EXISTS reporting;

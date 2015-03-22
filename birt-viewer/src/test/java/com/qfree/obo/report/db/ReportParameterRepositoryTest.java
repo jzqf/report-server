@@ -3,6 +3,7 @@ package com.qfree.obo.report.db;
 import static org.junit.Assert.assertEquals;
 
 import java.util.List;
+import java.util.UUID;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -46,18 +47,27 @@ public class ReportParameterRepositoryTest {
 	@Transactional
 	public void save_newReportParameter() {
 
-		logger.info("reportParameterRepository = {}", reportParameterRepository);
-
 		assertEquals(4, reportParameterRepository.count());
-		ReportParameter reportParameter = new ReportParameter(null, "ParamAbbrev", "ParamDescription", true);
-		logger.info("reportParameter = {}", reportParameter);
+
+		ReportParameter reportParameter = new ReportParameter("ParamAbbrev", "ParamDescription", true);
+		//		logger.info("reportParameter = {}", reportParameter);
 
 		ReportParameter saved = reportParameterRepository.save(reportParameter);
-		logger.info("saved = {}", saved);
+		//		logger.info("saved = {}", saved);
+		//		logger.info("saved.getreportParameterId() = {}", saved.getReportParameterId());
+		//		logger.info("After save: reportParameter.getReportParameterId() = {}", reportParameter.getReportParameterId());
 
 		assertEquals(5, reportParameterRepository.count());
-		//		assertReportParameter(4, saved);
-		//		assertReportParameter(4, reportParameterRepository.findOne(5L));
+
+		UUID uuidFromSavedEntity = saved.getReportParameterId();
+		ReportParameter foundReportParameter = reportParameterRepository.findOne(uuidFromSavedEntity);
+
+		/*
+		 * TODO Replace this code with a custom "assertReportParameter(...)" method.
+		 */
+		assertEquals("ParamAbbrev", foundReportParameter.getAbbreviation());
+		assertEquals("ParamDescription", foundReportParameter.getDescription());
+		assertEquals(true, foundReportParameter.getActive());
 	}
 
 }
