@@ -12,11 +12,11 @@ import org.hibernate.type.descriptor.sql.VarcharTypeDescriptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class UUIDCustomType extends AbstractSingleColumnStandardBasicType {
+public class UuidCustomType extends AbstractSingleColumnStandardBasicType {
 
 	private static final long serialVersionUID = 1L;
 
-	private static final Logger logger = LoggerFactory.getLogger(UUIDCustomType.class);
+	private static final Logger logger = LoggerFactory.getLogger(UuidCustomType.class);
 
 	private static final SqlTypeDescriptor SQL_DESCRIPTOR;
 	private static final JavaTypeDescriptor TYPE_DESCRIPTOR;
@@ -25,15 +25,29 @@ public class UUIDCustomType extends AbstractSingleColumnStandardBasicType {
 
 		//Properties properties = new Properties();
 		boolean runningTests = true;
-		try (InputStream in = UUIDCustomType.class.getResourceAsStream("/test-env.properties")) {
+		try (InputStream in = UuidCustomType.class.getResourceAsStream("/test-env.properties")) {
+			/*
+			 * "in" will be null if the file "test-env.properties" is not found 
+			 * at the root of the classpath. This file is located in this project
+			 * here:
+			 *     /src/test/resources/test-env.properties
+			 * It will be placed on the classpath if we run a class from Eclipse
+			 * that is stored in the src/test/java/ tree.  Testing shows that 
+			 * this covers both cases:
+			 * 
+			 *     Run As > JUnit Test         (for a JUnit test class)
+			 *     Run As > Java Application   (for a Java class with a "main" method)
+			 */
 			runningTests = (in == null) ? false : true;
 		} catch (IOException e) {
 			runningTests = false;
 		}
+
 		//runningTests = false;	// to *force* @Type(type = "pg-uuid")	
+
 		logger.info("runningTests = {}", runningTests);
 		if (runningTests) {
-			SQL_DESCRIPTOR = VarcharTypeDescriptor.INSTANCE;
+			SQL_DESCRIPTOR = VarcharTypeDescriptor.INSTANCE;	// for H2 database
 		} else {
 			SQL_DESCRIPTOR = PostgresUUIDType.PostgresUUIDSqlTypeDescriptor.INSTANCE;
 		}
@@ -51,7 +65,7 @@ public class UUIDCustomType extends AbstractSingleColumnStandardBasicType {
 		TYPE_DESCRIPTOR = UUIDTypeDescriptor.INSTANCE;
 	}
 
-	public UUIDCustomType() {
+	public UuidCustomType() {
 		super(SQL_DESCRIPTOR, TYPE_DESCRIPTOR);
 	}
 

@@ -16,7 +16,7 @@ import org.hibernate.annotations.TypeDef;
 
 @Entity
 @Table(name = "report_parameter", schema = "reporting")
-@TypeDef(name = "uuid-custom", defaultForType = UUID.class, typeClass = UUIDCustomType.class)
+@TypeDef(name = "uuid-custom", defaultForType = UUID.class, typeClass = UuidCustomType.class)
 public class ReportParameter implements Serializable {
 
 	private static final long serialVersionUID = 1L;
