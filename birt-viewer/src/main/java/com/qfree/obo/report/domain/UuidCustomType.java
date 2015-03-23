@@ -2,6 +2,7 @@ package com.qfree.obo.report.domain;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Properties;
 
 import org.hibernate.type.AbstractSingleColumnStandardBasicType;
 import org.hibernate.type.PostgresUUIDType;
@@ -23,9 +24,10 @@ public class UuidCustomType extends AbstractSingleColumnStandardBasicType {
 
 	static {
 
-		//Properties properties = new Properties();
-		boolean runningTests = true;
-		try (InputStream in = UuidCustomType.class.getResourceAsStream("/test-env.properties")) {
+		Properties properties = new Properties();
+		String dialect = null;
+		//		boolean runningTests = true;
+		try (InputStream in = UuidCustomType.class.getResourceAsStream("/config.properties")) {
 			/*
 			 * "in" will be null if the file "test-env.properties" is not found 
 			 * at the root of the classpath. This file is located in this project
@@ -38,29 +40,38 @@ public class UuidCustomType extends AbstractSingleColumnStandardBasicType {
 			 *     Run As > JUnit Test         (for a JUnit test class)
 			 *     Run As > Java Application   (for a Java class with a "main" method)
 			 */
-			runningTests = (in == null) ? false : true;
+			//			runningTests = (in == null) ? false : true;
+			if (in != null) {
+				properties.load(in);
+				dialect = properties.getProperty("hibernate.dialect");
+			}
 		} catch (IOException e) {
-			runningTests = false;
+			logger.error("An IOException was thrown loading config.properties. Rethrowing...", e);
+			try {
+				throw e;
+			} catch (IOException e1) {
+				e1.printStackTrace();
+			}
+			//			runningTests = false;
 		}
 
 		//runningTests = false;	// to *force* @Type(type = "pg-uuid")	
 
-		logger.info("runningTests = {}", runningTests);
-		if (runningTests) {
-			SQL_DESCRIPTOR = VarcharTypeDescriptor.INSTANCE;	// for H2 database
-		} else {
-			SQL_DESCRIPTOR = PostgresUUIDType.PostgresUUIDSqlTypeDescriptor.INSTANCE;
-		}
-
-		//		String dialect = "org.hibernate.dialect.H2Dialect";
-		//		String dialect = "org.hibernate.dialect.PostgreSQLDialect";
-		//		if (dialect.equals("org.hibernate.dialect.PostgreSQLDialect")) {
-		//			SQL_DESCRIPTOR = PostgresUUIDType.PostgresUUIDSqlTypeDescriptor.INSTANCE;
-		//		} else if (dialect.equals("org.hibernate.dialect.H2Dialect")) {
-		//			SQL_DESCRIPTOR = VarcharTypeDescriptor.INSTANCE;
+		//		logger.info("runningTests = {}", runningTests);
+		//		if (runningTests) {
+		//			SQL_DESCRIPTOR = VarcharTypeDescriptor.INSTANCE;	// for H2 database
 		//		} else {
-		//			throw new UnsupportedOperationException("Unsupported database!");
+		//			SQL_DESCRIPTOR = PostgresUUIDType.PostgresUUIDSqlTypeDescriptor.INSTANCE;
 		//		}
+
+		logger.info("dialect = {}", dialect);
+		if (dialect != null && dialect.equals("org.hibernate.dialect.PostgreSQLDialect")) {
+			SQL_DESCRIPTOR = PostgresUUIDType.PostgresUUIDSqlTypeDescriptor.INSTANCE;
+		} else if (dialect.equals("org.hibernate.dialect.H2Dialect")) {
+			SQL_DESCRIPTOR = VarcharTypeDescriptor.INSTANCE;
+		} else {
+			throw new UnsupportedOperationException("Unsupported database: " + dialect);
+		}
 
 		TYPE_DESCRIPTOR = UUIDTypeDescriptor.INSTANCE;
 	}

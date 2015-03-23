@@ -36,11 +36,18 @@ public class Report implements Serializable {
 	//	@Type(type = "pg-uuid")
 	@GeneratedValue(generator = "uuid2")
 	@GenericGenerator(name = "uuid2", strategy = "uuid2")
-	@Column(name = "report_id", unique = true, nullable = false, columnDefinition = "uuid DEFAULT uuid_generate_v4()")
+	@Column(name = "report_id", unique = true, nullable = false,
+			columnDefinition = "uuid DEFAULT uuid_generate_v4()")
 	private UUID reportId;
 
 	@ManyToOne
-	@JoinColumn(name = "report_category_id", nullable = false)
+	/*
+	 * If columnDefinition="uuid" is ommitted here and the database schema is 
+	 * created by Hibernate (via hibernate.hbm2ddl.auto="create"), then the 
+	 * PostgreSQL column definition includes "DEFAULT uuid_generate_v4()", which
+	 * is not what is wanted.
+	 */
+	@JoinColumn(name = "report_category_id", nullable = false, columnDefinition = "uuid")
 	private ReportCategory reportCategory;
 
 	@Column(name = "name", nullable = false, length = 80)

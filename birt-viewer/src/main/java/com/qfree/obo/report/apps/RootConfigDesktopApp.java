@@ -81,11 +81,8 @@ public class RootConfigDesktopApp {
 		emf.setDataSource(dataSource);
 		emf.setPersistenceUnitName("reportServer");
 		emf.setJpaVendorAdapter(jpaVendorAdapter);
-		emf.setPackagesToScan("com.qfree.obo.report.domain");
-
-		//		emf.setPackagesToScan("com.qfree.obo.report.domain_generated");
-
 		emf.setJpaProperties(additionalProperties());
+		emf.setPackagesToScan("com.qfree.obo.report.domain");
 		return emf;
 	}
 
