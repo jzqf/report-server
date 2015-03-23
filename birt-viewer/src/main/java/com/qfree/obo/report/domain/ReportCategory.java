@@ -33,16 +33,17 @@ public class ReportCategory implements Serializable {
 	//	@Type(type = "pg-uuid")
 	@GeneratedValue(generator = "uuid2")
 	@GenericGenerator(name = "uuid2", strategy = "uuid2")
-	@Column(name = "report_category_id", columnDefinition = "uuid", unique = true, nullable = false)
+	@Column(name = "report_category_id", unique = true, nullable = false,
+			columnDefinition = "uuid DEFAULT uuid_generate_v4()")
 	private UUID reportCategoryId;
 
-	@Column(name = "description")
-	private String description;
-
-	@Column(name = "abbreviation")
+	@Column(name = "abbreviation", nullable = false, length = 32)
 	private String abbreviation;
 
-	@Column(name = "active")
+	@Column(name = "description", nullable = false, length = 32)
+	private String description;
+
+	@Column(name = "active", nullable = false)
 	private boolean active;
 
 	@OneToMany(targetEntity = Report.class, fetch = FetchType.EAGER, mappedBy = "reportCategory")
@@ -82,5 +83,22 @@ public class ReportCategory implements Serializable {
 
 	public List<Report> getReports() {
 		return reports;
+	}
+
+	@Override
+	public String toString() {
+		StringBuilder builder = new StringBuilder();
+		builder.append("ReportCategory [reportCategoryId=");
+		builder.append(reportCategoryId);
+		builder.append(", abbreviation=");
+		builder.append(abbreviation);
+		builder.append(", description=");
+		builder.append(description);
+		builder.append(", active=");
+		builder.append(active);
+		//		builder.append(", reports=");
+		//		builder.append(reports);
+		builder.append("]");
+		return builder.toString();
 	}
 }

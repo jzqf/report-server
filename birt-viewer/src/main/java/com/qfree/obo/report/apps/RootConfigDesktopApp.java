@@ -90,21 +90,18 @@ public class RootConfigDesktopApp {
 	}
 
 	Properties additionalProperties() {
-		logger.info("env.getProperty(\"hibernate.dialect\") = {}", env.getProperty("hibernate.dialect"));
-		logger.info("env.getProperty(\"hibernate.show_sql\") = {}", env.getProperty("hibernate.show_sql"));
 		Properties properties = new Properties();
 		properties.setProperty("hibernate.dialect", env.getProperty("hibernate.dialect"));
 		properties.setProperty("hibernate.show_sql", env.getProperty("hibernate.show_sql"));
-		//TODO REMEMBER TO UNDO THIS IF I COMMENT IT OUT: !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-		//		properties.setProperty("hibernate.hbm2ddl.auto", env.getProperty("hibernate.hbm2ddl.auto"));
-		/*
-		 * Hardwired settings.
-		 */
-		//		properties.setProperty("hibernate.default_schema", "reporting");
-		/* The "import_files" scripts are only executed if the schema is created, 
-		 * i.e., if hibernate.hbm2ddl.auto is set to "create" or "create-drop".
-		 */
-		//properties.setProperty("hibernate.hbm2ddl.import_files", "/db/postgresql/test-data.sql");
+		properties.setProperty("hibernate.hbm2ddl.auto", env.getProperty("hibernate.hbm2ddl.auto"));
+		String import_files = env.getProperty("hibernate.hbm2ddl.import_files");
+		if (import_files != null && !import_files.isEmpty()) {
+			/* The "import_files" scripts are only executed if the schema is created, 
+			 * i.e., if hibernate.hbm2ddl.auto is set to "create" or "create-drop".
+			 */
+			properties.setProperty("hibernate.hbm2ddl.import_files", import_files);
+		}
+		//properties.setProperty("hibernate.default_schema", "reporting");
 
 		return properties;
 	}

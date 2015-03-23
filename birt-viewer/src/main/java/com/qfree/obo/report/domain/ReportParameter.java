@@ -27,21 +27,21 @@ public class ReportParameter implements Serializable {
 	//	@Type(type = "pg-uuid")
 	@GeneratedValue(generator = "uuid2")
 	@GenericGenerator(name = "uuid2", strategy = "uuid2")
-	@Column(name = "report_parameter_id", columnDefinition = "uuid", unique = true, nullable = false)
+	@Column(name = "report_parameter_id", unique = true, nullable = false,
+			columnDefinition = "uuid DEFAULT uuid_generate_v4()")
 	private UUID reportParameterId;
 
-	@Column(nullable=false, length=20)
+	@Column(name = "abbreviation", nullable = false, length = 32)
 	private String abbreviation;
 
-	@Column(nullable=false)
-	private Boolean active;
-
-	@Column(nullable=false, length=25)
+	@Column(name = "description", nullable = false, length = 32)
 	private String description;
 
-	//	//bi-directional many-to-one association to Report
-	//	@OneToMany(mappedBy="reportCategory")
-	//	private List<ReportUuid> reports;
+	@Column(name = "active", nullable = false)
+	private Boolean active;
+
+	//	@OneToMany(targetEntity = Report.class, fetch = FetchType.EAGER, mappedBy = "reportCategory")
+	//	private List<Report> reports;
 
 	public ReportParameter() {
 	}
@@ -102,13 +102,14 @@ public class ReportParameter implements Serializable {
 		builder.append(reportParameterId);
 		builder.append(", abbreviation=");
 		builder.append(abbreviation);
-		builder.append(", active=");
-		builder.append(active);
 		builder.append(", description=");
 		builder.append(description);
+		builder.append(", active=");
+		builder.append(active);
 		builder.append("]");
 		return builder.toString();
 	}
+
 
 	//	public List<ReportUuid> getReports() {
 	//		return this.reports;

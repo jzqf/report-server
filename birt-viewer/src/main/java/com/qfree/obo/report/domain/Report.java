@@ -16,6 +16,11 @@ import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;
 
+/**
+ * The persistent class for the '"report" database table.
+ * 
+ * @author Jeffrey Zelt
+ */
 @Entity
 @Table(name = "report", schema = "reporting")
 @TypeDef(name = "uuid-custom", defaultForType = UUID.class, typeClass = UuidCustomType.class)
@@ -31,17 +36,17 @@ public class Report implements Serializable {
 	//	@Type(type = "pg-uuid")
 	@GeneratedValue(generator = "uuid2")
 	@GenericGenerator(name = "uuid2", strategy = "uuid2")
-	@Column(name = "report_id", columnDefinition = "uuid", unique = true, nullable = false)
+	@Column(name = "report_id", unique = true, nullable = false, columnDefinition = "uuid DEFAULT uuid_generate_v4()")
 	private UUID reportId;
 
 	@ManyToOne
-	@JoinColumn(name = "report_category_id")
+	@JoinColumn(name = "report_category_id", nullable = false)
 	private ReportCategory reportCategory;
 
-	@Column(name = "name")
+	@Column(name = "name", nullable = false, length = 80)
 	private String name;
 
-	@Column(name = "created_on")
+	@Column(name = "created_on", nullable = false)
 	private Date createdOn;
 
 	private Report() {

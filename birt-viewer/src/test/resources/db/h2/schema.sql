@@ -10,8 +10,8 @@ CREATE SCHEMA reporting;
 
 CREATE TABLE reporting.report_category (
   report_category_id  uuid         NOT NULL DEFAULT RANDOM_UUID(),
-  description         varchar(25)  NOT NULL,
-  abbreviation        varchar(20)  NOT NULL,
+  description         varchar(32)  NOT NULL,
+  abbreviation        varchar(32)  NOT NULL,
   active              boolean      NOT NULL,
   PRIMARY KEY (report_category_id)
 );
@@ -27,8 +27,8 @@ CREATE TABLE reporting.report (
 
 CREATE TABLE reporting.report_parameter (
   report_parameter_id  uuid         NOT NULL DEFAULT RANDOM_UUID(),
-  description          varchar(25)  NOT NULL,
-  abbreviation         varchar(20)  NOT NULL,
+  description          varchar(32)  NOT NULL,
+  abbreviation         varchar(32)  NOT NULL,
   active               boolean      NOT NULL,
   PRIMARY KEY (report_parameter_id)
 );

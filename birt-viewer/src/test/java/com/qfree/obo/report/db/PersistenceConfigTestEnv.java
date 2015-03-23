@@ -43,13 +43,6 @@ public class PersistenceConfigTestEnv {
 	@Autowired
 	private Environment env;
 
-	//	@Bean
-	//	public org.hibernate.cfg.Configuration configuration() {
-	//		org.hibernate.cfg.Configuration configuration = new org.hibernate.cfg.Configuration();
-	//		configuration.registerTypeOverride(      );
-	//		return configuration;
-	//	}
-
 	@Bean
 	public DataSource dataSource() {
 		EmbeddedDatabaseBuilder edb = new EmbeddedDatabaseBuilder();
