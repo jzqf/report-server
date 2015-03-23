@@ -13,6 +13,21 @@ import org.hibernate.type.descriptor.sql.VarcharTypeDescriptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Defines a custom UUID column type "uuid-custom" that can be used with either
+ * PostgreSQL or H2 databases.
+ * <p/>
+ * To this this type, annotate the entity class itself with:
+ * <p/>
+ * <code>@TypeDef(name="uuid-custom", defaultForType=UUID.class, typeClass=UuidCustomType.class)</code>,
+ * <p/>
+ * and annotate a UUID attribute/column in the entity class with:
+ * <p/>
+ * <code>@Type(type="uuid-custom")</code>
+ * 
+ * @author Jeffrey Zelt
+ *
+ */
 public class UuidCustomType extends AbstractSingleColumnStandardBasicType {
 
 	private static final long serialVersionUID = 1L;
