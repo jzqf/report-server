@@ -17,6 +17,12 @@ import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;
 
+/**
+ * The persistent class for the "report_category" database table.
+ * 
+ * @author Jeffrey Zelt
+ * 
+ */
 @Entity
 @Table(name = "report_category", schema = "reporting")
 @TypeDef(name = "uuid-custom", defaultForType = UUID.class, typeClass = UuidCustomType.class)

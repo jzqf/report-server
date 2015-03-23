@@ -17,9 +17,10 @@ import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;
 
 /**
- * The persistent class for the '"report" database table.
+ * The persistent class for the "report" database table.
  * 
  * @author Jeffrey Zelt
+ * 
  */
 @Entity
 @Table(name = "report", schema = "reporting")
