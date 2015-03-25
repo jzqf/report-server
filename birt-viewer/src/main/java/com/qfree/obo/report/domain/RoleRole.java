@@ -6,6 +6,7 @@ import java.util.UUID;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.ForeignKey;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
@@ -48,7 +49,9 @@ public class RoleRole implements Serializable {
 	 * PostgreSQL column definition includes "DEFAULT uuid_generate_v4()", which
 	 * is not what is wanted.
 	 */
-	@JoinColumn(name = "parent_role_id", nullable = false, columnDefinition = "uuid")
+	@JoinColumn(name = "parent_role_id", nullable = false,
+			foreignKey = @ForeignKey(name = "fk_rolerole_parentrole"),
+			columnDefinition = "uuid")
 	private Role parentRole;
 
 	@ManyToOne
@@ -58,7 +61,9 @@ public class RoleRole implements Serializable {
 	 * PostgreSQL column definition includes "DEFAULT uuid_generate_v4()", which
 	 * is not what is wanted.
 	 */
-	@JoinColumn(name = "child_role_id", nullable = false, columnDefinition = "uuid")
+	@JoinColumn(name = "child_role_id", nullable = false,
+			foreignKey = @ForeignKey(name = "fk_rolerole_childrole"),
+			columnDefinition = "uuid")
 	private Role childRole;
 
 	@Column(name = "created_on", nullable = false)

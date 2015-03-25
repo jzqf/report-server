@@ -52,7 +52,27 @@ public class ReportCategory implements Serializable {
 	@Column(name = "active", nullable = false)
 	private boolean active;
 
-	@OneToMany(targetEntity = Report.class, fetch = FetchType.EAGER, mappedBy = "reportCategory")
+	/*
+	 * "CascadeType.REMOVE" is required here if we delete a [report_category] 
+	 * row that is referenced from one or more [report] rows. Without this 
+	 * setting, an exception is thrown:
+	 * 
+	 *     ERROR: update or delete on table "report_category" violates foreign 
+	 *     key constraint "fk_report_reportcategory" on table "report"
+	 * 
+	 * However, it is safer here to *not* specify "CascadeType.REMOVE", in which
+	 * case it will be necessary to first *explicitly* delete the [report] 
+	 * row(s) before the [report_category] row is deleted, if this functionality
+	 * is ever needed (I doubt it).
+	 * 
+	 * Specifying "orphanRemoval=true" a similar, but not identical, effect, but
+	 * Hibernate currently has a problem with this feature so it sahould be 
+	 * avoided. See this bug  https://hibernate.atlassian.net/browse/HHH-6709
+	 */
+	@OneToMany(targetEntity = Report.class, fetch = FetchType.EAGER, mappedBy = "reportCategory"
+	//			, cascade = CascadeType.REMOVE
+	//			, orphanRemoval = true
+			)
 	private List<Report> reports;
 
 	private ReportCategory() {

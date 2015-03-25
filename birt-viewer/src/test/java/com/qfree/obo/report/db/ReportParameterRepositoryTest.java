@@ -36,10 +36,9 @@ public class ReportParameterRepositoryTest {
 	public void findAll() {
 		List<ReportParameter> reportParameters = reportParameterRepository.findAll();
 		assertEquals(4, reportParameters.size());
-
-		for (ReportParameter reportParameter : reportParameters) {
-			logger.info("reportParameter = {}", reportParameter);
-		}
+		//		for (ReportParameter reportParameter : reportParameters) {
+		//			logger.info("reportParameter = {}", reportParameter);
+		//		}
 	}
 
 	@Test

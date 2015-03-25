@@ -6,6 +6,7 @@ import java.util.UUID;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.ForeignKey;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
@@ -48,7 +49,9 @@ public class Report implements Serializable {
 	 * PostgreSQL column definition includes "DEFAULT uuid_generate_v4()", which
 	 * is not what is wanted.
 	 */
-	@JoinColumn(name = "report_category_id", nullable = false, columnDefinition = "uuid")
+	@JoinColumn(name = "report_category_id", nullable = false,
+			foreignKey = @ForeignKey(name = "fk_report_reportcategory"),
+			columnDefinition = "uuid")
 	private ReportCategory reportCategory;
 
 	@Column(name = "name", nullable = false, length = 80)
@@ -106,6 +109,10 @@ public class Report implements Serializable {
 
 	public ReportCategory getReportCategory() {
 		return this.reportCategory;
+	}
+
+	public void setReportCategory(ReportCategory reportCategory) {
+		this.reportCategory = reportCategory;
 	}
 
 	public String getRptdesign() {

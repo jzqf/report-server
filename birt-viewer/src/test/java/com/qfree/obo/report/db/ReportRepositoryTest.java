@@ -33,6 +33,9 @@ public class ReportRepositoryTest {
 	@Autowired
 	ReportRepository reportRepository;
 
+	@Autowired
+	ReportCategoryRepository reportCategoryRepository;
+
 	@Test
 	@Transactional
 	public void count() {
@@ -132,11 +135,14 @@ public class ReportRepositoryTest {
 	@Transactional
 	public void delete() {
 		assertEquals(15, reportRepository.count());
+		assertEquals(4, reportCategoryRepository.count());
 		UUID uuidOf13thRow = UUID.fromString("75162a48-3031-4e46-a1b5-5fb09248e01e");
 		assertNotNull(reportRepository.findOne(uuidOf13thRow));
+		//		ReportCategory report13sCategory = reportRepository.findOne(uuidOf13thRow).getReportCategory();
 		reportRepository.delete(uuidOf13thRow);
 		assertEquals(14, reportRepository.count());
 		assertNull(reportRepository.findOne(uuidOf13thRow));
+		assertEquals(4, reportCategoryRepository.count());
 	}
 	
 	private void assertRecent(List<Report> recent, int count) {
