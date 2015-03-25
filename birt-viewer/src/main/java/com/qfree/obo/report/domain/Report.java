@@ -43,7 +43,7 @@ public class Report implements Serializable {
 
 	@ManyToOne
 	/*
-	 * If columnDefinition="uuid" is ommitted here and the database schema is 
+	 * If columnDefinition="uuid" is omitted here and the database schema is 
 	 * created by Hibernate (via hibernate.hbm2ddl.auto="create"), then the 
 	 * PostgreSQL column definition includes "DEFAULT uuid_generate_v4()", which
 	 * is not what is wanted.
@@ -57,21 +57,40 @@ public class Report implements Serializable {
 	@Column(name = "created_on", nullable = false)
 	private Date createdOn;
 
+	// Works for H2, but not PostgreSQL:
+	//	@Column(name = "rptdesign", nullable = false, columnDefinition = "clob")
+	/* This works for PostgreSQL but not for H2. With H2, it seems that if you 
+	 * create a column of type "text", then the column that is created is  
+	 * actually given the H2 type "clob". This means that validating the schema 
+	 * via hbm2ddl.auto=validate will fail because Hibernate expects a column of 
+	 * type "text" but it sees, instead, a column of type "clob". This causes
+	 * the validation to fail. Hence, the schema cannotbe validated during unit
+	 * testing with the embedded H2 database unless we temporarily set 
+	 * columnDefinition = "clob".
+	 */
+	@Column(name = "rptdesign", nullable = false, columnDefinition = "text")
+	private String rptdesign;
+
 	private Report() {
 	}
 
-	public Report(ReportCategory reportCategory, String name, Date createdOn) {
+	public Report(ReportCategory reportCategory, String name, String rptdesign) {
+		this(reportCategory, name, rptdesign, new Date());
+	}
+
+	public Report(ReportCategory reportCategory, String name, String rptdesign, Date createdOn) {
+		this.reportCategory = reportCategory;
+		this.name = name;
+		this.rptdesign = rptdesign;
+		this.createdOn = createdOn;
+	}
+
+	public Report(UUID reportId, ReportCategory reportCategory, String name, Date createdOn) {
+		this.reportId = reportId;
 		this.reportCategory = reportCategory;
 		this.name = name;
 		this.createdOn = createdOn;
 	}
-
-	//	public Report(UUID reportId, ReportCategory reportCategory, String name, Date createdOn) {
-	//		this.reportId = reportId;
-	//		this.reportCategory = reportCategory;
-	//		this.name = name;
-	//		this.createdOn = createdOn;
-	//	}
 
 	public UUID getReportId() {
 		return this.reportId;
@@ -87,6 +106,14 @@ public class Report implements Serializable {
 
 	public ReportCategory getReportCategory() {
 		return this.reportCategory;
+	}
+
+	public String getRptdesign() {
+		return rptdesign;
+	}
+
+	public void setRptdesign(String rptdesign) {
+		this.rptdesign = rptdesign;
 	}
 
 }

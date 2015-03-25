@@ -32,7 +32,7 @@ public class ReportCategory implements Serializable {
 
 	@Id
 	//	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	//	@Column(name = "report_category_id", unique = true, nullable = fals)
+	//	@Column(name = "report_category_id", unique = true, nullable = false)
 	//	private Long reportCategoryId;
 	@NotNull
 	@Type(type = "uuid-custom")

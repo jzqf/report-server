@@ -113,7 +113,10 @@ public class PersistenceConfigTestEnv {
 		Properties properties = new Properties();
 		properties.setProperty("hibernate.dialect", env.getProperty("hibernate.dialect"));
 		properties.setProperty("hibernate.show_sql", env.getProperty("hibernate.show_sql"));
-		properties.setProperty("hibernate.hbm2ddl.auto", env.getProperty("hibernate.hbm2ddl.auto"));
+		String hbm2ddlAuto = env.getProperty("hibernate.hbm2ddl.auto");
+		if (hbm2ddlAuto != null && !hbm2ddlAuto.isEmpty()) {
+			properties.setProperty("hibernate.hbm2ddl.auto", hbm2ddlAuto);
+		}
 		String import_files = env.getProperty("hibernate.hbm2ddl.import_files");
 		if (import_files != null && !import_files.isEmpty()) {
 			/* The "import_files" scripts are only executed if the schema is created, 
@@ -121,6 +124,8 @@ public class PersistenceConfigTestEnv {
 			 */
 			properties.setProperty("hibernate.hbm2ddl.import_files", import_files);
 		}
+		properties.setProperty("hibernate.hbm2ddl.import_files_sql_extractor",
+				"org.hibernate.tool.hbm2ddl.MultipleLinesSqlCommandExtractor");
 		//properties.setProperty("hibernate.default_schema", "reporting");
 
 		return properties;

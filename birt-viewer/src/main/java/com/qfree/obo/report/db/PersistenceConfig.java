@@ -141,6 +141,8 @@ public class PersistenceConfig {
 			 */
 			properties.setProperty("hibernate.hbm2ddl.import_files", import_files);
 		}
+		properties.setProperty("hibernate.hbm2ddl.import_files_sql_extractor",
+				"org.hibernate.tool.hbm2ddl.MultipleLinesSqlCommandExtractor");
 		//properties.setProperty("hibernate.default_schema", "reporting");
 
 		return properties;

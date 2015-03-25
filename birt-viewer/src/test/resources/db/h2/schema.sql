@@ -20,15 +20,16 @@ CREATE TABLE reporting.report (
   report_id           uuid         NOT NULL DEFAULT RANDOM_UUID(),
   report_category_id  uuid         NOT NULL,
   name                varchar(80)  NOT NULL,
+  rptdesign           text         NOT NULL,
   created_on          timestamp    NOT NULL,
   PRIMARY KEY (report_id),
   FOREIGN KEY (report_category_id) REFERENCES report_category(report_category_id)
 );
 
 CREATE TABLE reporting.report_parameter (
-  report_parameter_id  uuid         NOT NULL DEFAULT RANDOM_UUID(),
-  description          varchar(32)  NOT NULL,
-  abbreviation         varchar(32)  NOT NULL,
-  active               boolean      NOT NULL,
+  report_parameter_id uuid         NOT NULL DEFAULT RANDOM_UUID(),
+  description         varchar(32)  NOT NULL,
+  abbreviation        varchar(32)  NOT NULL,
+  active              boolean      NOT NULL,
   PRIMARY KEY (report_parameter_id)
 );

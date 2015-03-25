@@ -103,7 +103,21 @@ public class ReportRepositoryTest {
 		assertEquals(15, reportRepository.count());
 		ReportCategory reportCategory = reportRepository
 				.findOne(UUID.fromString("75162a48-3031-4e46-a1b5-5fb09248e01e")).getReportCategory();
-		Report report = new Report(reportCategory, "Some report title", new Date());
+		String rptdesign = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
+				+
+				"<report xmlns=\"http://www.eclipse.org/birt/2005/design\" version=\"3.2.23\" id=\"1\">\n"
+				+
+				"    <property name=\"createdBy\">Eclipse BIRT Designer Version 4.4.2.v201410272105 Build &lt;4.4.2.v20150217-1805></property>\n"
+				+
+				"    <property name=\"units\">in</property>\n" +
+				"    <property name=\"iconFile\">/templates/blank_report.gif</property>\n" +
+				"    <property name=\"bidiLayoutOrientation\">ltr</property>\n" +
+				"    <property name=\"imageDPI\">96</property>\n" +
+				"    <page-setup>\n" +
+				"        <simple-master-page name=\"Simple MasterPage\" id=\"2\"/>\n" +
+				"    </page-setup>\n" +
+				"</report>";
+		Report report = new Report(reportCategory, "Some report title", rptdesign, new Date());
 		Report saved = reportRepository.save(report);
 		assertNotNull(saved.getReportId());    // Check that id was created.
 		assertEquals(16, reportRepository.count());
