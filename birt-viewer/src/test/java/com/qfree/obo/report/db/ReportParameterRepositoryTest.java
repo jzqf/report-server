@@ -1,6 +1,7 @@
 package com.qfree.obo.report.db;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 import java.util.List;
 import java.util.UUID;
@@ -14,6 +15,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.qfree.obo.report.domain.Report;
 import com.qfree.obo.report.domain.ReportParameter;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -25,17 +27,20 @@ public class ReportParameterRepositoryTest {
 	@Autowired
 	ReportParameterRepository reportParameterRepository;
 
+	@Autowired
+	ReportRepository reportRepository;
+
 	@Test
 	@Transactional
 	public void count() {
-		assertEquals(4, reportParameterRepository.count());
+		assertEquals(15, reportParameterRepository.count());
 	}
 
 	@Test
 	@Transactional
 	public void findAll() {
 		List<ReportParameter> reportParameters = reportParameterRepository.findAll();
-		assertEquals(4, reportParameters.size());
+		assertEquals(15, reportParameters.size());
 		//		for (ReportParameter reportParameter : reportParameters) {
 		//			logger.info("reportParameter = {}", reportParameter);
 		//		}
@@ -45,9 +50,14 @@ public class ReportParameterRepositoryTest {
 	@Transactional
 	public void save_newReportParameter() {
 
-		assertEquals(4, reportParameterRepository.count());
+		assertEquals(15, reportParameterRepository.count());
 
-		ReportParameter reportParameter = new ReportParameter("ParamAbbrev", "ParamDescription", true);
+		UUID uuidOf4thRow = UUID.fromString("702d5daa-e23d-4f00-b32b-67b44c06d8f6");
+		Report four = reportRepository.findOne(uuidOf4thRow);
+		assertNotNull(four);
+
+		ReportParameter reportParameter = new ReportParameter(four, "ParamAbbrevNotUsed",
+				"ParamDescriptionNotUsed", true);
 		//		logger.info("reportParameter = {}", reportParameter);
 
 		ReportParameter saved = reportParameterRepository.save(reportParameter);
@@ -55,7 +65,7 @@ public class ReportParameterRepositoryTest {
 		//		logger.info("saved.getreportParameterId() = {}", saved.getReportParameterId());
 		//		logger.info("After save: reportParameter.getReportParameterId() = {}", reportParameter.getReportParameterId());
 
-		assertEquals(5, reportParameterRepository.count());
+		assertEquals(16, reportParameterRepository.count());
 
 		UUID uuidFromSavedEntity = saved.getReportParameterId();
 		ReportParameter foundReportParameter = reportParameterRepository.findOne(uuidFromSavedEntity);
@@ -63,8 +73,8 @@ public class ReportParameterRepositoryTest {
 		/*
 		 * TODO Replace this code with a custom "assertReportParameter(...)" method.
 		 */
-		assertEquals("ParamAbbrev", foundReportParameter.getAbbreviation());
-		assertEquals("ParamDescription", foundReportParameter.getDescription());
+		assertEquals("ParamAbbrevNotUsed", foundReportParameter.getAbbreviation());
+		assertEquals("ParamDescriptionNotUsed", foundReportParameter.getDescription());
 		assertEquals(true, foundReportParameter.getActive());
 	}
 

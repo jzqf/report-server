@@ -5,8 +5,11 @@ import java.util.UUID;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.ForeignKey;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
@@ -46,13 +49,23 @@ public class ReportParameter implements Serializable {
 	@Column(name = "active", nullable = false)
 	private Boolean active;
 
-	//	@OneToMany(targetEntity = Report.class, fetch = FetchType.EAGER, mappedBy = "reportCategory")
-	//	private List<Report> reports;
+	@ManyToOne
+	/*
+	 * If columnDefinition="uuid" is omitted here and the database schema is 
+	 * created by Hibernate (via hibernate.hbm2ddl.auto="create"), then the 
+	 * PostgreSQL column definition includes "DEFAULT uuid_generate_v4()", which
+	 * is not what is wanted.
+	 */
+	@JoinColumn(name = "report_id", nullable = false,
+			foreignKey = @ForeignKey(name = "fk_reportparameter_report"),
+			columnDefinition = "uuid")
+	private Report report;
 
 	public ReportParameter() {
 	}
 
-	public ReportParameter(String abbreviation, String description, Boolean active) {
+	public ReportParameter(Report report, String abbreviation, String description, Boolean active) {
+		this.report = report;
 		this.abbreviation = abbreviation;
 		this.description = description;
 		this.active = active;

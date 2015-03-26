@@ -2,15 +2,19 @@ package com.qfree.obo.report.domain;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.ForeignKey;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 import org.hibernate.annotations.GenericGenerator;
@@ -59,6 +63,13 @@ public class Report implements Serializable {
 
 	@Column(name = "created_on", nullable = false)
 	private Date createdOn;
+
+	/*
+	 * cascade = CascadeType.ALL:
+	 *     Deleting a Report will delete all of its ReportParameter's.
+	 */
+	@OneToMany(fetch = FetchType.EAGER, mappedBy = "report", cascade = CascadeType.ALL)
+	private List<ReportParameter> reportParameters;
 
 	// Works for H2, but not PostgreSQL:
 	//	@Column(name = "rptdesign", nullable = false, columnDefinition = "clob")
