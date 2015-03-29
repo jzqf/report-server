@@ -2,6 +2,8 @@
 
 <configuration scan="true" scanPeriod="3 seconds" debug="true">
 
+	 <!-- <variable name="catalina.base" value="catalina.base-set-in.logback.xml" /> -->
+
 	<!--
 		Logback ships with a StatusListener implementation called OnConsoleStatusListener
 		which, as its name indicates, prints all new incoming status messages on the console.
@@ -71,6 +73,8 @@
 	<!-- <logger name="com.qfree.cs.autopass"><level value="DEBUG" /></logger> -->
 	
 	<!-- 3rdparty Loggers -->
+	<logger name="org.hibernate"><level value="DEBUG" /></logger>
+	<logger name="org.springframework"><level value="INFO" /></logger>
 	<!-- <logger name="org.springframework.core"><level value="INFO" /></logger> -->
 	<!-- <logger name="org.springframework.beans"><level value="INFO" /></logger> -->
 	<!-- <logger name="org.springframework.context"><level value="INFO" /></logger> -->
