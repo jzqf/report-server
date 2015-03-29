@@ -33,14 +33,14 @@ public class ReportParameterRepositoryTest {
 	@Test
 	@Transactional
 	public void count() {
-		assertEquals(15, reportParameterRepository.count());
+		assertEquals(5, reportParameterRepository.count());
 	}
 
 	@Test
 	@Transactional
 	public void findAll() {
 		List<ReportParameter> reportParameters = reportParameterRepository.findAll();
-		assertEquals(15, reportParameters.size());
+		assertEquals(5, reportParameters.size());
 		//		for (ReportParameter reportParameter : reportParameters) {
 		//			logger.info("reportParameter = {}", reportParameter);
 		//		}
@@ -50,25 +50,26 @@ public class ReportParameterRepositoryTest {
 	@Transactional
 	public void save_newReportParameter() {
 
-		assertEquals(15, reportParameterRepository.count());
+		assertEquals(5, reportParameterRepository.count());
 
-		UUID uuidOf4thRow = UUID.fromString("702d5daa-e23d-4f00-b32b-67b44c06d8f6");
-		Report four = reportRepository.findOne(uuidOf4thRow);
-		assertNotNull(four);
+		UUID uuidOf4thReportRow = UUID.fromString("702d5daa-e23d-4f00-b32b-67b44c06d8f6");
+		Report fourthReport = reportRepository.findOne(uuidOf4thReportRow);
+		assertNotNull(fourthReport);
 
-		ReportParameter reportParameter = new ReportParameter(four, "ParamAbbrevNotUsed",
-				"ParamDescriptionNotUsed", true);
-		//		logger.info("reportParameter = {}", reportParameter);
+		ReportParameter unsavedReportParameter = new ReportParameter(
+				fourthReport, "ParamAbbrevNotUsed", "ParamDescriptionNotUsed", true);
+		//		logger.info("unsavedReportParameter = {}", unsavedReportParameter);
 
-		ReportParameter saved = reportParameterRepository.save(reportParameter);
-		//		logger.info("saved = {}", saved);
-		//		logger.info("saved.getreportParameterId() = {}", saved.getReportParameterId());
-		//		logger.info("After save: reportParameter.getReportParameterId() = {}", reportParameter.getReportParameterId());
+		ReportParameter savedReportParameter = reportParameterRepository.save(unsavedReportParameter);
+		//		logger.info("savedReportParameter = {}", savedReportParameter);
+		//		logger.info("savedReportParameter.getreportParameterId() = {}", savedReportParameter.getReportParameterId());
+		//		logger.info("After save: unsavedReportParameter.getReportParameterId() = {}",
+		//				unsavedReportParameter.getReportParameterId());
 
-		assertEquals(16, reportParameterRepository.count());
+		assertEquals(6, reportParameterRepository.count());
 
-		UUID uuidFromSavedEntity = saved.getReportParameterId();
-		ReportParameter foundReportParameter = reportParameterRepository.findOne(uuidFromSavedEntity);
+		UUID uuidFromSavedReportParameter = savedReportParameter.getReportParameterId();
+		ReportParameter foundReportParameter = reportParameterRepository.findOne(uuidFromSavedReportParameter);
 
 		/*
 		 * TODO Replace this code with a custom "assertReportParameter(...)" method.

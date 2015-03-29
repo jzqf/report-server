@@ -28,7 +28,8 @@ CREATE TABLE reporting.report_parameter (
     report_parameter_id uuid DEFAULT RANDOM_UUID() NOT NULL,
     abbreviation character varying(32) NOT NULL,
     active boolean NOT NULL,
-    description character varying(32) NOT NULL
+    description character varying(32) NOT NULL,
+    report_id uuid NOT NULL
 );
 
 CREATE TABLE reporting.role (
@@ -104,24 +105,32 @@ ALTER TABLE reporting.role
 
 
 --
--- Name: fk_3t7udj2hlyu0k9deq1np51jui; Type: FK CONSTRAINT; Schema: reporting; Owner: dbtest
---
-
-ALTER TABLE reporting.role_role
-    ADD CONSTRAINT fk_3t7udj2hlyu0k9deq1np51jui FOREIGN KEY (child_role_id) REFERENCES role(role_id);
-
-
---
--- Name: fk_e3r9jheol1woc5jcnv8cxvlv; Type: FK CONSTRAINT; Schema: reporting; Owner: dbtest
+-- Name: fk_report_reportcategory; Type: FK CONSTRAINT; Schema: reporting; Owner: dbtest
 --
 
 ALTER TABLE reporting.report
-    ADD CONSTRAINT fk_e3r9jheol1woc5jcnv8cxvlv FOREIGN KEY (report_category_id) REFERENCES report_category(report_category_id);
+    ADD CONSTRAINT fk_report_reportcategory FOREIGN KEY (report_category_id) REFERENCES report_category(report_category_id);
 
 
 --
--- Name: fk_k5d94vtbmeqth523ke4fi64cc; Type: FK CONSTRAINT; Schema: reporting; Owner: dbtest
+-- Name: fk_reportparameter_report; Type: FK CONSTRAINT; Schema: reporting; Owner: dbtest
+--
+
+ALTER TABLE reporting.report_parameter
+    ADD CONSTRAINT fk_reportparameter_report FOREIGN KEY (report_id) REFERENCES report(report_id);
+
+
+--
+-- Name: fk_rolerole_childrole; Type: FK CONSTRAINT; Schema: reporting; Owner: dbtest
 --
 
 ALTER TABLE reporting.role_role
-    ADD CONSTRAINT fk_k5d94vtbmeqth523ke4fi64cc FOREIGN KEY (parent_role_id) REFERENCES role(role_id);
+    ADD CONSTRAINT fk_rolerole_childrole FOREIGN KEY (child_role_id) REFERENCES role(role_id);
+
+
+--
+-- Name: fk_rolerole_parentrole; Type: FK CONSTRAINT; Schema: reporting; Owner: dbtest
+--
+
+ALTER TABLE reporting.role_role
+    ADD CONSTRAINT fk_rolerole_parentrole FOREIGN KEY (parent_role_id) REFERENCES role(role_id);
