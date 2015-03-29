@@ -73,7 +73,7 @@
 	<!-- <logger name="com.qfree.cs.autopass"><level value="DEBUG" /></logger> -->
 	
 	<!-- 3rdparty Loggers -->
-	<logger name="org.hibernate"><level value="DEBUG" /></logger>
+	<logger name="org.hibernate"><level value="INFO" /></logger>
 	<logger name="org.springframework"><level value="INFO" /></logger>
 	<!-- <logger name="org.springframework.core"><level value="INFO" /></logger> -->
 	<!-- <logger name="org.springframework.beans"><level value="INFO" /></logger> -->

@@ -8,10 +8,12 @@ import static org.junit.Assert.assertTrue;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
@@ -147,21 +149,8 @@ public class ReportRepositoryTest {
 	
 	private void assertRecent(List<Report> recent, int count) {
 		assertEquals(count, recent.size());
-		UUID[] recentIds = new UUID[] {
-				UUID.fromString("fe718314-5b39-40e7-aed2-279354c04a9d"),
-				UUID.fromString("c7f1d394-9814-4ede-bb01-2700187d79ca"),
-				UUID.fromString("d65f3d9c-f67d-4beb-9936-9dfa19aa1407"),
-				UUID.fromString("702d5daa-e23d-4f00-b32b-67b44c06d8f6"),
-				UUID.fromString("f1f06b15-c0b6-488d-9eed-74e867a47d5a") };
-//				UUID.fromString("f8b6f20e-626a-4039-b385-7106c15d0204"),
-//				UUID.fromString("0308594d-081f-4adf-8ead-33f8e1e02217"),
-//				UUID.fromString("75162a48-3031-4e46-a1b5-5fb09248e01e"),
-//				UUID.fromString("c606d7f3-9c62-4db3-bba7-52fa58e31327"),
-//				UUID.fromString("8b42eeef-928a-49cb-b827-4177b5ad6f6d"),
-//				UUID.fromString("2c2b279b-8d8d-4b15-a795-6de0a0796a03"),
-//				UUID.fromString("8d9a517b-4628-4a17-af26-21252fafcb5f") };
 		for (int i = 0; i < count; i++) {
-			assertEquals(recentIds[i], recent.get(i).getReportId());
+			assertTrue(recentReportIds.contains(recent.get(i).getReportId()));
 		}
 	}
 	
@@ -169,4 +158,16 @@ public class ReportRepositoryTest {
 	//		assertEquals(16, report.getReportId().longValue());
 	//	}
 	
+	private static List<UUID> recentReportIds;
+
+	@BeforeClass
+	public static void before() {
+		recentReportIds = new ArrayList<>();
+		recentReportIds.add(UUID.fromString("fe718314-5b39-40e7-aed2-279354c04a9d"));
+		recentReportIds.add(UUID.fromString("c7f1d394-9814-4ede-bb01-2700187d79ca"));
+		recentReportIds.add(UUID.fromString("d65f3d9c-f67d-4beb-9936-9dfa19aa1407"));
+		recentReportIds.add(UUID.fromString("702d5daa-e23d-4f00-b32b-67b44c06d8f6"));
+		recentReportIds.add(UUID.fromString("f1f06b15-c0b6-488d-9eed-74e867a47d5a"));
+		logger.info("recentReportIds.size() = ", recentReportIds.size());
+	}
 }
