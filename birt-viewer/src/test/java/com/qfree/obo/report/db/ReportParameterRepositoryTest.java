@@ -33,14 +33,14 @@ public class ReportParameterRepositoryTest {
 	@Test
 	@Transactional
 	public void count() {
-		assertEquals(5, reportParameterRepository.count());
+		assertEquals(6, reportParameterRepository.count());
 	}
 
 	@Test
 	@Transactional
 	public void findAll() {
 		List<ReportParameter> reportParameters = reportParameterRepository.findAll();
-		assertEquals(5, reportParameters.size());
+		assertEquals(6, reportParameters.size());
 		//		for (ReportParameter reportParameter : reportParameters) {
 		//			logger.info("reportParameter = {}", reportParameter);
 		//		}
@@ -50,14 +50,14 @@ public class ReportParameterRepositoryTest {
 	@Transactional
 	public void save_newReportParameter() {
 
-		assertEquals(5, reportParameterRepository.count());
+		assertEquals(6, reportParameterRepository.count());
 
-		UUID uuidOf4thReportRow = UUID.fromString("702d5daa-e23d-4f00-b32b-67b44c06d8f6");
-		Report fourthReport = reportRepository.findOne(uuidOf4thReportRow);
-		assertNotNull(fourthReport);
+		UUID uuidOfReport04 = UUID.fromString("702d5daa-e23d-4f00-b32b-67b44c06d8f6");
+		Report report04 = reportRepository.findOne(uuidOfReport04);
+		assertNotNull(report04);
 
 		ReportParameter unsavedReportParameter = new ReportParameter(
-				fourthReport, "ParamAbbrevNotUsed", "ParamDescriptionNotUsed", true);
+				report04, "ParamAbbrevNotUsed", "ParamDescriptionNotUsed", true);
 		//		logger.info("unsavedReportParameter = {}", unsavedReportParameter);
 
 		ReportParameter savedReportParameter = reportParameterRepository.save(unsavedReportParameter);
@@ -66,7 +66,7 @@ public class ReportParameterRepositoryTest {
 		//		logger.info("After save: unsavedReportParameter.getReportParameterId() = {}",
 		//				unsavedReportParameter.getReportParameterId());
 
-		assertEquals(6, reportParameterRepository.count());
+		assertEquals(7, reportParameterRepository.count());
 
 		UUID uuidFromSavedReportParameter = savedReportParameter.getReportParameterId();
 		ReportParameter foundReportParameter = reportParameterRepository.findOne(uuidFromSavedReportParameter);

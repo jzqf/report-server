@@ -46,9 +46,9 @@ public class ReportRepositoryTest {
 	@Test
 	@Transactional
 	public void count() {
-		//		assertEquals(5, reportRepository.count());
-		assertThat(reportRepository.count(), is(equalTo(5L)));
-		//		assertThat(reportRepository.count(), is(not(equalTo(5L))));  //import static org.hamcrest.Matchers.not;
+		//		assertEquals(6, reportRepository.count());
+		assertThat(reportRepository.count(), is(equalTo(6L)));
+		//		assertThat(reportRepository.count(), is(not(equalTo(6L))));  //import static org.hamcrest.Matchers.not;
 	}
 
 	@Test
@@ -70,10 +70,10 @@ public class ReportRepositoryTest {
 	@Test
 	@Transactional
 	public void findOne() {
-		UUID uuidOf4thReportRow = UUID.fromString("702d5daa-e23d-4f00-b32b-67b44c06d8f6");
-		Report fourthReport = reportRepository.findOne(uuidOf4thReportRow);
-		assertEquals(uuidOf4thReportRow.toString(), fourthReport.getReportId().toString());
-		assertEquals("Report name #04", fourthReport.getName());
+		UUID uuidOfReport04 = UUID.fromString("702d5daa-e23d-4f00-b32b-67b44c06d8f6");
+		Report report04 = reportRepository.findOne(uuidOfReport04);
+		assertEquals(uuidOfReport04.toString(), report04.getReportId().toString());
+		assertEquals("Report name #04", report04.getName());
 
 		//		DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
 		//		DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
@@ -81,20 +81,20 @@ public class ReportRepositoryTest {
 		dateFormat.setLenient(false);
 		Date date = null;
 		try {
-			date = dateFormat.parse("2012-03-25T12:15:00");
+			date = dateFormat.parse("2014-03-25T12:15:00");
 		} catch (ParseException e) {
 			e.printStackTrace();
 		}
 		//		logger.info("date = {}", date);
-		//		logger.info("fourthReport.getCreatedOn() = {}", fourthReport.getCreatedOn());
-		//		logger.info("fourthReport.getCreatedOn().getTime() = {}", fourthReport.getCreatedOn().getTime());
+		//		logger.info("report04.getCreatedOn() = {}", report04.getCreatedOn());
+		//		logger.info("report04.getCreatedOn().getTime() = {}", report04.getCreatedOn().getTime());
 
-		assertEquals(date.getTime(), fourthReport.getCreatedOn().getTime());
+		assertEquals(date.getTime(), report04.getCreatedOn().getTime());
 		assertEquals("bb2bc482-c19a-4c19-a087-e68ffc62b5a0",
-				fourthReport.getReportCategory().getReportCategoryId().toString());
-		assertEquals("Q-Free internal", fourthReport.getReportCategory().getDescription());
-		assertEquals("QFREE", fourthReport.getReportCategory().getAbbreviation());
-		assertTrue(fourthReport.getReportCategory().isActive());
+				report04.getReportCategory().getReportCategoryId().toString());
+		assertEquals("Q-Free internal", report04.getReportCategory().getDescription());
+		assertEquals("QFREE", report04.getReportCategory().getAbbreviation());
+		assertTrue(report04.getReportCategory().isActive());
 	}
 
 	@Test
@@ -104,17 +104,14 @@ public class ReportRepositoryTest {
 		List<Report> reports = reportRepository
 				.findByReportCategoryReportCategoryId(uuidOf1stReportCategoryRow);
 		assertEquals(3, reports.size());
-		//		for (int i = 0; i < 11; i++) {
-		//			assertEquals(i+5, reports.get(i).getReportId().longValue());
-		//		}
 	}
 	
 	@Test
 	@Transactional
 	public void save() {
-		assertEquals(5, reportRepository.count());
-		UUID uuidOf3rdReportRow = UUID.fromString("fe718314-5b39-40e7-aed2-279354c04a9d");
-		ReportCategory reportCategoryOf3rdReport = reportRepository.findOne(uuidOf3rdReportRow).getReportCategory();
+		assertEquals(6, reportRepository.count());
+		UUID uuidOfReport03 = UUID.fromString("fe718314-5b39-40e7-aed2-279354c04a9d");
+		ReportCategory reportCategoryOfReport03 = reportRepository.findOne(uuidOfReport03).getReportCategory();
 		String rptdesign = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
 				+
 				"<report xmlns=\"http://www.eclipse.org/birt/2005/design\" version=\"3.2.23\" id=\"1\">\n"
@@ -129,10 +126,10 @@ public class ReportRepositoryTest {
 				"        <simple-master-page name=\"Simple MasterPage\" id=\"2\"/>\n" +
 				"    </page-setup>\n" +
 				"</report>";
-		Report report = new Report(reportCategoryOf3rdReport, "Some report title", rptdesign, new Date());
+		Report report = new Report(reportCategoryOfReport03, "Some report title", rptdesign, new Date());
 		Report saved = reportRepository.save(report);
 		assertNotNull(saved.getReportId());    // Check that id was created.
-		assertEquals(6, reportRepository.count());
+		assertEquals(7, reportRepository.count());
 		//		assertNewReport(saved);
 		//		assertNewReport(reportRepository.findOne(16L));
 		Report foundReport = reportRepository.findOne(saved.getReportId());
@@ -143,14 +140,14 @@ public class ReportRepositoryTest {
 	@Test
 	@Transactional
 	public void delete() {
-		assertEquals(5, reportRepository.count());
+		assertEquals(6, reportRepository.count());
 		assertEquals(4, reportCategoryRepository.count());
-		UUID uuidOf2ndRow = UUID.fromString("c7f1d394-9814-4ede-bb01-2700187d79ca");
-		assertNotNull(reportRepository.findOne(uuidOf2ndRow));
-		//		ReportCategory reportCategoryOf2ndReport = reportRepository.findOne(uuidOf2ndRow).getReportCategory();
-		reportRepository.delete(uuidOf2ndRow);
-		assertEquals(4, reportRepository.count());
-		assertNull(reportRepository.findOne(uuidOf2ndRow));
+		UUID uuidOfReport02 = UUID.fromString("c7f1d394-9814-4ede-bb01-2700187d79ca");
+		assertNotNull(reportRepository.findOne(uuidOfReport02));
+		//		ReportCategory reportCategoryOfReport02 = reportRepository.findOne(uuidOf2ndRow).getReportCategory();
+		reportRepository.delete(uuidOfReport02);
+		assertEquals(5, reportRepository.count());
+		assertNull(reportRepository.findOne(uuidOfReport02));
 		assertEquals(4, reportCategoryRepository.count());
 	}
 	
@@ -169,13 +166,20 @@ public class ReportRepositoryTest {
 
 	@BeforeClass
 	public static void before() {
+		UUID uuidOfReport01 = UUID.fromString("d65f3d9c-f67d-4beb-9936-9dfa19aa1407");
+		UUID uuidOfReport02 = UUID.fromString("c7f1d394-9814-4ede-bb01-2700187d79ca");
+		UUID uuidOfReport03 = UUID.fromString("fe718314-5b39-40e7-aed2-279354c04a9d");
+		UUID uuidOfReport04 = UUID.fromString("702d5daa-e23d-4f00-b32b-67b44c06d8f6");
+		UUID uuidOfReport05 = UUID.fromString("f1f06b15-c0b6-488d-9eed-74e867a47d5a");
+		UUID uuidOfReport06 = UUID.fromString("adc50b28-cb84-4ede-9759-43f467ac22ec");
 		recentReportIds = new ArrayList<>();
 		// These are in reverse chronological order, from most recent to oldest.
-		recentReportIds.add(UUID.fromString("fe718314-5b39-40e7-aed2-279354c04a9d"));
-		recentReportIds.add(UUID.fromString("c7f1d394-9814-4ede-bb01-2700187d79ca"));
-		recentReportIds.add(UUID.fromString("d65f3d9c-f67d-4beb-9936-9dfa19aa1407"));
-		recentReportIds.add(UUID.fromString("702d5daa-e23d-4f00-b32b-67b44c06d8f6"));
-		recentReportIds.add(UUID.fromString("f1f06b15-c0b6-488d-9eed-74e867a47d5a"));
+		recentReportIds.add(uuidOfReport06);
+		recentReportIds.add(uuidOfReport03);
+		recentReportIds.add(uuidOfReport02);
+		recentReportIds.add(uuidOfReport01);
+		recentReportIds.add(uuidOfReport04);
+		recentReportIds.add(uuidOfReport05);
 		logger.info("recentReportIds.size() = ", recentReportIds.size());
 	}
 }
