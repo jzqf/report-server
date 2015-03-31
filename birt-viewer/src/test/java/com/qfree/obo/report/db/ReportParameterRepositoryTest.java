@@ -86,9 +86,9 @@ public class ReportParameterRepositoryTest {
 		/*
 		 * TODO Replace this code with a custom "assertReportParameter(...)" method.
 		 */
-		assertEquals("Some new parameter name", foundReportParameter.getName());
-		assertEquals("Some new parameter description", foundReportParameter.getDescription());
-		assertEquals(true, foundReportParameter.getRequired());
+		assertThat(foundReportParameter.getName(), is("Some new parameter name"));
+		assertThat(foundReportParameter.getDescription(), is("Some new parameter description"));
+		assertThat(foundReportParameter.getRequired(), is(true));
 	}
 
 }

@@ -94,8 +94,16 @@ public class RoleRole implements Serializable {
 		return this.parentRole;
 	}
 
+	public void setParentRole(Role parentRole) {
+		this.parentRole = parentRole;
+	}
+
 	public Role getChildRole() {
 		return this.childRole;
+	}
+
+	public void setChildRole(Role childRole) {
+		this.childRole = childRole;
 	}
 
 	@Override

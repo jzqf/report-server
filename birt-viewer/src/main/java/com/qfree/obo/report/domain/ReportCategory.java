@@ -91,8 +91,16 @@ public class ReportCategory implements Serializable {
 		return description;
 	}
 
+	public void setDescription(String description) {
+		this.description = description;
+	}
+
 	public String getAbbreviation() {
 		return abbreviation;
+	}
+
+	public void setAbbreviation(String abbreviation) {
+		this.abbreviation = abbreviation;
 	}
 
 	public boolean isActive() {
@@ -101,6 +109,10 @@ public class ReportCategory implements Serializable {
 
 	public List<Report> getReports() {
 		return reports;
+	}
+
+	public void setReports(List<Report> reports) {
+		this.reports = reports;
 	}
 
 	@Override

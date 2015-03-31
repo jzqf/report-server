@@ -102,6 +102,14 @@ public class ReportParameter implements Serializable {
 		this.reportParameterId = reportParameterId;
 	}
 
+	public Report getReport() {
+		return report;
+	}
+
+	public void setReport(Report report) {
+		this.report = report;
+	}
+
 	public Widget getWidget() {
 		return widget;
 	}

@@ -88,6 +88,10 @@ public class Role implements Serializable {
 		return encodedPassword;
 	}
 
+	public void setEncodedPassword(String encodedPassword) {
+		this.encodedPassword = encodedPassword;
+	}
+
 	public String getUsername() {
 		return username;
 	}
@@ -120,8 +124,16 @@ public class Role implements Serializable {
 		return parentRoleRoles;
 	}
 
+	public void setParentRoleRoles(List<RoleRole> parentRoleRoles) {
+		this.parentRoleRoles = parentRoleRoles;
+	}
+
 	public List<RoleRole> getChildRoleRoles() {
 		return childRoleRoles;
+	}
+
+	public void setChildRoleRoles(List<RoleRole> childRoleRoles) {
+		this.childRoleRoles = childRoleRoles;
 	}
 
 	@Override

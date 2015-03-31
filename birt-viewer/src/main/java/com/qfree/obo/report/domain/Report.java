@@ -113,6 +113,10 @@ public class Report implements Serializable {
 		return this.name;
 	}
 
+	public void setName(String name) {
+		this.name = name;
+	}
+
 	public Date getCreatedOn() {
 		return this.createdOn;
 	}
@@ -123,6 +127,14 @@ public class Report implements Serializable {
 
 	public void setReportCategory(ReportCategory reportCategory) {
 		this.reportCategory = reportCategory;
+	}
+
+	public List<ReportParameter> getReportParameters() {
+		return reportParameters;
+	}
+
+	public void setReportParameters(List<ReportParameter> reportParameters) {
+		this.reportParameters = reportParameters;
 	}
 
 	public String getRptdesign() {
