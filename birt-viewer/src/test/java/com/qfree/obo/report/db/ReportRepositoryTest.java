@@ -1,8 +1,13 @@
 package com.qfree.obo.report.db;
 
+//import static org.hamcrest.CoreMatchers.equalTo;
+//import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 import java.text.DateFormat;
@@ -41,7 +46,9 @@ public class ReportRepositoryTest {
 	@Test
 	@Transactional
 	public void count() {
-		assertEquals(5, reportRepository.count());
+		//		assertEquals(5, reportRepository.count());
+		assertThat(reportRepository.count(), is(equalTo(5L)));
+		//		assertThat(reportRepository.count(), is(not(equalTo(5L))));  //import static org.hamcrest.Matchers.not;
 	}
 
 	@Test
@@ -163,6 +170,7 @@ public class ReportRepositoryTest {
 	@BeforeClass
 	public static void before() {
 		recentReportIds = new ArrayList<>();
+		// These are in reverse chronological order, from most recent to oldest.
 		recentReportIds.add(UUID.fromString("fe718314-5b39-40e7-aed2-279354c04a9d"));
 		recentReportIds.add(UUID.fromString("c7f1d394-9814-4ede-bb01-2700187d79ca"));
 		recentReportIds.add(UUID.fromString("d65f3d9c-f67d-4beb-9936-9dfa19aa1407"));
