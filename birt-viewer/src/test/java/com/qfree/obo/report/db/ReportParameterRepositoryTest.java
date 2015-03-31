@@ -1,7 +1,11 @@
 package com.qfree.obo.report.db;
 
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
+import static org.hamcrest.Matchers.notNullValue;
+import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
 
 import java.util.List;
 import java.util.UUID;
@@ -17,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.qfree.obo.report.domain.Report;
 import com.qfree.obo.report.domain.ReportParameter;
+import com.qfree.obo.report.domain.Widget;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = PersistenceConfigTestEnv.class)
@@ -29,6 +34,9 @@ public class ReportParameterRepositoryTest {
 
 	@Autowired
 	ReportRepository reportRepository;
+
+	@Autowired
+	WidgetRepository widgetRepository;
 
 	@Test
 	@Transactional
@@ -54,10 +62,14 @@ public class ReportParameterRepositoryTest {
 
 		UUID uuidOfReport04 = UUID.fromString("702d5daa-e23d-4f00-b32b-67b44c06d8f6");
 		Report report04 = reportRepository.findOne(uuidOfReport04);
-		assertNotNull(report04);
+		assertThat(report04, is(not(nullValue())));
+
+		UUID uuidOfWidget1 = UUID.fromString("b8e91527-8b0e-4ed2-8cba-8cb8989ba8e2");
+		Widget widget1 = widgetRepository.findOne(uuidOfWidget1);
+		assertThat(widget1, is(notNullValue()));
 
 		ReportParameter unsavedReportParameter = new ReportParameter(
-				report04, "ParamAbbrevNotUsed", "ParamDescriptionNotUsed", true);
+				report04, "Some new parameter name", "Some new parameter description", widget1, true);
 		//		logger.info("unsavedReportParameter = {}", unsavedReportParameter);
 
 		ReportParameter savedReportParameter = reportParameterRepository.save(unsavedReportParameter);
@@ -74,9 +86,9 @@ public class ReportParameterRepositoryTest {
 		/*
 		 * TODO Replace this code with a custom "assertReportParameter(...)" method.
 		 */
-		assertEquals("ParamAbbrevNotUsed", foundReportParameter.getAbbreviation());
-		assertEquals("ParamDescriptionNotUsed", foundReportParameter.getDescription());
-		assertEquals(true, foundReportParameter.getActive());
+		assertEquals("Some new parameter name", foundReportParameter.getName());
+		assertEquals("Some new parameter description", foundReportParameter.getDescription());
+		assertEquals(true, foundReportParameter.getRequired());
 	}
 
 }

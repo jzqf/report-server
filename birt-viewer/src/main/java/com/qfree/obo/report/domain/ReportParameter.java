@@ -1,6 +1,7 @@
 package com.qfree.obo.report.domain;
 
 import java.io.Serializable;
+import java.util.Date;
 import java.util.UUID;
 
 import javax.persistence.Column;
@@ -40,14 +41,14 @@ public class ReportParameter implements Serializable {
 			columnDefinition = "uuid DEFAULT uuid_generate_v4()")
 	private UUID reportParameterId;
 
-	@Column(name = "abbreviation", nullable = false, length = 32)
-	private String abbreviation;
+	@Column(name = "name", nullable = false, length = 32)
+	private String name;
 
-	@Column(name = "description", nullable = false, length = 32)
+	@Column(name = "description", nullable = false, length = 80)
 	private String description;
 
-	@Column(name = "active", nullable = false)
-	private Boolean active;
+	@Column(name = "required", nullable = false)
+	private Boolean required;
 
 	@ManyToOne
 	/*
@@ -61,26 +62,37 @@ public class ReportParameter implements Serializable {
 			columnDefinition = "uuid")
 	private Report report;
 
+	@ManyToOne
+	/*
+	 * If columnDefinition="uuid" is omitted here and the database schema is 
+	 * created by Hibernate (via hibernate.hbm2ddl.auto="create"), then the 
+	 * PostgreSQL column definition includes "DEFAULT uuid_generate_v4()", which
+	 * is not what is wanted.
+	 */
+	@JoinColumn(name = "widget_id", nullable = false,
+			foreignKey = @ForeignKey(name = "fk_reportparameter_widget"),
+			columnDefinition = "uuid")
+	private Widget widget;
+
+	@Column(name = "created_on", nullable = false)
+	private Date createdOn;
+
 	public ReportParameter() {
 	}
 
-	public ReportParameter(Report report, String abbreviation, String description, Boolean active) {
-		this.report = report;
-		this.abbreviation = abbreviation;
-		this.description = description;
-		this.active = active;
+	public ReportParameter(Report report, String name, String description, Widget widget, Boolean required) {
+		this(report, name, description, widget, required, new Date());
 	}
 
-	//	public ReportParameter(UUID reportParameterId, String abbreviation, String description, Boolean active) {
-	//		//super();
-	//		//		if (reportParameterId == null) {
-	//		//			reportParameterId = java.util.UUID.randomUUID();
-	//		//		}
-	//		this.reportParameterId = reportParameterId;
-	//		this.abbreviation = abbreviation;
-	//		this.description = description;
-	//		this.active = active;
-	//	}
+	public ReportParameter(Report report, String name, String description, Widget widget, Boolean required,
+			Date createdOn) {
+		this.report = report;
+		this.name = name;
+		this.description = description;
+		this.widget = widget;
+		this.required = required;
+		this.createdOn = createdOn;
+	}
 
 	public UUID getReportParameterId() {
 		return this.reportParameterId;
@@ -90,20 +102,28 @@ public class ReportParameter implements Serializable {
 		this.reportParameterId = reportParameterId;
 	}
 
-	public String getAbbreviation() {
-		return this.abbreviation;
+	public Widget getWidget() {
+		return widget;
 	}
 
-	public void setAbbreviation(String abbreviation) {
-		this.abbreviation = abbreviation;
+	public void setWidget(Widget widget) {
+		this.widget = widget;
 	}
 
-	public Boolean getActive() {
-		return this.active;
+	public String getName() {
+		return this.name;
 	}
 
-	public void setActive(Boolean active) {
-		this.active = active;
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public Boolean getRequired() {
+		return this.required;
+	}
+
+	public void setRequired(Boolean required) {
+		this.required = required;
 	}
 
 	public String getDescription() {
@@ -119,37 +139,14 @@ public class ReportParameter implements Serializable {
 		StringBuilder builder = new StringBuilder();
 		builder.append("ReportParameter [reportParameterId=");
 		builder.append(reportParameterId);
-		builder.append(", abbreviation=");
-		builder.append(abbreviation);
+		builder.append(", name=");
+		builder.append(name);
 		builder.append(", description=");
 		builder.append(description);
-		builder.append(", active=");
-		builder.append(active);
+		builder.append(", required=");
+		builder.append(required);
 		builder.append("]");
 		return builder.toString();
 	}
-
-
-	//	public List<ReportUuid> getReports() {
-	//		return this.reports;
-	//	}
-	//
-	//	public void setReports(List<ReportUuid> reports) {
-	//		this.reports = reports;
-	//	}
-	//
-	//	public ReportUuid addReport(ReportUuid report) {
-	//		getReports().add(report);
-	//		report.setReportCategory(this);
-	//
-	//		return report;
-	//	}
-	//
-	//	public ReportUuid removeReport(ReportUuid report) {
-	//		getReports().remove(report);
-	//		report.setReportCategory(null);
-	//
-	//		return report;
-	//	}
 
 }

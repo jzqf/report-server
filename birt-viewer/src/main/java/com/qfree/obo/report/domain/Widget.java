@@ -18,98 +18,106 @@ import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;
 
 /**
- * The persistent class for the "report_category" database table.
+ * The persistent class for the "widget" database table.
+ * 
+ * Used to specify the graphical GUI element that will be used to prompt for
+ * a value, or for values, for a report parameter.
  * 
  * @author Jeffrey Zelt
  * 
  */
 @Entity
-@Table(name = "report_category", schema = "reporting")
+@Table(name = "widget", schema = "reporting")
 @TypeDef(name = "uuid-custom", defaultForType = UUID.class, typeClass = UuidCustomType.class)
-public class ReportCategory implements Serializable {
+public class Widget implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
 	@Id
 	//	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	//	@Column(name = "report_category_id", unique = true, nullable = false)
-	//	private Long reportCategoryId;
+	//	@Column(name = "widget_id", unique = true, nullable = false)
+	//	private Long widgetId;
 	@NotNull
 	@Type(type = "uuid-custom")
 	//	@Type(type = "pg-uuid")
 	@GeneratedValue(generator = "uuid2")
 	@GenericGenerator(name = "uuid2", strategy = "uuid2")
-	@Column(name = "report_category_id", unique = true, nullable = false,
+	@Column(name = "widget_id", unique = true, nullable = false,
 			columnDefinition = "uuid DEFAULT uuid_generate_v4()")
-	private UUID reportCategoryId;
+	private UUID widgetId;
 
-	@Column(name = "abbreviation", nullable = false, length = 32)
-	private String abbreviation;
+	@Column(name = "name", nullable = false, length = 32)
+	private String name;
 
-	@Column(name = "description", nullable = false, length = 32)
+	@Column(name = "description", nullable = false, length = 80)
 	private String description;
+
+	@Column(name = "multiple_select", nullable = false)
+	private boolean multipleSelect;
 
 	@Column(name = "active", nullable = false)
 	private boolean active;
 
-	@OneToMany(targetEntity = Report.class, mappedBy = "reportCategory")
-	private List<Report> reports;
+	@OneToMany(targetEntity = ReportParameter.class, mappedBy = "widget")
+	private List<ReportParameter> reportParameters;
 
 	@Column(name = "created_on", nullable = false)
 	private Date createdOn;
 
-	private ReportCategory() {
+	private Widget() {
 	}
 
-	public ReportCategory(String description, String abbreviation) {
-		this(description, abbreviation, true, new Date());
+	public Widget(String description, String name, boolean multipleSelect) {
+		this(description, name, multipleSelect, true, new Date());
 	}
 
-	public ReportCategory(String description, String abbreviation, boolean active) {
-		this(description, abbreviation, active, new Date());
+	public Widget(String description, String name, boolean multipleSelect, boolean active) {
+		this(description, name, multipleSelect, active, new Date());
 	}
 
-	public ReportCategory(String description, String abbreviation, boolean active, Date createdOn) {
+	public Widget(String description, String name, boolean multipleSelect, boolean active, Date createdOn) {
 		this.description = description;
-		this.abbreviation = abbreviation;
+		this.name = name;
+		this.multipleSelect = multipleSelect;
 		this.active = active;
 		this.createdOn = createdOn;
 	}
 
-	//	public ReportCategory(UUID reportCategoryId, String description, String abbreviation, boolean active) {
-	//		this.reportCategoryId = reportCategoryId;
-	//		this.description = description;
-	//		this.abbreviation = abbreviation;
-	//		this.active = active;
-	//	}
-
-	public UUID getReportCategoryId() {
-		return reportCategoryId;
+	public UUID getWidgetId() {
+		return widgetId;
 	}
 
 	public String getDescription() {
 		return description;
 	}
 
-	public String getAbbreviation() {
-		return abbreviation;
+	public String getName() {
+		return name;
+	}
+
+	public boolean isMultipleSelect() {
+		return multipleSelect;
+	}
+
+	public void setMultipleSelect(boolean multipleSelect) {
+		this.multipleSelect = multipleSelect;
 	}
 
 	public boolean isActive() {
 		return active;
 	}
 
-	public List<Report> getReports() {
-		return reports;
+	public List<ReportParameter> getReportParameters() {
+		return reportParameters;
 	}
 
 	@Override
 	public String toString() {
 		StringBuilder builder = new StringBuilder();
 		builder.append("ReportCategory [reportCategoryId=");
-		builder.append(reportCategoryId);
-		builder.append(", abbreviation=");
-		builder.append(abbreviation);
+		builder.append(widgetId);
+		builder.append(", name=");
+		builder.append(name);
 		builder.append(", description=");
 		builder.append(description);
 		builder.append(", active=");

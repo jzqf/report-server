@@ -7,7 +7,6 @@ import java.util.UUID;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
@@ -43,9 +42,6 @@ public class Role implements Serializable {
 			columnDefinition = "uuid DEFAULT uuid_generate_v4()")
 	private UUID roleId;
 
-	@Column(name = "created_on", nullable = false)
-	private Date createdOn;
-
 	@Column(name = "login_role", nullable = false)
 	private boolean loginRole;
 
@@ -61,16 +57,23 @@ public class Role implements Serializable {
 	@Column(name = "encoded_password", nullable = false, length = 32)
 	private String encodedPassword;
 
-	@OneToMany(targetEntity = RoleRole.class, fetch = FetchType.EAGER, mappedBy = "parentRole")
+	@OneToMany(targetEntity = RoleRole.class, mappedBy = "parentRole")
 	private List<RoleRole> parentRoleRoles;
 
-	@OneToMany(targetEntity = RoleRole.class, fetch = FetchType.EAGER, mappedBy = "childRole")
+	@OneToMany(targetEntity = RoleRole.class, mappedBy = "childRole")
 	private List<RoleRole> childRoleRoles;
+
+	@Column(name = "created_on", nullable = false)
+	private Date createdOn;
 
 	private Role() {
 	}
 
-	public Role(String encodedPassword, String username, Date createdOn, boolean loginRole) {
+	public Role(String encodedPassword, String username, boolean loginRole) {
+		this(encodedPassword,  username,  loginRole, new Date());
+	}
+
+	public Role(String encodedPassword, String username, boolean loginRole, Date createdOn) {
 		this.createdOn = createdOn;
 		this.loginRole = loginRole;
 		this.username = username;

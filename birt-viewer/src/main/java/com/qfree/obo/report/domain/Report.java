@@ -8,7 +8,6 @@ import java.util.UUID;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.ForeignKey;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -61,14 +60,11 @@ public class Report implements Serializable {
 	@Column(name = "name", nullable = false, length = 80)
 	private String name;
 
-	@Column(name = "created_on", nullable = false)
-	private Date createdOn;
-
 	/*
 	 * cascade = CascadeType.ALL:
 	 *     Deleting a Report will delete all of its ReportParameter's.
 	 */
-	@OneToMany(fetch = FetchType.EAGER, mappedBy = "report", cascade = CascadeType.ALL)
+	@OneToMany(mappedBy = "report", cascade = CascadeType.ALL)
 	private List<ReportParameter> reportParameters;
 
 	// Works for H2, but not PostgreSQL:
@@ -84,6 +80,9 @@ public class Report implements Serializable {
 	 */
 	@Column(name = "rptdesign", nullable = false, columnDefinition = "text")
 	private String rptdesign;
+
+	@Column(name = "created_on", nullable = false)
+	private Date createdOn;
 
 	private Report() {
 	}
