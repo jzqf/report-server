@@ -41,6 +41,13 @@ public class ReportParameter implements Serializable {
 			columnDefinition = "uuid DEFAULT uuid_generate_v4()")
 	private UUID reportParameterId;
 
+	/**
+	 * The name of the report parameter as defined in the BIRT report.
+	 * 
+	 * This is the string that must be used to refer to the report parameter
+	 * in a URL when requesting a report. It is used to provide one or more
+	 * values for the parameter. 
+	 */
 	@Column(name = "name", nullable = false, length = 32)
 	private String name;
 
@@ -69,6 +76,18 @@ public class ReportParameter implements Serializable {
 	 * PostgreSQL column definition includes "DEFAULT uuid_generate_v4()", which
 	 * is not what is wanted.
 	 */
+	@JoinColumn(name = "parameter_type_id", nullable = false,
+			foreignKey = @ForeignKey(name = "fk_reportparameter_parametertype"),
+			columnDefinition = "uuid")
+	private ParameterType parameterType;
+
+	@ManyToOne
+	/*
+	 * If columnDefinition="uuid" is omitted here and the database schema is 
+	 * created by Hibernate (via hibernate.hbm2ddl.auto="create"), then the 
+	 * PostgreSQL column definition includes "DEFAULT uuid_generate_v4()", which
+	 * is not what is wanted.
+	 */
 	@JoinColumn(name = "widget_id", nullable = false,
 			foreignKey = @ForeignKey(name = "fk_reportparameter_widget"),
 			columnDefinition = "uuid")
@@ -80,15 +99,18 @@ public class ReportParameter implements Serializable {
 	public ReportParameter() {
 	}
 
-	public ReportParameter(Report report, String name, String description, Widget widget, Boolean required) {
-		this(report, name, description, widget, required, new Date());
+	public ReportParameter(Report report, String name, String description, ParameterType parameterType,
+			Widget widget, Boolean required) {
+		this(report, name, description, parameterType, widget, required, new Date());
 	}
 
-	public ReportParameter(Report report, String name, String description, Widget widget, Boolean required,
+	public ReportParameter(Report report, String name, String description, ParameterType parameterType, Widget widget,
+			Boolean required,
 			Date createdOn) {
 		this.report = report;
 		this.name = name;
 		this.description = description;
+		this.parameterType = parameterType;
 		this.widget = widget;
 		this.required = required;
 		this.createdOn = createdOn;
@@ -108,6 +130,14 @@ public class ReportParameter implements Serializable {
 
 	public void setReport(Report report) {
 		this.report = report;
+	}
+
+	public ParameterType getParameterType() {
+		return parameterType;
+	}
+
+	public void setParameterType(ParameterType parameterType) {
+		this.parameterType = parameterType;
 	}
 
 	public Widget getWidget() {

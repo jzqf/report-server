@@ -18,30 +18,41 @@ import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;
 
 /**
- * The persistent class for the "report_category" database table.
+ * The persistent class for the "parameter_type" database table.
+ * 
+ * Specifies a basic type for a report parameter, e.g.,
+ * 
+ *     boolean
+ *     date
+ *     datetime
+ *     decimal
+ *     float
+ *     integer
+ *     string
+ *     time
  * 
  * @author Jeffrey Zelt
  * 
  */
 @Entity
-@Table(name = "report_category", schema = "reporting")
+@Table(name = "parameter_type", schema = "reporting")
 @TypeDef(name = "uuid-custom", defaultForType = UUID.class, typeClass = UuidCustomType.class)
-public class ReportCategory implements Serializable {
+public class ParameterType implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
 	@Id
 	//	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	//	@Column(name = "report_category_id", unique = true, nullable = false)
+	//	@Column(name = "parameter_type_id", unique = true, nullable = false)
 	//	private Long reportCategoryId;
 	@NotNull
 	@Type(type = "uuid-custom")
 	//	@Type(type = "pg-uuid")
 	@GeneratedValue(generator = "uuid2")
 	@GenericGenerator(name = "uuid2", strategy = "uuid2")
-	@Column(name = "report_category_id", unique = true, nullable = false,
+	@Column(name = "parameter_type_id", unique = true, nullable = false,
 			columnDefinition = "uuid DEFAULT uuid_generate_v4()")
-	private UUID reportCategoryId;
+	private UUID parameterTypeId;
 
 	@Column(name = "abbreviation", nullable = false, length = 32)
 	private String abbreviation;
@@ -49,35 +60,35 @@ public class ReportCategory implements Serializable {
 	@Column(name = "description", nullable = false, length = 32)
 	private String description;
 
+	@OneToMany(targetEntity = ReportParameter.class, mappedBy = "parameterType")
+	private List<ReportParameter> reportParameters;
+
 	@Column(name = "active", nullable = false)
 	private boolean active;
-
-	@OneToMany(targetEntity = Report.class, mappedBy = "reportCategory")
-	private List<Report> reports;
 
 	@Column(name = "created_on", nullable = false)
 	private Date createdOn;
 
-	private ReportCategory() {
+	private ParameterType() {
 	}
 
-	public ReportCategory(String description, String abbreviation) {
+	public ParameterType(String description, String abbreviation) {
 		this(description, abbreviation, true, new Date());
 	}
 
-	public ReportCategory(String description, String abbreviation, boolean active) {
+	public ParameterType(String description, String abbreviation, boolean active) {
 		this(description, abbreviation, active, new Date());
 	}
 
-	public ReportCategory(String description, String abbreviation, boolean active, Date createdOn) {
+	public ParameterType(String description, String abbreviation, boolean active, Date createdOn) {
 		this.description = description;
 		this.abbreviation = abbreviation;
 		this.active = active;
 		this.createdOn = createdOn;
 	}
 
-	public UUID getReportCategoryId() {
-		return reportCategoryId;
+	public UUID getParameterTypeId() {
+		return parameterTypeId;
 	}
 
 	public String getDescription() {
@@ -96,6 +107,14 @@ public class ReportCategory implements Serializable {
 		this.abbreviation = abbreviation;
 	}
 
+	public List<ReportParameter> getReportParameters() {
+		return reportParameters;
+	}
+
+	public void setReportParameters(List<ReportParameter> reportParameters) {
+		this.reportParameters = reportParameters;
+	}
+
 	public boolean isActive() {
 		return active;
 	}
@@ -104,19 +123,11 @@ public class ReportCategory implements Serializable {
 		this.active = active;
 	}
 
-	public List<Report> getReports() {
-		return reports;
-	}
-
-	public void setReports(List<Report> reports) {
-		this.reports = reports;
-	}
-
 	@Override
 	public String toString() {
 		StringBuilder builder = new StringBuilder();
 		builder.append("ReportCategory [reportCategoryId=");
-		builder.append(reportCategoryId);
+		builder.append(parameterTypeId);
 		builder.append(", abbreviation=");
 		builder.append(abbreviation);
 		builder.append(", description=");

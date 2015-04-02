@@ -19,6 +19,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.qfree.obo.report.domain.ParameterType;
 import com.qfree.obo.report.domain.Report;
 import com.qfree.obo.report.domain.ReportParameter;
 import com.qfree.obo.report.domain.Widget;
@@ -37,6 +38,9 @@ public class ReportParameterRepositoryTest {
 
 	@Autowired
 	WidgetRepository widgetRepository;
+
+	@Autowired
+	ParameterTypeRepository parameterTypeRepository;
 
 	@Test
 	@Transactional
@@ -68,8 +72,11 @@ public class ReportParameterRepositoryTest {
 		Widget widget1 = widgetRepository.findOne(uuidOfWidget1);
 		assertThat(widget1, is(notNullValue()));
 
+		UUID uuidOfParameterTypeDate = UUID.fromString("12d3f4f8-468d-4faf-be3a-5c15eaba4eb6");
+		ParameterType parameterTypeDate = parameterTypeRepository.findOne(uuidOfParameterTypeDate);
+
 		ReportParameter unsavedReportParameter = new ReportParameter(
-				report04, "Some new parameter name", "Some new parameter description", widget1, true);
+				report04, "Some new parameter name", "Some new parameter description", parameterTypeDate, widget1, true);
 		//		logger.info("unsavedReportParameter = {}", unsavedReportParameter);
 
 		ReportParameter savedReportParameter = reportParameterRepository.save(unsavedReportParameter);
