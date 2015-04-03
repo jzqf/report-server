@@ -1,5 +1,6 @@
 package com.qfree.obo.report.db;
 
+import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.notNullValue;
@@ -75,8 +76,20 @@ public class ReportParameterRepositoryTest {
 		UUID uuidOfParameterTypeDate = UUID.fromString("12d3f4f8-468d-4faf-be3a-5c15eaba4eb6");
 		ParameterType parameterTypeDate = parameterTypeRepository.findOne(uuidOfParameterTypeDate);
 
+		/* Query for the current maximum value of orderIndex for all 
+		 * ReportParameter's for report04. This should be equal to the number of
+		 * ReportParameter's for report04 because orderIndex is 1-based and 
+		 * is incremented by one for each aprameter added to the report.
+		 */
+		Integer maxOrderIndex = reportParameterRepository.maxOrderIndex(report04);
+		assertThat(maxOrderIndex, is(equalTo(1)));
+
+		Boolean required = true;
+		Boolean multivalued = false;
+
 		ReportParameter unsavedReportParameter = new ReportParameter(
-				report04, "Some new parameter name", "Some new parameter description", parameterTypeDate, widget1, true);
+				report04, "Some new parameter name", "Some new parameter description", parameterTypeDate, widget1,
+				required, multivalued, maxOrderIndex + 1);
 		//		logger.info("unsavedReportParameter = {}", unsavedReportParameter);
 
 		ReportParameter savedReportParameter = reportParameterRepository.save(unsavedReportParameter);
@@ -86,6 +99,12 @@ public class ReportParameterRepositoryTest {
 		//				unsavedReportParameter.getReportParameterId());
 
 		assertEquals(7, reportParameterRepository.count());
+
+		/*
+		 * Check that max(orderIndex) has been incremented for report04.
+		 */
+		Integer newMaxOrderIndex = reportParameterRepository.maxOrderIndex(report04);
+		assertThat(newMaxOrderIndex, is(equalTo(maxOrderIndex + 1)));
 
 		UUID uuidFromSavedReportParameter = savedReportParameter.getReportParameterId();
 		ReportParameter foundReportParameter = reportParameterRepository.findOne(uuidFromSavedReportParameter);

@@ -12,6 +12,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.NotNull;
 
 import org.hibernate.annotations.GenericGenerator;
@@ -25,7 +26,10 @@ import org.hibernate.annotations.TypeDef;
  * 
  */
 @Entity
-@Table(name = "report_parameter", schema = "reporting")
+@Table(name = "report_parameter", schema = "reporting",
+		uniqueConstraints = {
+				@UniqueConstraint(columnNames = { "report_id", "order_index" },
+						name = "uc_report_parameter_order_index") })
 @TypeDef(name = "uuid-custom", defaultForType = UUID.class, typeClass = UuidCustomType.class)
 public class ReportParameter implements Serializable {
 
@@ -56,6 +60,12 @@ public class ReportParameter implements Serializable {
 
 	@Column(name = "required", nullable = false)
 	private Boolean required;
+
+	@Column(name = "multivalued", nullable = false)
+	private Boolean multivalued;
+
+	@Column(name = "order_index", nullable = false)
+	private Integer orderIndex;
 
 	@ManyToOne
 	/*
@@ -100,19 +110,20 @@ public class ReportParameter implements Serializable {
 	}
 
 	public ReportParameter(Report report, String name, String description, ParameterType parameterType,
-			Widget widget, Boolean required) {
-		this(report, name, description, parameterType, widget, required, new Date());
+			Widget widget, Boolean required, Boolean multivalued, Integer orderIndex) {
+		this(report, name, description, parameterType, widget, required, multivalued, orderIndex, new Date());
 	}
 
 	public ReportParameter(Report report, String name, String description, ParameterType parameterType, Widget widget,
-			Boolean required,
-			Date createdOn) {
+			Boolean required, Boolean multivalued, Integer orderIndex, Date createdOn) {
 		this.report = report;
 		this.name = name;
 		this.description = description;
 		this.parameterType = parameterType;
 		this.widget = widget;
 		this.required = required;
+		this.multivalued = multivalued;
+		this.orderIndex = orderIndex;
 		this.createdOn = createdOn;
 	}
 
@@ -156,6 +167,14 @@ public class ReportParameter implements Serializable {
 		this.name = name;
 	}
 
+	public String getDescription() {
+		return this.description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
+	}
+
 	public Boolean getRequired() {
 		return this.required;
 	}
@@ -164,12 +183,20 @@ public class ReportParameter implements Serializable {
 		this.required = required;
 	}
 
-	public String getDescription() {
-		return this.description;
+	public Boolean getMultivalued() {
+		return multivalued;
 	}
 
-	public void setDescription(String description) {
-		this.description = description;
+	public void setMultivalued(Boolean multivalued) {
+		this.multivalued = multivalued;
+	}
+
+	public Integer getOrderIndex() {
+		return orderIndex;
+	}
+
+	public void setOrderIndex(Integer orderIndex) {
+		this.orderIndex = orderIndex;
 	}
 
 	@Override
@@ -181,8 +208,6 @@ public class ReportParameter implements Serializable {
 		builder.append(name);
 		builder.append(", description=");
 		builder.append(description);
-		builder.append(", required=");
-		builder.append(required);
 		builder.append("]");
 		return builder.toString();
 	}
