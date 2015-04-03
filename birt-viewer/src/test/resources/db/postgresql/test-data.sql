@@ -9,16 +9,17 @@ insert into reporting.parameter_type (parameter_type_id, description, abbreviati
 insert into reporting.parameter_type (parameter_type_id, description, abbreviation, active, created_on) values ('9b0af697-8bc9-49e2-b8b6-136ced83dbd8', 'String'                 , 'string'   , true, '2015-05-01T12:00:01');
 insert into reporting.parameter_type (parameter_type_id, description, abbreviation, active, created_on) values ('da575eee-e5a3-4149-8ea3-1fd86015bbb9', 'Time'                   , 'time'     , true, '2015-05-01T12:00:01');
 
-insert into reporting.document_format (document_format_id, name, file_extension, birt_format, active, created_on) values ('bc5169e0-3d36-483c-a7b5-a76766587991', 'Microsoft Word'               , 'doc' , 'doc' , true, '2015-06-30T11:59:00');
-insert into reporting.document_format (document_format_id, name, file_extension, birt_format, active, created_on) values ('d0225349-1642-46e3-a949-4ce39795907f', 'Office Open XML Document'     , 'docx', 'docx', true, '2015-06-30T11:59:00');
-insert into reporting.document_format (document_format_id, name, file_extension, birt_format, active, created_on) values ('38b73b21-cb66-42cf-932b-1cdf7937525c', 'OpenDocument Presentation'    , 'odp' , 'odp' , true, '2015-06-30T11:59:00');
-insert into reporting.document_format (document_format_id, name, file_extension, birt_format, active, created_on) values ('05a4ad8d-6f30-4d6d-83d5-995345a8dc58', 'OpenDocument Spreadsheet'     , 'ods' , 'ods' , true, '2015-06-30T11:59:00');
-insert into reporting.document_format (document_format_id, name, file_extension, birt_format, active, created_on) values ('b4f2249d-f52e-47e2-871c-daf35f4ba78e', 'OpenDocument Text'            , 'odt' , 'odt' , true, '2015-06-30T11:59:00');
-insert into reporting.document_format (document_format_id, name, file_extension, birt_format, active, created_on) values ('30800d77-5fdd-44bc-94a3-1502bd307c1d', 'PDF'                          , 'pdf' , 'pdf' , true, '2015-06-30T11:59:00');
-insert into reporting.document_format (document_format_id, name, file_extension, birt_format, active, created_on) values ('597f34fb-10d8-4408-971a-1b67472ac588', 'PowerPoint'                   , 'ppt' , 'ppt' , true, '2015-06-30T11:59:00');
-insert into reporting.document_format (document_format_id, name, file_extension, birt_format, active, created_on) values ('d7ccb194-91c6-4dce-bbfe-6424f079dc07', 'Office Open XML Presentation' , 'pptx', 'pptx', true, '2015-06-30T11:59:00');
-insert into reporting.document_format (document_format_id, name, file_extension, birt_format, active, created_on) values ('25762ba8-1688-4100-b323-b9e74eba396c', 'Microsoft Excel'              , 'xls' , 'xls' , true, '2015-06-30T11:59:00');
-insert into reporting.document_format (document_format_id, name, file_extension, birt_format, active, created_on) values ('c78ac922-2f37-4855-83ae-b708d453b005', 'Office Open XML Workbook'     , 'xlsx', 'xlsx', true, '2015-06-30T11:59:00');
+insert into reporting.document_format (document_format_id, name, file_extension, birt_format, active, created_on) values ('bc5169e0-3d36-483c-a7b5-a76766587991', 'Microsoft Word'               , 'doc' , 'doc' , true , '2015-06-30T11:59:00');
+insert into reporting.document_format (document_format_id, name, file_extension, birt_format, active, created_on) values ('d0225349-1642-46e3-a949-4ce39795907f', 'Office Open XML Document'     , 'docx', 'docx', true , '2015-06-30T11:59:00');
+insert into reporting.document_format (document_format_id, name, file_extension, birt_format, active, created_on) values ('e1d0b3f2-f639-4521-a055-d5465dce29a2', 'HTML'                         , 'html', 'html', false, '2015-06-30T11:59:00');
+insert into reporting.document_format (document_format_id, name, file_extension, birt_format, active, created_on) values ('38b73b21-cb66-42cf-932b-1cdf7937525c', 'OpenDocument Presentation'    , 'odp' , 'odp' , true , '2015-06-30T11:59:00');
+insert into reporting.document_format (document_format_id, name, file_extension, birt_format, active, created_on) values ('05a4ad8d-6f30-4d6d-83d5-995345a8dc58', 'OpenDocument Spreadsheet'     , 'ods' , 'ods' , true , '2015-06-30T11:59:00');
+insert into reporting.document_format (document_format_id, name, file_extension, birt_format, active, created_on) values ('b4f2249d-f52e-47e2-871c-daf35f4ba78e', 'OpenDocument Text'            , 'odt' , 'odt' , true , '2015-06-30T11:59:00');
+insert into reporting.document_format (document_format_id, name, file_extension, birt_format, active, created_on) values ('30800d77-5fdd-44bc-94a3-1502bd307c1d', 'PDF'                          , 'pdf' , 'pdf' , true , '2015-06-30T11:59:00');
+insert into reporting.document_format (document_format_id, name, file_extension, birt_format, active, created_on) values ('597f34fb-10d8-4408-971a-1b67472ac588', 'PowerPoint'                   , 'ppt' , 'ppt' , true , '2015-06-30T11:59:00');
+insert into reporting.document_format (document_format_id, name, file_extension, birt_format, active, created_on) values ('d7ccb194-91c6-4dce-bbfe-6424f079dc07', 'Office Open XML Presentation' , 'pptx', 'pptx', true , '2015-06-30T11:59:00');
+insert into reporting.document_format (document_format_id, name, file_extension, birt_format, active, created_on) values ('25762ba8-1688-4100-b323-b9e74eba396c', 'Microsoft Excel'              , 'xls' , 'xls' , true , '2015-06-30T11:59:00');
+insert into reporting.document_format (document_format_id, name, file_extension, birt_format, active, created_on) values ('c78ac922-2f37-4855-83ae-b708d453b005', 'Office Open XML Workbook'     , 'xlsx', 'xlsx', true , '2015-06-30T11:59:00');
 
 insert into reporting.report_category (report_category_id, description, abbreviation, active, created_on) values ('7a482694-51d2-42d0-b0e2-19dd13bbbc64', 'Accounting'       , 'ACCT' , false, '2015-04-30T12:00:00');
 insert into reporting.report_category (report_category_id, description, abbreviation, active, created_on) values ('bb2bc482-c19a-4c19-a087-e68ffc62b5a0', 'Q-Free internal'  , 'QFREE', true , '2015-05-30T22:00:00');
@@ -347,5 +348,23 @@ INSERT INTO role_role (role_role_id, parent_role_id, child_role_id, created_on) 
 INSERT INTO role_role (role_role_id, parent_role_id, child_role_id, created_on) VALUES ('fa17f095-624c-455b-9b69-e38bd3e1ff0f', '69f6b032-3989-4b06-be04-0e4bf5536997', 'ecf3be61-7bb3-4e05-8491-9dfcbf57493b', '2015-04-13T09:00:00');
 -- parent='bcc', child='bccc':
 INSERT INTO role_role (role_role_id, parent_role_id, child_role_id, created_on) VALUES ('2f804552-339c-4e72-8c9e-b8feef0099a3', '69f6b032-3989-4b06-be04-0e4bf5536997', '6b8ec23a-0bde-4d77-98df-0ed0b763ba69', '2015-04-13T09:00:00');
+
+
+-- Role "a" has access to report "Report name #01":
+insert into reporting.role_report (role_report_id, role_id, report_id, created_on) values ('50213453-0b2f-426d-b4f1-e70030b1592d', 'e73ee6a5-5236-4630-aba1-de18e76b8105', 'd65f3d9c-f67d-4beb-9936-9dfa19aa1407', '2015-05-06T15:30:00');
+-- Role "a" has access to report "Report name #02":
+insert into reporting.role_report (role_report_id, role_id, report_id, created_on) values ('6c99bd7d-0fc0-494c-8a1f-bfcfcc7e34f8', 'e73ee6a5-5236-4630-aba1-de18e76b8105', 'c7f1d394-9814-4ede-bb01-2700187d79ca', '2015-05-06T15:30:00');
+-- Role "ac" has access to report "Report name #05":
+insert into reporting.role_report (role_report_id, role_id, report_id, created_on) values ('f72562bc-62d1-410e-a18b-94f15443bd5a', 'e745b03b-a63d-4c14-8b3c-d9aa773080f1', 'f1f06b15-c0b6-488d-9eed-74e867a47d5a', '2015-05-06T15:30:00');
+-- Role "ac" has access to report "Report name #06":
+insert into reporting.role_report (role_report_id, role_id, report_id, created_on) values ('0186bd70-2555-4603-8ed9-c389fd60d4f8', 'e745b03b-a63d-4c14-8b3c-d9aa773080f1', 'adc50b28-cb84-4ede-9759-43f467ac22ec', '2015-05-06T15:30:00');
+-- Role "aab" has access to report "Report name #02":
+insert into reporting.role_report (role_report_id, role_id, report_id, created_on) values ('fc9edf17-c8af-433e-9469-11b56c9d53ca', '149c594e-9ae6-4c48-b02d-e84659d030ad', 'c7f1d394-9814-4ede-bb01-2700187d79ca', '2015-05-06T15:30:00');
+-- Role "aab" has access to report "Report name #03":
+insert into reporting.role_report (role_report_id, role_id, report_id, created_on) values ('2a3af647-0518-4dfb-8466-f94da3d755c0', '149c594e-9ae6-4c48-b02d-e84659d030ad', 'fe718314-5b39-40e7-aed2-279354c04a9d', '2015-05-06T15:30:00');
+-- Role "aabb" has access to report "Report name #03":
+insert into reporting.role_report (role_report_id, role_id, report_id, created_on) values ('461716c1-f0c7-437c-a3a2-6c63938f9128', 'ee56f34d-dbb4-41c1-9d30-ce29cf973820', 'fe718314-5b39-40e7-aed2-279354c04a9d', '2015-05-06T15:30:00');
+-- Role "aabb" has access to report "Report name #04":
+insert into reporting.role_report (role_report_id, role_id, report_id, created_on) values ('3ad583f6-8116-4208-a803-e65f2b877c60', 'ee56f34d-dbb4-41c1-9d30-ce29cf973820', '702d5daa-e23d-4f00-b32b-67b44c06d8f6', '2015-05-06T15:30:00');
 
 COMMIT;

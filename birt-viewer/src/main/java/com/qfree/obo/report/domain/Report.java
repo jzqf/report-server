@@ -67,6 +67,13 @@ public class Report implements Serializable {
 	@OneToMany(mappedBy = "report", cascade = CascadeType.ALL)
 	private List<ReportParameter> reportParameters;
 
+	/*
+	 * cascade = CascadeType.ALL:
+	 *     Deleting a Report will delete all of its RoleReport's.
+	 */
+	@OneToMany(mappedBy = "report", cascade = CascadeType.ALL)
+	private List<RoleReport> roleReports;
+
 	// Works for H2, but not PostgreSQL:
 	//	@Column(name = "rptdesign", nullable = false, columnDefinition = "clob")
 	/* This works for PostgreSQL but not for H2. With H2, it seems that if you 
@@ -135,6 +142,14 @@ public class Report implements Serializable {
 
 	public void setReportParameters(List<ReportParameter> reportParameters) {
 		this.reportParameters = reportParameters;
+	}
+
+	public List<RoleReport> getRoleReports() {
+		return roleReports;
+	}
+
+	public void setRoleReports(List<RoleReport> roleReports) {
+		this.roleReports = roleReports;
 	}
 
 	public String getRptdesign() {

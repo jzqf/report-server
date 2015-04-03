@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -62,6 +63,13 @@ public class Role implements Serializable {
 
 	@OneToMany(targetEntity = RoleRole.class, mappedBy = "childRole")
 	private List<RoleRole> childRoleRoles;
+
+	/*
+	 * cascade = CascadeType.ALL:
+	 *     Deleting a Role will delete all of its RoleReport's.
+	 */
+	@OneToMany(mappedBy = "role", cascade = CascadeType.ALL)
+	private List<RoleReport> roleReports;
 
 	@Column(name = "created_on", nullable = false)
 	private Date createdOn;
@@ -134,6 +142,14 @@ public class Role implements Serializable {
 
 	public void setChildRoleRoles(List<RoleRole> childRoleRoles) {
 		this.childRoleRoles = childRoleRoles;
+	}
+
+	public List<RoleReport> getRoleReports() {
+		return roleReports;
+	}
+
+	public void setRoleReports(List<RoleReport> roleReports) {
+		this.roleReports = roleReports;
 	}
 
 	@Override

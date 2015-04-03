@@ -19,17 +19,19 @@ import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;
 
 /**
- * The persistent class for the "role_role" database table.
+ * The persistent class for the "role_report" database table.
+ * 
+ * Instances/rows specify which reports are available to each role.
  * 
  * @author Jeffrey Zelt
  * 
  */
 @Entity
-@Table(name = "role_role", schema = "reporting",
-		uniqueConstraints = { @UniqueConstraint(columnNames = { "parent_role_id", "child_role_id" },
-				name = "uc_rolerole_parent_child") })
+@Table(name = "role_report", schema = "reporting",
+		uniqueConstraints = { @UniqueConstraint(columnNames = { "role_id", "report_id" },
+				name = "uc_rolereport_role_report") })
 @TypeDef(name = "uuid-custom", defaultForType = UUID.class, typeClass = UuidCustomType.class)
-public class RoleRole implements Serializable {
+public class RoleReport implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
@@ -38,7 +40,7 @@ public class RoleRole implements Serializable {
 	//	@Type(type = "pg-uuid")
 	@GeneratedValue(generator = "uuid2")
 	@GenericGenerator(name = "uuid2", strategy = "uuid2")
-	@Column(name = "role_role_id", unique = true, nullable = false,
+	@Column(name = "role_report_id", unique = true, nullable = false,
 			columnDefinition = "uuid DEFAULT uuid_generate_v4()")
 	private UUID roleRoleId;
 
@@ -49,10 +51,10 @@ public class RoleRole implements Serializable {
 	 * PostgreSQL column definition includes "DEFAULT uuid_generate_v4()", which
 	 * is not what is wanted.
 	 */
-	@JoinColumn(name = "parent_role_id", nullable = false,
-			foreignKey = @ForeignKey(name = "fk_rolerole_parentrole"),
+	@JoinColumn(name = "role_id", nullable = false,
+			foreignKey = @ForeignKey(name = "fk_rolereport_role"),
 			columnDefinition = "uuid")
-	private Role parentRole;
+	private Role role;
 
 	@ManyToOne
 	/*
@@ -61,24 +63,24 @@ public class RoleRole implements Serializable {
 	 * PostgreSQL column definition includes "DEFAULT uuid_generate_v4()", which
 	 * is not what is wanted.
 	 */
-	@JoinColumn(name = "child_role_id", nullable = false,
-			foreignKey = @ForeignKey(name = "fk_rolerole_childrole"),
+	@JoinColumn(name = "report_id", nullable = false,
+			foreignKey = @ForeignKey(name = "fk_rolereport_report"),
 			columnDefinition = "uuid")
-	private Role childRole;
+	private Report report;
 
 	@Column(name = "created_on", nullable = false)
 	private Date createdOn;
 
-	private RoleRole() {
+	private RoleReport() {
 	}
 
-	public RoleRole(Role parentRole, Role childRole) {
-		this(parentRole, childRole, new Date());
+	public RoleReport(Role role, Report report) {
+		this(role, report, new Date());
 	}
 
-	public RoleRole(Role parentRole, Role childRole, Date createdOn) {
-		this.parentRole = parentRole;
-		this.childRole = childRole;
+	public RoleReport(Role role, Report report, Date createdOn) {
+		this.role = role;
+		this.report = report;
 		this.createdOn = createdOn;
 	}
 
@@ -90,31 +92,29 @@ public class RoleRole implements Serializable {
 		return this.createdOn;
 	}
 
-	public Role getParentRole() {
-		return this.parentRole;
+	public Report getReport() {
+		return this.report;
 	}
 
-	public void setParentRole(Role parentRole) {
-		this.parentRole = parentRole;
+	public void setReport(Report report) {
+		this.report = report;
 	}
 
-	public Role getChildRole() {
-		return this.childRole;
+	public Role getRole() {
+		return this.role;
 	}
 
-	public void setChildRole(Role childRole) {
-		this.childRole = childRole;
+	public void setRole(Role role) {
+		this.role = role;
 	}
 
 	@Override
 	public String toString() {
 		StringBuilder builder = new StringBuilder();
-		builder.append("RoleRole [parentRole=");
-		builder.append(parentRole);
-		builder.append(", childRole=");
-		builder.append(childRole);
-		builder.append(", createdOn=");
-		builder.append(createdOn);
+		builder.append("RoleReport [role=");
+		builder.append(role);
+		builder.append(", report=");
+		builder.append(report);
 		builder.append("]");
 		return builder.toString();
 	}
