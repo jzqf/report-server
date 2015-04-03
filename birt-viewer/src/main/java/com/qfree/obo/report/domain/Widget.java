@@ -130,7 +130,7 @@ public class Widget implements Serializable {
 	@Override
 	public String toString() {
 		StringBuilder builder = new StringBuilder();
-		builder.append("ReportCategory [reportCategoryId=");
+		builder.append("ReportCategory [widgetId=");
 		builder.append(widgetId);
 		builder.append(", name=");
 		builder.append(name);
@@ -138,8 +138,6 @@ public class Widget implements Serializable {
 		builder.append(description);
 		builder.append(", active=");
 		builder.append(active);
-		//		builder.append(", reports=");
-		//		builder.append(reports);
 		builder.append("]");
 		return builder.toString();
 	}

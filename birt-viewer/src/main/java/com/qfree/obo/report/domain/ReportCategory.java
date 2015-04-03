@@ -115,16 +115,12 @@ public class ReportCategory implements Serializable {
 	@Override
 	public String toString() {
 		StringBuilder builder = new StringBuilder();
-		builder.append("ReportCategory [reportCategoryId=");
-		builder.append(reportCategoryId);
 		builder.append(", abbreviation=");
 		builder.append(abbreviation);
 		builder.append(", description=");
 		builder.append(description);
 		builder.append(", active=");
 		builder.append(active);
-		//		builder.append(", reports=");
-		//		builder.append(reports);
 		builder.append("]");
 		return builder.toString();
 	}

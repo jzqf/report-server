@@ -145,4 +145,17 @@ public class Report implements Serializable {
 		this.rptdesign = rptdesign;
 	}
 
+	@Override
+	public String toString() {
+		StringBuilder builder = new StringBuilder();
+		builder.append("Report [reportId=");
+		builder.append(reportId);
+		builder.append(", reportCategory=");
+		builder.append(reportCategory);
+		builder.append(", name=");
+		builder.append(name);
+		builder.append("]");
+		return builder.toString();
+	}
+
 }

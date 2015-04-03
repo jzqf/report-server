@@ -202,12 +202,16 @@ public class ReportParameter implements Serializable {
 	@Override
 	public String toString() {
 		StringBuilder builder = new StringBuilder();
-		builder.append("ReportParameter [reportParameterId=");
-		builder.append(reportParameterId);
+		builder.append("ReportParameter [report=");
+		builder.append(report);
 		builder.append(", name=");
 		builder.append(name);
-		builder.append(", description=");
-		builder.append(description);
+		builder.append(", required=");
+		builder.append(required);
+		builder.append(", multivalued=");
+		builder.append(multivalued);
+		builder.append(", orderIndex=");
+		builder.append(orderIndex);
 		builder.append("]");
 		return builder.toString();
 	}
