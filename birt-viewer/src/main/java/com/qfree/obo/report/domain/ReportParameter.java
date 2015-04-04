@@ -58,6 +58,12 @@ public class ReportParameter implements Serializable {
 	@Column(name = "description", nullable = false, length = 80)
 	private String description;
 
+	/**
+	 * If this is false, a GUI should display a checkbox labeled "Is null" (or 
+	 * something similar) next to the input widget for the parameter. If this
+	 * is checked, the widget for entering a value should be disabled to 
+	 * indicate that no value can be entered.
+	 */
 	@Column(name = "required", nullable = false)
 	private Boolean required;
 
@@ -129,10 +135,6 @@ public class ReportParameter implements Serializable {
 
 	public UUID getReportParameterId() {
 		return this.reportParameterId;
-	}
-
-	public void setReportParameterId(UUID reportParameterId) {
-		this.reportParameterId = reportParameterId;
 	}
 
 	public Report getReport() {
