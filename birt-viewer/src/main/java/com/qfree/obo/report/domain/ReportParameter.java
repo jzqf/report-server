@@ -2,8 +2,10 @@ package com.qfree.obo.report.domain;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.ForeignKey;
@@ -11,6 +13,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.NotNull;
@@ -109,6 +112,14 @@ public class ReportParameter implements Serializable {
 			columnDefinition = "uuid")
 	private Widget widget;
 
+	/*
+	 * cascade = CascadeType.ALL:
+	 *     Deleting a ReportParameter will delete all of its 
+	 *     RoleParameterValue's.
+	 */
+	@OneToMany(mappedBy = "reportParameter", cascade = CascadeType.ALL)
+	private List<RoleParameterValue> roleParameterValues;
+
 	@Column(name = "created_on", nullable = false)
 	private Date createdOn;
 
@@ -159,6 +170,14 @@ public class ReportParameter implements Serializable {
 
 	public void setWidget(Widget widget) {
 		this.widget = widget;
+	}
+
+	public List<RoleParameterValue> getRoleParameterValues() {
+		return roleParameterValues;
+	}
+
+	public void setRoleParameterValues(List<RoleParameterValue> roleParameterValuess) {
+		this.roleParameterValues = roleParameterValuess;
 	}
 
 	public String getName() {

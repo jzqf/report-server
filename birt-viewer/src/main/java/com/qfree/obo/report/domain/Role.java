@@ -71,6 +71,20 @@ public class Role implements Serializable {
 	@OneToMany(mappedBy = "role", cascade = CascadeType.ALL)
 	private List<RoleReport> roleReports;
 
+	/*
+	 * cascade = CascadeType.ALL:
+	 *     Deleting a Role will delete all of its Subscription's.
+	 */
+	@OneToMany(mappedBy = "role", cascade = CascadeType.ALL)
+	private List<Subscription> roleSubscriptions;
+
+	/*
+	 * cascade = CascadeType.ALL:
+	 *     Deleting a Role will delete all of its RoleParameterValue's.
+	 */
+	@OneToMany(mappedBy = "role", cascade = CascadeType.ALL)
+	private List<RoleParameterValue> roleParameterValues;
+
 	@Column(name = "created_on", nullable = false)
 	private Date createdOn;
 
@@ -150,6 +164,22 @@ public class Role implements Serializable {
 
 	public void setRoleReports(List<RoleReport> roleReports) {
 		this.roleReports = roleReports;
+	}
+
+	public List<Subscription> getRoleSubscriptions() {
+		return roleSubscriptions;
+	}
+
+	public void setRoleSubscriptions(List<Subscription> roleSubscriptions) {
+		this.roleSubscriptions = roleSubscriptions;
+	}
+
+	public List<RoleParameterValue> getRoleParameterValues() {
+		return roleParameterValues;
+	}
+
+	public void setRoleParameterValues(List<RoleParameterValue> roleParameterValues) {
+		this.roleParameterValues = roleParameterValues;
 	}
 
 	@Override

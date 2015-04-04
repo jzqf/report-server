@@ -2,12 +2,14 @@ package com.qfree.obo.report.domain;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
@@ -43,6 +45,9 @@ public class DocumentFormat implements Serializable {
 	@Column(name = "document_format_id", unique = true, nullable = false,
 			columnDefinition = "uuid DEFAULT uuid_generate_v4()")
 	private UUID documentFormatId;
+
+	@OneToMany(targetEntity = Subscription.class, mappedBy = "documentFormat")
+	private List<Subscription> subscriptions;
 
 	/*
 	 * E.g., "OpenDocument Spreadsheet", "PDF", "PowerPoint", ...

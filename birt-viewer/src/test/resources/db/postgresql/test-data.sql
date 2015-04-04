@@ -368,19 +368,23 @@ insert into reporting.role_report (role_report_id, role_id, report_id, created_o
 insert into reporting.role_report (role_report_id, role_id, report_id, created_on) values ('3ad583f6-8116-4208-a803-e65f2b877c60', 'ee56f34d-dbb4-41c1-9d30-ce29cf973820', '702d5daa-e23d-4f00-b32b-67b44c06d8f6', '2015-05-06T15:30:00');
 
 
----- Role "aabb", report parameter "Report01Param01" (multi-valued):
---insert into reporting.role_parameter_value (role_parameter_value_id, role_id, report_parameter_id, string_value, created_on) values ('7e7f2284-efcd-447b-b0fd-07b841400666', 'ee56f34d-dbb4-41c1-9d30-ce29cf973820', '206723d6-50e7-4f4a-85c0-cb679e92ad6b', 'Role aabb''s value for Report01Param01'   , '2015-05-31T13:00:00');
----- Role "aabb", report parameter "Report02Param01" (single-valued):
---insert into reporting.role_parameter_value (role_parameter_value_id, role_id, report_parameter_id, string_value, created_on) values ('c0b449cc-4b87-4733-8648-a1b0168a1925', 'ee56f34d-dbb4-41c1-9d30-ce29cf973820', '36fc0de4-cc4c-4efa-8c47-73e0e254e449', 'Role aabb''s value for Report02Param01'   , '2015-05-31T13:00:00');
----- Role "aabb", report parameter "Report03Param01" (multi-valued):
---insert into reporting.role_parameter_value (role_parameter_value_id, role_id, report_parameter_id, string_value, created_on) values ('967147d0-24e2-46a5-8423-e18a87bf13c1', 'ee56f34d-dbb4-41c1-9d30-ce29cf973820', '5a201251-b04f-406e-b07c-c6d55dc3dc85', 'Role aabb''s value #1 for Report03Param01', '2015-05-31T13:00:00');
---insert into reporting.role_parameter_value (role_parameter_value_id, role_id, report_parameter_id, string_value, created_on) values ('7fe51a01-c311-46e3-9a8b-70346a71b47f', 'ee56f34d-dbb4-41c1-9d30-ce29cf973820', '5a201251-b04f-406e-b07c-c6d55dc3dc85', 'Role aabb''s value #2 for Report03Param01', '2015-05-31T13:00:00');
---insert into reporting.role_parameter_value (role_parameter_value_id, role_id, report_parameter_id, string_value, created_on) values ('58d7d22d-620d-474e-aae5-a57620229110', 'ee56f34d-dbb4-41c1-9d30-ce29cf973820', '5a201251-b04f-406e-b07c-c6d55dc3dc85', 'Role aabb''s value #3 for Report03Param01', '2015-05-31T13:00:00');
----- Role "aabb", report parameter "Report04Param01" (single-valued):
---insert into reporting.role_parameter_value (role_parameter_value_id, role_id, report_parameter_id, string_value, created_on) values ('80546b03-0e32-46c2-abe8-4b7f3e34d90b', 'ee56f34d-dbb4-41c1-9d30-ce29cf973820', '4c2bd07e-c7d7-451a-8c07-c8f589959382', 'Role aabb''s value for Report04Param01'   , '2015-05-31T13:00:00');
----- Role "acca", report parameter "Report05Param01" (multi-valued):
---insert into reporting.role_parameter_value (role_parameter_value_id, role_id, report_parameter_id, string_value, created_on) values ('213fac69-8424-4d88-a55d-90ac43e18832', '39bc8737-b9eb-4cb5-9765-1c33dd5ee40c', '73792710-8d69-477a-8d44-fe646507eaf8', 'Role acca''s value for Report05Param01'   , '2015-05-31T13:00:00');
----- Role "acca", report parameter "Report04Param01" (single-valued):
---insert into reporting.role_parameter_value (role_parameter_value_id, role_id, report_parameter_id, string_value, created_on) values ('558f3ecb-15dc-4eec-951a-eedc6ebf3fb0', '39bc8737-b9eb-4cb5-9765-1c33dd5ee40c', '86e93f08-86fd-4aed-99c2-1f4af29382d3', 'Role acca''s value for Report06Param01'   , '2015-05-31T13:00:00');
+-- Role "aabb", report parameter "Report01Param01" (multi-valued):
+insert into reporting.role_parameter_value (role_parameter_value_id, role_id, report_parameter_id, string_value, created_on) values ('7e7f2284-efcd-447b-b0fd-07b841400666', 'ee56f34d-dbb4-41c1-9d30-ce29cf973820', '206723d6-50e7-4f4a-85c0-cb679e92ad6b', 'Role aabb''s value for Report01Param01'   , '2015-05-31T13:00:00');
+-- Role "aabb", report parameter "Report02Param01" (single-valued):
+insert into reporting.role_parameter_value (role_parameter_value_id, role_id, report_parameter_id, string_value, created_on) values ('c0b449cc-4b87-4733-8648-a1b0168a1925', 'ee56f34d-dbb4-41c1-9d30-ce29cf973820', '36fc0de4-cc4c-4efa-8c47-73e0e254e449', 'Role aabb''s value for Report02Param01'   , '2015-05-31T13:00:00');
+-- Role "aabb", report parameter "Report03Param01" (multi-valued):
+insert into reporting.role_parameter_value (role_parameter_value_id, role_id, report_parameter_id, string_value, created_on) values ('967147d0-24e2-46a5-8423-e18a87bf13c1', 'ee56f34d-dbb4-41c1-9d30-ce29cf973820', '5a201251-b04f-406e-b07c-c6d55dc3dc85', 'Role aabb''s value #1 for Report03Param01', '2015-05-31T13:00:00');
+insert into reporting.role_parameter_value (role_parameter_value_id, role_id, report_parameter_id, string_value, created_on) values ('7fe51a01-c311-46e3-9a8b-70346a71b47f', 'ee56f34d-dbb4-41c1-9d30-ce29cf973820', '5a201251-b04f-406e-b07c-c6d55dc3dc85', 'Role aabb''s value #2 for Report03Param01', '2015-05-31T13:00:00');
+insert into reporting.role_parameter_value (role_parameter_value_id, role_id, report_parameter_id, string_value, created_on) values ('58d7d22d-620d-474e-aae5-a57620229110', 'ee56f34d-dbb4-41c1-9d30-ce29cf973820', '5a201251-b04f-406e-b07c-c6d55dc3dc85', 'Role aabb''s value #3 for Report03Param01', '2015-05-31T13:00:00');
+-- Role "aabb", report parameter "Report04Param01" (single-valued):
+insert into reporting.role_parameter_value (role_parameter_value_id, role_id, report_parameter_id, string_value, created_on) values ('80546b03-0e32-46c2-abe8-4b7f3e34d90b', 'ee56f34d-dbb4-41c1-9d30-ce29cf973820', '4c2bd07e-c7d7-451a-8c07-c8f589959382', 'Role aabb''s value for Report04Param01'   , '2015-05-31T13:00:00');
+-- Role "acca", report parameter "Report05Param01" (multi-valued):
+insert into reporting.role_parameter_value (role_parameter_value_id, role_id, report_parameter_id, string_value, created_on) values ('213fac69-8424-4d88-a55d-90ac43e18832', '39bc8737-b9eb-4cb5-9765-1c33dd5ee40c', '73792710-8d69-477a-8d44-fe646507eaf8', 'Role acca''s value for Report05Param01'   , '2015-05-31T13:00:00');
+-- Role "acca", report parameter "Report04Param01" (single-valued):
+insert into reporting.role_parameter_value (role_parameter_value_id, role_id, report_parameter_id, string_value, created_on) values ('558f3ecb-15dc-4eec-951a-eedc6ebf3fb0', '39bc8737-b9eb-4cb5-9765-1c33dd5ee40c', '86e93f08-86fd-4aed-99c2-1f4af29382d3', 'Role acca''s value for Report06Param01'   , '2015-05-31T13:00:00');
+
+
+-- Subscription #1:  Deliver report "Report name #01" to role "aabb" in format "PDF":
+insert into reporting.subscription (subscription_id, role_id, report_id, document_format_id, run_once_at, cron_schedule, email, description, created_on) values ('7f68e31c-2884-4638-b3e5-c64697a28bd1', 'ee56f34d-dbb4-41c1-9d30-ce29cf973820', 'd65f3d9c-f67d-4beb-9936-9dfa19aa1407', '30800d77-5fdd-44bc-94a3-1502bd307c1d', '2016-01-01T03:00:00', '00 6 * * 1', 'jeffreyz@q-free.com', 'Description for Subscription #1', '2015-06-06T15:45:30');
 
 COMMIT;
