@@ -15,6 +15,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Type;
@@ -95,6 +97,7 @@ public class Report implements Serializable {
 	@Column(name = "rptdesign", nullable = false, columnDefinition = "text")
 	private String rptdesign;
 
+	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name = "created_on", nullable = false)
 	private Date createdOn;
 

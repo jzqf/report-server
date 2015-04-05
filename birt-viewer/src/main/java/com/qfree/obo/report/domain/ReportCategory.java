@@ -11,6 +11,8 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import javax.validation.constraints.NotNull;
 
 import org.hibernate.annotations.GenericGenerator;
@@ -55,6 +57,7 @@ public class ReportCategory implements Serializable {
 	@OneToMany(targetEntity = Report.class, mappedBy = "reportCategory")
 	private List<Report> reports;
 
+	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name = "created_on", nullable = false)
 	private Date createdOn;
 

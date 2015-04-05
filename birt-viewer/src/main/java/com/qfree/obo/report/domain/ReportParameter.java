@@ -15,6 +15,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.NotNull;
 
@@ -120,6 +122,7 @@ public class ReportParameter implements Serializable {
 	@OneToMany(mappedBy = "reportParameter", cascade = CascadeType.ALL)
 	private List<RoleParameterValue> roleParameterValues;
 
+	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name = "created_on", nullable = false)
 	private Date createdOn;
 

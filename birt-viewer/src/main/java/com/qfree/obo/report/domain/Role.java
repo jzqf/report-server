@@ -12,6 +12,8 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.NotNull;
 
@@ -85,6 +87,7 @@ public class Role implements Serializable {
 	@OneToMany(mappedBy = "role", cascade = CascadeType.ALL)
 	private List<RoleParameterValue> roleParameterValues;
 
+	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name = "created_on", nullable = false)
 	private Date createdOn;
 

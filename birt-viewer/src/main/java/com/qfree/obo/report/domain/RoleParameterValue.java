@@ -12,6 +12,8 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.NotNull;
 
@@ -87,6 +89,7 @@ public class RoleParameterValue implements Serializable {
 	@Column(name = "string_value", nullable = false, length = 80)
 	private String stringValue;
 
+	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name = "created_on", nullable = false)
 	private Date createdOn;
 

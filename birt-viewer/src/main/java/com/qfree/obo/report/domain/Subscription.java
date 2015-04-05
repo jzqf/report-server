@@ -12,6 +12,8 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Type;
@@ -91,6 +93,7 @@ public class Subscription implements Serializable {
 	 * time. This can be specified instead of (or in addition to?) cronSchedule,
 	 * which is used to specify a recurring delivery schedule.
 	 */
+	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name = "run_once_at", nullable = true)
 	private Date runOnceAt;
 
@@ -110,6 +113,7 @@ public class Subscription implements Serializable {
 	@Column(name = "description", nullable = true, length = 80)
 	private String description;
 
+	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name = "created_on", nullable = false)
 	private Date createdOn;
 
