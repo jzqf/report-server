@@ -2,8 +2,10 @@ package com.qfree.obo.report.domain;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.ForeignKey;
@@ -11,6 +13,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -78,6 +81,13 @@ public class Subscription implements Serializable {
 			foreignKey = @ForeignKey(name = "fk_subscription_documentformat"),
 			columnDefinition = "uuid")
 	private DocumentFormat documentFormat;
+
+	/*
+	 * cascade = CascadeType.ALL:
+	 *     Deleting a Role will delete all of its SubscriptionParameterValue's.
+	 */
+	@OneToMany(mappedBy = "subscription", cascade = CascadeType.ALL)
+	private List<SubscriptionParameterValue> subscriptionParameterValues;
 
 	/**
 	 * "cron" expression used to specify the delivery schedule for the 
@@ -167,6 +177,14 @@ public class Subscription implements Serializable {
 
 	public void setDocumentFormat(DocumentFormat documentFormat) {
 		this.documentFormat = documentFormat;
+	}
+
+	public List<SubscriptionParameterValue> getSubscriptionParameterValues() {
+		return subscriptionParameterValues;
+	}
+
+	public void setSubscriptionParameterValues(List<SubscriptionParameterValue> subscriptionParameterValues) {
+		this.subscriptionParameterValues = subscriptionParameterValues;
 	}
 
 	public String getCronSchedule() {

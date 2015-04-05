@@ -122,6 +122,14 @@ public class ReportParameter implements Serializable {
 	@OneToMany(mappedBy = "reportParameter", cascade = CascadeType.ALL)
 	private List<RoleParameterValue> roleParameterValues;
 
+	/*
+	 * cascade = CascadeType.ALL:
+	 *     Deleting a ReportParameter will delete all of its 
+	 *     SubscriptionParameterValue's.
+	 */
+	@OneToMany(mappedBy = "reportParameter", cascade = CascadeType.ALL)
+	private List<SubscriptionParameterValue> subscriptionParameterValues;
+
 	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name = "created_on", nullable = false)
 	private Date createdOn;
@@ -181,6 +189,14 @@ public class ReportParameter implements Serializable {
 
 	public void setRoleParameterValues(List<RoleParameterValue> roleParameterValuess) {
 		this.roleParameterValues = roleParameterValuess;
+	}
+
+	public List<SubscriptionParameterValue> getSubscriptionParameterValues() {
+		return subscriptionParameterValues;
+	}
+
+	public void setSubscriptionParameterValues(List<SubscriptionParameterValue> subscriptionParameterValues) {
+		this.subscriptionParameterValues = subscriptionParameterValues;
 	}
 
 	public String getName() {
