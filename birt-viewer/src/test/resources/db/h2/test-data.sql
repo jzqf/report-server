@@ -395,6 +395,6 @@ insert into reporting.subscription_parameter_value (subscription_parameter_value
 -- job for report "Report name #01" run by role "aabb":
 insert into reporting.job (report_id, role_id, created_on) VALUES ('d65f3d9c-f67d-4beb-9936-9dfa19aa1407', 'ee56f34d-dbb4-41c1-9d30-ce29cf973820', '2015-06-06T00:00:15');
 -- job for report "Report name #01" run by role "aabb":
-insert into reporting.job (report_id, role_id, created_on) VALUES ('d65f3d9c-f67d-4beb-9936-9dfa19aa1407', 'ee56f34d-dbb4-41c1-9d30-ce29cf973820', '2015-06-06T00:00:15');
+insert into reporting.job (report_id, role_id, created_on) VALUES ('d65f3d9c-f67d-4beb-9936-9dfa19aa1407', 'ee56f34d-dbb4-41c1-9d30-ce29cf973820', '2015-06-07T00:00:15');
 
 COMMIT;
