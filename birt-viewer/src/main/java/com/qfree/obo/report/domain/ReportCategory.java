@@ -115,6 +115,10 @@ public class ReportCategory implements Serializable {
 		this.reports = reports;
 	}
 
+	public Date getCreatedOn() {
+		return createdOn;
+	}
+
 	@Override
 	public String toString() {
 		StringBuilder builder = new StringBuilder();
