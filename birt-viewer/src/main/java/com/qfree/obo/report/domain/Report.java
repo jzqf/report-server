@@ -62,6 +62,9 @@ public class Report implements Serializable {
 	@Column(name = "name", nullable = false, length = 80)
 	private String name;
 
+	@Column(name = "number", nullable = false)
+	private Integer number;
+
 	/*
 	 * cascade = CascadeType.ALL:
 	 *     Deleting a Report will delete all of its Subscription's.
@@ -97,19 +100,22 @@ public class Report implements Serializable {
 	@OneToMany(mappedBy = "report", cascade = CascadeType.ALL)
 	private List<Job> jobs;
 
-	// Works for H2, but not PostgreSQL:
-	//	@Column(name = "rptdesign", nullable = false, columnDefinition = "clob")
-	/* This works for PostgreSQL but not for H2. With H2, it seems that if you 
-	 * create a column of type "text", then the column that is created is  
-	 * actually given the H2 type "clob". This means that validating the schema 
-	 * via hbm2ddl.auto=validate will fail because Hibernate expects a column of 
-	 * type "text" but it sees, instead, a column of type "clob". This causes
-	 * the validation to fail. Hence, the schema cannotbe validated during unit
-	 * testing with the embedded H2 database unless we temporarily set 
-	 * columnDefinition = "clob".
-	 */
-	@Column(name = "rptdesign", nullable = false, columnDefinition = "text")
-	private String rptdesign;
+	//	// Works for H2, but not PostgreSQL:
+	//	//	@Column(name = "rptdesign", nullable = false, columnDefinition = "clob")
+	//	/* This works for PostgreSQL but not for H2. With H2, it seems that if you 
+	//	 * create a column of type "text", then the column that is created is  
+	//	 * actually given the H2 type "clob". This means that validating the schema 
+	//	 * via hbm2ddl.auto=validate will fail because Hibernate expects a column of 
+	//	 * type "text" but it sees, instead, a column of type "clob". This causes
+	//	 * the validation to fail. Hence, the schema cannotbe validated during unit
+	//	 * testing with the embedded H2 database unless we temporarily set 
+	//	 * columnDefinition = "clob".
+	//	 */
+	//	@Column(name = "rptdesign", nullable = false, columnDefinition = "text")
+	//	private String rptdesign;
+
+	@Column(name = "active", nullable = false)
+	private boolean active;
 
 	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name = "created_on", nullable = false)
@@ -118,23 +124,24 @@ public class Report implements Serializable {
 	private Report() {
 	}
 
-	public Report(ReportCategory reportCategory, String name, String rptdesign) {
-		this(reportCategory, name, rptdesign, new Date());
+	public Report(ReportCategory reportCategory, String name, Integer number, boolean active) {
+		this(reportCategory, name, number, active, new Date());
 	}
 
-	public Report(ReportCategory reportCategory, String name, String rptdesign, Date createdOn) {
+	public Report(ReportCategory reportCategory, String name, Integer number, boolean active, Date createdOn) {
 		this.reportCategory = reportCategory;
 		this.name = name;
-		this.rptdesign = rptdesign;
+		this.number = number;
+		this.active = active;
 		this.createdOn = createdOn;
 	}
 
-	public Report(UUID reportId, ReportCategory reportCategory, String name, Date createdOn) {
-		this.reportId = reportId;
-		this.reportCategory = reportCategory;
-		this.name = name;
-		this.createdOn = createdOn;
-	}
+	//	public Report(UUID reportId, ReportCategory reportCategory, String name, Date createdOn) {
+	//		this.reportId = reportId;
+	//		this.reportCategory = reportCategory;
+	//		this.name = name;
+	//		this.createdOn = createdOn;
+	//	}
 
 	public UUID getReportId() {
 		return this.reportId;
@@ -146,6 +153,22 @@ public class Report implements Serializable {
 
 	public void setName(String name) {
 		this.name = name;
+	}
+
+	public Integer getNumber() {
+		return number;
+	}
+
+	public void setNumber(Integer number) {
+		this.number = number;
+	}
+
+	public boolean isActive() {
+		return active;
+	}
+
+	public void setActive(boolean active) {
+		this.active = active;
 	}
 
 	public Date getCreatedOn() {
@@ -192,13 +215,13 @@ public class Report implements Serializable {
 		this.jobs = jobs;
 	}
 
-	public String getRptdesign() {
-		return rptdesign;
-	}
-
-	public void setRptdesign(String rptdesign) {
-		this.rptdesign = rptdesign;
-	}
+	//	public String getRptdesign() {
+	//		return rptdesign;
+	//	}
+	//
+	//	public void setRptdesign(String rptdesign) {
+	//		this.rptdesign = rptdesign;
+	//	}
 
 	@Override
 	public String toString() {

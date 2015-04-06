@@ -126,7 +126,7 @@ public class ReportRepositoryTest {
 				"        <simple-master-page name=\"Simple MasterPage\" id=\"2\"/>\n" +
 				"    </page-setup>\n" +
 				"</report>";
-		Report report = new Report(reportCategoryOfReport03, "Some report title", rptdesign, new Date());
+		Report report = new Report(reportCategoryOfReport03, "Some report title", 666, true);
 		Report saved = reportRepository.save(report);
 		assertNotNull(saved.getReportId());    // Check that id was created.
 		assertEquals(7, reportRepository.count());
