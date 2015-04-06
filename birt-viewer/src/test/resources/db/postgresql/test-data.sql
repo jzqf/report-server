@@ -391,4 +391,10 @@ insert into reporting.subscription (subscription_id, role_id, report_id, documen
 -- [report] "Report name #01" for [subscription] "Description for Subscription #1":
 insert into reporting.subscription_parameter_value (subscription_parameter_value_id, subscription_id, report_parameter_id, string_value, time_value, year_number, years_relative, month_number, months_relative, week_of_month_number, week_of_year_number, weeks_relative, day_of_month_number, day_of_week_number, days_relative, created_on) VALUES ('a5159f31-1c2b-496f-af04-bcb02cc04cfb', '7f68e31c-2884-4638-b3e5-c64697a28bd1', '206723d6-50e7-4f4a-85c0-cb679e92ad6b', 'integer value for Report01Param01 for subscription #1', null, null, null, null, null, null, null, null, null, null, null, '2015-03-15T11:00:01');
 
+
+-- job for report "Report name #01" run by role "aabb":
+insert into reporting.job (report_id, role_id, created_on) VALUES ('d65f3d9c-f67d-4beb-9936-9dfa19aa1407', 'ee56f34d-dbb4-41c1-9d30-ce29cf973820', '2015-06-06T00:00:15');
+-- job for report "Report name #01" run by role "aabb":
+insert into reporting.job (report_id, role_id, created_on) VALUES ('d65f3d9c-f67d-4beb-9936-9dfa19aa1407', 'ee56f34d-dbb4-41c1-9d30-ce29cf973820', '2015-06-06T00:00:15');
+
 COMMIT;
