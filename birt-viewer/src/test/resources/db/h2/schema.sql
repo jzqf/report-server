@@ -8,9 +8,10 @@
 --DROP SCHEMA IF EXISTS reporting;
 
 CREATE SCHEMA reporting;
+--------------------------------------------------------------------------------
 
 CREATE TABLE reporting.document_format (
-    document_format_id uuid DEFAULT RANDOM_UUID() NOT NULL,
+    document_format_id uuid NOT NULL,
     active boolean NOT NULL,
     birt_format character varying(8) NOT NULL,
     created_on timestamp NOT NULL,
@@ -18,8 +19,26 @@ CREATE TABLE reporting.document_format (
     name character varying(32) NOT NULL
 );
 
+CREATE TABLE reporting.job (
+    job_id identity NOT NULL,
+    created_on timestamp NOT NULL,
+    report_id uuid NOT NULL,
+    role_id uuid NOT NULL
+);
+
+
+--CREATE SEQUENCE job_job_id_seq
+--    START WITH 1
+--    INCREMENT BY 1
+--    NO MINVALUE
+--    NO MAXVALUE
+--    CACHE 1;
+----ALTER TABLE job_job_id_seq OWNER TO dbtest;
+----ALTER SEQUENCE job_job_id_seq OWNED BY job.job_id;
+
+
 CREATE TABLE reporting.parameter_type (
-    parameter_type_id uuid DEFAULT RANDOM_UUID() NOT NULL,
+    parameter_type_id uuid NOT NULL,
     abbreviation character varying(32) NOT NULL,
     active boolean NOT NULL,
     created_on timestamp NOT NULL,
@@ -27,7 +46,7 @@ CREATE TABLE reporting.parameter_type (
 );
 
 CREATE TABLE reporting.report (
-    report_id uuid DEFAULT RANDOM_UUID() NOT NULL,
+    report_id uuid NOT NULL,
     created_on timestamp NOT NULL,
     name character varying(80) NOT NULL,
     rptdesign text NOT NULL,
@@ -35,7 +54,7 @@ CREATE TABLE reporting.report (
 );
 
 CREATE TABLE reporting.report_category (
-    report_category_id uuid DEFAULT RANDOM_UUID() NOT NULL,
+    report_category_id uuid NOT NULL,
     abbreviation character varying(32) NOT NULL,
     active boolean NOT NULL,
     created_on timestamp NOT NULL,
@@ -43,7 +62,7 @@ CREATE TABLE reporting.report_category (
 );
 
 CREATE TABLE reporting.report_parameter (
-    report_parameter_id uuid DEFAULT RANDOM_UUID() NOT NULL,
+    report_parameter_id uuid NOT NULL,
     created_on timestamp NOT NULL,
     description character varying(80) NOT NULL,
     multivalued boolean NOT NULL,
@@ -56,7 +75,7 @@ CREATE TABLE reporting.report_parameter (
 );
 
 CREATE TABLE reporting.role (
-    role_id uuid DEFAULT RANDOM_UUID() NOT NULL,
+    role_id uuid NOT NULL,
     created_on timestamp NOT NULL,
     encoded_password character varying(32) NOT NULL,
     full_name character varying(32),
@@ -65,7 +84,7 @@ CREATE TABLE reporting.role (
 );
 
 CREATE TABLE reporting.role_parameter_value (
-    role_parameter_value_id uuid DEFAULT RANDOM_UUID() NOT NULL,
+    role_parameter_value_id uuid NOT NULL,
     created_on timestamp NOT NULL,
     string_value character varying(80) NOT NULL,
     report_parameter_id uuid NOT NULL,
@@ -73,21 +92,21 @@ CREATE TABLE reporting.role_parameter_value (
 );
 
 CREATE TABLE reporting.role_report (
-    role_report_id uuid DEFAULT RANDOM_UUID() NOT NULL,
+    role_report_id uuid NOT NULL,
     created_on timestamp NOT NULL,
     report_id uuid NOT NULL,
     role_id uuid NOT NULL
 );
 
 CREATE TABLE reporting.role_role (
-    role_role_id uuid DEFAULT RANDOM_UUID() NOT NULL,
+    role_role_id uuid NOT NULL,
     created_on timestamp NOT NULL,
     child_role_id uuid NOT NULL,
     parent_role_id uuid NOT NULL
 );
 
 CREATE TABLE reporting.subscription (
-    subscription_id uuid DEFAULT RANDOM_UUID() NOT NULL,
+    subscription_id uuid NOT NULL,
     created_on timestamp NOT NULL,
     cron_schedule character varying(80),
     description character varying(80),
@@ -98,8 +117,9 @@ CREATE TABLE reporting.subscription (
     role_id uuid NOT NULL
 );
 
+
 CREATE TABLE reporting.subscription_parameter_value (
-    subscription_parameter_value_id uuid DEFAULT RANDOM_UUID() NOT NULL,
+    subscription_parameter_value_id uuid NOT NULL,
     created_on timestamp NOT NULL,
     day_of_month_number integer,
     day_of_week_number integer,
@@ -118,7 +138,7 @@ CREATE TABLE reporting.subscription_parameter_value (
 );
 
 CREATE TABLE reporting.widget (
-    widget_id uuid DEFAULT RANDOM_UUID() NOT NULL,
+    widget_id uuid NOT NULL,
     active boolean NOT NULL,
     created_on timestamp NOT NULL,
     description character varying(80) NOT NULL,
@@ -127,12 +147,26 @@ CREATE TABLE reporting.widget (
 );
 
 
+--ALTER TABLE reporting.job ALTER COLUMN job_id SET DEFAULT nextval('job_job_id_seq');
+----ALTER TABLE reporting.job ALTER COLUMN job_id SET DEFAULT nextval('job_job_id_seq'::regclass);
+----SELECT pg_catalog.setval('job_job_id_seq', 3, true);
+
+
+
 --
 -- Name: document_format_pkey; Type: CONSTRAINT; Schema: reporting; Owner: dbtest; Tablespace: 
 --
 
 ALTER TABLE reporting.document_format
     ADD CONSTRAINT document_format_pkey PRIMARY KEY (document_format_id);
+
+
+--
+-- Name: job_pkey; Type: CONSTRAINT; Schema: reporting; Owner: dbtest; Tablespace: 
+--
+
+--ALTER TABLE reporting.job
+--    ADD CONSTRAINT job_pkey PRIMARY KEY (job_id);
 
 
 --
@@ -261,6 +295,22 @@ ALTER TABLE reporting.role_role
 
 ALTER TABLE reporting.widget
     ADD CONSTRAINT widget_pkey PRIMARY KEY (widget_id);
+
+
+--
+-- Name: fk_job_report; Type: FK CONSTRAINT; Schema: reporting; Owner: dbtest
+--
+
+ALTER TABLE reporting.job
+    ADD CONSTRAINT fk_job_report FOREIGN KEY (report_id) REFERENCES report(report_id);
+
+
+--
+-- Name: fk_job_role; Type: FK CONSTRAINT; Schema: reporting; Owner: dbtest
+--
+
+ALTER TABLE reporting.job
+    ADD CONSTRAINT fk_job_role FOREIGN KEY (role_id) REFERENCES role(role_id);
 
 
 --

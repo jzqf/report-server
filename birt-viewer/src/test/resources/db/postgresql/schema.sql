@@ -1,5 +1,6 @@
 -- PostgreSQL:
 
+DROP TABLE IF EXISTS job;
 DROP TABLE IF EXISTS role_report;
 DROP TABLE IF EXISTS role_parameter_value;
 DROP TABLE IF EXISTS report;
@@ -14,6 +15,7 @@ DROP TABLE IF EXISTS parameter_type;
 DROP TABLE IF EXISTS widget;
 
 CREATE SCHEMA IF NOT EXISTS reporting;
+--------------------------------------------------------------------------------
 
 CREATE TABLE document_format (
     document_format_id uuid DEFAULT public.uuid_generate_v4() NOT NULL,
@@ -23,6 +25,24 @@ CREATE TABLE document_format (
     file_extension character varying(8) NOT NULL,
     name character varying(32) NOT NULL
 );
+
+CREATE TABLE job (
+    job_id bigint NOT NULL,
+    created_on timestamp without time zone NOT NULL,
+    report_id uuid NOT NULL,
+    role_id uuid NOT NULL
+);
+
+
+CREATE SEQUENCE job_job_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+ALTER TABLE job_job_id_seq OWNER TO dbtest;
+ALTER SEQUENCE job_job_id_seq OWNED BY job.job_id;
+
 
 CREATE TABLE parameter_type (
     parameter_type_id uuid DEFAULT public.uuid_generate_v4() NOT NULL,
@@ -104,6 +124,7 @@ CREATE TABLE subscription (
     role_id uuid NOT NULL
 );
 
+
 CREATE TABLE subscription_parameter_value (
     subscription_parameter_value_id uuid DEFAULT public.uuid_generate_v4() NOT NULL,
     created_on timestamp without time zone NOT NULL,
@@ -133,12 +154,25 @@ CREATE TABLE widget (
 );
 
 
+ALTER TABLE ONLY job ALTER COLUMN job_id SET DEFAULT nextval('job_job_id_seq'::regclass);
+SELECT pg_catalog.setval('job_job_id_seq', 3, true);
+
+
+
 --
 -- Name: document_format_pkey; Type: CONSTRAINT; Schema: reporting; Owner: dbtest; Tablespace: 
 --
 
 ALTER TABLE ONLY document_format
     ADD CONSTRAINT document_format_pkey PRIMARY KEY (document_format_id);
+
+
+--
+-- Name: job_pkey; Type: CONSTRAINT; Schema: reporting; Owner: dbtest; Tablespace: 
+--
+
+ALTER TABLE ONLY job
+    ADD CONSTRAINT job_pkey PRIMARY KEY (job_id);
 
 
 --
@@ -270,6 +304,22 @@ ALTER TABLE ONLY widget
 
 
 --
+-- Name: fk_job_report; Type: FK CONSTRAINT; Schema: reporting; Owner: dbtest
+--
+
+ALTER TABLE ONLY job
+    ADD CONSTRAINT fk_job_report FOREIGN KEY (report_id) REFERENCES report(report_id);
+
+
+--
+-- Name: fk_job_role; Type: FK CONSTRAINT; Schema: reporting; Owner: dbtest
+--
+
+ALTER TABLE ONLY job
+    ADD CONSTRAINT fk_job_role FOREIGN KEY (role_id) REFERENCES role(role_id);
+
+
+--
 -- Name: fk_report_reportcategory; Type: FK CONSTRAINT; Schema: reporting; Owner: dbtest
 --
 
@@ -387,3 +437,4 @@ ALTER TABLE ONLY subscription
 
 ALTER TABLE ONLY subscription_parameter_value
     ADD CONSTRAINT fk_subscriptionparametervalue_reportparameter FOREIGN KEY (report_parameter_id) REFERENCES report_parameter(report_parameter_id);
+

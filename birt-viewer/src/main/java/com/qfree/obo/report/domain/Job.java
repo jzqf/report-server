@@ -40,7 +40,7 @@ public class Job implements Serializable {
 	//	@GenericGenerator(name = "uuid2", strategy = "uuid2")
 	//	@Column(name = "job_id", unique = true, nullable = false,
 	//			columnDefinition = "uuid DEFAULT uuid_generate_v4()")
-	//	private UUID roleRoleId;
+	//	private UUID jobId;
 
 	@ManyToOne
 	/*
