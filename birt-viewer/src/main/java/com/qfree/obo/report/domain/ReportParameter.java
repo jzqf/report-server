@@ -33,7 +33,8 @@ import org.hibernate.annotations.TypeDef;
 @Entity
 @Table(name = "report_parameter", schema = "reporting",
 		uniqueConstraints = {
-				@UniqueConstraint(columnNames = { "report_id", "order_index" },
+				//				@UniqueConstraint(columnNames = { "report_id", "order_index" },
+				@UniqueConstraint(columnNames = { "report_version_id", "order_index" },
 						name = "uc_report_parameter_order_index") })
 @TypeDef(name = "uuid-custom", defaultForType = UUID.class, typeClass = UuidCustomType.class)
 public class ReportParameter implements Serializable {
@@ -85,10 +86,14 @@ public class ReportParameter implements Serializable {
 	 * PostgreSQL column definition includes "DEFAULT uuid_generate_v4()", which
 	 * is not what is wanted.
 	 */
-	@JoinColumn(name = "report_id", nullable = false,
+	@JoinColumn(name = "report_version_id", nullable = false,
 			foreignKey = @ForeignKey(name = "fk_reportparameter_report"),
 			columnDefinition = "uuid")
-	private Report report;
+	private ReportVersion reportVersion;
+	//	@JoinColumn(name = "report_id", nullable = false,
+	//			foreignKey = @ForeignKey(name = "fk_reportparameter_report"),
+	//			columnDefinition = "uuid")
+	//	private Report report;
 
 	@ManyToOne
 	/*
@@ -145,14 +150,15 @@ public class ReportParameter implements Serializable {
 	public ReportParameter() {
 	}
 
-	public ReportParameter(Report report, String name, String description, ParameterType parameterType,
+	public ReportParameter(ReportVersion reportVersion, String name, String description, ParameterType parameterType,
 			Widget widget, Boolean required, Boolean multivalued, Integer orderIndex) {
-		this(report, name, description, parameterType, widget, required, multivalued, orderIndex, new Date());
+		this(reportVersion, name, description, parameterType, widget, required, multivalued, orderIndex, new Date());
 	}
 
-	public ReportParameter(Report report, String name, String description, ParameterType parameterType, Widget widget,
+	public ReportParameter(ReportVersion reportVersion, String name, String description, ParameterType parameterType,
+			Widget widget,
 			Boolean required, Boolean multivalued, Integer orderIndex, Date createdOn) {
-		this.report = report;
+		this.reportVersion = reportVersion;
 		this.name = name;
 		this.description = description;
 		this.parameterType = parameterType;
@@ -167,12 +173,12 @@ public class ReportParameter implements Serializable {
 		return this.reportParameterId;
 	}
 
-	public Report getReport() {
-		return report;
+	public ReportVersion getReportVersion() {
+		return reportVersion;
 	}
 
-	public void setReport(Report report) {
-		this.report = report;
+	public void setReportVersion(ReportVersion reportVersion) {
+		this.reportVersion = reportVersion;
 	}
 
 	public ParameterType getParameterType() {
@@ -258,8 +264,8 @@ public class ReportParameter implements Serializable {
 	@Override
 	public String toString() {
 		StringBuilder builder = new StringBuilder();
-		builder.append("ReportParameter [report=");
-		builder.append(report);
+		builder.append("ReportParameter [reportVersion=");
+		builder.append(reportVersion);
 		builder.append(", name=");
 		builder.append(name);
 		builder.append(", required=");

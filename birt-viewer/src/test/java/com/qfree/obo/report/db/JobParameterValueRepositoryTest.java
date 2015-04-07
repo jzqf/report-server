@@ -26,6 +26,7 @@ import com.qfree.obo.report.domain.Job;
 import com.qfree.obo.report.domain.JobParameterValue;
 import com.qfree.obo.report.domain.Report;
 import com.qfree.obo.report.domain.ReportParameter;
+import com.qfree.obo.report.domain.ReportVersion;
 import com.qfree.obo.report.domain.Role;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -76,6 +77,9 @@ public class JobParameterValueRepositoryTest {
 		Report report04 = reportRepository.findOne(uuidOfReport04);
 		assertThat(report04, is(not(nullValue())));
 
+		ReportVersion report04Version01 = report04.getReportVersions().get(0);
+		assertThat(report04Version01, is(not(nullValue())));
+
 		UUID uuidOfRole_aabb = UUID.fromString("ee56f34d-dbb4-41c1-9d30-ce29cf973820");
 		Role role_aabb = roleRepository.findOne(uuidOfRole_aabb);
 		assertThat(role_aabb, is(notNullValue()));
@@ -88,7 +92,9 @@ public class JobParameterValueRepositoryTest {
 		/*
 		 * Get all the parameters.
 		 */
-		List<ReportParameter> reportParameters = report04.getReportParameters();
+		//		List<ReportParameter> reportParameters = report04.getReportParameters();
+		//		assertThat(reportParameters, hasSize(equalTo(1)));
+		List<ReportParameter> reportParameters = report04Version01.getReportParameters();
 		assertThat(reportParameters, hasSize(equalTo(1)));
 
 		/*

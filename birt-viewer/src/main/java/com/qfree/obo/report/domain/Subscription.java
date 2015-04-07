@@ -65,10 +65,14 @@ public class Subscription implements Serializable {
 	 * PostgreSQL column definition includes "DEFAULT uuid_generate_v4()", which
 	 * is not what is wanted.
 	 */
-	@JoinColumn(name = "report_id", nullable = false,
+	//	@JoinColumn(name = "report_id", nullable = false,
+	//			foreignKey = @ForeignKey(name = "fk_subscription_report"),
+	//			columnDefinition = "uuid")
+	//	private Report report;
+	@JoinColumn(name = "report_version_id", nullable = false,
 			foreignKey = @ForeignKey(name = "fk_subscription_report"),
 			columnDefinition = "uuid")
-	private Report report;
+	private ReportVersion reportVersion;
 
 	@ManyToOne
 	/*
@@ -130,15 +134,17 @@ public class Subscription implements Serializable {
 	private Subscription() {
 	}
 
-	public Subscription(Role role, Report report, DocumentFormat documentFormat, String cronSchedule, Date runOnceAt,
+	public Subscription(Role role, ReportVersion reportVersion, DocumentFormat documentFormat, String cronSchedule,
+			Date runOnceAt,
 			String email, String description) {
-		this(role, report, documentFormat, cronSchedule, runOnceAt, email, description, new Date());
+		this(role, reportVersion, documentFormat, cronSchedule, runOnceAt, email, description, new Date());
 	}
 
-	public Subscription(Role role, Report report, DocumentFormat documentFormat, String cronSchedule, Date runOnceAt,
+	public Subscription(Role role, ReportVersion reportVersion, DocumentFormat documentFormat, String cronSchedule,
+			Date runOnceAt,
 			String email, String description, Date createdOn) {
 		this.role = role;
-		this.report = report;
+		this.reportVersion = reportVersion;
 		this.documentFormat = documentFormat;
 		this.cronSchedule = cronSchedule;
 		this.runOnceAt = runOnceAt;
@@ -155,12 +161,12 @@ public class Subscription implements Serializable {
 		return this.createdOn;
 	}
 
-	public Report getReport() {
-		return this.report;
+	public ReportVersion getReportVersion() {
+		return this.reportVersion;
 	}
 
-	public void setReport(Report report) {
-		this.report = report;
+	public void setReportVersion(ReportVersion reportVersion) {
+		this.reportVersion = reportVersion;
 	}
 
 	public Role getRole() {
@@ -224,8 +230,8 @@ public class Subscription implements Serializable {
 		StringBuilder builder = new StringBuilder();
 		builder.append("RoleReport [role=");
 		builder.append(role);
-		builder.append(", report=");
-		builder.append(report);
+		builder.append(", reportVersion=");
+		builder.append(reportVersion);
 		builder.append("]");
 		return builder.toString();
 	}

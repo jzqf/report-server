@@ -67,17 +67,17 @@ public class Report implements Serializable {
 
 	/*
 	 * cascade = CascadeType.ALL:
-	 *     Deleting a Report will delete all of its Subscription's.
+	 *     Deleting a Report will delete all of its ReportVersion's.
 	 */
 	@OneToMany(mappedBy = "report", cascade = CascadeType.ALL)
 	private List<ReportVersion> reportVersions;
 
-	/*
-	 * cascade = CascadeType.ALL:
-	 *     Deleting a Report will delete all of its ReportParameter's.
-	 */
-	@OneToMany(mappedBy = "report", cascade = CascadeType.ALL)
-	private List<ReportParameter> reportParameters;
+	//	/*
+	//	 * cascade = CascadeType.ALL:
+	//	 *     Deleting a Report will delete all of its ReportParameter's.
+	//	 */
+	//	@OneToMany(mappedBy = "report", cascade = CascadeType.ALL)
+	//	private List<ReportParameter> reportParameters;
 
 	/*
 	 * cascade = CascadeType.ALL:
@@ -86,12 +86,12 @@ public class Report implements Serializable {
 	@OneToMany(mappedBy = "report", cascade = CascadeType.ALL)
 	private List<RoleReport> roleReports;
 
-	/*
-	 * cascade = CascadeType.ALL:
-	 *     Deleting a Report will delete all of its Subscription's.
-	 */
-	@OneToMany(mappedBy = "report", cascade = CascadeType.ALL)
-	private List<Subscription> reportSubscriptions;
+	//	/*
+	//	 * cascade = CascadeType.ALL:
+	//	 *     Deleting a Report will delete all of its Subscription's.
+	//	 */
+	//	@OneToMany(mappedBy = "report", cascade = CascadeType.ALL)
+	//	private List<Subscription> reportSubscriptions;
 
 	/*
 	 * cascade = CascadeType.ALL:
@@ -183,12 +183,12 @@ public class Report implements Serializable {
 		this.reportCategory = reportCategory;
 	}
 
-	public List<ReportParameter> getReportParameters() {
-		return reportParameters;
+	public List<ReportVersion> getReportVersions() {
+		return reportVersions;
 	}
 
-	public void setReportParameters(List<ReportParameter> reportParameters) {
-		this.reportParameters = reportParameters;
+	public void setReportVersions(List<ReportVersion> reportVersions) {
+		this.reportVersions = reportVersions;
 	}
 
 	public List<RoleReport> getRoleReports() {
@@ -197,14 +197,6 @@ public class Report implements Serializable {
 
 	public void setRoleReports(List<RoleReport> roleReports) {
 		this.roleReports = roleReports;
-	}
-
-	public List<Subscription> getReportSubscriptions() {
-		return reportSubscriptions;
-	}
-
-	public void setReportSubscriptions(List<Subscription> reportSubscriptions) {
-		this.reportSubscriptions = reportSubscriptions;
 	}
 
 	public List<Job> getJobs() {

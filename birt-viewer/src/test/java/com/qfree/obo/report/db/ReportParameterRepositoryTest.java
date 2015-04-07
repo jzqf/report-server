@@ -23,6 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.qfree.obo.report.domain.ParameterType;
 import com.qfree.obo.report.domain.Report;
 import com.qfree.obo.report.domain.ReportParameter;
+import com.qfree.obo.report.domain.ReportVersion;
 import com.qfree.obo.report.domain.Widget;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -69,6 +70,9 @@ public class ReportParameterRepositoryTest {
 		Report report04 = reportRepository.findOne(uuidOfReport04);
 		assertThat(report04, is(not(nullValue())));
 
+		ReportVersion report04Version01 = report04.getReportVersions().get(0);
+		assertThat(report04Version01, is(not(nullValue())));
+
 		UUID uuidOfWidget1 = UUID.fromString("b8e91527-8b0e-4ed2-8cba-8cb8989ba8e2");
 		Widget widget1 = widgetRepository.findOne(uuidOfWidget1);
 		assertThat(widget1, is(notNullValue()));
@@ -79,16 +83,21 @@ public class ReportParameterRepositoryTest {
 		/* Query for the current maximum value of orderIndex for all 
 		 * ReportParameter's for report04. This should be equal to the number of
 		 * ReportParameter's for report04 because orderIndex is 1-based and 
-		 * is incremented by one for each aprameter added to the report.
+		 * is incremented by one for each parameter added to the report.
 		 */
-		Integer maxOrderIndex = reportParameterRepository.maxOrderIndex(report04);
+		//		Integer maxOrderIndex = reportParameterRepository.maxOrderIndex(report04);
+		Integer maxOrderIndex = reportParameterRepository.maxOrderIndex(report04Version01);
 		assertThat(maxOrderIndex, is(equalTo(1)));
 
 		Boolean required = true;
 		Boolean multivalued = false;
 
+		//		ReportParameter unsavedReportParameter = new ReportParameter(
+		//				report04, "Some new parameter name", "Some new parameter description", parameterTypeDate, widget1,
+		//				required, multivalued, maxOrderIndex + 1);
 		ReportParameter unsavedReportParameter = new ReportParameter(
-				report04, "Some new parameter name", "Some new parameter description", parameterTypeDate, widget1,
+				report04Version01, "Some new parameter name", "Some new parameter description", parameterTypeDate,
+				widget1,
 				required, multivalued, maxOrderIndex + 1);
 		//		logger.info("unsavedReportParameter = {}", unsavedReportParameter);
 
@@ -103,7 +112,8 @@ public class ReportParameterRepositoryTest {
 		/*
 		 * Check that max(orderIndex) has been incremented for report04.
 		 */
-		Integer newMaxOrderIndex = reportParameterRepository.maxOrderIndex(report04);
+		//		Integer newMaxOrderIndex = reportParameterRepository.maxOrderIndex(report04);
+		Integer newMaxOrderIndex = reportParameterRepository.maxOrderIndex(report04Version01);
 		assertThat(newMaxOrderIndex, is(equalTo(maxOrderIndex + 1)));
 
 		UUID uuidFromSavedReportParameter = savedReportParameter.getReportParameterId();

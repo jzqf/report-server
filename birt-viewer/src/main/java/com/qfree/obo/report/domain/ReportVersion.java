@@ -2,8 +2,10 @@ package com.qfree.obo.report.domain;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.ForeignKey;
@@ -11,6 +13,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -60,6 +63,19 @@ public class ReportVersion implements Serializable {
 			foreignKey = @ForeignKey(name = "fk_reportversion_report"),
 			columnDefinition = "uuid")
 	private Report report;
+
+	/*
+	 * cascade = CascadeType.ALL:
+	 *     Deleting a Report will delete all of its ReportParameter's.
+	 */
+	@OneToMany(mappedBy = "reportVersion", cascade = CascadeType.ALL)
+	private List<ReportParameter> reportParameters;
+	/*
+	 * cascade = CascadeType.ALL:
+	 *     Deleting a Report will delete all of its Subscription's.
+	 */
+	@OneToMany(mappedBy = "reportVersion", cascade = CascadeType.ALL)
+	private List<Subscription> reportSubscriptions;
 
 	// Works for H2, but not PostgreSQL:
 	//	@Column(name = "rptdesign", nullable = false, columnDefinition = "clob")
@@ -126,6 +142,22 @@ public class ReportVersion implements Serializable {
 
 	public void setReport(Report report) {
 		this.report = report;
+	}
+
+	public List<ReportParameter> getReportParameters() {
+		return reportParameters;
+	}
+
+	public void setReportParameters(List<ReportParameter> reportParameters) {
+		this.reportParameters = reportParameters;
+	}
+
+	public List<Subscription> getReportSubscriptions() {
+		return reportSubscriptions;
+	}
+
+	public void setReportSubscriptions(List<Subscription> reportSubscriptions) {
+		this.reportSubscriptions = reportSubscriptions;
 	}
 
 	public String getRptdesign() {
