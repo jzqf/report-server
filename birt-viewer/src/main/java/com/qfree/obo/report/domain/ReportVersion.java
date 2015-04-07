@@ -91,9 +91,12 @@ public class ReportVersion implements Serializable {
 	 * actually given the H2 type "clob". This means that validating the schema 
 	 * via hbm2ddl.auto=validate will fail because Hibernate expects a column of 
 	 * type "text" but it sees, instead, a column of type "clob". This causes
-	 * the validation to fail. Hence, the schema cannotbe validated during unit
+	 * the validation to fail. Hence, the schema cannot be validated during unit
 	 * testing with the embedded H2 database unless we temporarily set 
-	 * columnDefinition = "clob".
+	 * columnDefinition = "clob". But that is not an issue if we explicitly
+	 * create the database using a script:
+	 * 
+	 *   .../resources/db/h2/schema.sql
 	 */
 	@Column(name = "rptdesign", nullable = false, columnDefinition = "text")
 	private String rptdesign;

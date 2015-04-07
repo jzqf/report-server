@@ -98,6 +98,14 @@ public class DocumentFormat implements Serializable {
 	@Column(name = "birt_format", nullable = false, length = 12)
 	private String birtFormat;
 
+	/**
+	 * true if the document format is binary. This implies that the document
+	 * must be Base64 encoded in order to store it in the "document" text column
+	 * of [job].
+	 */
+	@Column(name = "binary_data", nullable = false)
+	private boolean binaryData;
+
 	@Column(name = "active", nullable = false)
 	private boolean active;
 
@@ -111,20 +119,22 @@ public class DocumentFormat implements Serializable {
 	private DocumentFormat() {
 	}
 
-	public DocumentFormat(String name, String fileExtension, String mediaType, String birtFormat) {
-		this(name, fileExtension, mediaType, birtFormat, true, new Date());
+	public DocumentFormat(String name, String fileExtension, String mediaType, String birtFormat, boolean binary) {
+		this(name, fileExtension, mediaType, birtFormat, binary, true, new Date());
 	}
 
-	public DocumentFormat(String name, String fileExtension, String mediaType, String birtFormat, boolean active) {
-		this(name, fileExtension, mediaType, birtFormat, active, new Date());
+	public DocumentFormat(String name, String fileExtension, String mediaType, String birtFormat, boolean binary,
+			boolean active) {
+		this(name, fileExtension, mediaType, birtFormat, binary, active, new Date());
 	}
 
-	public DocumentFormat(String name, String fileExtension, String mediaType, String birtFormat, boolean active,
-			Date createdOn) {
+	public DocumentFormat(String name, String fileExtension, String mediaType, String birtFormat, boolean binary,
+			boolean active, Date createdOn) {
 		this.name = name;
 		this.fileExtension = fileExtension;
 		this.mediaType = mediaType;
 		this.birtFormat = birtFormat;
+		this.binaryData = binary;
 		this.active = active;
 		this.createdOn = createdOn;
 	}
@@ -163,6 +173,14 @@ public class DocumentFormat implements Serializable {
 
 	public void setBirtFormat(String birtFormat) {
 		this.birtFormat = birtFormat;
+	}
+
+	public boolean isBinaryData() {
+		return binaryData;
+	}
+
+	public void setBinaryData(boolean binary) {
+		this.binaryData = binary;
 	}
 
 	public boolean isActive() {
