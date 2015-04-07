@@ -13,29 +13,33 @@ CREATE SCHEMA reporting;
 CREATE TABLE reporting.document_format (
     document_format_id uuid NOT NULL,
     active boolean NOT NULL,
-    birt_format character varying(8) NOT NULL,
+    binary_data boolean NOT NULL,
+    birt_format character varying(12) NOT NULL,
     created_on timestamp NOT NULL,
-    file_extension character varying(8) NOT NULL,
+    file_extension character varying(12) NOT NULL,
+    media_type character varying(100) NOT NULL,
     name character varying(32) NOT NULL
 );
 
 CREATE TABLE reporting.job (
     job_id identity NOT NULL,
     created_on timestamp NOT NULL,
-    report_id uuid NOT NULL,
+    document text,
+    encoded boolean,
+    file_name character varying(128),
+    url character varying(1024),
+    document_format_id uuid NOT NULL,
+    report_version_id uuid NOT NULL,
     role_id uuid NOT NULL
 );
 
-
---CREATE SEQUENCE job_job_id_seq
---    START WITH 1
---    INCREMENT BY 1
---    NO MINVALUE
---    NO MAXVALUE
---    CACHE 1;
-----ALTER TABLE job_job_id_seq OWNER TO dbtest;
-----ALTER SEQUENCE job_job_id_seq OWNED BY job.job_id;
-
+CREATE TABLE reporting.job_parameter_value (
+    job_parameter_value_id identity NOT NULL,
+    created_on timestamp NOT NULL,
+    string_value character varying(80) NOT NULL,
+    job_id bigint NOT NULL,
+    report_parameter_id uuid NOT NULL
+);
 
 CREATE TABLE reporting.parameter_type (
     parameter_type_id uuid NOT NULL,
@@ -47,9 +51,10 @@ CREATE TABLE reporting.parameter_type (
 
 CREATE TABLE reporting.report (
     report_id uuid NOT NULL,
+    active boolean NOT NULL,
     created_on timestamp NOT NULL,
     name character varying(80) NOT NULL,
-    rptdesign text NOT NULL,
+    number integer NOT NULL,
     report_category_id uuid NOT NULL
 );
 
@@ -70,8 +75,18 @@ CREATE TABLE reporting.report_parameter (
     order_index integer NOT NULL,
     required boolean NOT NULL,
     parameter_type_id uuid NOT NULL,
-    report_id uuid NOT NULL,
+    report_version_id uuid NOT NULL,
     widget_id uuid NOT NULL
+);
+
+CREATE TABLE reporting.report_version (
+    report_version_id uuid NOT NULL,
+    active boolean NOT NULL,
+    created_on timestamp NOT NULL,
+    rptdesign text NOT NULL,
+    version_code integer NOT NULL,
+    version_name character varying(16) NOT NULL,
+    report_id uuid NOT NULL
 );
 
 CREATE TABLE reporting.role (
@@ -113,10 +128,9 @@ CREATE TABLE reporting.subscription (
     email character varying(80) NOT NULL,
     run_once_at timestamp,
     document_format_id uuid NOT NULL,
-    report_id uuid NOT NULL,
+    report_version_id uuid NOT NULL,
     role_id uuid NOT NULL
 );
-
 
 CREATE TABLE reporting.subscription_parameter_value (
     subscription_parameter_value_id uuid NOT NULL,
@@ -147,26 +161,12 @@ CREATE TABLE reporting.widget (
 );
 
 
---ALTER TABLE reporting.job ALTER COLUMN job_id SET DEFAULT nextval('job_job_id_seq');
-----ALTER TABLE reporting.job ALTER COLUMN job_id SET DEFAULT nextval('job_job_id_seq'::regclass);
-----SELECT pg_catalog.setval('job_job_id_seq', 3, true);
-
-
-
 --
 -- Name: document_format_pkey; Type: CONSTRAINT; Schema: reporting; Owner: dbtest; Tablespace: 
 --
 
 ALTER TABLE reporting.document_format
     ADD CONSTRAINT document_format_pkey PRIMARY KEY (document_format_id);
-
-
---
--- Name: job_pkey; Type: CONSTRAINT; Schema: reporting; Owner: dbtest; Tablespace: 
---
-
---ALTER TABLE reporting.job
---    ADD CONSTRAINT job_pkey PRIMARY KEY (job_id);
 
 
 --
@@ -199,6 +199,14 @@ ALTER TABLE reporting.report_parameter
 
 ALTER TABLE reporting.report
     ADD CONSTRAINT report_pkey PRIMARY KEY (report_id);
+
+
+--
+-- Name: report_version_pkey; Type: CONSTRAINT; Schema: reporting; Owner: dbtest; Tablespace: 
+--
+
+ALTER TABLE reporting.report_version
+    ADD CONSTRAINT report_version_pkey PRIMARY KEY (report_version_id);
 
 
 --
@@ -250,11 +258,27 @@ ALTER TABLE reporting.subscription
 
 
 --
+-- Name: uc_jobparametervalue_job_parameter_value; Type: CONSTRAINT; Schema: reporting; Owner: dbtest; Tablespace: 
+--
+
+ALTER TABLE reporting.job_parameter_value
+    ADD CONSTRAINT uc_jobparametervalue_job_parameter_value UNIQUE (job_id, report_parameter_id, string_value);
+
+
+--
 -- Name: uc_report_parameter_order_index; Type: CONSTRAINT; Schema: reporting; Owner: dbtest; Tablespace: 
 --
 
 ALTER TABLE reporting.report_parameter
-    ADD CONSTRAINT uc_report_parameter_order_index UNIQUE (report_id, order_index);
+    ADD CONSTRAINT uc_report_parameter_order_index UNIQUE (report_version_id, order_index);
+
+
+--
+-- Name: uc_reportversion_report_versioncode; Type: CONSTRAINT; Schema: reporting; Owner: dbtest; Tablespace: 
+--
+
+ALTER TABLE reporting.report_version
+    ADD CONSTRAINT uc_reportversion_report_versioncode UNIQUE (report_id, version_code, version_name);
 
 
 --
@@ -298,11 +322,19 @@ ALTER TABLE reporting.widget
 
 
 --
+-- Name: fk_job_documentformat; Type: FK CONSTRAINT; Schema: reporting; Owner: dbtest
+--
+
+ALTER TABLE reporting.job
+    ADD CONSTRAINT fk_job_documentformat FOREIGN KEY (document_format_id) REFERENCES document_format(document_format_id);
+
+
+--
 -- Name: fk_job_report; Type: FK CONSTRAINT; Schema: reporting; Owner: dbtest
 --
 
 ALTER TABLE reporting.job
-    ADD CONSTRAINT fk_job_report FOREIGN KEY (report_id) REFERENCES report(report_id);
+    ADD CONSTRAINT fk_job_report FOREIGN KEY (report_version_id) REFERENCES report_version(report_version_id);
 
 
 --
@@ -311,6 +343,22 @@ ALTER TABLE reporting.job
 
 ALTER TABLE reporting.job
     ADD CONSTRAINT fk_job_role FOREIGN KEY (role_id) REFERENCES role(role_id);
+
+
+--
+-- Name: fk_jobparametervalue_job; Type: FK CONSTRAINT; Schema: reporting; Owner: dbtest
+--
+
+ALTER TABLE reporting.job_parameter_value
+    ADD CONSTRAINT fk_jobparametervalue_job FOREIGN KEY (job_id) REFERENCES job(job_id);
+
+
+--
+-- Name: fk_jobparametervalue_reportparameter; Type: FK CONSTRAINT; Schema: reporting; Owner: dbtest
+--
+
+ALTER TABLE reporting.job_parameter_value
+    ADD CONSTRAINT fk_jobparametervalue_reportparameter FOREIGN KEY (report_parameter_id) REFERENCES report_parameter(report_parameter_id);
 
 
 --
@@ -334,15 +382,7 @@ ALTER TABLE reporting.report_parameter
 --
 
 ALTER TABLE reporting.report_parameter
-    ADD CONSTRAINT fk_reportparameter_report FOREIGN KEY (report_id) REFERENCES report(report_id);
-
-
---
--- Name: fk_reportparameter_role; Type: FK CONSTRAINT; Schema: reporting; Owner: dbtest
---
-
-ALTER TABLE reporting.role_parameter_value
-    ADD CONSTRAINT fk_reportparameter_role FOREIGN KEY (role_id) REFERENCES role(role_id);
+    ADD CONSTRAINT fk_reportparameter_report FOREIGN KEY (report_version_id) REFERENCES report_version(report_version_id);
 
 
 --
@@ -362,11 +402,27 @@ ALTER TABLE reporting.report_parameter
 
 
 --
+-- Name: fk_reportversion_report; Type: FK CONSTRAINT; Schema: reporting; Owner: dbtest
+--
+
+ALTER TABLE reporting.report_version
+    ADD CONSTRAINT fk_reportversion_report FOREIGN KEY (report_id) REFERENCES report(report_id);
+
+
+--
 -- Name: fk_roleparametervalue_reportparameter; Type: FK CONSTRAINT; Schema: reporting; Owner: dbtest
 --
 
 ALTER TABLE reporting.role_parameter_value
     ADD CONSTRAINT fk_roleparametervalue_reportparameter FOREIGN KEY (report_parameter_id) REFERENCES report_parameter(report_parameter_id);
+
+
+--
+-- Name: fk_roleparametervalue_role; Type: FK CONSTRAINT; Schema: reporting; Owner: dbtest
+--
+
+ALTER TABLE reporting.role_parameter_value
+    ADD CONSTRAINT fk_roleparametervalue_role FOREIGN KEY (role_id) REFERENCES role(role_id);
 
 
 --
@@ -414,7 +470,7 @@ ALTER TABLE reporting.subscription
 --
 
 ALTER TABLE reporting.subscription
-    ADD CONSTRAINT fk_subscription_report FOREIGN KEY (report_id) REFERENCES report(report_id);
+    ADD CONSTRAINT fk_subscription_report FOREIGN KEY (report_version_id) REFERENCES report_version(report_version_id);
 
 
 --

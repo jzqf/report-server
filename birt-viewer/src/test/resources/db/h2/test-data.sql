@@ -1,5 +1,6 @@
 BEGIN TRANSACTION;
 
+
 insert into reporting.parameter_type (parameter_type_id, description, abbreviation, active, created_on) values ('bfa09b13-ad55-481e-8c29-b047dc5d7f3e', 'Boolean (True/False)'   , 'boolean'  , true, '2015-05-01T12:00:01');
 insert into reporting.parameter_type (parameter_type_id, description, abbreviation, active, created_on) values ('12d3f4f8-468d-4faf-be3a-5c15eaba4eb6', 'Date (no time)'         , 'date'     , true, '2015-05-01T12:00:01');
 insert into reporting.parameter_type (parameter_type_id, description, abbreviation, active, created_on) values ('abce5a38-b1e9-42a3-9962-19227d51dd4a', 'Datetime (date + time)' , 'datetime' , true, '2015-05-01T12:00:01');
@@ -9,22 +10,33 @@ insert into reporting.parameter_type (parameter_type_id, description, abbreviati
 insert into reporting.parameter_type (parameter_type_id, description, abbreviation, active, created_on) values ('9b0af697-8bc9-49e2-b8b6-136ced83dbd8', 'String'                 , 'string'   , true, '2015-05-01T12:00:01');
 insert into reporting.parameter_type (parameter_type_id, description, abbreviation, active, created_on) values ('da575eee-e5a3-4149-8ea3-1fd86015bbb9', 'Time'                   , 'time'     , true, '2015-05-01T12:00:01');
 
-insert into reporting.document_format (document_format_id, name, file_extension, birt_format, active, created_on) values ('bc5169e0-3d36-483c-a7b5-a76766587991', 'Microsoft Word'               , 'doc' , 'doc' , true , '2015-06-30T11:59:00');
-insert into reporting.document_format (document_format_id, name, file_extension, birt_format, active, created_on) values ('d0225349-1642-46e3-a949-4ce39795907f', 'Office Open XML Document'     , 'docx', 'docx', true , '2015-06-30T11:59:00');
-insert into reporting.document_format (document_format_id, name, file_extension, birt_format, active, created_on) values ('e1d0b3f2-f639-4521-a055-d5465dce29a2', 'HTML'                         , 'html', 'html', false, '2015-06-30T11:59:00');
-insert into reporting.document_format (document_format_id, name, file_extension, birt_format, active, created_on) values ('38b73b21-cb66-42cf-932b-1cdf7937525c', 'OpenDocument Presentation'    , 'odp' , 'odp' , true , '2015-06-30T11:59:00');
-insert into reporting.document_format (document_format_id, name, file_extension, birt_format, active, created_on) values ('05a4ad8d-6f30-4d6d-83d5-995345a8dc58', 'OpenDocument Spreadsheet'     , 'ods' , 'ods' , true , '2015-06-30T11:59:00');
-insert into reporting.document_format (document_format_id, name, file_extension, birt_format, active, created_on) values ('b4f2249d-f52e-47e2-871c-daf35f4ba78e', 'OpenDocument Text'            , 'odt' , 'odt' , true , '2015-06-30T11:59:00');
-insert into reporting.document_format (document_format_id, name, file_extension, birt_format, active, created_on) values ('30800d77-5fdd-44bc-94a3-1502bd307c1d', 'PDF'                          , 'pdf' , 'pdf' , true , '2015-06-30T11:59:00');
-insert into reporting.document_format (document_format_id, name, file_extension, birt_format, active, created_on) values ('597f34fb-10d8-4408-971a-1b67472ac588', 'PowerPoint'                   , 'ppt' , 'ppt' , true , '2015-06-30T11:59:00');
-insert into reporting.document_format (document_format_id, name, file_extension, birt_format, active, created_on) values ('d7ccb194-91c6-4dce-bbfe-6424f079dc07', 'Office Open XML Presentation' , 'pptx', 'pptx', true , '2015-06-30T11:59:00');
-insert into reporting.document_format (document_format_id, name, file_extension, birt_format, active, created_on) values ('25762ba8-1688-4100-b323-b9e74eba396c', 'Microsoft Excel'              , 'xls' , 'xls' , true , '2015-06-30T11:59:00');
-insert into reporting.document_format (document_format_id, name, file_extension, birt_format, active, created_on) values ('c78ac922-2f37-4855-83ae-b708d453b005', 'Office Open XML Workbook'     , 'xlsx', 'xlsx', true , '2015-06-30T11:59:00');
+
+insert into reporting.document_format (document_format_id, name, file_extension, media_type, binary_data, birt_format, active, created_on) values ('bc5169e0-3d36-483c-a7b5-a76766587991', 'Microsoft Word'               , 'doc' , 'application/msword'                                                       , true , 'doc' , true , '2015-06-30T11:59:00');
+insert into reporting.document_format (document_format_id, name, file_extension, media_type, binary_data, birt_format, active, created_on) values ('d0225349-1642-46e3-a949-4ce39795907f', 'Office Open XML Document'     , 'docx', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'  , true , 'docx', true , '2015-06-30T11:59:00');
+insert into reporting.document_format (document_format_id, name, file_extension, media_type, binary_data, birt_format, active, created_on) values ('e1d0b3f2-f639-4521-a055-d5465dce29a2', 'HTML'                         , 'html', 'text/html'                                                                , false, 'html', false, '2015-06-30T11:59:00');
+insert into reporting.document_format (document_format_id, name, file_extension, media_type, binary_data, birt_format, active, created_on) values ('38b73b21-cb66-42cf-932b-1cdf7937525c', 'OpenDocument Presentation'    , 'odp' , 'application/vnd.oasis.opendocument.presentation'                          , true , 'odp' , true , '2015-06-30T11:59:00');
+insert into reporting.document_format (document_format_id, name, file_extension, media_type, binary_data, birt_format, active, created_on) values ('05a4ad8d-6f30-4d6d-83d5-995345a8dc58', 'OpenDocument Spreadsheet'     , 'ods' , 'application/vnd.oasis.opendocument.spreadsheet'                           , true , 'ods' , true , '2015-06-30T11:59:00');
+insert into reporting.document_format (document_format_id, name, file_extension, media_type, binary_data, birt_format, active, created_on) values ('b4f2249d-f52e-47e2-871c-daf35f4ba78e', 'OpenDocument Text'            , 'odt' , 'application/vnd.oasis.opendocument.text'                                  , true , 'odt' , true , '2015-06-30T11:59:00');
+insert into reporting.document_format (document_format_id, name, file_extension, media_type, binary_data, birt_format, active, created_on) values ('30800d77-5fdd-44bc-94a3-1502bd307c1d', 'PDF'                          , 'pdf' , 'application/pdf'                                                          , true , 'pdf' , true , '2015-06-30T11:59:00');
+insert into reporting.document_format (document_format_id, name, file_extension, media_type, binary_data, birt_format, active, created_on) values ('597f34fb-10d8-4408-971a-1b67472ac588', 'PowerPoint'                   , 'ppt' , 'application/vnd.ms-powerpoint'                                            , true , 'ppt' , true , '2015-06-30T11:59:00');
+insert into reporting.document_format (document_format_id, name, file_extension, media_type, binary_data, birt_format, active, created_on) values ('d7ccb194-91c6-4dce-bbfe-6424f079dc07', 'Office Open XML Presentation' , 'pptx', 'application/vnd.openxmlformats-officedocument.presentationml.presentation', true , 'pptx', true , '2015-06-30T11:59:00');
+insert into reporting.document_format (document_format_id, name, file_extension, media_type, binary_data, birt_format, active, created_on) values ('25762ba8-1688-4100-b323-b9e74eba396c', 'Microsoft Excel'              , 'xls' , 'application/vnd.ms-excel'                                                 , true , 'xls' , true , '2015-06-30T11:59:00');
+insert into reporting.document_format (document_format_id, name, file_extension, media_type, binary_data, birt_format, active, created_on) values ('c78ac922-2f37-4855-83ae-b708d453b005', 'Office Open XML Workbook'     , 'xlsx', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'        , true , 'xlsx', true , '2015-06-30T11:59:00');
+
 
 insert into reporting.report_category (report_category_id, description, abbreviation, active, created_on) values ('7a482694-51d2-42d0-b0e2-19dd13bbbc64', 'Accounting'       , 'ACCT' , false, '2015-04-30T12:00:00');
 insert into reporting.report_category (report_category_id, description, abbreviation, active, created_on) values ('bb2bc482-c19a-4c19-a087-e68ffc62b5a0', 'Q-Free internal'  , 'QFREE', true , '2015-05-30T22:00:00');
 insert into reporting.report_category (report_category_id, description, abbreviation, active, created_on) values ('5c3cc664-b685-4f6e-8d9a-2927c6bcffdc', 'Manual validation', 'MIR'  , false, '2015-03-01T02:00:00');
 insert into reporting.report_category (report_category_id, description, abbreviation, active, created_on) values ('72d7cb27-1770-4cc7-b301-44d39ccf1e76', 'Traffic'          , 'TRA'  , true , '2015-03-01T02:00:10');
+
+
+insert into reporting.report (report_id, report_category_id, name, number, active, created_on) values ('d65f3d9c-f67d-4beb-9936-9dfa19aa1407', '7a482694-51d2-42d0-b0e2-19dd13bbbc64', 'Report name #01', 100, true, '2014-06-09T22:00:00'); --, (SELECT rptdesign FROM tmp_rptdesign));
+insert into reporting.report (report_id, report_category_id, name, number, active, created_on) values ('c7f1d394-9814-4ede-bb01-2700187d79ca', '7a482694-51d2-42d0-b0e2-19dd13bbbc64', 'Report name #02', 200, true, '2014-06-09T22:10:00'); --, (SELECT rptdesign FROM tmp_rptdesign));
+insert into reporting.report (report_id, report_category_id, name, number, active, created_on) values ('fe718314-5b39-40e7-aed2-279354c04a9d', '7a482694-51d2-42d0-b0e2-19dd13bbbc64', 'Report name #03', 300, true, '2014-07-04T23:30:00'); --, (SELECT rptdesign FROM tmp_rptdesign));
+insert into reporting.report (report_id, report_category_id, name, number, active, created_on) values ('702d5daa-e23d-4f00-b32b-67b44c06d8f6', 'bb2bc482-c19a-4c19-a087-e68ffc62b5a0', 'Report name #04', 400, true, '2014-03-25T12:15:00'); --, (SELECT rptdesign FROM tmp_rptdesign));
+insert into reporting.report (report_id, report_category_id, name, number, active, created_on) values ('f1f06b15-c0b6-488d-9eed-74e867a47d5a', '72d7cb27-1770-4cc7-b301-44d39ccf1e76', 'Report name #05', 500, true, '2014-03-25T12:15:00'); --, (SELECT rptdesign FROM tmp_rptdesign));
+insert into reporting.report (report_id, report_category_id, name, number, active, created_on) values ('adc50b28-cb84-4ede-9759-43f467ac22ec', 'bb2bc482-c19a-4c19-a087-e68ffc62b5a0', 'Report name #06', 600, true, '2015-05-06T15:00:00'); --, (SELECT rptdesign FROM tmp_rptdesign));
+
 
 CREATE TEMPORARY TABLE tmp_rptdesign (rptdesign text) ON COMMIT DROP;
 INSERT INTO tmp_rptdesign (rptdesign) VALUES ('<?xml version="1.0" encoding="UTF-8"?>
@@ -39,21 +51,40 @@ INSERT INTO tmp_rptdesign (rptdesign) VALUES ('<?xml version="1.0" encoding="UTF
     </page-setup>
 </report>');
 
-insert into reporting.report (report_id, report_category_id, name, created_on, rptdesign) values ('d65f3d9c-f67d-4beb-9936-9dfa19aa1407', '7a482694-51d2-42d0-b0e2-19dd13bbbc64', 'Report name #01', '2014-06-09T22:00:00', (SELECT rptdesign FROM tmp_rptdesign));
-insert into reporting.report (report_id, report_category_id, name, created_on, rptdesign) values ('c7f1d394-9814-4ede-bb01-2700187d79ca', '7a482694-51d2-42d0-b0e2-19dd13bbbc64', 'Report name #02', '2014-06-09T22:10:00', (SELECT rptdesign FROM tmp_rptdesign));
-insert into reporting.report (report_id, report_category_id, name, created_on, rptdesign) values ('fe718314-5b39-40e7-aed2-279354c04a9d', '7a482694-51d2-42d0-b0e2-19dd13bbbc64', 'Report name #03', '2014-07-04T23:30:00', (SELECT rptdesign FROM tmp_rptdesign));
-insert into reporting.report (report_id, report_category_id, name, created_on, rptdesign) values ('702d5daa-e23d-4f00-b32b-67b44c06d8f6', 'bb2bc482-c19a-4c19-a087-e68ffc62b5a0', 'Report name #04', '2014-03-25T12:15:00', (SELECT rptdesign FROM tmp_rptdesign));
-insert into reporting.report (report_id, report_category_id, name, created_on, rptdesign) values ('f1f06b15-c0b6-488d-9eed-74e867a47d5a', '72d7cb27-1770-4cc7-b301-44d39ccf1e76', 'Report name #05', '2014-03-25T12:15:00', (SELECT rptdesign FROM tmp_rptdesign));
-insert into reporting.report (report_id, report_category_id, name, created_on, rptdesign) values ('adc50b28-cb84-4ede-9759-43f467ac22ec', 'bb2bc482-c19a-4c19-a087-e68ffc62b5a0', 'Report name #06', '2015-05-06T15:00:00', (SELECT rptdesign FROM tmp_rptdesign));
+-- 'Report name #01' version 1:
+insert into reporting.report_version (report_version_id, report_id, rptdesign, version_name, version_code, active, created_on) VALUES ('dbc0883b-afe3-4147-87b4-0ed35869cd35', 'd65f3d9c-f67d-4beb-9936-9dfa19aa1407', (SELECT rptdesign FROM tmp_rptdesign), '0.5', 1, true, '2015-05-06T15:10:00');
+-- 'Report name #02' version 1:
+insert into reporting.report_version (report_version_id, report_id, rptdesign, version_name, version_code, active, created_on) VALUES ('fb8a4896-609b-438a-81b0-c70587f8f637', 'c7f1d394-9814-4ede-bb01-2700187d79ca', (SELECT rptdesign FROM tmp_rptdesign), '0.5', 1, true, '2015-05-06T15:10:00');
+-- 'Report name #03' version 1:
+insert into reporting.report_version (report_version_id, report_id, rptdesign, version_name, version_code, active, created_on) VALUES ('2f88d7ff-8b74-457a-bce6-89d3e74d0bb9', 'fe718314-5b39-40e7-aed2-279354c04a9d', (SELECT rptdesign FROM tmp_rptdesign), '0.5', 1, true, '2015-05-06T15:10:00');
+-- 'Report name #04' version 1:
+insert into reporting.report_version (report_version_id, report_id, rptdesign, version_name, version_code, active, created_on) VALUES ('293abf69-1516-4e9b-84ae-241d25c13e8d', '702d5daa-e23d-4f00-b32b-67b44c06d8f6', (SELECT rptdesign FROM tmp_rptdesign), '0.5', 1, true, '2015-05-06T15:10:00');
+-- 'Report name #05' version 1:
+insert into reporting.report_version (report_version_id, report_id, rptdesign, version_name, version_code, active, created_on) VALUES ('8dd9bb5a-1565-4d38-8a8b-857803088626', 'f1f06b15-c0b6-488d-9eed-74e867a47d5a', (SELECT rptdesign FROM tmp_rptdesign), '0.5', 1, true, '2015-05-06T15:10:00');
+-- 'Report name #06' version 1:
+insert into reporting.report_version (report_version_id, report_id, rptdesign, version_name, version_code, active, created_on) VALUES ('d481c452-990c-4ea3-9afa-3ea60cef04ab', 'adc50b28-cb84-4ede-9759-43f467ac22ec', (SELECT rptdesign FROM tmp_rptdesign), '0.5', 1, true, '2015-05-06T15:10:00');
+
 
 insert into reporting.widget (widget_id, name, description, multiple_select ,active, created_on ) values ('b8e91527-8b0e-4ed2-8cba-8cb8989ba8e2', 'widget #1', 'widget #1 description', false, true, '2015-03-31T02:00:00');
 
-insert into reporting.report_parameter (report_parameter_id, report_id, name, description, parameter_type_id, widget_id, required, multivalued, order_index, created_on) values ('206723d6-50e7-4f4a-85c0-cb679e92ad6b', 'd65f3d9c-f67d-4beb-9936-9dfa19aa1407', 'Report01Param01', 'Parameter #1 for Report #1', '807c64b1-a59b-465c-998b-a399984b5ef4', 'b8e91527-8b0e-4ed2-8cba-8cb8989ba8e2', true,  false, 1, '2015-05-06T15:00:00');
-insert into reporting.report_parameter (report_parameter_id, report_id, name, description, parameter_type_id, widget_id, required, multivalued, order_index, created_on) values ('36fc0de4-cc4c-4efa-8c47-73e0e254e449', 'c7f1d394-9814-4ede-bb01-2700187d79ca', 'Report02Param01', 'Parameter #1 for Report #2', 'abce5a38-b1e9-42a3-9962-19227d51dd4a', 'b8e91527-8b0e-4ed2-8cba-8cb8989ba8e2', false, false, 1, '2015-05-06T15:00:01');
-insert into reporting.report_parameter (report_parameter_id, report_id, name, description, parameter_type_id, widget_id, required, multivalued, order_index, created_on) values ('5a201251-b04f-406e-b07c-c6d55dc3dc85', 'fe718314-5b39-40e7-aed2-279354c04a9d', 'Report03Param01', 'Parameter #1 for Report #3', '807c64b1-a59b-465c-998b-a399984b5ef4', 'b8e91527-8b0e-4ed2-8cba-8cb8989ba8e2', true,  false, 1, '2015-05-06T15:00:02');
-insert into reporting.report_parameter (report_parameter_id, report_id, name, description, parameter_type_id, widget_id, required, multivalued, order_index, created_on) values ('4c2bd07e-c7d7-451a-8c07-c8f589959382', '702d5daa-e23d-4f00-b32b-67b44c06d8f6', 'Report04Param01', 'Parameter #1 for Report #4', 'bfa09b13-ad55-481e-8c29-b047dc5d7f3e', 'b8e91527-8b0e-4ed2-8cba-8cb8989ba8e2', true,  false, 1, '2015-05-06T15:00:03');
-insert into reporting.report_parameter (report_parameter_id, report_id, name, description, parameter_type_id, widget_id, required, multivalued, order_index, created_on) values ('73792710-8d69-477a-8d44-fe646507eaf8', 'f1f06b15-c0b6-488d-9eed-74e867a47d5a', 'Report05Param01', 'Parameter #1 for Report #5', 'abce5a38-b1e9-42a3-9962-19227d51dd4a', 'b8e91527-8b0e-4ed2-8cba-8cb8989ba8e2', true,  false, 1, '2015-05-06T15:00:04');
-insert into reporting.report_parameter (report_parameter_id, report_id, name, description, parameter_type_id, widget_id, required, multivalued, order_index, created_on) values ('86e93f08-86fd-4aed-99c2-1f4af29382d3', 'adc50b28-cb84-4ede-9759-43f467ac22ec', 'Report06Param01', 'Parameter #1 for Report #6', '807c64b1-a59b-465c-998b-a399984b5ef4', 'b8e91527-8b0e-4ed2-8cba-8cb8989ba8e2', false, false, 1, '2015-05-06T15:00:05');
+
+--------------------------------------------------------------------------------
+-- [report_parameter]'s with relation to [report]:
+--insert into reporting.report_parameter (report_parameter_id, report_id, name, description, parameter_type_id, widget_id, required, multivalued, order_index, created_on) values ('206723d6-50e7-4f4a-85c0-cb679e92ad6b', 'd65f3d9c-f67d-4beb-9936-9dfa19aa1407', 'Report01Param01', 'Parameter #1 for Report #1', '807c64b1-a59b-465c-998b-a399984b5ef4', 'b8e91527-8b0e-4ed2-8cba-8cb8989ba8e2', true,  false, 1, '2015-05-06T15:00:00');
+--insert into reporting.report_parameter (report_parameter_id, report_id, name, description, parameter_type_id, widget_id, required, multivalued, order_index, created_on) values ('36fc0de4-cc4c-4efa-8c47-73e0e254e449', 'c7f1d394-9814-4ede-bb01-2700187d79ca', 'Report02Param01', 'Parameter #1 for Report #2', 'abce5a38-b1e9-42a3-9962-19227d51dd4a', 'b8e91527-8b0e-4ed2-8cba-8cb8989ba8e2', false, false, 1, '2015-05-06T15:00:01');
+--insert into reporting.report_parameter (report_parameter_id, report_id, name, description, parameter_type_id, widget_id, required, multivalued, order_index, created_on) values ('5a201251-b04f-406e-b07c-c6d55dc3dc85', 'fe718314-5b39-40e7-aed2-279354c04a9d', 'Report03Param01', 'Parameter #1 for Report #3', '807c64b1-a59b-465c-998b-a399984b5ef4', 'b8e91527-8b0e-4ed2-8cba-8cb8989ba8e2', true,  false, 1, '2015-05-06T15:00:02');
+--insert into reporting.report_parameter (report_parameter_id, report_id, name, description, parameter_type_id, widget_id, required, multivalued, order_index, created_on) values ('4c2bd07e-c7d7-451a-8c07-c8f589959382', '702d5daa-e23d-4f00-b32b-67b44c06d8f6', 'Report04Param01', 'Parameter #1 for Report #4', 'bfa09b13-ad55-481e-8c29-b047dc5d7f3e', 'b8e91527-8b0e-4ed2-8cba-8cb8989ba8e2', true,  true, 1, '2015-05-06T15:00:03');
+--insert into reporting.report_parameter (report_parameter_id, report_id, name, description, parameter_type_id, widget_id, required, multivalued, order_index, created_on) values ('73792710-8d69-477a-8d44-fe646507eaf8', 'f1f06b15-c0b6-488d-9eed-74e867a47d5a', 'Report05Param01', 'Parameter #1 for Report #5', 'abce5a38-b1e9-42a3-9962-19227d51dd4a', 'b8e91527-8b0e-4ed2-8cba-8cb8989ba8e2', true,  false, 1, '2015-05-06T15:00:04');
+--insert into reporting.report_parameter (report_parameter_id, report_id, name, description, parameter_type_id, widget_id, required, multivalued, order_index, created_on) values ('86e93f08-86fd-4aed-99c2-1f4af29382d3', 'adc50b28-cb84-4ede-9759-43f467ac22ec', 'Report06Param01', 'Parameter #1 for Report #6', '807c64b1-a59b-465c-998b-a399984b5ef4', 'b8e91527-8b0e-4ed2-8cba-8cb8989ba8e2', false, false, 1, '2015-05-06T15:00:05');
+--------------------------------------------------------------------------------
+-- [report_parameter]'s with relation to [report_version]:
+insert into reporting.report_parameter (report_parameter_id, report_version_id, name, description, parameter_type_id, widget_id, required, multivalued, order_index, created_on) values ('206723d6-50e7-4f4a-85c0-cb679e92ad6b', 'dbc0883b-afe3-4147-87b4-0ed35869cd35', 'Report01Param01', 'Parameter #1 for Report #1', '807c64b1-a59b-465c-998b-a399984b5ef4', 'b8e91527-8b0e-4ed2-8cba-8cb8989ba8e2', true,  false, 1, '2015-05-06T15:00:00');
+insert into reporting.report_parameter (report_parameter_id, report_version_id, name, description, parameter_type_id, widget_id, required, multivalued, order_index, created_on) values ('36fc0de4-cc4c-4efa-8c47-73e0e254e449', 'fb8a4896-609b-438a-81b0-c70587f8f637', 'Report02Param01', 'Parameter #1 for Report #2', 'abce5a38-b1e9-42a3-9962-19227d51dd4a', 'b8e91527-8b0e-4ed2-8cba-8cb8989ba8e2', false, false, 1, '2015-05-06T15:00:01');
+insert into reporting.report_parameter (report_parameter_id, report_version_id, name, description, parameter_type_id, widget_id, required, multivalued, order_index, created_on) values ('5a201251-b04f-406e-b07c-c6d55dc3dc85', '2f88d7ff-8b74-457a-bce6-89d3e74d0bb9', 'Report03Param01', 'Parameter #1 for Report #3', '807c64b1-a59b-465c-998b-a399984b5ef4', 'b8e91527-8b0e-4ed2-8cba-8cb8989ba8e2', true,  false, 1, '2015-05-06T15:00:02');
+insert into reporting.report_parameter (report_parameter_id, report_version_id, name, description, parameter_type_id, widget_id, required, multivalued, order_index, created_on) values ('4c2bd07e-c7d7-451a-8c07-c8f589959382', '293abf69-1516-4e9b-84ae-241d25c13e8d', 'Report04Param01', 'Parameter #1 for Report #4', 'bfa09b13-ad55-481e-8c29-b047dc5d7f3e', 'b8e91527-8b0e-4ed2-8cba-8cb8989ba8e2', true,  true, 1, '2015-05-06T15:00:03');
+insert into reporting.report_parameter (report_parameter_id, report_version_id, name, description, parameter_type_id, widget_id, required, multivalued, order_index, created_on) values ('73792710-8d69-477a-8d44-fe646507eaf8', '8dd9bb5a-1565-4d38-8a8b-857803088626', 'Report05Param01', 'Parameter #1 for Report #5', 'abce5a38-b1e9-42a3-9962-19227d51dd4a', 'b8e91527-8b0e-4ed2-8cba-8cb8989ba8e2', true,  false, 1, '2015-05-06T15:00:04');
+insert into reporting.report_parameter (report_parameter_id, report_version_id, name, description, parameter_type_id, widget_id, required, multivalued, order_index, created_on) values ('86e93f08-86fd-4aed-99c2-1f4af29382d3', 'd481c452-990c-4ea3-9afa-3ea60cef04ab', 'Report06Param01', 'Parameter #1 for Report #6', '807c64b1-a59b-465c-998b-a399984b5ef4', 'b8e91527-8b0e-4ed2-8cba-8cb8989ba8e2', false, false, 1, '2015-05-06T15:00:05');
+--------------------------------------------------------------------------------
 
 
 -- Insert  tree of [role] records:
@@ -384,17 +415,34 @@ insert into reporting.role_parameter_value (role_parameter_value_id, role_id, re
 insert into reporting.role_parameter_value (role_parameter_value_id, role_id, report_parameter_id, string_value, created_on) values ('558f3ecb-15dc-4eec-951a-eedc6ebf3fb0', '39bc8737-b9eb-4cb5-9765-1c33dd5ee40c', '86e93f08-86fd-4aed-99c2-1f4af29382d3', 'Role acca''s value for Report06Param01'   , '2015-05-31T13:00:00');
 
 
--- Subscription #1:  Deliver report "Report name #01" to role "aabb" in format "PDF":
-insert into reporting.subscription (subscription_id, role_id, report_id, document_format_id, run_once_at, cron_schedule, email, description, created_on) values ('7f68e31c-2884-4638-b3e5-c64697a28bd1', 'ee56f34d-dbb4-41c1-9d30-ce29cf973820', 'd65f3d9c-f67d-4beb-9936-9dfa19aa1407', '30800d77-5fdd-44bc-94a3-1502bd307c1d', '2016-01-01T03:00:00', '00 6 * * 1', 'jeffreyz@q-free.com', 'Description for Subscription #1', '2015-06-06T15:45:30');
+--------------------------------------------------------------------------------
+-- [subscription]'s with relation to [report]:
+---- Subscription #1:  Deliver report "Report name #01" to role "aabb" in format "PDF":
+--insert into reporting.subscription (subscription_id, role_id, report_id, document_format_id, run_once_at, cron_schedule, email, description, created_on) values ('7f68e31c-2884-4638-b3e5-c64697a28bd1', 'ee56f34d-dbb4-41c1-9d30-ce29cf973820', 'd65f3d9c-f67d-4beb-9936-9dfa19aa1407', '30800d77-5fdd-44bc-94a3-1502bd307c1d', '2016-01-01T03:00:00', '00 6 * * 1', 'jeffreyz@q-free.com', 'Description for Subscription #1', '2015-06-06T15:45:30');
+--------------------------------------------------------------------------------
+-- [subscription]'s with relation to [report_version]:
+insert into reporting.subscription (subscription_id, role_id, report_version_id, document_format_id, run_once_at, cron_schedule, email, description, created_on) values ('7f68e31c-2884-4638-b3e5-c64697a28bd1', 'ee56f34d-dbb4-41c1-9d30-ce29cf973820', 'dbc0883b-afe3-4147-87b4-0ed35869cd35', '30800d77-5fdd-44bc-94a3-1502bd307c1d', '2016-01-01T03:00:00', '00 6 * * 1', 'jeffreyz@q-free.com', 'Description for Subscription #1', '2015-06-06T15:45:30');
+--------------------------------------------------------------------------------
+
 
 -- [subscription_parameter_value] rows for [report_parameter]'s associated with 
 -- [report] "Report name #01" for [subscription] "Description for Subscription #1":
 insert into reporting.subscription_parameter_value (subscription_parameter_value_id, subscription_id, report_parameter_id, string_value, time_value, year_number, years_relative, month_number, months_relative, week_of_month_number, week_of_year_number, weeks_relative, day_of_month_number, day_of_week_number, days_relative, created_on) VALUES ('a5159f31-1c2b-496f-af04-bcb02cc04cfb', '7f68e31c-2884-4638-b3e5-c64697a28bd1', '206723d6-50e7-4f4a-85c0-cb679e92ad6b', 'integer value for Report01Param01 for subscription #1', null, null, null, null, null, null, null, null, null, null, null, '2015-03-15T11:00:01');
 
 
--- job for report "Report name #01" run by role "aabb":
-insert into reporting.job (report_id, role_id, created_on) VALUES ('d65f3d9c-f67d-4beb-9936-9dfa19aa1407', 'ee56f34d-dbb4-41c1-9d30-ce29cf973820', '2015-06-06T00:00:15');
--- job for report "Report name #01" run by role "aabb":
-insert into reporting.job (report_id, role_id, created_on) VALUES ('d65f3d9c-f67d-4beb-9936-9dfa19aa1407', 'ee56f34d-dbb4-41c1-9d30-ce29cf973820', '2015-06-07T00:00:15');
+--------------------------------------------------------------------------------
+-- [job]'s with relation to [report]:
+---- job for report "Report name #01" run by role "aabb":
+--insert into reporting.job (report_id, role_id, created_on) VALUES ('d65f3d9c-f67d-4beb-9936-9dfa19aa1407', 'ee56f34d-dbb4-41c1-9d30-ce29cf973820', '2015-06-06T00:00:15');
+---- job for report "Report name #01" run by role "aabb":
+--insert into reporting.job (report_id, role_id, created_on) VALUES ('d65f3d9c-f67d-4beb-9936-9dfa19aa1407', 'ee56f34d-dbb4-41c1-9d30-ce29cf973820', '2015-06-07T00:00:15');
+--------------------------------------------------------------------------------
+-- [job]'s with relation to [report_version]:
+-- job for [report_version] "version 1" of report "Report name #01" run by role "aabb". [document_format]: PDF:
+insert into reporting.job (report_version_id, role_id, document_format_id, created_on) VALUES ('dbc0883b-afe3-4147-87b4-0ed35869cd35', 'ee56f34d-dbb4-41c1-9d30-ce29cf973820', '30800d77-5fdd-44bc-94a3-1502bd307c1d', '2015-06-06T00:00:15');
+-- job for [report_version] "version 1" of report "Report name #01" run by role "aabb". [document_format]: OpenDocument Spreadsheet:
+insert into reporting.job (report_version_id, role_id, document_format_id, created_on) VALUES ('dbc0883b-afe3-4147-87b4-0ed35869cd35', 'ee56f34d-dbb4-41c1-9d30-ce29cf973820', '05a4ad8d-6f30-4d6d-83d5-995345a8dc58', '2015-06-07T00:00:15');
+--------------------------------------------------------------------------------
+
 
 COMMIT;
