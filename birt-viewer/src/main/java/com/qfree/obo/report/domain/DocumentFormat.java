@@ -51,24 +51,51 @@ public class DocumentFormat implements Serializable {
 	@OneToMany(targetEntity = Subscription.class, mappedBy = "documentFormat")
 	private List<Subscription> subscriptions;
 
-	/*
-	 * E.g., "OpenDocument Spreadsheet", "PDF", "PowerPoint", ...
+	/**
+	 * Name of the document format. Examples are:<br>
+	 * <pre>
+	 *   OpenDocument Spreadsheet
+	 *   PDF
+	 *   PowerPoint
+	 *   ...
+	 * <pre>
 	 */
 	@Column(name = "name", nullable = false, length = 32)
 	private String name;
 
-	/*
+	/**
 	 * Extension of the file generated when a particular document format is 
-	 * requested.
+	 * requested. Examples are:<br>
+	 * <pre>
+	 *   html
+	 *   ods
+	 *   pdf
+	 *   ppt
+	 *   ...
+	 * <pre>
 	 */
-	@Column(name = "file_extension", nullable = false, length = 8)
+	@Column(name = "file_extension", nullable = false, length = 12)
 	private String fileExtension;
+
+	/**
+	 * Internet media type (also referred to as MIME type or Content-type) for 
+	 * the document format. Examples are:<br>
+	 * <pre>
+	 *   text/html
+	 *   application/vnd.oasis.opendocument.spreadsheet
+	 *   application/pdf
+	 *   application/vnd.ms-powerpoint
+	 *   ...
+	 * <pre>
+	 */
+	@Column(name = "media_type", nullable = false, length = 100)
+	private String mediaType;
 
 	/*
 	 * The value assigned to the BIRT "__format" URL query parameter in order
 	 * to request that a report be delivered in the specified format.
 	 */
-	@Column(name = "birt_format", nullable = false, length = 8)
+	@Column(name = "birt_format", nullable = false, length = 12)
 	private String birtFormat;
 
 	@Column(name = "active", nullable = false)
@@ -84,17 +111,19 @@ public class DocumentFormat implements Serializable {
 	private DocumentFormat() {
 	}
 
-	public DocumentFormat(String name, String fileExtension, String birtFormat) {
-		this(name, fileExtension, birtFormat, true, new Date());
+	public DocumentFormat(String name, String fileExtension, String mediaType, String birtFormat) {
+		this(name, fileExtension, mediaType, birtFormat, true, new Date());
 	}
 
-	public DocumentFormat(String name, String fileExtension, String birtFormat, boolean active) {
-		this(name, fileExtension, birtFormat, active, new Date());
+	public DocumentFormat(String name, String fileExtension, String mediaType, String birtFormat, boolean active) {
+		this(name, fileExtension, mediaType, birtFormat, active, new Date());
 	}
 
-	public DocumentFormat(String name, String fileExtension, String birtFormat, boolean active, Date createdOn) {
+	public DocumentFormat(String name, String fileExtension, String mediaType, String birtFormat, boolean active,
+			Date createdOn) {
 		this.name = name;
 		this.fileExtension = fileExtension;
+		this.mediaType = mediaType;
 		this.birtFormat = birtFormat;
 		this.active = active;
 		this.createdOn = createdOn;
@@ -118,6 +147,14 @@ public class DocumentFormat implements Serializable {
 
 	public void setName(String name) {
 		this.name = name;
+	}
+
+	public String getMediaType() {
+		return mediaType;
+	}
+
+	public void setMediaType(String mediaType) {
+		this.mediaType = mediaType;
 	}
 
 	public String getBirtFormat() {
