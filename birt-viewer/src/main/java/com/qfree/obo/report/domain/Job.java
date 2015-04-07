@@ -52,10 +52,14 @@ public class Job implements Serializable {
 	 * PostgreSQL column definition includes "DEFAULT uuid_generate_v4()", which
 	 * is not what is wanted.
 	 */
-	@JoinColumn(name = "report_id", nullable = false,
+	//	@JoinColumn(name = "report_id", nullable = false,
+	//			foreignKey = @ForeignKey(name = "fk_job_report"),
+	//			columnDefinition = "uuid")
+	//	private Report report;
+	@JoinColumn(name = "report_version_id", nullable = false,
 			foreignKey = @ForeignKey(name = "fk_job_report"),
 			columnDefinition = "uuid")
-	private Report report;
+	private ReportVersion reportVersion;
 
 	@ManyToOne
 	/*
@@ -83,12 +87,12 @@ public class Job implements Serializable {
 	private Job() {
 	}
 
-	public Job(Report report, Role role) {
-		this(report, role, new Date());
+	public Job(ReportVersion report_version, Role role) {
+		this(report_version, role, new Date());
 	}
 
-	public Job(Report report, Role role, Date createdOn) {
-		this.report = report;
+	public Job(ReportVersion report_version, Role role, Date createdOn) {
+		this.reportVersion = report_version;
 		this.role = role;
 		this.createdOn = createdOn;
 	}
@@ -101,12 +105,12 @@ public class Job implements Serializable {
 		return this.createdOn;
 	}
 
-	public Report getReport() {
-		return this.report;
+	public ReportVersion getReportVersion() {
+		return this.reportVersion;
 	}
 
-	public void setReport(Report report) {
-		this.report = report;
+	public void setReportVersion(ReportVersion report_version) {
+		this.reportVersion = report_version;
 	}
 
 	public Role getRole() {
@@ -130,8 +134,8 @@ public class Job implements Serializable {
 		StringBuilder builder = new StringBuilder();
 		builder.append("Job [jobId=");
 		builder.append(jobId);
-		builder.append(", report=");
-		builder.append(report);
+		builder.append(", report_version=");
+		builder.append(reportVersion);
 		builder.append(", role=");
 		builder.append(role);
 		builder.append("]");

@@ -63,6 +63,7 @@ insert into reporting.report_version (report_version_id, report_id, rptdesign, v
 insert into reporting.widget (widget_id, name, description, multiple_select ,active, created_on ) values ('b8e91527-8b0e-4ed2-8cba-8cb8989ba8e2', 'widget #1', 'widget #1 description', false, true, '2015-03-31T02:00:00');
 
 
+--------------------------------------------------------------------------------
 -- [report_parameter]'s with relation to [report]:
 --insert into reporting.report_parameter (report_parameter_id, report_id, name, description, parameter_type_id, widget_id, required, multivalued, order_index, created_on) values ('206723d6-50e7-4f4a-85c0-cb679e92ad6b', 'd65f3d9c-f67d-4beb-9936-9dfa19aa1407', 'Report01Param01', 'Parameter #1 for Report #1', '807c64b1-a59b-465c-998b-a399984b5ef4', 'b8e91527-8b0e-4ed2-8cba-8cb8989ba8e2', true,  false, 1, '2015-05-06T15:00:00');
 --insert into reporting.report_parameter (report_parameter_id, report_id, name, description, parameter_type_id, widget_id, required, multivalued, order_index, created_on) values ('36fc0de4-cc4c-4efa-8c47-73e0e254e449', 'c7f1d394-9814-4ede-bb01-2700187d79ca', 'Report02Param01', 'Parameter #1 for Report #2', 'abce5a38-b1e9-42a3-9962-19227d51dd4a', 'b8e91527-8b0e-4ed2-8cba-8cb8989ba8e2', false, false, 1, '2015-05-06T15:00:01');
@@ -70,6 +71,7 @@ insert into reporting.widget (widget_id, name, description, multiple_select ,act
 --insert into reporting.report_parameter (report_parameter_id, report_id, name, description, parameter_type_id, widget_id, required, multivalued, order_index, created_on) values ('4c2bd07e-c7d7-451a-8c07-c8f589959382', '702d5daa-e23d-4f00-b32b-67b44c06d8f6', 'Report04Param01', 'Parameter #1 for Report #4', 'bfa09b13-ad55-481e-8c29-b047dc5d7f3e', 'b8e91527-8b0e-4ed2-8cba-8cb8989ba8e2', true,  true, 1, '2015-05-06T15:00:03');
 --insert into reporting.report_parameter (report_parameter_id, report_id, name, description, parameter_type_id, widget_id, required, multivalued, order_index, created_on) values ('73792710-8d69-477a-8d44-fe646507eaf8', 'f1f06b15-c0b6-488d-9eed-74e867a47d5a', 'Report05Param01', 'Parameter #1 for Report #5', 'abce5a38-b1e9-42a3-9962-19227d51dd4a', 'b8e91527-8b0e-4ed2-8cba-8cb8989ba8e2', true,  false, 1, '2015-05-06T15:00:04');
 --insert into reporting.report_parameter (report_parameter_id, report_id, name, description, parameter_type_id, widget_id, required, multivalued, order_index, created_on) values ('86e93f08-86fd-4aed-99c2-1f4af29382d3', 'adc50b28-cb84-4ede-9759-43f467ac22ec', 'Report06Param01', 'Parameter #1 for Report #6', '807c64b1-a59b-465c-998b-a399984b5ef4', 'b8e91527-8b0e-4ed2-8cba-8cb8989ba8e2', false, false, 1, '2015-05-06T15:00:05');
+--------------------------------------------------------------------------------
 -- [report_parameter]'s with relation to [report_version]:
 insert into reporting.report_parameter (report_parameter_id, report_version_id, name, description, parameter_type_id, widget_id, required, multivalued, order_index, created_on) values ('206723d6-50e7-4f4a-85c0-cb679e92ad6b', 'dbc0883b-afe3-4147-87b4-0ed35869cd35', 'Report01Param01', 'Parameter #1 for Report #1', '807c64b1-a59b-465c-998b-a399984b5ef4', 'b8e91527-8b0e-4ed2-8cba-8cb8989ba8e2', true,  false, 1, '2015-05-06T15:00:00');
 insert into reporting.report_parameter (report_parameter_id, report_version_id, name, description, parameter_type_id, widget_id, required, multivalued, order_index, created_on) values ('36fc0de4-cc4c-4efa-8c47-73e0e254e449', 'fb8a4896-609b-438a-81b0-c70587f8f637', 'Report02Param01', 'Parameter #1 for Report #2', 'abce5a38-b1e9-42a3-9962-19227d51dd4a', 'b8e91527-8b0e-4ed2-8cba-8cb8989ba8e2', false, false, 1, '2015-05-06T15:00:01');
@@ -77,6 +79,7 @@ insert into reporting.report_parameter (report_parameter_id, report_version_id, 
 insert into reporting.report_parameter (report_parameter_id, report_version_id, name, description, parameter_type_id, widget_id, required, multivalued, order_index, created_on) values ('4c2bd07e-c7d7-451a-8c07-c8f589959382', '293abf69-1516-4e9b-84ae-241d25c13e8d', 'Report04Param01', 'Parameter #1 for Report #4', 'bfa09b13-ad55-481e-8c29-b047dc5d7f3e', 'b8e91527-8b0e-4ed2-8cba-8cb8989ba8e2', true,  true, 1, '2015-05-06T15:00:03');
 insert into reporting.report_parameter (report_parameter_id, report_version_id, name, description, parameter_type_id, widget_id, required, multivalued, order_index, created_on) values ('73792710-8d69-477a-8d44-fe646507eaf8', '8dd9bb5a-1565-4d38-8a8b-857803088626', 'Report05Param01', 'Parameter #1 for Report #5', 'abce5a38-b1e9-42a3-9962-19227d51dd4a', 'b8e91527-8b0e-4ed2-8cba-8cb8989ba8e2', true,  false, 1, '2015-05-06T15:00:04');
 insert into reporting.report_parameter (report_parameter_id, report_version_id, name, description, parameter_type_id, widget_id, required, multivalued, order_index, created_on) values ('86e93f08-86fd-4aed-99c2-1f4af29382d3', 'd481c452-990c-4ea3-9afa-3ea60cef04ab', 'Report06Param01', 'Parameter #1 for Report #6', '807c64b1-a59b-465c-998b-a399984b5ef4', 'b8e91527-8b0e-4ed2-8cba-8cb8989ba8e2', false, false, 1, '2015-05-06T15:00:05');
+--------------------------------------------------------------------------------
 
 
 -- Insert  tree of [role] records:
@@ -407,11 +410,14 @@ insert into reporting.role_parameter_value (role_parameter_value_id, role_id, re
 insert into reporting.role_parameter_value (role_parameter_value_id, role_id, report_parameter_id, string_value, created_on) values ('558f3ecb-15dc-4eec-951a-eedc6ebf3fb0', '39bc8737-b9eb-4cb5-9765-1c33dd5ee40c', '86e93f08-86fd-4aed-99c2-1f4af29382d3', 'Role acca''s value for Report06Param01'   , '2015-05-31T13:00:00');
 
 
+--------------------------------------------------------------------------------
 -- [subscription]'s with relation to [report]:
 ---- Subscription #1:  Deliver report "Report name #01" to role "aabb" in format "PDF":
 --insert into reporting.subscription (subscription_id, role_id, report_id, document_format_id, run_once_at, cron_schedule, email, description, created_on) values ('7f68e31c-2884-4638-b3e5-c64697a28bd1', 'ee56f34d-dbb4-41c1-9d30-ce29cf973820', 'd65f3d9c-f67d-4beb-9936-9dfa19aa1407', '30800d77-5fdd-44bc-94a3-1502bd307c1d', '2016-01-01T03:00:00', '00 6 * * 1', 'jeffreyz@q-free.com', 'Description for Subscription #1', '2015-06-06T15:45:30');
+--------------------------------------------------------------------------------
 -- [subscription]'s with relation to [report_version]:
 insert into reporting.subscription (subscription_id, role_id, report_version_id, document_format_id, run_once_at, cron_schedule, email, description, created_on) values ('7f68e31c-2884-4638-b3e5-c64697a28bd1', 'ee56f34d-dbb4-41c1-9d30-ce29cf973820', 'dbc0883b-afe3-4147-87b4-0ed35869cd35', '30800d77-5fdd-44bc-94a3-1502bd307c1d', '2016-01-01T03:00:00', '00 6 * * 1', 'jeffreyz@q-free.com', 'Description for Subscription #1', '2015-06-06T15:45:30');
+--------------------------------------------------------------------------------
 
 
 -- [subscription_parameter_value] rows for [report_parameter]'s associated with 
@@ -419,9 +425,18 @@ insert into reporting.subscription (subscription_id, role_id, report_version_id,
 insert into reporting.subscription_parameter_value (subscription_parameter_value_id, subscription_id, report_parameter_id, string_value, time_value, year_number, years_relative, month_number, months_relative, week_of_month_number, week_of_year_number, weeks_relative, day_of_month_number, day_of_week_number, days_relative, created_on) VALUES ('a5159f31-1c2b-496f-af04-bcb02cc04cfb', '7f68e31c-2884-4638-b3e5-c64697a28bd1', '206723d6-50e7-4f4a-85c0-cb679e92ad6b', 'integer value for Report01Param01 for subscription #1', null, null, null, null, null, null, null, null, null, null, null, '2015-03-15T11:00:01');
 
 
--- job for report "Report name #01" run by role "aabb":
-insert into reporting.job (report_id, role_id, created_on) VALUES ('d65f3d9c-f67d-4beb-9936-9dfa19aa1407', 'ee56f34d-dbb4-41c1-9d30-ce29cf973820', '2015-06-06T00:00:15');
--- job for report "Report name #01" run by role "aabb":
-insert into reporting.job (report_id, role_id, created_on) VALUES ('d65f3d9c-f67d-4beb-9936-9dfa19aa1407', 'ee56f34d-dbb4-41c1-9d30-ce29cf973820', '2015-06-07T00:00:15');
+--------------------------------------------------------------------------------
+-- [job]'s with relation to [report]:
+---- job for report "Report name #01" run by role "aabb":
+--insert into reporting.job (report_id, role_id, created_on) VALUES ('d65f3d9c-f67d-4beb-9936-9dfa19aa1407', 'ee56f34d-dbb4-41c1-9d30-ce29cf973820', '2015-06-06T00:00:15');
+---- job for report "Report name #01" run by role "aabb":
+--insert into reporting.job (report_id, role_id, created_on) VALUES ('d65f3d9c-f67d-4beb-9936-9dfa19aa1407', 'ee56f34d-dbb4-41c1-9d30-ce29cf973820', '2015-06-07T00:00:15');
+--------------------------------------------------------------------------------
+-- [job]'s with relation to [report_version]:
+-- job for [report_version] "version 1" of report "Report name #01" run by role "aabb":
+insert into reporting.job (report_version_id, role_id, created_on) VALUES ('dbc0883b-afe3-4147-87b4-0ed35869cd35', 'ee56f34d-dbb4-41c1-9d30-ce29cf973820', '2015-06-06T00:00:15');
+-- job for [report_version] "version 1" of report "Report name #01" run by role "aabb":
+insert into reporting.job (report_version_id, role_id, created_on) VALUES ('dbc0883b-afe3-4147-87b4-0ed35869cd35', 'ee56f34d-dbb4-41c1-9d30-ce29cf973820', '2015-06-07T00:00:15');
+--------------------------------------------------------------------------------
 
 COMMIT;

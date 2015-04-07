@@ -93,12 +93,12 @@ public class Report implements Serializable {
 	//	@OneToMany(mappedBy = "report", cascade = CascadeType.ALL)
 	//	private List<Subscription> reportSubscriptions;
 
-	/*
-	 * cascade = CascadeType.ALL:
-	 *     Deleting a Report will delete all of its Job's.
-	 */
-	@OneToMany(mappedBy = "report", cascade = CascadeType.ALL)
-	private List<Job> jobs;
+	//	/*
+	//	 * cascade = CascadeType.ALL:
+	//	 *     Deleting a Report will delete all of its Job's.
+	//	 */
+	//	@OneToMany(mappedBy = "report", cascade = CascadeType.ALL)
+	//	private List<Job> jobs;
 
 	//	// Works for H2, but not PostgreSQL:
 	//	//	@Column(name = "rptdesign", nullable = false, columnDefinition = "clob")
@@ -197,14 +197,6 @@ public class Report implements Serializable {
 
 	public void setRoleReports(List<RoleReport> roleReports) {
 		this.roleReports = roleReports;
-	}
-
-	public List<Job> getJobs() {
-		return jobs;
-	}
-
-	public void setJobs(List<Job> jobs) {
-		this.jobs = jobs;
 	}
 
 	//	public String getRptdesign() {

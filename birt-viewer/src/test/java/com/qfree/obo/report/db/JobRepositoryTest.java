@@ -21,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.qfree.obo.report.domain.Job;
 import com.qfree.obo.report.domain.Report;
+import com.qfree.obo.report.domain.ReportVersion;
 import com.qfree.obo.report.domain.Role;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -67,11 +68,15 @@ public class JobRepositoryTest {
 		Report report04 = reportRepository.findOne(uuidOfReport04);
 		assertThat(report04, is(not(nullValue())));
 
+		ReportVersion report04Version01 = report04.getReportVersions().get(0);
+		assertThat(report04Version01, is(not(nullValue())));
+
 		UUID uuidOfRole_aabb = UUID.fromString("ee56f34d-dbb4-41c1-9d30-ce29cf973820");
 		Role role_aabb = roleRepository.findOne(uuidOfRole_aabb);
 		assertThat(role_aabb, is(notNullValue()));
 
-		Job unsavedJob = new Job(report04, role_aabb);
+		//		Job unsavedJob = new Job(report04, role_aabb);
+		Job unsavedJob = new Job(report04Version01, role_aabb);
 		//		logger.info("unsavedJob = {}", unsavedJob);
 
 		Job savedJob = jobRepository.save(unsavedJob);
