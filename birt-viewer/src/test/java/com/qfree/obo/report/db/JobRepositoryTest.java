@@ -19,6 +19,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.qfree.obo.report.domain.DocumentFormat;
 import com.qfree.obo.report.domain.Job;
 import com.qfree.obo.report.domain.Report;
 import com.qfree.obo.report.domain.ReportVersion;
@@ -38,6 +39,9 @@ public class JobRepositoryTest {
 
 	@Autowired
 	ReportRepository reportRepository;
+
+	@Autowired
+	DocumentFormatRepository documentFormatRepository;
 
 	//	@Autowired
 	//	ReportParameterRepository reportParameterRepository;
@@ -71,12 +75,16 @@ public class JobRepositoryTest {
 		ReportVersion report04Version01 = report04.getReportVersions().get(0);
 		assertThat(report04Version01, is(not(nullValue())));
 
+		UUID uuidOfPdfFormat = UUID.fromString("30800d77-5fdd-44bc-94a3-1502bd307c1d");
+		DocumentFormat pdfFormat = documentFormatRepository.findOne(uuidOfPdfFormat);
+		assertThat(pdfFormat, is(not(nullValue())));
+
 		UUID uuidOfRole_aabb = UUID.fromString("ee56f34d-dbb4-41c1-9d30-ce29cf973820");
 		Role role_aabb = roleRepository.findOne(uuidOfRole_aabb);
 		assertThat(role_aabb, is(notNullValue()));
 
 		//		Job unsavedJob = new Job(report04, role_aabb);
-		Job unsavedJob = new Job(report04Version01, role_aabb);
+		Job unsavedJob = new Job(report04Version01, role_aabb, pdfFormat);
 		//		logger.info("unsavedJob = {}", unsavedJob);
 
 		Job savedJob = jobRepository.save(unsavedJob);

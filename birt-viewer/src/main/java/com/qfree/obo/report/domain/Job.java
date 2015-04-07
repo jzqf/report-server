@@ -73,12 +73,53 @@ public class Job implements Serializable {
 			columnDefinition = "uuid")
 	private Role role;
 
+	@ManyToOne
+	/*
+	 * If columnDefinition="uuid" is omitted here and the database schema is 
+	 * created by Hibernate (via hibernate.hbm2ddl.auto="create"), then the 
+	 * PostgreSQL column definition includes "DEFAULT uuid_generate_v4()", which
+	 * is not what is wanted.
+	 */
+	@JoinColumn(name = "document_format_id", nullable = false,
+			foreignKey = @ForeignKey(name = "fk_job_documentformat"),
+			columnDefinition = "uuid")
+	private DocumentFormat documentFormat;
+
 	/*
 	 * cascade = CascadeType.ALL:
 	 *     Deleting a Job will delete all of its JobParameterValue's.
 	 */
 	@OneToMany(mappedBy = "job", cascade = CascadeType.ALL)
 	private List<JobParameterValue> jobParameterValues;
+
+	/**
+	 * The URL used to request the report from the report server.
+	 */
+	@Column(name = "url", nullable = true, length = 1024)
+	private String url;
+
+	/**
+	 * The name of the file to generate from the document stored in 
+	 * {@link #document}. This includes the file extension, but no path 
+	 * information. This will normally be generated automatically from the 
+	 * report number, name, version and document format (for the extension).
+	 */
+	@Column(name = "file_name", nullable = true, length = 128)
+	private String fileName;
+
+	/**
+	 * The response from the report server returned for a request for a report.
+	 * This is Base64-encoded if the response represents a binary document
+	 * format.
+	 */
+	@Column(name = "document", nullable = true, columnDefinition = "text")
+	private String document;
+
+	/**
+	 * true if {@link #document} is Base64 encoded.
+	 */
+	@Column(name = "encoded", nullable = true)
+	private Boolean encoded;
 
 	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name = "created_on", nullable = false)
@@ -87,13 +128,24 @@ public class Job implements Serializable {
 	private Job() {
 	}
 
-	public Job(ReportVersion report_version, Role role) {
-		this(report_version, role, new Date());
+	public Job(ReportVersion report_version, Role role, DocumentFormat documentFormat) {
+		this(report_version, role, documentFormat, null, null, null, null, new Date());
 	}
 
-	public Job(ReportVersion report_version, Role role, Date createdOn) {
+	public Job(ReportVersion report_version, Role role, DocumentFormat documentFormat,
+			String url, String fileName, String document, Boolean encoded) {
+		this(report_version, role, documentFormat, url, fileName, document, encoded, new Date());
+	}
+
+	public Job(ReportVersion report_version, Role role, DocumentFormat documentFormat,
+			String url, String fileName, String document, Boolean encoded, Date createdOn) {
 		this.reportVersion = report_version;
 		this.role = role;
+		this.documentFormat = documentFormat;
+		this.url = url;
+		this.fileName = fileName;
+		this.document = document;
+		this.encoded = encoded;
 		this.createdOn = createdOn;
 	}
 
@@ -121,12 +173,52 @@ public class Job implements Serializable {
 		this.role = role;
 	}
 
+	public DocumentFormat getDocumentFormat() {
+		return documentFormat;
+	}
+
+	public void setDocumentFormat(DocumentFormat documentformat) {
+		this.documentFormat = documentformat;
+	}
+
 	public List<JobParameterValue> getJobParameterValues() {
 		return jobParameterValues;
 	}
 
 	public void setJobParameterValues(List<JobParameterValue> jobParameterValues) {
 		this.jobParameterValues = jobParameterValues;
+	}
+
+	public String getUrl() {
+		return url;
+	}
+
+	public void setUrl(String url) {
+		this.url = url;
+	}
+
+	public String getFileName() {
+		return fileName;
+	}
+
+	public void setFileName(String fileName) {
+		this.fileName = fileName;
+	}
+
+	public String getDocument() {
+		return document;
+	}
+
+	public void setDocument(String document) {
+		this.document = document;
+	}
+
+	public Boolean getEncoded() {
+		return encoded;
+	}
+
+	public void setEncoded(Boolean encoded) {
+		this.encoded = encoded;
 	}
 
 	@Override

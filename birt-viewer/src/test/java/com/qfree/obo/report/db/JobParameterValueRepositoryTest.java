@@ -22,6 +22,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.qfree.obo.report.domain.DocumentFormat;
 import com.qfree.obo.report.domain.Job;
 import com.qfree.obo.report.domain.JobParameterValue;
 import com.qfree.obo.report.domain.Report;
@@ -46,6 +47,9 @@ public class JobParameterValueRepositoryTest {
 
 	@Autowired
 	ReportRepository reportRepository;
+
+	@Autowired
+	DocumentFormatRepository documentFormatRepository;
 
 	//	@Autowired
 	//	ReportParameterRepository reportParameterRepository;
@@ -84,11 +88,15 @@ public class JobParameterValueRepositoryTest {
 		Role role_aabb = roleRepository.findOne(uuidOfRole_aabb);
 		assertThat(role_aabb, is(notNullValue()));
 
+		UUID uuidOfPdfFormat = UUID.fromString("30800d77-5fdd-44bc-94a3-1502bd307c1d");
+		DocumentFormat pdfFormat = documentFormatRepository.findOne(uuidOfPdfFormat);
+		assertThat(pdfFormat, is(not(nullValue())));
+
 		/*
 		 * Create a new Job. for report "Report name #04" for Role "aabb".
 		 */
 		//		Job newJob = new Job(report04, role_aabb);
-		Job newJob = new Job(report04Version01, role_aabb);
+		Job newJob = new Job(report04Version01, role_aabb, pdfFormat);
 
 		/*
 		 * Get all the parameters.
@@ -155,8 +163,12 @@ public class JobParameterValueRepositoryTest {
 		Role role_aabb = roleRepository.findOne(uuidOfRole_aabb);
 		assertThat(role_aabb, is(notNullValue()));
 
+		UUID uuidOfPdfFormat = UUID.fromString("30800d77-5fdd-44bc-94a3-1502bd307c1d");
+		DocumentFormat pdfFormat = documentFormatRepository.findOne(uuidOfPdfFormat);
+		assertThat(pdfFormat, is(not(nullValue())));
+
 		//		Job unsavedJob = new Job(report04, role_aabb);
-		Job unsavedJob = new Job(report04Version01, role_aabb);
+		Job unsavedJob = new Job(report04Version01, role_aabb, pdfFormat);
 		//		logger.info("unsavedJob = {}", unsavedJob);
 
 		Job savedJob = jobRepository.save(unsavedJob);

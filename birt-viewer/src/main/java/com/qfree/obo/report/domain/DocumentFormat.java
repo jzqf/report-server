@@ -51,6 +51,9 @@ public class DocumentFormat implements Serializable {
 	@OneToMany(targetEntity = Subscription.class, mappedBy = "documentFormat")
 	private List<Subscription> subscriptions;
 
+	@OneToMany(targetEntity = Job.class, mappedBy = "documentFormat")
+	private List<Job> jobs;
+
 	/**
 	 * Name of the document format. Examples are:<br>
 	 * <pre>
@@ -91,7 +94,7 @@ public class DocumentFormat implements Serializable {
 	@Column(name = "media_type", nullable = false, length = 100)
 	private String mediaType;
 
-	/*
+	/**
 	 * The value assigned to the BIRT "__format" URL query parameter in order
 	 * to request that a report be delivered in the specified format.
 	 */
@@ -189,6 +192,22 @@ public class DocumentFormat implements Serializable {
 
 	public void setActive(boolean active) {
 		this.active = active;
+	}
+
+	public List<Subscription> getSubscriptions() {
+		return subscriptions;
+	}
+
+	public void setSubscriptions(List<Subscription> subscriptions) {
+		this.subscriptions = subscriptions;
+	}
+
+	public List<Job> getJobs() {
+		return jobs;
+	}
+
+	public void setJobs(List<Job> jobs) {
+		this.jobs = jobs;
 	}
 
 	@Override

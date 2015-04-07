@@ -438,10 +438,10 @@ insert into reporting.subscription_parameter_value (subscription_parameter_value
 --insert into reporting.job (report_id, role_id, created_on) VALUES ('d65f3d9c-f67d-4beb-9936-9dfa19aa1407', 'ee56f34d-dbb4-41c1-9d30-ce29cf973820', '2015-06-07T00:00:15');
 --------------------------------------------------------------------------------
 -- [job]'s with relation to [report_version]:
--- job for [report_version] "version 1" of report "Report name #01" run by role "aabb":
-insert into reporting.job (report_version_id, role_id, created_on) VALUES ('dbc0883b-afe3-4147-87b4-0ed35869cd35', 'ee56f34d-dbb4-41c1-9d30-ce29cf973820', '2015-06-06T00:00:15');
--- job for [report_version] "version 1" of report "Report name #01" run by role "aabb":
-insert into reporting.job (report_version_id, role_id, created_on) VALUES ('dbc0883b-afe3-4147-87b4-0ed35869cd35', 'ee56f34d-dbb4-41c1-9d30-ce29cf973820', '2015-06-07T00:00:15');
+-- job for [report_version] "version 1" of report "Report name #01" run by role "aabb". [document_format]: PDF:
+insert into reporting.job (report_version_id, role_id, document_format_id, created_on) VALUES ('dbc0883b-afe3-4147-87b4-0ed35869cd35', 'ee56f34d-dbb4-41c1-9d30-ce29cf973820', '30800d77-5fdd-44bc-94a3-1502bd307c1d', '2015-06-06T00:00:15');
+-- job for [report_version] "version 1" of report "Report name #01" run by role "aabb". [document_format]: OpenDocument Spreadsheet:
+insert into reporting.job (report_version_id, role_id, document_format_id, created_on) VALUES ('dbc0883b-afe3-4147-87b4-0ed35869cd35', 'ee56f34d-dbb4-41c1-9d30-ce29cf973820', '05a4ad8d-6f30-4d6d-83d5-995345a8dc58', '2015-06-07T00:00:15');
 --------------------------------------------------------------------------------
 
 
