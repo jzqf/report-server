@@ -79,6 +79,11 @@ public class Job implements Serializable {
 	 * created by Hibernate (via hibernate.hbm2ddl.auto="create"), then the 
 	 * PostgreSQL column definition includes "DEFAULT uuid_generate_v4()", which
 	 * is not what is wanted.
+	 * 
+	 * The value of documentFormat.birtFormat should be assigned to the BIRT
+	 * __format query parameter in the URL.
+	 * 
+	 * TODO How to determine documentFormat for a report run manually (not from a Subscription)?
 	 */
 	@JoinColumn(name = "document_format_id", nullable = false,
 			foreignKey = @ForeignKey(name = "fk_job_documentformat"),
@@ -93,14 +98,25 @@ public class Job implements Serializable {
 	private List<JobParameterValue> jobParameterValues;
 
 	/**
-	 * The URL used to request the report from the report server.
+	 * The URL used to request the report from the report server.<br>
+	 * <br>
+	 * This will include the name of the rptdesign document from the report 
+	 * server's file system, the document format (&__format=...) and other
+	 * details.<br>
+	 * <br>
+	 * If this {@link Job} is created for a Subscription, it will include query 
+	 * parameters for all of the report parameters. If this report is run 
+	 * manually, the user will be prompted for the report parameter values when 
+	 * the report is run so they will not appear in {@link #url}.
 	 */
 	@Column(name = "url", nullable = true, length = 1024)
 	private String url;
 
 	/**
 	 * The name of the file to generate from the document stored in 
-	 * {@link #document}. This includes the file extension, but no path 
+	 * {@link #document}.<br>
+	 * <br>
+	 * This includes the file extension, but no path 
 	 * information. This will normally be generated automatically from the 
 	 * report number, name, version and document format (for the extension).
 	 */
@@ -108,9 +124,16 @@ public class Job implements Serializable {
 	private String fileName;
 
 	/**
-	 * The response from the report server returned for a request for a report.
+	 * The response from the report server returned for a request for a 
+	 * report.<br>
+	 * <br>
 	 * This is Base64-encoded if the response represents a binary document
-	 * format.
+	 * format. This can be determined by checking the value of 
+	 * {@link #encoded}.<br>
+	 * <br>
+	 * If this {@link Job} is created for a Subscription, the decoded value of 
+	 * this field is delivered to the recipient's e-mail address as an 
+	 * attachment.
 	 */
 	@Column(name = "document", nullable = true, columnDefinition = "text")
 	private String document;
