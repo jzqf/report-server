@@ -35,7 +35,7 @@ import com.qfree.obo.report.domain.ReportCategory;
 @ContextConfiguration(classes = PersistenceConfigTestEnv.class)
 public class ReportRepositoryTest {
 
-	private static final Logger logger = LoggerFactory.getLogger(ReportParameterRepositoryTest.class);
+	private static final Logger logger = LoggerFactory.getLogger(ReportRepositoryTest.class);
 
 	@Autowired
 	ReportRepository reportRepository;
@@ -180,6 +180,6 @@ public class ReportRepositoryTest {
 		recentReportIds.add(uuidOfReport01);
 		recentReportIds.add(uuidOfReport04);
 		recentReportIds.add(uuidOfReport05);
-		logger.info("recentReportIds.size() = ", recentReportIds.size());
+		//		logger.info("recentReportIds.size() = ", recentReportIds.size());
 	}
 }

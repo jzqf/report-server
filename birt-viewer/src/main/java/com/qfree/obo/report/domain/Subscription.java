@@ -70,7 +70,7 @@ public class Subscription implements Serializable {
 	//			columnDefinition = "uuid")
 	//	private Report report;
 	@JoinColumn(name = "report_version_id", nullable = false,
-			foreignKey = @ForeignKey(name = "fk_subscription_report"),
+			foreignKey = @ForeignKey(name = "fk_subscription_reportversion"),
 			columnDefinition = "uuid")
 	private ReportVersion reportVersion;
 

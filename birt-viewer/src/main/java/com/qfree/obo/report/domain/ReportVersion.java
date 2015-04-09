@@ -36,7 +36,7 @@ import org.hibernate.annotations.TypeDef;
 				@UniqueConstraint(columnNames = { "report_id", "version_code" },
 						name = "uc_reportversion_report_versioncode"),
 				@UniqueConstraint(columnNames = { "report_id", "version_name" },
-						name = "uc_reportversion_report_versioncode") })
+						name = "uc_reportversion_report_versionname") })
 @TypeDef(name = "uuid-custom", defaultForType = UUID.class, typeClass = UuidCustomType.class)
 public class ReportVersion implements Serializable {
 

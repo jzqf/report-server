@@ -57,7 +57,7 @@ public class SubscriptionParameterValue implements Serializable {
 	 * is not what is wanted.
 	 */
 	@JoinColumn(name = "subscription_id", nullable = false,
-			foreignKey = @ForeignKey(name = "fk_reportparameter_subscription"),
+			foreignKey = @ForeignKey(name = "fk_subscriptionparametervalue_subscription"),
 			columnDefinition = "uuid")
 	private Subscription subscription;
 

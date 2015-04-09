@@ -35,7 +35,7 @@ import org.hibernate.annotations.TypeDef;
 		uniqueConstraints = {
 				//				@UniqueConstraint(columnNames = { "report_id", "order_index" },
 				@UniqueConstraint(columnNames = { "report_version_id", "order_index" },
-						name = "uc_report_parameter_order_index") })
+						name = "uc_reportparameter_reportversion_orderindex") })
 @TypeDef(name = "uuid-custom", defaultForType = UUID.class, typeClass = UuidCustomType.class)
 public class ReportParameter implements Serializable {
 
