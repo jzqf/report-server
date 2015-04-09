@@ -24,6 +24,7 @@ import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;
 
 import com.qfree.obo.report.configuration.Config.ParamName;
+import com.qfree.obo.report.configuration.Config.ParamType;
 
 /**
  * The persistent class for the "configuration" database table.
@@ -71,6 +72,11 @@ public class Configuration implements Serializable {
 	@Enumerated(EnumType.STRING)
 	private ParamName paramName;
 
+	@Column(name = "param_type", nullable = false, length = 16)
+	//	private String paramType;
+	@Enumerated(EnumType.STRING)
+	private ParamType paramType;
+
 	@Column(name = "boolean_value", nullable = true)
 	private Boolean booleanValue;
 
@@ -106,14 +112,16 @@ public class Configuration implements Serializable {
 	private Date createdOn;
 
 	public Configuration() {
-		this(null, new Date());
+		this(null, null, null, new Date());
 	}
 
 	public Configuration(Role role) {
-		this(role, new Date());
+		this(null, null, role, new Date());
 	}
 
-	public Configuration(Role role, Date createdOn) {
+	public Configuration(ParamName paramName, ParamType paramType, Role role, Date createdOn) {
+		this.paramName = paramName;
+		this.paramType = paramType;
 		this.role = role;
 		this.createdOn = createdOn;
 	}
@@ -144,6 +152,14 @@ public class Configuration implements Serializable {
 
 	public void setParamName(ParamName paramName) {
 		this.paramName = paramName;
+	}
+
+	public ParamType getParamType() {
+		return paramType;
+	}
+
+	public void setParamType(ParamType paramType) {
+		this.paramType = paramType;
 	}
 
 	public Boolean getBooleanValue() {

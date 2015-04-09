@@ -415,15 +415,15 @@ insert into reporting.role_parameter_value (role_parameter_value_id, role_id, re
 insert into reporting.role_parameter_value (role_parameter_value_id, role_id, report_parameter_id, string_value, created_on) values ('558f3ecb-15dc-4eec-951a-eedc6ebf3fb0', '39bc8737-b9eb-4cb5-9765-1c33dd5ee40c', '86e93f08-86fd-4aed-99c2-1f4af29382d3', 'Role acca''s value for Report06Param01'   , '2015-05-31T13:00:00');
 
 
-insert into reporting.configuration (configuration_id, param_name, role_id, boolean_value , created_on) VALUES ('1f4f4814-577f-426d-bb98-4cc47446d578', 'TEST_BOOLEAN'  , null, true                      , '2015-07-14T00:00:00');
-insert into reporting.configuration (configuration_id, param_name, role_id, bytea_value   , created_on) VALUES ('e61167ae-2331-408c-9b5c-b2880adbea5a', 'TEST_BYTEARRAY', null, null                      , '2015-07-14T00:00:00');
-insert into reporting.configuration (configuration_id, param_name, role_id, date_value    , created_on) VALUES ('7d325b3c-d307-4fd0-bdae-c349ec2d4835', 'TEST_DATE'     , null, '1958-05-06'              , '2015-07-14T00:00:00');
-insert into reporting.configuration (configuration_id, param_name, role_id, datetime_value, created_on) VALUES ('5e7d5a1e-5d42-4a9c-b790-e45e545463f7', 'TEST_DATETIME' , null, '2008-11-29T01:00:00'     , '2015-07-14T00:00:00');
-insert into reporting.configuration (configuration_id, param_name, role_id, float_value   , created_on) VALUES ('d34f8309-56e3-4328-9227-0d8c1e57a941', 'TEST_FLOAT'    , null, 3.14159                   , '2015-07-14T00:00:00');
-insert into reporting.configuration (configuration_id, param_name, role_id, integer_value , created_on) VALUES ('b4fd2271-26fb-4db7-bfe7-07211d849364', 'TEST_INTEGER'  , null, 42                        , '2015-07-14T00:00:00');
-insert into reporting.configuration (configuration_id, param_name, role_id, string_value  , created_on) VALUES ('62f9ca07-79ce-48dd-8357-873191ea8b9d', 'TEST_STRING'   , null, 'Meaning of life'         , '2015-07-14T00:00:00');
-insert into reporting.configuration (configuration_id, param_name, role_id, text_value    , created_on) VALUES ('b0aa23ef-2be5-4041-a95f-b7615af639b5', 'TEST_TEXT'     , null, 'Meaning of life - really', '2015-07-14T00:00:00');
-insert into reporting.configuration (configuration_id, param_name, role_id, time_value    , created_on) VALUES ('e0537e8a-62f3-4240-ba19-da0d5005092e', 'TEST_TIME'     , null, '16:17:18'                , '2015-07-14T00:00:00');
+insert into reporting.configuration (configuration_id, param_name, role_id, param_type, boolean_value , created_on) VALUES ('1f4f4814-577f-426d-bb98-4cc47446d578', 'TEST_BOOLEAN'  , null, 'BOOLEAN'  , true                      , '2015-07-14T00:00:00');
+insert into reporting.configuration (configuration_id, param_name, role_id, param_type, bytea_value   , created_on) VALUES ('e61167ae-2331-408c-9b5c-b2880adbea5a', 'TEST_BYTEARRAY', null, 'BYTEARRAY', null                      , '2015-07-14T00:00:00');
+insert into reporting.configuration (configuration_id, param_name, role_id, param_type, date_value    , created_on) VALUES ('7d325b3c-d307-4fd0-bdae-c349ec2d4835', 'TEST_DATE'     , null, 'DATE'     , '1958-05-06'              , '2015-07-14T00:00:00');
+insert into reporting.configuration (configuration_id, param_name, role_id, param_type, datetime_value, created_on) VALUES ('5e7d5a1e-5d42-4a9c-b790-e45e545463f7', 'TEST_DATETIME' , null, 'DATETIME' , '2008-11-29T01:00:00'     , '2015-07-14T00:00:00');
+insert into reporting.configuration (configuration_id, param_name, role_id, param_type, float_value   , created_on) VALUES ('d34f8309-56e3-4328-9227-0d8c1e57a941', 'TEST_FLOAT'    , null, 'FLOAT'    , 3.14159                   , '2015-07-14T00:00:00');
+insert into reporting.configuration (configuration_id, param_name, role_id, param_type, integer_value , created_on) VALUES ('b4fd2271-26fb-4db7-bfe7-07211d849364', 'TEST_INTEGER'  , null, 'INTEGER'  , 42                        , '2015-07-14T00:00:00');
+insert into reporting.configuration (configuration_id, param_name, role_id, param_type, string_value  , created_on) VALUES ('62f9ca07-79ce-48dd-8357-873191ea8b9d', 'TEST_STRING'   , null, 'STRING'   , 'Meaning of life'         , '2015-07-14T00:00:00');
+insert into reporting.configuration (configuration_id, param_name, role_id, param_type, text_value    , created_on) VALUES ('b0aa23ef-2be5-4041-a95f-b7615af639b5', 'TEST_TEXT'     , null, 'TEXT'     , 'Meaning of life - really', '2015-07-14T00:00:00');
+insert into reporting.configuration (configuration_id, param_name, role_id, param_type, time_value    , created_on) VALUES ('e0537e8a-62f3-4240-ba19-da0d5005092e', 'TEST_TIME'     , null, 'TIME'     , '16:17:18'                , '2015-07-14T00:00:00');
 
 
 --------------------------------------------------------------------------------

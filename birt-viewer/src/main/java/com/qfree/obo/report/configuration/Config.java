@@ -15,6 +15,11 @@ public class Config {
 	@Autowired
 	ConfigurationRepository configurationRepository;
 
+	/**
+	 * These enum elements are stored in the report server database as
+	 * strings. They are used by the {@link Configuration} entity class. 
+	 * Therefore, they should never be changed or deleted.
+	 */
 	public enum ParamName {
 		/*
 		 * For unit tests:
@@ -30,77 +35,95 @@ public class Config {
 		TEST_TIME
 	}
 
+	/**
+	 * These enum elements are stored in the report server database as
+	 * strings. They are used by the {@link Configuration} entity class. 
+	 * Therefore, they should never be changed or deleted.
+	 */
+	public enum ParamType {
+		BOOLEAN,
+		BYTEARRAY,
+		DATE,
+		DATETIME,
+		FLOAT,
+		INTEGER,
+		STRING,
+		TEXT,
+		TIME
+	}
+
 	public Object get(ParamName name) {
 		return get(name, null);
 	}
 
 	public Object get(ParamName name, Role role) {
 		/*
-		 * First look for role-specific value if a Role is specified, and then 
-		 * for global default, i.e., (role==null), if no role-specific value is
-		 * found.
+		 * First look for role-specific value if a Role is specified.
 		 */
 		Object object = null;
 		if (role != null) {
 			//TODO Write me!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 		}
 
+		/*
+		 * If no role-specific value has been found...
+		 */
 		if (object == null) {
 			/* 
-			 * Look for global default.
+			 * ...Look for a global (role-independent) default value for the 
+			 * parameter.
 			 */
 			//			Configuration configuration = configurationRepository.findByParamName(ParamName.TEST_STRING
 			//					.toString());
 			logger.info("name = {}", name);
 			Configuration configuration = configurationRepository.findByParamName(name);
+			//TODO THROW CUSTOM EXCEPTION IF NO PARAM FOUND + LOG
 			logger.info("configuration = {}", configuration);
-			//			object = "Finish writing Config.get!";
-			//TODO MUST DO TJIS IN A CASE OR WHATEVER:
+
 			/*
-			 * We use an enum so that we can hardwire the data type of each 
-			 * parameter.
+			 * Get the type of the parameter value so that we can retrieve the
+			 * value with the appropriate property. 
 			 */
-			switch (name) {
-			case TEST_BOOLEAN:
+			ParamType paramType = configuration.getParamType();
+			switch (paramType) {
+			case BOOLEAN:
 				object = configuration.getBooleanValue();
 				break;
-			case TEST_BYTEARRAY:
+			case BYTEARRAY:
 				object = configuration.getByteaValue();
 				break;
-			case TEST_DATE:
+			case DATE:
 				object = configuration.getDateValue();
 				break;
-			case TEST_DATETIME:
+			case DATETIME:
 				object = configuration.getDatetimeValue();
 				break;
-			case TEST_FLOAT:
+			case FLOAT:
 				object = configuration.getFloatValue();
 				break;
-			case TEST_INTEGER:
+			case INTEGER:
 				object = configuration.getIntegerValue();
 				break;
-			case TEST_STRING:
+			case STRING:
 				object = configuration.getStringValue();
 				break;
-			case TEST_TEXT:
+			case TEXT:
 				object = configuration.getTextValue();
 				break;
-			case TEST_TIME:
+			case TIME:
 				object = configuration.getTimeValue();
 				break;
 			default:
-				logger.error("Untreated case. name = {}", name);
+				logger.error("Untreated case. paramType = {}", paramType);
 				//TODO Throw a custom (or even a standard) exception here?
 				break;
 			}
 		}
 
-		//TODO THROW CUSTOM EXCEPTION IF NO PARAM FOUND + LOG
-
 		return object;
 	}
 
-	public void set(ParamName name, String value, Role role) {
+	public void set(ParamName name, String value, ParamType paramType, Role role) {
 		//TODO Write me!
 	}
 }
