@@ -34,7 +34,7 @@ public class ConfigurationRepositoryTest {
 
 	private static final Logger logger = LoggerFactory.getLogger(ConfigurationRepositoryTest.class);
 
-	private static final long NUM_TEST_CONFIGURATIONS = 18L;  // number of test [configuration] records
+	private static final long NUM_TEST_CONFIGURATIONS = 20L;  // number of test [configuration] records
 
 	/*
 	 * Default values (role_id = null) in the test [configuration] records.
@@ -43,6 +43,7 @@ public class ConfigurationRepositoryTest {
 	private static final byte[] TEST_BYTEARRAY_DEFAULT_VALUE=null;
 	private static final Date TEST_DATE_DEFAULT_VALUE = new GregorianCalendar(1958, 4, 6).getTime();
 	private static final Date TEST_DATETIME_DEFAULT_VALUE = new GregorianCalendar(2008, 10, 29, 01, 0, 0).getTime();
+	private static final Double TEST_DOUBLE_DEFAULT_VALUE = 299792458.467;
 	private static final Float TEST_FLOAT_DEFAULT_VALUE=3.14159F;
 	private static final Integer TEST_INTEGER_DEFAULT_VALUE=42;
 	private static final String TEST_STRING_DEFAULT_VALUE="Meaning of life";
@@ -578,6 +579,150 @@ public class ConfigurationRepositoryTest {
 		assertThat(datetimeWithTimeZone, is(equalTo(TEST_DATETIME_DEFAULT_VALUE)));
 	}
 
+	// ======================== Double parameter tests ========================
+
+	@Test
+	@Transactional
+	public void doubleValueExistsDefault() {
+		UUID uuidOfDefaultDoubleValueConfiguration = UUID.fromString("4bedeeae-6436-4c64-862b-4e87ffaa4527");
+		Configuration defaultDoubleValueConfiguration = configurationRepository
+				.findOne(uuidOfDefaultDoubleValueConfiguration);
+		assertThat(defaultDoubleValueConfiguration, is(not(nullValue())));
+		assertThat(defaultDoubleValueConfiguration.getDoubleValue(), is(TEST_DOUBLE_DEFAULT_VALUE));
+	}
+
+	@Test
+	@Transactional
+	public void doubleValueFetchDefault() {
+		//		Configuration configuration = configurationRepository.findByParamName(ParamName.TEST_DOUBLE.toString());
+		Configuration configuration = configurationRepository.findByParamName(ParamName.TEST_DOUBLE);
+		assertThat(configuration, is(not(nullValue())));
+		Double doubleValue = configuration.getDoubleValue();
+		assertThat(doubleValue, is(not(nullValue())));
+		assertThat(doubleValue, is(TEST_DOUBLE_DEFAULT_VALUE));
+	}
+
+	@Test
+	@Transactional
+	public void doubleValueFetchDefaultFromConfig() {
+		Object doubleValueObject = config.get(ParamName.TEST_DOUBLE);
+		assertThat(doubleValueObject, is(instanceOf(Double.class)));
+		assertThat((Double) doubleValueObject, is(TEST_DOUBLE_DEFAULT_VALUE));
+	}
+
+	@Test
+	@Transactional
+	public void doubleValueFetchNonexistentRoleSpecificFromConfig() {
+		UUID uuidOfRole_bcbc = UUID.fromString("e918c8aa-c6d1-462c-9e91-f1db0fb9f346");
+		Role role_bcbc = roleRepository.findOne(uuidOfRole_bcbc);
+		assertThat(role_bcbc, is(notNullValue()));
+		/*
+		 * There is a default value for ParamName.TEST_DOUBLE, but no
+		 * role-specific value for Role "bcbc".
+		 */
+		Object doubleValueObject = config.get(ParamName.TEST_DOUBLE, role_bcbc);
+		assertThat(doubleValueObject, is(instanceOf(Double.class)));
+		assertThat((Double) doubleValueObject, is(TEST_DOUBLE_DEFAULT_VALUE));
+	}
+
+	/*
+	 * Set default double value for a parameter that already has a default 
+	 * (Role==null) Configuration. This should update the existing Configuration
+	 * entity to store this new value.
+	 */
+	@Test
+	@Transactional
+	public void doubleValueSetDefaultWithConfig() {
+		assertThat(configurationRepository.count(), is(NUM_TEST_CONFIGURATIONS));
+		/*
+		 * Retrieve the existing default value.
+		 */
+		Object doubleValueDefaultObject = config.get(ParamName.TEST_DOUBLE);
+		assertThat(doubleValueDefaultObject, is(instanceOf(Double.class)));
+		assertThat((Double) doubleValueDefaultObject, is(TEST_DOUBLE_DEFAULT_VALUE));
+		/*
+		 * Update default value.
+		 */
+		Double newDoubleValue = 111222333.444;
+		config.set(ParamName.TEST_DOUBLE, newDoubleValue);
+		/*
+		 * The existing Configuration should have been updated, so there should
+		 * be the same number of entities in the database
+		 */
+		assertThat(configurationRepository.count(), is(NUM_TEST_CONFIGURATIONS));
+		/* 
+		 * Retrieve value just set.
+		 */
+		Object doubleValueNewDefaultObject = config.get(ParamName.TEST_DOUBLE);
+		assertThat(doubleValueNewDefaultObject, is(instanceOf(Double.class)));
+		assertThat((Double) doubleValueNewDefaultObject, is(newDoubleValue));
+	}
+
+	/*
+	 * Set role-specific double value for a parameter that has a default 
+	 * (Role==null) Configuration, but no role-specific value. This should
+	 * create a new Configuration entity to store this value.
+	 */
+	@Test
+	@Transactional
+	public void doubleValueSetRoleSpecificWithConfig() {
+		assertThat(configurationRepository.count(), is(NUM_TEST_CONFIGURATIONS));
+
+		UUID uuidOfRole_bcbc = UUID.fromString("e918c8aa-c6d1-462c-9e91-f1db0fb9f346");
+		Role role_bcbc = roleRepository.findOne(uuidOfRole_bcbc);
+		assertThat(role_bcbc, is(notNullValue()));
+		/*
+		 * There is a default value for ParamName.TEST_DOUBLE, but no
+		 * role-specific value for Role "bcbc".
+		 */
+		Object doubleValueObject = config.get(ParamName.TEST_DOUBLE, role_bcbc);
+		assertThat(doubleValueObject, is(instanceOf(Double.class)));
+		assertThat((Double) doubleValueObject, is(TEST_DOUBLE_DEFAULT_VALUE));
+
+		/*
+		 * Set role-specific value, which should override the default value for
+		 * the specified role.
+		 */
+		Double newDoubleValue = 483.128444;
+		config.set(ParamName.TEST_DOUBLE, newDoubleValue, role_bcbc);
+		/*
+		 * This should have created a new Configuration.
+		 */
+		assertThat(configurationRepository.count(), is(NUM_TEST_CONFIGURATIONS + 1));
+		/*
+		 * Retrieve value just set. The new value should override the default.
+		 */
+		Object doubleValueRoleSpecificObject = config.get(ParamName.TEST_DOUBLE, role_bcbc);
+		assertThat(doubleValueRoleSpecificObject, is(instanceOf(Double.class)));
+		assertThat((Double) doubleValueRoleSpecificObject, is(newDoubleValue));
+
+		/*
+		 * Update the role-specific value. This should override the default 
+		 * value for the specified role and RE-USE the new role-specific
+		 * Configuration just created, i.e., not create a new Configuration
+		 */
+		newDoubleValue = 0.000001;
+		config.set(ParamName.TEST_DOUBLE, newDoubleValue, role_bcbc);
+		/*
+		 * This should have re-used the Configuration just created.
+		 */
+		assertThat(configurationRepository.count(), is(NUM_TEST_CONFIGURATIONS + 1));
+		/*
+		 * Retrieve value just set. The new value should override the default.
+		 */
+		doubleValueRoleSpecificObject = config.get(ParamName.TEST_DOUBLE, role_bcbc);
+		assertThat(doubleValueRoleSpecificObject, is(instanceOf(Double.class)));
+		assertThat((Double) doubleValueRoleSpecificObject, is(newDoubleValue));
+
+		/*
+		 * The default value for ParamName.TEST_DOUBLE should still be the
+		 * same.
+		 */
+		Object doubleValueDefaultObject = config.get(ParamName.TEST_DOUBLE);
+		assertThat(doubleValueDefaultObject, is(instanceOf(Double.class)));
+		assertThat((Double) doubleValueDefaultObject, is(TEST_DOUBLE_DEFAULT_VALUE));
+	}
+
 	// ======================== Float parameter tests ========================
 
 	@Test
@@ -642,7 +787,7 @@ public class ConfigurationRepositoryTest {
 		/*
 		 * Update default value.
 		 */
-		Float newFloatValue = 123456.789F;
+		Float newFloatValue = 1234.56F;
 		config.set(ParamName.TEST_FLOAT, newFloatValue);
 		/*
 		 * The existing Configuration should have been updated, so there should
@@ -682,7 +827,7 @@ public class ConfigurationRepositoryTest {
 		 * Set role-specific value, which should override the default value for
 		 * the specified role.
 		 */
-		Float newFloatValue = 8462.5837F;
+		Float newFloatValue = 82.583F;
 		config.set(ParamName.TEST_FLOAT, newFloatValue, role_bcbc);
 		/*
 		 * This should have created a new Configuration.

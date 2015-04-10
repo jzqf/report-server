@@ -31,6 +31,7 @@ public class Config {
 		TEST_BYTEARRAY(ParamType.BYTEARRAY),
 		TEST_DATE(ParamType.DATE),
 		TEST_DATETIME(ParamType.DATETIME),
+		TEST_DOUBLE(ParamType.DOUBLE),
 		TEST_FLOAT(ParamType.FLOAT),
 		TEST_INTEGER(ParamType.INTEGER),
 		TEST_STRING(ParamType.STRING),
@@ -64,6 +65,7 @@ public class Config {
 		BYTEARRAY,
 		DATE,
 		DATETIME,
+		DOUBLE,
 		FLOAT,
 		INTEGER,
 		STRING,
@@ -120,6 +122,9 @@ public class Config {
 				break;
 			case DATETIME:
 				object = configuration.getDatetimeValue();
+				break;
+			case DOUBLE:
+				object = configuration.getDoubleValue();
 				break;
 			case FLOAT:
 				object = configuration.getFloatValue();
@@ -198,6 +203,9 @@ public class Config {
 			break;
 		case DATETIME:
 			configuration.setDatetimeValue((Date) value);
+			break;
+		case DOUBLE:
+			configuration.setDoubleValue((Double) value);
 			break;
 		case FLOAT:
 			configuration.setFloatValue((Float) value);

@@ -91,6 +91,9 @@ public class Configuration implements Serializable {
 	@Column(name = "datetime_value", nullable = true)
 	private Date datetimeValue;
 
+	@Column(name = "double_value", nullable = true)
+	private Double doubleValue;
+
 	@Column(name = "float_value", nullable = true)
 	private Float floatValue;
 
@@ -196,6 +199,14 @@ public class Configuration implements Serializable {
 
 	public void setDatetimeValue(Date datetimeValue) {
 		this.datetimeValue = datetimeValue;
+	}
+
+	public Double getDoubleValue() {
+		return doubleValue;
+	}
+
+	public void setDoubleValue(Double doubleValue) {
+		this.doubleValue = doubleValue;
 	}
 
 	public Float getFloatValue() {
