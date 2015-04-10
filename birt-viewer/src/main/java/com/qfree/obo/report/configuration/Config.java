@@ -228,6 +228,29 @@ public class Config {
 			break;
 		}
 
+		/*
+		 * Set stringValue field for non-String parameters. This allows
+		 * information for all parameters to be displayed using just the 
+		 * stringValue field.
+		 */
+		if (paramName.paramType() != ParamType.STRING) {
+			switch (paramName.paramType()) {
+			case BYTEARRAY:
+				configuration.setStringValue(String.valueOf(configuration.getByteaValue().length) + " bytes");
+				break;
+			case TEXT:
+				String textValue = configuration.getTextValue();
+				if (textValue.length() > 40) {
+					textValue = textValue.substring(0, 40) + "...";
+				}
+				configuration.setStringValue(textValue);
+				break;
+			default:
+				configuration.setStringValue(value.toString());
+				break;
+			}
+		}
+
 		logger.info(
 				"After  setStringValue: paramName={}, value={}, role={}, configuration={}, configuration.getConfigurationId()={}",
 				paramName, value, role, configuration, configuration.getConfigurationId());
