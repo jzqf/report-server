@@ -3,6 +3,7 @@ package com.qfree.obo.report.domain;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
+import java.util.UUID;
 
 import org.hibernate.type.AbstractSingleColumnStandardBasicType;
 import org.hibernate.type.PostgresUUIDType;
@@ -28,14 +29,14 @@ import org.slf4j.LoggerFactory;
  * @author Jeffrey Zelt
  *
  */
-public class UuidCustomType extends AbstractSingleColumnStandardBasicType {
+public class UuidCustomType extends AbstractSingleColumnStandardBasicType<UUID> {
 
 	private static final long serialVersionUID = 1L;
 
 	private static final Logger logger = LoggerFactory.getLogger(UuidCustomType.class);
 
 	private static final SqlTypeDescriptor SQL_DESCRIPTOR;
-	private static final JavaTypeDescriptor TYPE_DESCRIPTOR;
+	private static final JavaTypeDescriptor<UUID> TYPE_DESCRIPTOR;
 
 	static {
 

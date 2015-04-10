@@ -115,14 +115,18 @@ public class Configuration implements Serializable {
 		this(null, null, null, new Date());
 	}
 
-	public Configuration(Role role) {
-		this(null, null, role, new Date());
+	public Configuration(ParamName paramName) {
+		this(paramName, null, paramName.paramType(), new Date());
 	}
 
-	public Configuration(ParamName paramName, ParamType paramType, Role role, Date createdOn) {
+	public Configuration(ParamName paramName, Role role) {
+		this(paramName, role, paramName.paramType(), new Date());
+	}
+
+	public Configuration(ParamName paramName, Role role, ParamType paramType, Date createdOn) {
 		this.paramName = paramName;
-		this.paramType = paramType;
 		this.role = role;
+		this.paramType = paramType;
 		this.createdOn = createdOn;
 	}
 

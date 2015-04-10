@@ -4,6 +4,7 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
+import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertThat;
 
@@ -21,6 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.qfree.obo.report.configuration.Config;
 import com.qfree.obo.report.configuration.Config.ParamName;
 import com.qfree.obo.report.domain.Configuration;
+import com.qfree.obo.report.domain.Role;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = PersistenceConfigTestEnv.class)
@@ -32,28 +34,31 @@ public class ConfigurationRepositoryTest {
 	ConfigurationRepository configurationRepository;
 
 	@Autowired
+	RoleRepository roleRepository;
+
+	@Autowired
 	Config config;
 
 	@Test
 	@Transactional
 	public void countTestRecords() {
-		assertThat(configurationRepository.count(), is(9L));
-		assertThat(configurationRepository.count(), is(equalTo(9L)));
+		assertThat(configurationRepository.count(), is(18L));
+		assertThat(configurationRepository.count(), is(equalTo(18L)));
 	}
 
 	@Test
 	@Transactional
-	public void integerValueExistsGlobal() {
-		UUID uuidOfglobalIntegerValueConfiguration = UUID.fromString("b4fd2271-26fb-4db7-bfe7-07211d849364");
-		Configuration globalIntegerValueConfiguration = configurationRepository
-				.findOne(uuidOfglobalIntegerValueConfiguration);
-		assertThat(globalIntegerValueConfiguration, is(not(nullValue())));
-		assertThat(globalIntegerValueConfiguration.getIntegerValue(), is(42));
+	public void integerValueExistsDefault() {
+		UUID uuidOfDefaultIntegerValueConfiguration = UUID.fromString("b4fd2271-26fb-4db7-bfe7-07211d849364");
+		Configuration defaultIntegerValueConfiguration = configurationRepository
+				.findOne(uuidOfDefaultIntegerValueConfiguration);
+		assertThat(defaultIntegerValueConfiguration, is(not(nullValue())));
+		assertThat(defaultIntegerValueConfiguration.getIntegerValue(), is(42));
 	}
 
 	@Test
 	@Transactional
-	public void integerValueFetchGlobal() {
+	public void integerValueFetchDefault() {
 		//		Configuration configuration = configurationRepository.findByParamName(ParamName.TEST_INTEGER.toString());
 		Configuration configuration = configurationRepository.findByParamName(ParamName.TEST_INTEGER);
 		assertThat(configuration, is(not(nullValue())));
@@ -64,17 +69,40 @@ public class ConfigurationRepositoryTest {
 
 	@Test
 	@Transactional
-	public void stringValueExistsGlobal() {
-		UUID uuidOfGlobalStringValueConfiguration = UUID.fromString("62f9ca07-79ce-48dd-8357-873191ea8b9d");
-		Configuration GlobalStringValueConfiguration = configurationRepository
-				.findOne(uuidOfGlobalStringValueConfiguration);
-		assertThat(GlobalStringValueConfiguration, is(not(nullValue())));
-		assertThat(GlobalStringValueConfiguration.getStringValue(), is("Meaning of life"));
+	public void integerValueFetchDefaultFromConfig() {
+		Object integerValueObject = config.get(ParamName.TEST_INTEGER);
+		assertThat(integerValueObject, is(instanceOf(Integer.class)));
+		assertThat((Integer) integerValueObject, is(42));
 	}
 
 	@Test
 	@Transactional
-	public void stringValueFetchGlobal() {
+	public void integerValueFetchNonexistentRoleSpecificFromConfig() {
+		UUID uuidOfRole_bcbc = UUID.fromString("e918c8aa-c6d1-462c-9e91-f1db0fb9f346");
+		Role role_bcbc = roleRepository.findOne(uuidOfRole_bcbc);
+		assertThat(role_bcbc, is(notNullValue()));
+		/*
+		 * There is a default value for ParamName.TEST_INTEGER, but no
+		 * role-specific value for Role "bcbc".
+		 */
+		Object integerValueObject = config.get(ParamName.TEST_INTEGER, role_bcbc);
+		assertThat(integerValueObject, is(instanceOf(Integer.class)));
+		assertThat((Integer) integerValueObject, is(42));
+	}
+
+	@Test
+	@Transactional
+	public void stringValueExistsDefault() {
+		UUID uuidOfDefaultStringValueConfiguration = UUID.fromString("62f9ca07-79ce-48dd-8357-873191ea8b9d");
+		Configuration defaultStringValueConfiguration = configurationRepository
+				.findOne(uuidOfDefaultStringValueConfiguration);
+		assertThat(defaultStringValueConfiguration, is(not(nullValue())));
+		assertThat(defaultStringValueConfiguration.getStringValue(), is("Meaning of life"));
+	}
+
+	@Test
+	@Transactional
+	public void stringValueFetchDefault() {
 		//		Configuration configuration = configurationRepository.findByParamName(ParamName.TEST_STRING.toString());
 		Configuration configuration = configurationRepository.findByParamName(ParamName.TEST_STRING);
 		assertThat(configuration, is(not(nullValue())));
@@ -85,7 +113,7 @@ public class ConfigurationRepositoryTest {
 
 	//	@Test
 	//	@Transactional
-	//	public void stringValueFetchGlobalFromConfig() {
+	//	public void stringValueFetchDefaultFromConfig() {
 	//		Object stringValueObject = Config.get(ParamName.TEST_STRING);
 	//		assertThat(stringValueObject, is(instanceOf(String.class)));
 	//		assertThat((String) stringValueObject, is("Meaning of life"));
@@ -93,92 +121,208 @@ public class ConfigurationRepositoryTest {
 
 	@Test
 	@Transactional
-	public void stringValueFetchGlobalFromConfig() {
+	public void stringValueFetchDefaultFromConfig() {
 		Object stringValueObject = config.get(ParamName.TEST_STRING);
 		assertThat(stringValueObject, is(instanceOf(String.class)));
 		assertThat((String) stringValueObject, is("Meaning of life"));
 	}
 
-	/**
-	 * Attempt to fetch a global (Role==null) value that does not exist in the
-	 * [configuration] table. This should throw a custom XXXXXXXXXXXXXXXXXXXXX.
+	/*
+	 * Attempt to fetch a role-specific value value that does not exist in the
+	 * [configuration] table. However, there *is* a default value for the 
+	 * parameter, which should be returned instead.
 	 */
+	@Test
+	@Transactional
+	public void stringValueFetchNonexistentRoleSpecificFromConfig() {
+		UUID uuidOfRole_bcbc = UUID.fromString("e918c8aa-c6d1-462c-9e91-f1db0fb9f346");
+		Role role_bcbc = roleRepository.findOne(uuidOfRole_bcbc);
+		assertThat(role_bcbc, is(notNullValue()));
+		/*
+		 * There is a default value for ParamName.TEST_STRING, but no
+		 * role-specific value for Role "bcbc".
+		 */
+		Object stringValueObject = config.get(ParamName.TEST_STRING, role_bcbc);
+		assertThat(stringValueObject, is(instanceOf(String.class)));
+		assertThat((String) stringValueObject, is("Meaning of life"));
+	}
 
+	/*
+	 * Attempt to fetch a default (Role==null) value that does not exist in the
+	 * [configuration] table. This should return null for the parameter value.
+	 * An error should also be logged, but we do not check that here.
+	 */
+	@Test
+	@Transactional
+	public void stringValueFetchNonexistentDefaultFromConfig() {
+		/*
+		 * Parameter ParamName.TEST_NOTSET does not exist in the test data for
+		 * the [configuration] table.
+		 */
+		Object stringValueObject = config.get(ParamName.TEST_NOTSET);
+		assertThat(stringValueObject, is(nullValue()));
+	}
+
+	//	/*
+	//	 * Set default integer value for a parameter that already has a default 
+	//	 * (Role==null) Configuration. This should update the existing Configuration
+	//	 * entity to store this new value.
+	//	 */
 	//	@Test
 	//	@Transactional
-	//	public void findAll() {
-	//		List<ReportParameter> reportParameters = reportParameterRepository.findAll();
-	//		assertEquals(6, reportParameters.size());
-	//		//		for (ReportParameter reportParameter : reportParameters) {
-	//		//			logger.info("reportParameter = {}", reportParameter);
-	//		//		}
+	//	public void integerValueSetDefaultWithConfig() {
+	//		long countConfiguration = 18;
+	//		assertThat(configurationRepository.count(), is(countConfiguration));
+	//		/*
+	//		 * Retrieve the existing default value.
+	//		 */
+	//		Object integerValueDefaultObject = config.get(ParamName.TEST_INTEGER);
+	//		assertThat(integerValueDefaultObject, is(instanceOf(Integer.class)));
+	//		assertThat((Integer) integerValueDefaultObject, is(42));
+	//		/*
+	//		 * Update default value.
+	//		 */
+	//		Integer newIntgerValue = 123456;
+	//				config.set(ParamName.TEST_INTEGER, newIntgerValue);
+	//		/*
+	//		 * The existing Configuration should have been updated, so there should
+	//		 * be the same number of entities in the database
+	//		 */
+	//		assertThat(configurationRepository.count(), is(countConfiguration));
+	//		/* 
+	//		 * Retrieve value just set.
+	//		 */
+	//		Object integerValueNewDefaultObject = config.get(ParamName.TEST_INTEGER);
+	//		assertThat(integerValueNewDefaultObject, is(instanceOf(Integer.class)));
+	//		assertThat((Integer) integerValueNewDefaultObject, is(newIntgerValue));
 	//	}
 	//
+	//	/*
+	//	 * Set role-specific integer value for a parameter that has a default 
+	//	 * (Role==null) Configuration, but no role-specific value. This should
+	//	 * create a new Configuration entity to store this value.
+	//	 */
 	//	@Test
 	//	@Transactional
-	//	public void save_newReportParameter() {
+	//	public void integerValueSetRoleSpecificWithConfig() {
+	//		long countConfiguration = 18;
+	//		assertThat(configurationRepository.count(), is(countConfiguration));
 	//
-	//		assertEquals(6, reportParameterRepository.count());
-	//
-	//		UUID uuidOfReport04 = UUID.fromString("702d5daa-e23d-4f00-b32b-67b44c06d8f6");
-	//		Report report04 = reportRepository.findOne(uuidOfReport04);
-	//		assertThat(report04, is(not(nullValue())));
-	//
-	//		ReportVersion report04Version01 = report04.getReportVersions().get(0);
-	//		assertThat(report04Version01, is(not(nullValue())));
-	//
-	//		UUID uuidOfWidget1 = UUID.fromString("b8e91527-8b0e-4ed2-8cba-8cb8989ba8e2");
-	//		Widget widget1 = widgetRepository.findOne(uuidOfWidget1);
-	//		assertThat(widget1, is(notNullValue()));
-	//
-	//		UUID uuidOfParameterTypeDate = UUID.fromString("12d3f4f8-468d-4faf-be3a-5c15eaba4eb6");
-	//		ParameterType parameterTypeDate = parameterTypeRepository.findOne(uuidOfParameterTypeDate);
-	//
-	//		/* Query for the current maximum value of orderIndex for all 
-	//		 * ReportParameter's for report04. This should be equal to the number of
-	//		 * ReportParameter's for report04 because orderIndex is 1-based and 
-	//		 * is incremented by one for each parameter added to the report.
-	//		 */
-	//		//		Integer maxOrderIndex = reportParameterRepository.maxOrderIndex(report04);
-	//		Integer maxOrderIndex = reportParameterRepository.maxOrderIndex(report04Version01);
-	//		assertThat(maxOrderIndex, is(equalTo(1)));
-	//
-	//		Boolean required = true;
-	//		Boolean multivalued = false;
-	//
-	//		//		ReportParameter unsavedReportParameter = new ReportParameter(
-	//		//				report04, "Some new parameter name", "Some new parameter description", parameterTypeDate, widget1,
-	//		//				required, multivalued, maxOrderIndex + 1);
-	//		ReportParameter unsavedReportParameter = new ReportParameter(
-	//				report04Version01, "Some new parameter name", "Some new parameter description", parameterTypeDate,
-	//				widget1,
-	//				required, multivalued, maxOrderIndex + 1);
-	//		//		logger.info("unsavedReportParameter = {}", unsavedReportParameter);
-	//
-	//		ReportParameter savedReportParameter = reportParameterRepository.save(unsavedReportParameter);
-	//		//		logger.info("savedReportParameter = {}", savedReportParameter);
-	//		//		logger.info("savedReportParameter.getreportParameterId() = {}", savedReportParameter.getReportParameterId());
-	//		//		logger.info("After save: unsavedReportParameter.getReportParameterId() = {}",
-	//		//				unsavedReportParameter.getReportParameterId());
-	//
-	//		assertEquals(7, reportParameterRepository.count());
-	//
+	//		UUID uuidOfRole_bcbc = UUID.fromString("e918c8aa-c6d1-462c-9e91-f1db0fb9f346");
+	//		Role role_bcbc = roleRepository.findOne(uuidOfRole_bcbc);
+	//		assertThat(role_bcbc, is(notNullValue()));
 	//		/*
-	//		 * Check that max(orderIndex) has been incremented for report04.
+	//		 * There is a default value for ParamName.TEST_INTEGER, but no
+	//		 * role-specific value for Role "bcbc".
 	//		 */
-	//		//		Integer newMaxOrderIndex = reportParameterRepository.maxOrderIndex(report04);
-	//		Integer newMaxOrderIndex = reportParameterRepository.maxOrderIndex(report04Version01);
-	//		assertThat(newMaxOrderIndex, is(equalTo(maxOrderIndex + 1)));
-	//
-	//		UUID uuidFromSavedReportParameter = savedReportParameter.getReportParameterId();
-	//		ReportParameter foundReportParameter = reportParameterRepository.findOne(uuidFromSavedReportParameter);
-	//
+	//		Integer defaultIntegerValue = 42;
+	//		Object integerValueObject = config.get(ParamName.TEST_INTEGER, role_bcbc);
+	//		assertThat(integerValueObject, is(instanceOf(Integer.class)));
+	//		assertThat((Integer) integerValueObject, is(defaultIntegerValue));
 	//		/*
-	//		 * TODO Replace this code with a custom "assertReportParameter(...)" method.
+	//		 * Set role-specific value, which should override the default value for
+	//		 * the specified role.
 	//		 */
-	//		assertThat(foundReportParameter.getName(), is("Some new parameter name"));
-	//		assertThat(foundReportParameter.getDescription(), is("Some new parameter description"));
-	//		assertThat(foundReportParameter.getRequired(), is(true));
+	//		Integer newIntgerValue = 1000001;
+	//		config.set(ParamName.TEST_INTEGER, newIntgerValue, role_bcbc);
+	//		/*
+	//		 * This should have created a new Configuration.
+	//		 */
+	//		assertThat(configurationRepository.count(), is(countConfiguration + 1));
+	//		/*
+	//		 * Retrieve value just set. The new value should override the default.
+	//		 */
+	//		Object integerValueRoleSpecificObject = config.get(ParamName.TEST_INTEGER, role_bcbc);
+	//		assertThat(integerValueRoleSpecificObject, is(instanceOf(Integer.class)));
+	//		assertThat((Integer) integerValueRoleSpecificObject, is(newIntgerValue));
+	//		/*
+	//		 * The default value for ParamName.TEST_INTEGER should still be the
+	//		 * same.
+	//		 */
+	//		Object integerValueDefaultObject = config.get(ParamName.TEST_INTEGER);
+	//		assertThat(integerValueDefaultObject, is(instanceOf(Integer.class)));
+	//		assertThat((Integer) integerValueDefaultObject, is(defaultIntegerValue));
 	//	}
+
+	/*
+	 * Set default string value for a parameter that already has a default 
+	 * (Role==null) Configuration. This should update the existing Configuration
+	 * entity to store this new value.
+	 */
+	@Test
+	@Transactional
+	public void stringValueSetDefaultWithConfig() {
+		long countConfiguration = 18;
+		assertThat(configurationRepository.count(), is(countConfiguration));
+		/*
+		 * Retrieve the existing default value.
+		 */
+		Object stringValueDefaultObject = config.get(ParamName.TEST_STRING);
+		assertThat(stringValueDefaultObject, is(instanceOf(String.class)));
+		assertThat((String) stringValueDefaultObject, is("Meaning of life"));
+		/*
+		 * Update default value.
+		 */
+		String newStringValue = "New default value";
+		config.set(ParamName.TEST_STRING, newStringValue);
+		/*
+		 * The existing Configuration should have been updated, so there should
+		 * be the same number of entities in the database
+		 */
+		assertThat(configurationRepository.count(), is(countConfiguration));
+		/* 
+		 * Retrieve value just set.
+		 */
+		Object stringValueNewDefaultObject = config.get(ParamName.TEST_STRING);
+		assertThat(stringValueNewDefaultObject, is(instanceOf(String.class)));
+		assertThat((String) stringValueNewDefaultObject, is(newStringValue));
+	}
+
+	/*
+	 * Set role-specific string value for a parameter that has a default 
+	 * (Role==null) Configuration, but no role-specific value. This should
+	 * create a new Configuration entity to store this value.
+	 */
+	@Test
+	@Transactional
+	public void stringValueSetRoleSpecificWithConfig() {
+		long countConfiguration = 18;
+		assertThat(configurationRepository.count(), is(countConfiguration));
+
+		UUID uuidOfRole_bcbc = UUID.fromString("e918c8aa-c6d1-462c-9e91-f1db0fb9f346");
+		Role role_bcbc = roleRepository.findOne(uuidOfRole_bcbc);
+		assertThat(role_bcbc, is(notNullValue()));
+		/*
+		 * There is a default value for ParamName.TEST_STRING, but no
+		 * role-specific value for Role "bcbc".
+		 */
+		String defaultStringValue = "Meaning of life";
+		Object stringValueObject = config.get(ParamName.TEST_STRING, role_bcbc);
+		assertThat(stringValueObject, is(instanceOf(String.class)));
+		assertThat((String) stringValueObject, is(defaultStringValue));
+		/*
+		 * Set role-specific value, which should override the default value for
+		 * the specified role.
+		 */
+		String newStringValue = "String value for role 'bcbc'";
+		config.set(ParamName.TEST_STRING, newStringValue, role_bcbc);
+		/*
+		 * This should have created a new Configuration.
+		 */
+		assertThat(configurationRepository.count(), is(countConfiguration + 1));
+		/*
+		 * Retrieve value just set. The new value should override the default.
+		 */
+		Object stringValueRoleSpecificObject = config.get(ParamName.TEST_STRING, role_bcbc);
+		assertThat(stringValueRoleSpecificObject, is(instanceOf(String.class)));
+		assertThat((String) stringValueRoleSpecificObject, is(newStringValue));
+		/*
+		 * The default value for ParamName.TEST_STRING should still be the
+		 * same.
+		 */
+		Object stringValueDefaultObject = config.get(ParamName.TEST_STRING);
+		assertThat(stringValueDefaultObject, is(instanceOf(String.class)));
+		assertThat((String) stringValueDefaultObject, is(defaultStringValue));
+	}
 
 }
