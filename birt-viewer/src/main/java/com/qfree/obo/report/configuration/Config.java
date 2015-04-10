@@ -1,5 +1,7 @@
 package com.qfree.obo.report.configuration;
 
+import java.util.Date;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -148,23 +150,13 @@ public class Config {
 		return object;
 	}
 
-	/*
-	 * There is one "set" method for each possible parameter data type value 
-	 * that can be persisted.
-	 * NOOOOOO. CAN WE JUST PASS AN "Object" AND THEN TREAT IT GENERICALLY?????????????????????????????????????????????????????
-	 */
-
-	public void set(ParamName paramName, String value, ParamType paramType, Role role) {
-		//TODO Write me!
-	}
-
 	@Transactional
-	public void set(ParamName paramName, String value) {
+	public void set(ParamName paramName, Object value) {
 		set(paramName, value, null);
 	}
 
 	@Transactional
-	public void set(ParamName paramName, String value, Role role) {
+	public void set(ParamName paramName, Object value, Role role) {
 		logger.info("paramName={}, value={}, role={}", paramName, value, role);
 		/*
 		 * Check if an existing Configuration does not exist, create one. Then
@@ -193,7 +185,41 @@ public class Config {
 		logger.info(
 				"Before setStringValue: paramName={}, value={}, role={}, configuration={}, configuration.getConfigurationId()={}",
 				paramName, value, role, configuration, configuration.getConfigurationId());
-		configuration.setStringValue(value);
+
+		switch (paramName.paramType()) {
+		case BOOLEAN:
+			configuration.setBooleanValue((Boolean) value);
+			break;
+		case BYTEARRAY:
+			configuration.setByteaValue((byte[]) value);
+			break;
+		case DATE:
+			configuration.setDateValue((Date) value);
+			break;
+		case DATETIME:
+			configuration.setDatetimeValue((Date) value);
+			break;
+		case FLOAT:
+			configuration.setFloatValue((Float) value);
+			break;
+		case INTEGER:
+			configuration.setIntegerValue((Integer) value);
+			break;
+		case STRING:
+			configuration.setStringValue((String) value);
+			break;
+		case TEXT:
+			configuration.setTextValue((String) value);
+			break;
+		case TIME:
+			configuration.setTimeValue((Date) value);
+			break;
+		default:
+			logger.error("Untreated case. paramType = {}", paramName.paramType());
+			//TODO Throw a custom (or even a standard) exception here?
+			break;
+		}
+
 		logger.info(
 				"After  setStringValue: paramName={}, value={}, role={}, configuration={}, configuration.getConfigurationId()={}",
 				paramName, value, role, configuration, configuration.getConfigurationId());

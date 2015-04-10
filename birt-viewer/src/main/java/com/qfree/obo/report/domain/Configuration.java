@@ -210,24 +210,24 @@ public class Configuration implements Serializable {
 		return integerValue;
 	}
 
-	public void setIntegerValue(Integer versionCode) {
-		this.integerValue = versionCode;
+	public void setIntegerValue(Integer integerValue) {
+		this.integerValue = integerValue;
 	}
 
 	public String getStringValue() {
 		return this.stringValue;
 	}
 
-	public void setStringValue(String name) {
-		this.stringValue = name;
+	public void setStringValue(String stringValue) {
+		this.stringValue = stringValue;
 	}
 
 	public String getTextValue() {
 		return textValue;
 	}
 
-	public void setTextValue(String rptdesign) {
-		this.textValue = rptdesign;
+	public void setTextValue(String textValue) {
+		this.textValue = textValue;
 	}
 
 	public Date getTimeValue() {
