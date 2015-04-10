@@ -70,6 +70,150 @@ public class ConfigurationRepositoryTest {
 		assertThat(configurationRepository.count(), is(equalTo(NUM_TEST_CONFIGURATIONS)));
 	}
 
+	// ======================== Boolean parameter tests ========================
+
+	@Test
+	@Transactional
+	public void booleanValueExistsDefault() {
+		UUID uuidOfDefaultBooleanValueConfiguration = UUID.fromString("1f4f4814-577f-426d-bb98-4cc47446d578");
+		Configuration defaultBooleanValueConfiguration = configurationRepository
+				.findOne(uuidOfDefaultBooleanValueConfiguration);
+		assertThat(defaultBooleanValueConfiguration, is(not(nullValue())));
+		assertThat(defaultBooleanValueConfiguration.getBooleanValue(), is(TEST_BOOLEAN_DEFAULT_VALUE));
+	}
+
+	@Test
+	@Transactional
+	public void booleanValueFetchDefault() {
+		//		Configuration configuration = configurationRepository.findByParamName(ParamName.TEST_BOOLEAN.toString());
+		Configuration configuration = configurationRepository.findByParamName(ParamName.TEST_BOOLEAN);
+		assertThat(configuration, is(not(nullValue())));
+		Boolean booleanValue = configuration.getBooleanValue();
+		assertThat(booleanValue, is(not(nullValue())));
+		assertThat(booleanValue, is(TEST_BOOLEAN_DEFAULT_VALUE));
+	}
+
+	@Test
+	@Transactional
+	public void booleanValueFetchDefaultFromConfig() {
+		Object booleanValueObject = config.get(ParamName.TEST_BOOLEAN);
+		assertThat(booleanValueObject, is(instanceOf(Boolean.class)));
+		assertThat((Boolean) booleanValueObject, is(TEST_BOOLEAN_DEFAULT_VALUE));
+	}
+
+	@Test
+	@Transactional
+	public void booleanValueFetchNonexistentRoleSpecificFromConfig() {
+		UUID uuidOfRole_bcbc = UUID.fromString("e918c8aa-c6d1-462c-9e91-f1db0fb9f346");
+		Role role_bcbc = roleRepository.findOne(uuidOfRole_bcbc);
+		assertThat(role_bcbc, is(notNullValue()));
+		/*
+		 * There is a default value for ParamName.TEST_BOOLEAN, but no
+		 * role-specific value for Role "bcbc".
+		 */
+		Object booleanValueObject = config.get(ParamName.TEST_BOOLEAN, role_bcbc);
+		assertThat(booleanValueObject, is(instanceOf(Boolean.class)));
+		assertThat((Boolean) booleanValueObject, is(TEST_BOOLEAN_DEFAULT_VALUE));
+	}
+
+	/*
+	 * Set default boolean value for a parameter that already has a default 
+	 * (Role==null) Configuration. This should update the existing Configuration
+	 * entity to store this new value.
+	 */
+	@Test
+	@Transactional
+	public void booleanValueSetDefaultWithConfig() {
+		assertThat(configurationRepository.count(), is(NUM_TEST_CONFIGURATIONS));
+		/*
+		 * Retrieve the existing default value.
+		 */
+		Object booleanValueDefaultObject = config.get(ParamName.TEST_BOOLEAN);
+		assertThat(booleanValueDefaultObject, is(instanceOf(Boolean.class)));
+		assertThat((Boolean) booleanValueDefaultObject, is(TEST_BOOLEAN_DEFAULT_VALUE));
+		/*
+		 * Update default value.
+		 */
+		Boolean newBooleanValue = false;
+		config.set(ParamName.TEST_BOOLEAN, newBooleanValue);
+		/*
+		 * The existing Configuration should have been updated, so there should
+		 * be the same number of entities in the database
+		 */
+		assertThat(configurationRepository.count(), is(NUM_TEST_CONFIGURATIONS));
+		/* 
+		 * Retrieve value just set.
+		 */
+		Object booleanValueNewDefaultObject = config.get(ParamName.TEST_BOOLEAN);
+		assertThat(booleanValueNewDefaultObject, is(instanceOf(Boolean.class)));
+		assertThat((Boolean) booleanValueNewDefaultObject, is(newBooleanValue));
+	}
+
+	/*
+	 * Set role-specific boolean value for a parameter that has a default 
+	 * (Role==null) Configuration, but no role-specific value. This should
+	 * create a new Configuration entity to store this value.
+	 */
+	@Test
+	@Transactional
+	public void booleanValueSetRoleSpecificWithConfig() {
+		assertThat(configurationRepository.count(), is(NUM_TEST_CONFIGURATIONS));
+
+		UUID uuidOfRole_bcbc = UUID.fromString("e918c8aa-c6d1-462c-9e91-f1db0fb9f346");
+		Role role_bcbc = roleRepository.findOne(uuidOfRole_bcbc);
+		assertThat(role_bcbc, is(notNullValue()));
+		/*
+		 * There is a default value for ParamName.TEST_BOOLEAN, but no
+		 * role-specific value for Role "bcbc".
+		 */
+		Object booleanValueObject = config.get(ParamName.TEST_BOOLEAN, role_bcbc);
+		assertThat(booleanValueObject, is(instanceOf(Boolean.class)));
+		assertThat((Boolean) booleanValueObject, is(TEST_BOOLEAN_DEFAULT_VALUE));
+
+		/*
+		 * Set role-specific value, which should override the default value for
+		 * the specified role.
+		 */
+		Boolean newBooleanValue = false;
+		config.set(ParamName.TEST_BOOLEAN, newBooleanValue, role_bcbc);
+		/*
+		 * This should have created a new Configuration.
+		 */
+		assertThat(configurationRepository.count(), is(NUM_TEST_CONFIGURATIONS + 1));
+		/*
+		 * Retrieve value just set. The new value should override the default.
+		 */
+		Object booleanValueRoleSpecificObject = config.get(ParamName.TEST_BOOLEAN, role_bcbc);
+		assertThat(booleanValueRoleSpecificObject, is(instanceOf(Boolean.class)));
+		assertThat((Boolean) booleanValueRoleSpecificObject, is(newBooleanValue));
+
+		/*
+		 * Update the role-specific value. This should override the default 
+		 * value for the specified role and RE-USE the new role-specific
+		 * Configuration just created, i.e., not create a new Configuration
+		 */
+		newBooleanValue = true;
+		config.set(ParamName.TEST_BOOLEAN, newBooleanValue, role_bcbc);
+		/*
+		 * This should have re-used the Configuration just created.
+		 */
+		assertThat(configurationRepository.count(), is(NUM_TEST_CONFIGURATIONS + 1));
+		/*
+		 * Retrieve value just set. The new value should override the default.
+		 */
+		booleanValueRoleSpecificObject = config.get(ParamName.TEST_BOOLEAN, role_bcbc);
+		assertThat(booleanValueRoleSpecificObject, is(instanceOf(Boolean.class)));
+		assertThat((Boolean) booleanValueRoleSpecificObject, is(newBooleanValue));
+
+		/*
+		 * The default value for ParamName.TEST_BOOLEAN should still be the
+		 * same.
+		 */
+		Object booleanValueDefaultObject = config.get(ParamName.TEST_BOOLEAN);
+		assertThat(booleanValueDefaultObject, is(instanceOf(Boolean.class)));
+		assertThat((Boolean) booleanValueDefaultObject, is(TEST_BOOLEAN_DEFAULT_VALUE));
+	}
+
 	// ======================== Date parameter tests ===========================
 
 	@Test
@@ -434,6 +578,150 @@ public class ConfigurationRepositoryTest {
 		assertThat(datetimeWithTimeZone, is(equalTo(TEST_DATETIME_DEFAULT_VALUE)));
 	}
 
+	// ======================== Float parameter tests ========================
+
+	@Test
+	@Transactional
+	public void floatValueExistsDefault() {
+		UUID uuidOfDefaultFloatValueConfiguration = UUID.fromString("d34f8309-56e3-4328-9227-0d8c1e57a941");
+		Configuration defaultFloatValueConfiguration = configurationRepository
+				.findOne(uuidOfDefaultFloatValueConfiguration);
+		assertThat(defaultFloatValueConfiguration, is(not(nullValue())));
+		assertThat(defaultFloatValueConfiguration.getFloatValue(), is(TEST_FLOAT_DEFAULT_VALUE));
+	}
+
+	@Test
+	@Transactional
+	public void floatValueFetchDefault() {
+		//		Configuration configuration = configurationRepository.findByParamName(ParamName.TEST_FLOAT.toString());
+		Configuration configuration = configurationRepository.findByParamName(ParamName.TEST_FLOAT);
+		assertThat(configuration, is(not(nullValue())));
+		Float floatValue = configuration.getFloatValue();
+		assertThat(floatValue, is(not(nullValue())));
+		assertThat(floatValue, is(TEST_FLOAT_DEFAULT_VALUE));
+	}
+
+	@Test
+	@Transactional
+	public void floatValueFetchDefaultFromConfig() {
+		Object floatValueObject = config.get(ParamName.TEST_FLOAT);
+		assertThat(floatValueObject, is(instanceOf(Float.class)));
+		assertThat((Float) floatValueObject, is(TEST_FLOAT_DEFAULT_VALUE));
+	}
+
+	@Test
+	@Transactional
+	public void floatValueFetchNonexistentRoleSpecificFromConfig() {
+		UUID uuidOfRole_bcbc = UUID.fromString("e918c8aa-c6d1-462c-9e91-f1db0fb9f346");
+		Role role_bcbc = roleRepository.findOne(uuidOfRole_bcbc);
+		assertThat(role_bcbc, is(notNullValue()));
+		/*
+		 * There is a default value for ParamName.TEST_FLOAT, but no
+		 * role-specific value for Role "bcbc".
+		 */
+		Object floatValueObject = config.get(ParamName.TEST_FLOAT, role_bcbc);
+		assertThat(floatValueObject, is(instanceOf(Float.class)));
+		assertThat((Float) floatValueObject, is(TEST_FLOAT_DEFAULT_VALUE));
+	}
+
+	/*
+	 * Set default float value for a parameter that already has a default 
+	 * (Role==null) Configuration. This should update the existing Configuration
+	 * entity to store this new value.
+	 */
+	@Test
+	@Transactional
+	public void floatValueSetDefaultWithConfig() {
+		assertThat(configurationRepository.count(), is(NUM_TEST_CONFIGURATIONS));
+		/*
+		 * Retrieve the existing default value.
+		 */
+		Object floatValueDefaultObject = config.get(ParamName.TEST_FLOAT);
+		assertThat(floatValueDefaultObject, is(instanceOf(Float.class)));
+		assertThat((Float) floatValueDefaultObject, is(TEST_FLOAT_DEFAULT_VALUE));
+		/*
+		 * Update default value.
+		 */
+		Float newFloatValue = 123456.789F;
+		config.set(ParamName.TEST_FLOAT, newFloatValue);
+		/*
+		 * The existing Configuration should have been updated, so there should
+		 * be the same number of entities in the database
+		 */
+		assertThat(configurationRepository.count(), is(NUM_TEST_CONFIGURATIONS));
+		/* 
+		 * Retrieve value just set.
+		 */
+		Object floatValueNewDefaultObject = config.get(ParamName.TEST_FLOAT);
+		assertThat(floatValueNewDefaultObject, is(instanceOf(Float.class)));
+		assertThat((Float) floatValueNewDefaultObject, is(newFloatValue));
+	}
+
+	/*
+	 * Set role-specific float value for a parameter that has a default 
+	 * (Role==null) Configuration, but no role-specific value. This should
+	 * create a new Configuration entity to store this value.
+	 */
+	@Test
+	@Transactional
+	public void floatValueSetRoleSpecificWithConfig() {
+		assertThat(configurationRepository.count(), is(NUM_TEST_CONFIGURATIONS));
+
+		UUID uuidOfRole_bcbc = UUID.fromString("e918c8aa-c6d1-462c-9e91-f1db0fb9f346");
+		Role role_bcbc = roleRepository.findOne(uuidOfRole_bcbc);
+		assertThat(role_bcbc, is(notNullValue()));
+		/*
+		 * There is a default value for ParamName.TEST_FLOAT, but no
+		 * role-specific value for Role "bcbc".
+		 */
+		Object floatValueObject = config.get(ParamName.TEST_FLOAT, role_bcbc);
+		assertThat(floatValueObject, is(instanceOf(Float.class)));
+		assertThat((Float) floatValueObject, is(TEST_FLOAT_DEFAULT_VALUE));
+
+		/*
+		 * Set role-specific value, which should override the default value for
+		 * the specified role.
+		 */
+		Float newFloatValue = 8462.5837F;
+		config.set(ParamName.TEST_FLOAT, newFloatValue, role_bcbc);
+		/*
+		 * This should have created a new Configuration.
+		 */
+		assertThat(configurationRepository.count(), is(NUM_TEST_CONFIGURATIONS + 1));
+		/*
+		 * Retrieve value just set. The new value should override the default.
+		 */
+		Object floatValueRoleSpecificObject = config.get(ParamName.TEST_FLOAT, role_bcbc);
+		assertThat(floatValueRoleSpecificObject, is(instanceOf(Float.class)));
+		assertThat((Float) floatValueRoleSpecificObject, is(newFloatValue));
+
+		/*
+		 * Update the role-specific value. This should override the default 
+		 * value for the specified role and RE-USE the new role-specific
+		 * Configuration just created, i.e., not create a new Configuration
+		 */
+		newFloatValue = 0.001F;
+		config.set(ParamName.TEST_FLOAT, newFloatValue, role_bcbc);
+		/*
+		 * This should have re-used the Configuration just created.
+		 */
+		assertThat(configurationRepository.count(), is(NUM_TEST_CONFIGURATIONS + 1));
+		/*
+		 * Retrieve value just set. The new value should override the default.
+		 */
+		floatValueRoleSpecificObject = config.get(ParamName.TEST_FLOAT, role_bcbc);
+		assertThat(floatValueRoleSpecificObject, is(instanceOf(Float.class)));
+		assertThat((Float) floatValueRoleSpecificObject, is(newFloatValue));
+
+		/*
+		 * The default value for ParamName.TEST_FLOAT should still be the
+		 * same.
+		 */
+		Object floatValueDefaultObject = config.get(ParamName.TEST_FLOAT);
+		assertThat(floatValueDefaultObject, is(instanceOf(Float.class)));
+		assertThat((Float) floatValueDefaultObject, is(TEST_FLOAT_DEFAULT_VALUE));
+	}
+
 	// ======================== Integer parameter tests ========================
 
 	@Test
@@ -587,7 +875,7 @@ public class ConfigurationRepositoryTest {
 		Configuration defaultStringValueConfiguration = configurationRepository
 				.findOne(uuidOfDefaultStringValueConfiguration);
 		assertThat(defaultStringValueConfiguration, is(not(nullValue())));
-		assertThat(defaultStringValueConfiguration.getStringValue(), is("Meaning of life"));
+		assertThat(defaultStringValueConfiguration.getStringValue(), is(TEST_STRING_DEFAULT_VALUE));
 	}
 
 	@Test
@@ -598,7 +886,7 @@ public class ConfigurationRepositoryTest {
 		assertThat(configuration, is(not(nullValue())));
 		String stringValue = configuration.getStringValue();
 		assertThat(stringValue, is(not(nullValue())));
-		assertThat(stringValue, is("Meaning of life"));
+		assertThat(stringValue, is(TEST_STRING_DEFAULT_VALUE));
 	}
 
 	//	@Test
@@ -606,7 +894,7 @@ public class ConfigurationRepositoryTest {
 	//	public void stringValueFetchDefaultFromConfig() {
 	//		Object stringValueObject = Config.get(ParamName.TEST_STRING);
 	//		assertThat(stringValueObject, is(instanceOf(String.class)));
-	//		assertThat((String) stringValueObject, is("Meaning of life"));
+	//		assertThat((String) stringValueObject, is(TEST_STRING_DEFAULT_VALUE));
 	//	}
 
 	@Test
@@ -614,7 +902,7 @@ public class ConfigurationRepositoryTest {
 	public void stringValueFetchDefaultFromConfig() {
 		Object stringValueObject = config.get(ParamName.TEST_STRING);
 		assertThat(stringValueObject, is(instanceOf(String.class)));
-		assertThat((String) stringValueObject, is("Meaning of life"));
+		assertThat((String) stringValueObject, is(TEST_STRING_DEFAULT_VALUE));
 	}
 
 	/*
@@ -632,10 +920,9 @@ public class ConfigurationRepositoryTest {
 		 * There is a default value for ParamName.TEST_STRING, but no
 		 * role-specific value for Role "bcbc".
 		 */
-		String defaultStringValue = "Meaning of life";
 		Object stringValueObject = config.get(ParamName.TEST_STRING, role_bcbc);
 		assertThat(stringValueObject, is(instanceOf(String.class)));
-		assertThat((String) stringValueObject, is(defaultStringValue));
+		assertThat((String) stringValueObject, is(TEST_STRING_DEFAULT_VALUE));
 	}
 
 	/*
@@ -666,10 +953,9 @@ public class ConfigurationRepositoryTest {
 		/*
 		 * Retrieve the existing default value.
 		 */
-		String defaultStringValue = "Meaning of life";
 		Object stringValueDefaultObject = config.get(ParamName.TEST_STRING);
 		assertThat(stringValueDefaultObject, is(instanceOf(String.class)));
-		assertThat((String) stringValueDefaultObject, is(defaultStringValue));
+		assertThat((String) stringValueDefaultObject, is(TEST_STRING_DEFAULT_VALUE));
 		/*
 		 * Update default value.
 		 */
@@ -705,10 +991,9 @@ public class ConfigurationRepositoryTest {
 		 * There is a default value for ParamName.TEST_STRING, but no
 		 * role-specific value for Role "bcbc".
 		 */
-		String defaultStringValue = "Meaning of life";
 		Object stringValueObject = config.get(ParamName.TEST_STRING, role_bcbc);
 		assertThat(stringValueObject, is(instanceOf(String.class)));
-		assertThat((String) stringValueObject, is(defaultStringValue));
+		assertThat((String) stringValueObject, is(TEST_STRING_DEFAULT_VALUE));
 
 		/*
 		 * Set role-specific value, which should override the default value for
@@ -755,7 +1040,160 @@ public class ConfigurationRepositoryTest {
 		 */
 		Object stringValueDefaultObject = config.get(ParamName.TEST_STRING);
 		assertThat(stringValueDefaultObject, is(instanceOf(String.class)));
-		assertThat((String) stringValueDefaultObject, is(defaultStringValue));
+		assertThat((String) stringValueDefaultObject, is(TEST_STRING_DEFAULT_VALUE));
+	}
+
+	// ======================== Text parameter tests =========================
+
+	@Test
+	@Transactional
+	public void textValueExistsDefault() {
+		UUID uuidOfDefaultTextValueConfiguration = UUID.fromString("b0aa23ef-2be5-4041-a95f-b7615af639b5");
+		Configuration defaultTextValueConfiguration = configurationRepository
+				.findOne(uuidOfDefaultTextValueConfiguration);
+		assertThat(defaultTextValueConfiguration, is(not(nullValue())));
+		assertThat(defaultTextValueConfiguration.getTextValue(), is(TEST_TEXT_DEFAULT_VALUE));
+	}
+
+	@Test
+	@Transactional
+	public void textValueFetchDefault() {
+		//		Configuration configuration = configurationRepository.findByParamName(ParamName.TEST_TEXT.toString());
+		Configuration configuration = configurationRepository.findByParamName(ParamName.TEST_TEXT);
+		assertThat(configuration, is(not(nullValue())));
+		String textValue = configuration.getTextValue();
+		assertThat(textValue, is(not(nullValue())));
+		assertThat(textValue, is(TEST_TEXT_DEFAULT_VALUE));
+	}
+
+	@Test
+	@Transactional
+	public void textValueFetchDefaultFromConfig() {
+		Object textValueObject = config.get(ParamName.TEST_TEXT);
+		assertThat(textValueObject, is(instanceOf(String.class)));
+		assertThat((String) textValueObject, is(TEST_TEXT_DEFAULT_VALUE));
+	}
+
+	/*
+	 * Attempt to fetch a role-specific value value that does not exist in the
+	 * [configuration] table. However, there *is* a default value for the 
+	 * parameter, which should be returned instead.
+	 */
+	@Test
+	@Transactional
+	public void textValueFetchNonexistentRoleSpecificFromConfig() {
+		UUID uuidOfRole_bcbc = UUID.fromString("e918c8aa-c6d1-462c-9e91-f1db0fb9f346");
+		Role role_bcbc = roleRepository.findOne(uuidOfRole_bcbc);
+		assertThat(role_bcbc, is(notNullValue()));
+		/*
+		 * There is a default value for ParamName.TEST_TEXT, but no
+		 * role-specific value for Role "bcbc".
+		 */
+		Object textValueObject = config.get(ParamName.TEST_TEXT, role_bcbc);
+		assertThat(textValueObject, is(instanceOf(String.class)));
+		assertThat((String) textValueObject, is(TEST_TEXT_DEFAULT_VALUE));
+	}
+
+	/*
+	 * Set default text value for a parameter that already has a default 
+	 * (Role==null) Configuration. This should update the existing Configuration
+	 * entity to store this new value.
+	 */
+	@Test
+	@Transactional
+	public void textValueSetDefaultWithConfig() {
+		assertThat(configurationRepository.count(), is(NUM_TEST_CONFIGURATIONS));
+		/*
+		 * Retrieve the existing default value.
+		 */
+		Object textValueDefaultObject = config.get(ParamName.TEST_TEXT);
+		assertThat(textValueDefaultObject, is(instanceOf(String.class)));
+		assertThat((String) textValueDefaultObject, is(TEST_TEXT_DEFAULT_VALUE));
+		/*
+		 * Update default value.
+		 */
+		String newTextValue = "New default text value, which could be very long";
+		config.set(ParamName.TEST_TEXT, newTextValue);
+		/*
+		 * The existing Configuration should have been updated, so there should
+		 * be the same number of entities in the database
+		 */
+		assertThat(configurationRepository.count(), is(NUM_TEST_CONFIGURATIONS));
+		/* 
+		 * Retrieve value just set.
+		 */
+		Object textValueNewDefaultObject = config.get(ParamName.TEST_TEXT);
+		assertThat(textValueNewDefaultObject, is(instanceOf(String.class)));
+		assertThat((String) textValueNewDefaultObject, is(newTextValue));
+	}
+
+	/*
+	 * Set role-specific text value for a parameter that has a default 
+	 * (Role==null) Configuration, but no role-specific value. This should
+	 * create a new Configuration entity to store this value.
+	 */
+	@Test
+	@Transactional
+	public void textValueSetRoleSpecificWithConfig() {
+		assertThat(configurationRepository.count(), is(NUM_TEST_CONFIGURATIONS));
+
+		UUID uuidOfRole_bcbc = UUID.fromString("e918c8aa-c6d1-462c-9e91-f1db0fb9f346");
+		Role role_bcbc = roleRepository.findOne(uuidOfRole_bcbc);
+		assertThat(role_bcbc, is(notNullValue()));
+		/*
+		 * There is a default value for ParamName.TEST_TEXT, but no
+		 * role-specific value for Role "bcbc".
+		 */
+		Object textValueObject = config.get(ParamName.TEST_TEXT, role_bcbc);
+		assertThat(textValueObject, is(instanceOf(String.class)));
+		assertThat((String) textValueObject, is(TEST_TEXT_DEFAULT_VALUE));
+
+		/*
+		 * Set role-specific value, which should override the default value for
+		 * the specified role.
+		 */
+		String newTextValue = "A potentially very long string.";
+		config.set(ParamName.TEST_TEXT, newTextValue, role_bcbc);
+		/*
+		 * This should have created a new Configuration.
+		 */
+		assertThat(configurationRepository.count(), is(NUM_TEST_CONFIGURATIONS + 1));
+		/*
+		 * Retrieve value just set. The new value should override the default.
+		 */
+		Object textValueRoleSpecificObject = config.get(ParamName.TEST_TEXT, role_bcbc);
+		assertThat(textValueRoleSpecificObject, is(instanceOf(String.class)));
+		assertThat((String) textValueRoleSpecificObject, is(newTextValue));
+
+		/*
+		 * Update the role-specific value. This should override the default 
+		 * value for the specified role and RE-USE the new role-specific
+		 * Configuration just created, i.e., not create a new Configuration
+		 */
+		/*
+		 * Set role-specific value, which should override the default value for
+		 * the specified role.
+		 */
+		newTextValue = "Updated role-specific text value";
+		config.set(ParamName.TEST_TEXT, newTextValue, role_bcbc);
+		/*
+		 * This should have re-used the Configuration just created.
+		 */
+		assertThat(configurationRepository.count(), is(NUM_TEST_CONFIGURATIONS + 1));
+		/*
+		 * Retrieve value just set. The new value should override the default.
+		 */
+		textValueRoleSpecificObject = config.get(ParamName.TEST_TEXT, role_bcbc);
+		assertThat(textValueRoleSpecificObject, is(instanceOf(String.class)));
+		assertThat((String) textValueRoleSpecificObject, is(newTextValue));
+
+		/*
+		 * The default value for ParamName.TEST_TEXT should still be the
+		 * same.
+		 */
+		Object textValueDefaultObject = config.get(ParamName.TEST_TEXT);
+		assertThat(textValueDefaultObject, is(instanceOf(String.class)));
+		assertThat((String) textValueDefaultObject, is(TEST_TEXT_DEFAULT_VALUE));
 	}
 
 	// ======================== Time parameter tests ===========================
