@@ -54,6 +54,18 @@ public class ConfigurationRepositoryTest {
 	/*
 	 * Role-specific values for Role "aabb" in the test [configuration] records.
 	 */
+	private static final Boolean TEST_BOOLEAN_ROLE_aabb_VALUE = false;
+	private static final byte[] TEST_BYTEARRAY_ROLE_aabb_VALUE = null;
+	private static final Date TEST_DATE_ROLE_aabb_VALUE = new GregorianCalendar(1971, 8, 8).getTime();
+	private static final Date TEST_DATETIME_ROLE_aabb_VALUE = new GregorianCalendar(2008, 10, 30, 02, 0, 1).getTime();
+	private static final Double TEST_DOUBLE_ROLE_aabb_VALUE = 1.618033988749;
+	private static final Float TEST_FLOAT_ROLE_aabb_VALUE = 2.71828F;
+	private static final Integer TEST_INTEGER_ROLE_aabb_VALUE = 666;
+	private static final String TEST_STRING_ROLE_aabb_VALUE = "Yada yada";
+	private static final String TEST_TEXT_ROLE_aabb_VALUE = "Yada yada yada yada";
+	// The year, month and day here are arbitrary and used only to construct a Date.
+	private static final Date TEST_TIME_ROLE_aabb_VALUE = new GregorianCalendar(2000, 0, 1, 0, 0, 1).getTime();
+	private static final LocalTime TEST_TIME_ROLE_aabb_VALUE_JODA = new LocalTime(TEST_TIME_ROLE_aabb_VALUE);
 
 	@Autowired
 	ConfigurationRepository configurationRepository;
@@ -100,6 +112,29 @@ public class ConfigurationRepositoryTest {
 		Object booleanValueObject = config.get(ParamName.TEST_BOOLEAN);
 		assertThat(booleanValueObject, is(instanceOf(Boolean.class)));
 		assertThat((Boolean) booleanValueObject, is(TEST_BOOLEAN_DEFAULT_VALUE));
+	}
+
+	/*
+	 * Get role-specific boolean value for a parameter that has both a default 
+	 * (Role==null) Configuration, and a role-specific value. This should
+	 * fetch the role-specific value.
+	 */
+	@Test
+	@Transactional
+	public void booleanValueGetRoleSpecificWithConfig() {
+		/*
+		 * Role "aabb" has a role-specific value for the TEST_BOOLEAN parameter.
+		 */
+		UUID uuidOfRole_aabb = UUID.fromString("ee56f34d-dbb4-41c1-9d30-ce29cf973820");
+		Role role_aabb = roleRepository.findOne(uuidOfRole_aabb);
+		assertThat(role_aabb, is(notNullValue()));
+		/*
+		 * Fetch the role-specific value for the TEST_BOOLEAN parameter for Role 
+		 * "aabb".
+		 */
+		Object booleanValueObject = config.get(ParamName.TEST_BOOLEAN, role_aabb);
+		assertThat(booleanValueObject, is(instanceOf(Boolean.class)));
+		assertThat((Boolean) booleanValueObject, is(TEST_BOOLEAN_ROLE_aabb_VALUE));
 	}
 
 	@Test
@@ -270,6 +305,35 @@ public class ConfigurationRepositoryTest {
 		//		assertThat((Date) dateValueObject, is(TEST_INTEGER_DEFAULT_VALUE));
 	}
 
+	/*
+	 * Get role-specific date value for a parameter that has both a default 
+	 * (Role==null) Configuration, and a role-specific value. This should
+	 * fetch the role-specific value.
+	 */
+	@Test
+	@Transactional
+	public void dateValueGetRoleSpecificWithConfig() {
+		/*
+		 * Role "aabb" has a role-specific value for the TEST_DATE parameter.
+		 */
+		UUID uuidOfRole_aabb = UUID.fromString("ee56f34d-dbb4-41c1-9d30-ce29cf973820");
+		Role role_aabb = roleRepository.findOne(uuidOfRole_aabb);
+		assertThat(role_aabb, is(notNullValue()));
+		/*
+		 * Fetch the role-specific value for the TEST_DATE parameter for Role 
+		 * "aabb".
+		 */
+		Object dateValueObject = config.get(ParamName.TEST_DATE, role_aabb);
+		assertThat(dateValueObject, is(instanceOf(Date.class)));
+
+		Date dateFromConfig = (Date) dateValueObject;
+		assertThat(dateFromConfig, is(not(nullValue())));
+		Calendar calendar = new GregorianCalendar();
+		calendar.setTime(dateFromConfig);
+		Date dateWithTimeZone = calendar.getTime();
+		assertThat(dateWithTimeZone, is(equalTo(TEST_DATE_ROLE_aabb_VALUE)));
+	}
+
 	@Test
 	@Transactional
 	public void dateValueFetchNonexistentRoleSpecificFromConfig() {
@@ -282,6 +346,7 @@ public class ConfigurationRepositoryTest {
 		 */
 		Object dateValueObject = config.get(ParamName.TEST_DATE, role_bcbc);
 		assertThat(dateValueObject, is(instanceOf(Date.class)));
+
 		Date dateFromConfig = (Date) dateValueObject;
 		assertThat(dateFromConfig, is(not(nullValue())));
 		Calendar calendar = new GregorianCalendar();
@@ -451,11 +516,39 @@ public class ConfigurationRepositoryTest {
 	}
 
 	/*
+	 * Get role-specific datetime value for a parameter that has both a default 
+	 * (Role==null) Configuration, and a role-specific value. This should
+	 * fetch the role-specific value.
+	 */
+	@Test
+	@Transactional
+	public void datetimeValueGetRoleSpecificWithConfig() {
+		/*
+		 * Role "aabb" has a role-specific value for the TEST_DATETIME parameter.
+		 */
+		UUID uuidOfRole_aabb = UUID.fromString("ee56f34d-dbb4-41c1-9d30-ce29cf973820");
+		Role role_aabb = roleRepository.findOne(uuidOfRole_aabb);
+		assertThat(role_aabb, is(notNullValue()));
+		/*
+		 * Fetch the role-specific value for the TEST_DATETIME parameter for Role 
+		 * "aabb".
+		 */
+		Object datetimeValueObject = config.get(ParamName.TEST_DATETIME, role_aabb);
+		assertThat(datetimeValueObject, is(instanceOf(Date.class)));
+
+		Date datetimeFromConfig = (Date) datetimeValueObject;
+		assertThat(datetimeFromConfig, is(not(nullValue())));
+		Calendar calendar = new GregorianCalendar();
+		calendar.setTime(datetimeFromConfig);
+		Date datetimeWithTimeZone = calendar.getTime();
+		assertThat(datetimeWithTimeZone, is(equalTo(TEST_DATETIME_ROLE_aabb_VALUE)));
+	}
+
+	/*
 	 * Set default datetime value for a parameter that already has a default 
 	 * (Role==null) Configuration. This should update the existing Configuration
 	 * entity to store this new value.
 	 */
-
 	@Test
 	@Transactional
 	public void datetimeValueSetDefaultWithConfig() {
@@ -610,6 +703,29 @@ public class ConfigurationRepositoryTest {
 		assertThat((Double) doubleValueObject, is(TEST_DOUBLE_DEFAULT_VALUE));
 	}
 
+	/*
+	 * Get role-specific double value for a parameter that has both a default 
+	 * (Role==null) Configuration, and a role-specific value. This should
+	 * fetch the role-specific value.
+	 */
+	@Test
+	@Transactional
+	public void doubleValueGetRoleSpecificWithConfig() {
+		/*
+		 * Role "aabb" has a role-specific value for the TEST_DOUBLE parameter.
+		 */
+		UUID uuidOfRole_aabb = UUID.fromString("ee56f34d-dbb4-41c1-9d30-ce29cf973820");
+		Role role_aabb = roleRepository.findOne(uuidOfRole_aabb);
+		assertThat(role_aabb, is(notNullValue()));
+		/*
+		 * Fetch the role-specific value for the TEST_DOUBLE parameter for Role 
+		 * "aabb".
+		 */
+		Object doubleValueObject = config.get(ParamName.TEST_DOUBLE, role_aabb);
+		assertThat(doubleValueObject, is(instanceOf(Double.class)));
+		assertThat((Double) doubleValueObject, is(TEST_DOUBLE_ROLE_aabb_VALUE));
+	}
+
 	@Test
 	@Transactional
 	public void doubleValueFetchNonexistentRoleSpecificFromConfig() {
@@ -754,6 +870,29 @@ public class ConfigurationRepositoryTest {
 		assertThat((Float) floatValueObject, is(TEST_FLOAT_DEFAULT_VALUE));
 	}
 
+	/*
+	 * Get role-specific float value for a parameter that has both a default 
+	 * (Role==null) Configuration, and a role-specific value. This should
+	 * fetch the role-specific value.
+	 */
+	@Test
+	@Transactional
+	public void floatValueGetRoleSpecificWithConfig() {
+		/*
+		 * Role "aabb" has a role-specific value for the TEST_FLOAT parameter.
+		 */
+		UUID uuidOfRole_aabb = UUID.fromString("ee56f34d-dbb4-41c1-9d30-ce29cf973820");
+		Role role_aabb = roleRepository.findOne(uuidOfRole_aabb);
+		assertThat(role_aabb, is(notNullValue()));
+		/*
+		 * Fetch the role-specific value for the TEST_FLOAT parameter for Role 
+		 * "aabb".
+		 */
+		Object floatValueObject = config.get(ParamName.TEST_FLOAT, role_aabb);
+		assertThat(floatValueObject, is(instanceOf(Float.class)));
+		assertThat((Float) floatValueObject, is(TEST_FLOAT_ROLE_aabb_VALUE));
+	}
+
 	@Test
 	@Transactional
 	public void floatValueFetchNonexistentRoleSpecificFromConfig() {
@@ -896,6 +1035,29 @@ public class ConfigurationRepositoryTest {
 		Object integerValueObject = config.get(ParamName.TEST_INTEGER);
 		assertThat(integerValueObject, is(instanceOf(Integer.class)));
 		assertThat((Integer) integerValueObject, is(TEST_INTEGER_DEFAULT_VALUE));
+	}
+
+	/*
+	 * Get role-specific integer value for a parameter that has both a default 
+	 * (Role==null) Configuration, and a role-specific value. This should
+	 * fetch the role-specific value.
+	 */
+	@Test
+	@Transactional
+	public void integerValueGetRoleSpecificWithConfig() {
+		/*
+		 * Role "aabb" has a role-specific value for the TEST_INTEGER parameter.
+		 */
+		UUID uuidOfRole_aabb = UUID.fromString("ee56f34d-dbb4-41c1-9d30-ce29cf973820");
+		Role role_aabb = roleRepository.findOne(uuidOfRole_aabb);
+		assertThat(role_aabb, is(notNullValue()));
+		/*
+		 * Fetch the role-specific value for the TEST_INTEGER parameter for Role 
+		 * "aabb".
+		 */
+		Object integerValueObject = config.get(ParamName.TEST_INTEGER, role_aabb);
+		assertThat(integerValueObject, is(instanceOf(Integer.class)));
+		assertThat((Integer) integerValueObject, is(TEST_INTEGER_ROLE_aabb_VALUE));
 	}
 
 	@Test
@@ -1048,6 +1210,29 @@ public class ConfigurationRepositoryTest {
 		Object stringValueObject = config.get(ParamName.TEST_STRING);
 		assertThat(stringValueObject, is(instanceOf(String.class)));
 		assertThat((String) stringValueObject, is(TEST_STRING_DEFAULT_VALUE));
+	}
+
+	/*
+	 * Get role-specific string value for a parameter that has both a default 
+	 * (Role==null) Configuration, and a role-specific value. This should
+	 * fetch the role-specific value.
+	 */
+	@Test
+	@Transactional
+	public void stringValueGetRoleSpecificWithConfig() {
+		/*
+		 * Role "aabb" has a role-specific value for the TEST_STRING parameter.
+		 */
+		UUID uuidOfRole_aabb = UUID.fromString("ee56f34d-dbb4-41c1-9d30-ce29cf973820");
+		Role role_aabb = roleRepository.findOne(uuidOfRole_aabb);
+		assertThat(role_aabb, is(notNullValue()));
+		/*
+		 * Fetch the role-specific value for the TEST_STRING parameter for Role 
+		 * "aabb".
+		 */
+		Object stringValueObject = config.get(ParamName.TEST_STRING, role_aabb);
+		assertThat(stringValueObject, is(instanceOf(String.class)));
+		assertThat((String) stringValueObject, is(TEST_STRING_ROLE_aabb_VALUE));
 	}
 
 	/*
@@ -1220,6 +1405,29 @@ public class ConfigurationRepositoryTest {
 	}
 
 	/*
+	 * Get role-specific text value for a parameter that has both a default 
+	 * (Role==null) Configuration, and a role-specific value. This should
+	 * fetch the role-specific value.
+	 */
+	@Test
+	@Transactional
+	public void textValueGetRoleSpecificWithConfig() {
+		/*
+		 * Role "aabb" has a role-specific value for the TEST_TEXT parameter.
+		 */
+		UUID uuidOfRole_aabb = UUID.fromString("ee56f34d-dbb4-41c1-9d30-ce29cf973820");
+		Role role_aabb = roleRepository.findOne(uuidOfRole_aabb);
+		assertThat(role_aabb, is(notNullValue()));
+		/*
+		 * Fetch the role-specific value for the TEST_TEXT parameter for Role 
+		 * "aabb".
+		 */
+		Object textValueObject = config.get(ParamName.TEST_TEXT, role_aabb);
+		assertThat(textValueObject, is(instanceOf(String.class)));
+		assertThat((String) textValueObject, is(TEST_TEXT_ROLE_aabb_VALUE));
+	}
+
+	/*
 	 * Attempt to fetch a role-specific value value that does not exist in the
 	 * [configuration] table. However, there *is* a default value for the 
 	 * parameter, which should be returned instead.
@@ -1364,11 +1572,38 @@ public class ConfigurationRepositoryTest {
 	}
 
 	/*
+	 * Get role-specific time value for a parameter that has both a default 
+	 * (Role==null) Configuration, and a role-specific value. This should
+	 * fetch the role-specific value.
+	 */
+	@Test
+	@Transactional
+	public void timeValueGetRoleSpecificWithConfig() {
+		/*
+		 * Role "aabb" has a role-specific value for the TEST_TIME parameter.
+		 */
+		UUID uuidOfRole_aabb = UUID.fromString("ee56f34d-dbb4-41c1-9d30-ce29cf973820");
+		Role role_aabb = roleRepository.findOne(uuidOfRole_aabb);
+		assertThat(role_aabb, is(notNullValue()));
+		/*
+		 * Fetch the role-specific value for the TEST_TIME parameter for Role 
+		 * "aabb".
+		 */
+		Object timeValueObject = config.get(ParamName.TEST_TIME, role_aabb);
+		assertThat(timeValueObject, is(instanceOf(Date.class)));
+
+		Date timeFromConfig = (Date) timeValueObject;
+		assertThat(timeFromConfig, is(not(nullValue())));
+
+		LocalTime defaultTime_Joda = new LocalTime(timeFromConfig);
+		assertThat(defaultTime_Joda, is(equalTo(TEST_TIME_ROLE_aabb_VALUE_JODA)));
+	}
+
+	/*
 	 * Set default time value for a parameter that already has a default 
 	 * (Role==null) Configuration. This should update the existing Configuration
 	 * entity to store this new value.
 	 */
-
 	@Test
 	@Transactional
 	public void timeValueSetDefaultWithConfig() {
