@@ -241,7 +241,7 @@ public class ConfigurationRepositoryTest {
 		//		assertThat((Date) dateValueRoleSpecificObject, is(newDateValue));
 
 		/*
-		 * UPDATE the role-specific value. This should override the default 
+		 * Update the role-specific value. This should override the default 
 		 * value for the specified role and RE-USE the new role-specific
 		 * Configuration just created, i.e., not create a new Configuration
 		 */
@@ -303,6 +303,135 @@ public class ConfigurationRepositoryTest {
 		Date dateWithTimeZone = calendar.getTime();
 		assertThat(dateWithTimeZone, is(equalTo(TEST_DATETIME_DEFAULT_VALUE)));
 		//		assertThat(defaultDatetimeValueConfiguration.getDatetimeValue(), is(equalTo(TEST_DATETIME_DEFAULT_VALUE)));
+	}
+
+	/*
+	 * Set default datetime value for a parameter that already has a default 
+	 * (Role==null) Configuration. This should update the existing Configuration
+	 * entity to store this new value.
+	 */
+
+	@Test
+	@Transactional
+	public void datetimeValueSetDefaultWithConfig() {
+		assertThat(configurationRepository.count(), is(NUM_TEST_CONFIGURATIONS));
+		/*
+		 * Retrieve the existing default value.
+		 */
+		Object datetimeValueObject = config.get(ParamName.TEST_DATETIME);
+		assertThat(datetimeValueObject, is(instanceOf(Date.class)));
+		Date datetimeFromConfig = (Date) datetimeValueObject;
+		assertThat(datetimeFromConfig, is(not(nullValue())));
+		Calendar calendar = new GregorianCalendar();
+		calendar.setTime(datetimeFromConfig);
+		Date datetimeWithTimeZone = calendar.getTime();
+		assertThat(datetimeWithTimeZone, is(equalTo(TEST_DATETIME_DEFAULT_VALUE)));
+		/*
+		 * Update default value.
+		 */
+		Date newDatetimeValue = new GregorianCalendar(1960, 4, 14, 1, 2, 3).getTime();
+		config.set(ParamName.TEST_DATETIME, newDatetimeValue);
+		/*
+		 * The existing Configuration should have been updated, so there should
+		 * be the same number of entities in the database
+		 */
+		assertThat(configurationRepository.count(), is(NUM_TEST_CONFIGURATIONS));
+		/* 
+		 * Retrieve value just set.
+		 */
+		Object datetimeValueObjectUpdated = config.get(ParamName.TEST_DATETIME);
+		assertThat(datetimeValueObjectUpdated, is(instanceOf(Date.class)));
+		Date datetimeFromConfigUpdated = (Date) datetimeValueObjectUpdated;
+		assertThat(datetimeFromConfigUpdated, is(not(nullValue())));
+		Calendar calendarUpdated = new GregorianCalendar();
+		calendarUpdated.setTime(datetimeFromConfigUpdated);
+		Date datetimeWithTimeZoneUpdated = calendarUpdated.getTime();
+		assertThat(datetimeWithTimeZoneUpdated, is(equalTo(newDatetimeValue)));
+	}
+
+	/*
+	 * Set role-specific datetime value for a parameter that has a default 
+	 * (Role==null) Configuration, but no role-specific value. This should
+	 * create a new Configuration entity to store this value.
+	 */
+	@Test
+	@Transactional
+	public void datetimeValueSetRoleSpecificWithConfig() {
+		assertThat(configurationRepository.count(), is(NUM_TEST_CONFIGURATIONS));
+
+		UUID uuidOfRole_bcbc = UUID.fromString("e918c8aa-c6d1-462c-9e91-f1db0fb9f346");
+		Role role_bcbc = roleRepository.findOne(uuidOfRole_bcbc);
+		assertThat(role_bcbc, is(notNullValue()));
+		/*
+		 * There is a default value for ParamName.TEST_DATETIME, but no
+		 * role-specific value for Role "bcbc".
+		 */
+		Object datetimeValueObject = config.get(ParamName.TEST_DATETIME, role_bcbc);
+		assertThat(datetimeValueObject, is(instanceOf(Date.class)));
+		Date datetimeFromConfig = (Date) datetimeValueObject;
+		assertThat(datetimeFromConfig, is(not(nullValue())));
+		Calendar calendar = new GregorianCalendar();
+		calendar.setTime(datetimeFromConfig);
+		Date datetimeWithTimeZone = calendar.getTime();
+		assertThat(datetimeWithTimeZone, is(equalTo(TEST_DATETIME_DEFAULT_VALUE)));
+
+		/*
+		 * Set role-specific value, which should override the default value for
+		 * the specified role.
+		 */
+		Date newDatetimeValue = new GregorianCalendar(1960, 4, 14, 1, 2, 3).getTime();
+		config.set(ParamName.TEST_DATETIME, newDatetimeValue, role_bcbc);
+		/*
+		 * This should have created a new Configuration.
+		 */
+		assertThat(configurationRepository.count(), is(NUM_TEST_CONFIGURATIONS + 1));
+		/*
+		 * Retrieve value just set. The new value should override the default.
+		 */
+		Object datetimeValueRoleSpecificObject = config.get(ParamName.TEST_DATETIME, role_bcbc);
+		assertThat(datetimeValueRoleSpecificObject, is(instanceOf(Date.class)));
+		Date datetimeFromRoleSpecific = (Date) datetimeValueRoleSpecificObject;
+		assertThat(datetimeFromRoleSpecific, is(not(nullValue())));
+		Calendar calendarUpdated = new GregorianCalendar();
+		calendarUpdated.setTime(datetimeFromRoleSpecific);
+		Date datetimeWithTimeZoneUpdated = calendarUpdated.getTime();
+		assertThat(datetimeWithTimeZoneUpdated, is(equalTo(newDatetimeValue)));
+
+		/*
+		 * Update the role-specific value. This should override the default 
+		 * value for the specified role and RE-USE the new role-specific
+		 * Configuration just created, i.e., not create a new Configuration
+		 */
+		newDatetimeValue = new GregorianCalendar(1961, 10, 4, 18, 30, 15).getTime();
+		config.set(ParamName.TEST_DATETIME, newDatetimeValue, role_bcbc);
+		/*
+		 * This should have created a new Configuration.
+		 */
+		assertThat(configurationRepository.count(), is(NUM_TEST_CONFIGURATIONS + 1));
+		/*
+		 * Retrieve value just set. The new value should override the default.
+		 */
+		datetimeValueRoleSpecificObject = config.get(ParamName.TEST_DATETIME, role_bcbc);
+		assertThat(datetimeValueRoleSpecificObject, is(instanceOf(Date.class)));
+		datetimeFromRoleSpecific = (Date) datetimeValueRoleSpecificObject;
+		assertThat(datetimeFromRoleSpecific, is(not(nullValue())));
+		calendarUpdated = new GregorianCalendar();
+		calendarUpdated.setTime(datetimeFromRoleSpecific);
+		datetimeWithTimeZoneUpdated = calendarUpdated.getTime();
+		assertThat(datetimeWithTimeZoneUpdated, is(equalTo(newDatetimeValue)));
+
+		/*
+		 * The default value for ParamName.TEST_DATETIME should still be the
+		 * same.
+		 */
+		Object datetimeValueDefaultObject = config.get(ParamName.TEST_DATETIME);
+		assertThat(datetimeValueDefaultObject, is(instanceOf(Date.class)));
+		datetimeFromConfig = (Date) datetimeValueDefaultObject;
+		assertThat(datetimeFromConfig, is(not(nullValue())));
+		calendar = new GregorianCalendar();
+		calendar.setTime(datetimeFromConfig);
+		datetimeWithTimeZone = calendar.getTime();
+		assertThat(datetimeWithTimeZone, is(equalTo(TEST_DATETIME_DEFAULT_VALUE)));
 	}
 
 	// ======================== Integer parameter tests ========================
@@ -423,7 +552,7 @@ public class ConfigurationRepositoryTest {
 		assertThat((Integer) integerValueRoleSpecificObject, is(newIntegerValue));
 
 		/*
-		 * UPDATE the role-specific value. This should override the default 
+		 * Update the role-specific value. This should override the default 
 		 * value for the specified role and RE-USE the new role-specific
 		 * Configuration just created, i.e., not create a new Configuration
 		 */
@@ -599,7 +728,7 @@ public class ConfigurationRepositoryTest {
 		assertThat((String) stringValueRoleSpecificObject, is(newStringValue));
 
 		/*
-		 * UPDATE the role-specific value. This should override the default 
+		 * Update the role-specific value. This should override the default 
 		 * value for the specified role and RE-USE the new role-specific
 		 * Configuration just created, i.e., not create a new Configuration
 		 */
@@ -649,6 +778,154 @@ public class ConfigurationRepositoryTest {
 		 */
 		LocalTime defaultTime_Joda = new LocalTime(defaultTimeValueConfiguration.getTimeValue());
 		assertThat(defaultTime_Joda, is(equalTo(TEST_TIME_DEFAULT_VALUE_JODA)));
+	}
+
+	/*
+	 * Set default time value for a parameter that already has a default 
+	 * (Role==null) Configuration. This should update the existing Configuration
+	 * entity to store this new value.
+	 */
+
+	@Test
+	@Transactional
+	public void timeValueSetDefaultWithConfig() {
+		assertThat(configurationRepository.count(), is(NUM_TEST_CONFIGURATIONS));
+		/*
+		 * Retrieve the existing default value.
+		 */
+		Object timeValueObject = config.get(ParamName.TEST_TIME);
+		assertThat(timeValueObject, is(instanceOf(Date.class)));
+		Date timeFromConfig = (Date) timeValueObject;
+		assertThat(timeFromConfig, is(not(nullValue())));
+
+		/*
+		 * Convert Date object to Joda time LocalTime object to make it easy
+		 * to compare with TEST_TIME_DEFAULT_VALUE_JODA.
+		 */
+		LocalTime timeFromConfig_Joda = new LocalTime(timeFromConfig);
+		assertThat(timeFromConfig_Joda, is(equalTo(TEST_TIME_DEFAULT_VALUE_JODA)));
+
+		/*
+		 * Update default value.
+		 * 
+		 * The year, month & day here (1800, 6, 15) are arbitrary and are not
+		 * used because it is only the time portion that we work with.
+		 */
+		Date newTimeValue = new GregorianCalendar(1800, 6, 15, 13, 45, 59).getTime();
+		config.set(ParamName.TEST_TIME, newTimeValue);
+		/*
+		* The existing Configuration should have been updated, so there should
+		* be the same number of entities in the database
+		*/
+		assertThat(configurationRepository.count(), is(NUM_TEST_CONFIGURATIONS));
+		/* 
+		 * Retrieve value just set.
+		 */
+		Object timeValueObjectUpdated = config.get(ParamName.TEST_TIME);
+		assertThat(timeValueObjectUpdated, is(instanceOf(Date.class)));
+		Date timeFromConfigUpdated = (Date) timeValueObjectUpdated;
+		assertThat(timeFromConfigUpdated, is(not(nullValue())));
+
+		LocalTime timeFromConfigUpdated_Joda = new LocalTime(timeFromConfigUpdated);
+		LocalTime newTimeValue_Joda = new LocalTime(newTimeValue);
+		assertThat(timeFromConfigUpdated_Joda, is(equalTo(newTimeValue_Joda)));
+	}
+
+	/*
+	 * Set role-specific time value for a parameter that has a default 
+	 * (Role==null) Configuration, but no role-specific value. This should
+	 * create a new Configuration entity to store this value.
+	 */
+	@Test
+	@Transactional
+	public void timeValueSetRoleSpecificWithConfig() {
+		assertThat(configurationRepository.count(), is(NUM_TEST_CONFIGURATIONS));
+
+		UUID uuidOfRole_bcbc = UUID.fromString("e918c8aa-c6d1-462c-9e91-f1db0fb9f346");
+		Role role_bcbc = roleRepository.findOne(uuidOfRole_bcbc);
+		assertThat(role_bcbc, is(notNullValue()));
+		/*
+		 * There is a default value for ParamName.TEST_TIME, but no
+		 * role-specific value for Role "bcbc".
+		 */
+		Object timeValueObject = config.get(ParamName.TEST_TIME, role_bcbc);
+		assertThat(timeValueObject, is(instanceOf(Date.class)));
+		Date timeFromConfig = (Date) timeValueObject;
+		assertThat(timeFromConfig, is(not(nullValue())));
+
+		/*
+		 * Convert Date object to Joda time LocalTime object to make it easy
+		 * to compare with TEST_TIME_DEFAULT_VALUE_JODA.
+		 */
+		LocalTime timeFromConfig_Joda = new LocalTime(timeFromConfig);
+		assertThat(timeFromConfig_Joda, is(equalTo(TEST_TIME_DEFAULT_VALUE_JODA)));
+
+		/*
+		 * Set role-specific value, which should override the default value for
+		 * the specified role.
+		 * 
+		 * The year, month & day here (1960, 4, 14) are arbitrary and are not
+		 * used because it is only the time portion that we work with.
+		 */
+		Date newTimeValue = new GregorianCalendar(1960, 4, 14, 23, 30, 59).getTime();
+		config.set(ParamName.TEST_TIME, newTimeValue, role_bcbc);
+		/*
+		 * This should have created a new Configuration.
+		 */
+		assertThat(configurationRepository.count(), is(NUM_TEST_CONFIGURATIONS + 1));
+		/*
+		 * Retrieve value just set. The new value should override the default.
+		 */
+		Object timeValueRoleSpecificObject = config.get(ParamName.TEST_TIME, role_bcbc);
+		assertThat(timeValueRoleSpecificObject, is(instanceOf(Date.class)));
+		Date timeFromRoleSpecific = (Date) timeValueRoleSpecificObject;
+		assertThat(timeFromRoleSpecific, is(not(nullValue())));
+
+		LocalTime timeFromRoleSpecific_Joda = new LocalTime(timeFromRoleSpecific);
+		LocalTime newTimeValue_Joda = new LocalTime(newTimeValue);
+		assertThat(timeFromRoleSpecific_Joda, is(equalTo(newTimeValue_Joda)));
+
+		/*
+		 * Update the role-specific value. This should override the default 
+		 * value for the specified role and RE-USE the new role-specific
+		 * Configuration just created, i.e., not create a new Configuration
+		 * 
+		 * The year, month & day here (1960, 4, 14) are arbitrary and are not
+		 * used because it is only the time portion that we work with.
+		 */
+		newTimeValue = new GregorianCalendar(1961, 10, 4, 00, 00, 00).getTime();
+		config.set(ParamName.TEST_TIME, newTimeValue, role_bcbc);
+		/*
+		 * This should have created a new Configuration.
+		 */
+		assertThat(configurationRepository.count(), is(NUM_TEST_CONFIGURATIONS + 1));
+		/*
+		 * Retrieve value just set. The new value should override the default.
+		 */
+		timeValueRoleSpecificObject = config.get(ParamName.TEST_TIME, role_bcbc);
+		assertThat(timeValueRoleSpecificObject, is(instanceOf(Date.class)));
+		timeFromRoleSpecific = (Date) timeValueRoleSpecificObject;
+		assertThat(timeFromRoleSpecific, is(not(nullValue())));
+
+		timeFromRoleSpecific_Joda = new LocalTime(timeFromRoleSpecific);
+		newTimeValue_Joda = new LocalTime(newTimeValue);
+		assertThat(timeFromRoleSpecific_Joda, is(equalTo(newTimeValue_Joda)));
+
+		/*
+		 * The default value for ParamName.TEST_TIME should still be the
+		 * same.
+		 */
+		Object timeValueDefaultObject = config.get(ParamName.TEST_TIME);
+		assertThat(timeValueDefaultObject, is(instanceOf(Date.class)));
+		timeFromConfig = (Date) timeValueDefaultObject;
+		assertThat(timeFromConfig, is(not(nullValue())));
+
+		/*
+		 * Convert Date object to Joda time LocalTime object to make it easy
+		 * to compare with TEST_TIME_DEFAULT_VALUE_JODA.
+		 */
+		timeFromConfig_Joda = new LocalTime(timeFromConfig);
+		assertThat(timeFromConfig_Joda, is(equalTo(TEST_TIME_DEFAULT_VALUE_JODA)));
 	}
 
 }
