@@ -22,6 +22,8 @@ import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
+import com.qfree.obo.report.configuration.Config;
+
 @Configuration
 @EnableJpaRepositories(basePackages = "com.qfree.obo.report.db")
 @PropertySource("classpath:config.properties")
@@ -81,11 +83,8 @@ public class RootConfigDesktopAppTestEnv {
 		emf.setDataSource(dataSource);
 		emf.setPersistenceUnitName("reportServer");
 		emf.setJpaVendorAdapter(jpaVendorAdapter);
-		emf.setPackagesToScan("com.qfree.obo.report.domain");
-
-		//		emf.setPackagesToScan("com.qfree.obo.report.domain_generated");
-
 		emf.setJpaProperties(additionalProperties());
+		emf.setPackagesToScan("com.qfree.obo.report.domain");
 		return emf;
 	}
 
@@ -93,16 +92,17 @@ public class RootConfigDesktopAppTestEnv {
 		Properties properties = new Properties();
 		properties.setProperty("hibernate.dialect", env.getProperty("hibernate.dialect"));
 		properties.setProperty("hibernate.show_sql", env.getProperty("hibernate.show_sql"));
-		//TODO REMEMBER TO UNDO THIS IF I COMMENT IT OUT: !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-		//		properties.setProperty("hibernate.hbm2ddl.auto", env.getProperty("hibernate.hbm2ddl.auto"));
-		/*
-		 * Hardwired settings.
-		 */
-		//		properties.setProperty("hibernate.default_schema", "reporting");
-		/* The "import_files" scripts are only executed if the schema is created, 
-		 * i.e., if hibernate.hbm2ddl.auto is set to "create" or "create-drop".
-		 */
-		//properties.setProperty("hibernate.hbm2ddl.import_files", "/db/postgresql/test-data.sql");
+		properties.setProperty("hibernate.hbm2ddl.auto", env.getProperty("hibernate.hbm2ddl.auto"));
+		String import_files = env.getProperty("hibernate.hbm2ddl.import_files");
+		if (import_files != null && !import_files.isEmpty()) {
+			/* The "import_files" scripts are only executed if the schema is created, 
+			 * i.e., if hibernate.hbm2ddl.auto is set to "create" or "create-drop".
+			 */
+			properties.setProperty("hibernate.hbm2ddl.import_files", import_files);
+		}
+		properties.setProperty("hibernate.hbm2ddl.import_files_sql_extractor",
+				"org.hibernate.tool.hbm2ddl.MultipleLinesSqlCommandExtractor");
+		//properties.setProperty("hibernate.default_schema", "reporting");
 
 		return properties;
 	}
@@ -120,5 +120,10 @@ public class RootConfigDesktopAppTestEnv {
 			transactionManager.setEntityManagerFactory(emf);
 			return transactionManager;
 		}
+	}
+
+	@Bean
+	public Config config() {
+		return new Config();
 	}
 }

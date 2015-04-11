@@ -6,12 +6,14 @@ package com.qfree.obo.report.spring.config;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.ImportResource;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
 
+import com.qfree.obo.report.configuration.Config;
 import com.qfree.obo.report.db.PersistenceConfig;
 
 //import com.borgsoftware.springmvc.spring.web.PropertyTest;
@@ -43,6 +45,11 @@ public class RootConfig {
 	 */
 	@Autowired
 	private Environment env;
+
+	@Bean
+	public Config config() {
+		return new Config();
+	}
 
 	//	/*
 	//	 * Configuration parameters can be injected one by one like this, and then

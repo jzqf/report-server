@@ -9,8 +9,8 @@ import com.qfree.obo.report.domain.Report;
 
 /**
  * Implementation class for "custom" repository query methods for 
- * {@link Report} persistence.
- *
+ * {@link Report} persistence.<br>
+ * <br>
  * Only query methods that are declared in 
  * {@link ReportRepositoryCustom} should be declared here. These are
  * methods that <i>cannot</i> be created using Spring Data's domain specific 
@@ -21,17 +21,30 @@ import com.qfree.obo.report.domain.Report;
  */
 public class ReportRepositoryImpl implements ReportRepositoryCustom {
 
-  @PersistenceContext
-  private EntityManager entityManager;
+	@PersistenceContext
+	private EntityManager entityManager;
 
-  public List<Report> findRecentlyCreated() {
-    return findRecentlyCreated(10);
-  }
+	public List<Report> findRecentlyCreated() {
+		return findRecentlyCreated(10);
+	}
 
-  public List<Report> findRecentlyCreated(int count) {
-		return (List<Report>) entityManager.createQuery("select r from Report r order by r.createdOn desc")
-        .setMaxResults(count)
-        .getResultList();
-  }
-  
+	/*
+	 * This version uses a static, named query that is defined in the 
+	 * Configuration entity class.
+	 */
+	public List<Report> findRecentlyCreated(int count) {
+		return (List<Report>) entityManager.createNamedQuery("Report.findByCreated", Report.class)
+				.setMaxResults(count)
+				.getResultList();
+	}
+
+	/*
+	 * This version uses a dynamic query.
+	 */
+	//	public List<Report> findRecentlyCreated(int count) {
+	//		return (List<Report>) entityManager.createQuery("select r from Report r order by r.createdOn desc")
+	//				.setMaxResults(count)
+	//				.getResultList();
+	//	}
+
 }

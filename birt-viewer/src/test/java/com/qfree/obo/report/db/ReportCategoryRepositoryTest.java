@@ -2,11 +2,13 @@ package com.qfree.obo.report.db;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 import java.util.List;
 import java.util.UUID;
 
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
@@ -20,13 +22,15 @@ import com.qfree.obo.report.domain.ReportCategory;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = PersistenceConfigTestEnv.class)
-//@ContextConfiguration(classes = com.qfree.obo.report.apps.RootConfigDesktopApp.class)
 public class ReportCategoryRepositoryTest {
 
 	private static final Logger logger = LoggerFactory.getLogger(ReportParameterRepositoryTest.class);
 
 	@Autowired
 	ReportCategoryRepository reportCategoryRepository;
+
+	@Autowired
+	ReportRepository reportRepository;
 
 	@Test
 	@Transactional
@@ -119,6 +123,20 @@ public class ReportCategoryRepositoryTest {
 		assertReportCategory(1, found);
 		ReportCategory saved = reportCategoryRepository.save(found);
 		assertEquals(4, reportCategoryRepository.count());
+	}
+
+	@Test
+	@Ignore
+	@Transactional
+	public void delete() {
+		assertEquals(4, reportCategoryRepository.count());
+		assertEquals(15, reportRepository.count());
+		UUID uuidOfTrafficeCategory = UUID.fromString("72d7cb27-1770-4cc7-b301-44d39ccf1e76");
+		assertNotNull(reportCategoryRepository.findOne(uuidOfTrafficeCategory));
+		reportCategoryRepository.delete(uuidOfTrafficeCategory);
+		assertEquals(3, reportCategoryRepository.count());
+		assertEquals(4, reportRepository.count());	// only for cascade=CascadeType.REMOVE in ReportCategory
+		assertNull(reportCategoryRepository.findOne(uuidOfTrafficeCategory));
 	}
 
 	/**
