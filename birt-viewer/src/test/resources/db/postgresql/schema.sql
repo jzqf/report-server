@@ -17,6 +17,29 @@ DROP TABLE IF EXISTS widget;
 CREATE SCHEMA IF NOT EXISTS reporting;
 --------------------------------------------------------------------------------
 
+CREATE TABLE configuration (
+    configuration_id uuid DEFAULT public.uuid_generate_v4() NOT NULL,
+    boolean_value boolean,
+    bytea_value bytea,
+    created_on timestamp without time zone NOT NULL,
+    date_value date,
+    datetime_value timestamp without time zone,
+    double_value double precision,
+    float_value real,
+    integer_value integer,
+    long_value bigint,
+    param_name character varying(64) NOT NULL,
+    param_type character varying(16) NOT NULL,
+    string_value character varying(1000),
+    text_value text,
+    time_value time without time zone,
+    role_id uuid
+);
+
+--
+-- Name: document_format; Type: TABLE; Schema: reporting; Owner: dbtest; Tablespace: 
+--
+
 CREATE TABLE document_format (
     document_format_id uuid DEFAULT public.uuid_generate_v4() NOT NULL,
     active boolean NOT NULL,
@@ -28,13 +51,20 @@ CREATE TABLE document_format (
     name character varying(32) NOT NULL
 );
 
+--
+-- Name: hibernate_sequence; Type: SEQUENCE; Schema: reporting; Owner: dbtest
+--
+
 CREATE SEQUENCE hibernate_sequence
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
     NO MAXVALUE
     CACHE 1;
-ALTER TABLE hibernate_sequence OWNER TO dbtest;
+
+--
+-- Name: job; Type: TABLE; Schema: reporting; Owner: dbtest; Tablespace: 
+--
 
 CREATE TABLE job (
     job_id bigint NOT NULL,
@@ -48,13 +78,20 @@ CREATE TABLE job (
     role_id uuid NOT NULL
 );
 
+--
+-- Name: job_job_id_seq; Type: SEQUENCE; Schema: reporting; Owner: dbtest
+--
+
 CREATE SEQUENCE job_job_id_seq
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
     NO MAXVALUE
     CACHE 1;
-ALTER TABLE job_job_id_seq OWNER TO dbtest;
+
+--
+-- Name: job_job_id_seq1; Type: SEQUENCE; Schema: reporting; Owner: dbtest
+--
 
 CREATE SEQUENCE job_job_id_seq1
     START WITH 1
@@ -62,8 +99,17 @@ CREATE SEQUENCE job_job_id_seq1
     NO MINVALUE
     NO MAXVALUE
     CACHE 1;
-ALTER TABLE job_job_id_seq1 OWNER TO dbtest;
+
+--
+-- Name: job_job_id_seq1; Type: SEQUENCE OWNED BY; Schema: reporting; Owner: dbtest
+--
+
 ALTER SEQUENCE job_job_id_seq1 OWNED BY job.job_id;
+
+
+--
+-- Name: job_parameter_value; Type: TABLE; Schema: reporting; Owner: dbtest; Tablespace: 
+--
 
 CREATE TABLE job_parameter_value (
     job_parameter_value_id bigint NOT NULL,
@@ -73,14 +119,27 @@ CREATE TABLE job_parameter_value (
     report_parameter_id uuid DEFAULT public.uuid_generate_v4() NOT NULL
 );
 
+--
+-- Name: job_parameter_value_job_parameter_value_id_seq; Type: SEQUENCE; Schema: reporting; Owner: dbtest
+--
+
 CREATE SEQUENCE job_parameter_value_job_parameter_value_id_seq
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
     NO MAXVALUE
     CACHE 1;
-ALTER TABLE job_parameter_value_job_parameter_value_id_seq OWNER TO dbtest;
+
+--
+-- Name: job_parameter_value_job_parameter_value_id_seq; Type: SEQUENCE OWNED BY; Schema: reporting; Owner: dbtest
+--
+
 ALTER SEQUENCE job_parameter_value_job_parameter_value_id_seq OWNED BY job_parameter_value.job_parameter_value_id;
+
+
+--
+-- Name: parameter_type; Type: TABLE; Schema: reporting; Owner: dbtest; Tablespace: 
+--
 
 CREATE TABLE parameter_type (
     parameter_type_id uuid DEFAULT public.uuid_generate_v4() NOT NULL,
@@ -89,6 +148,10 @@ CREATE TABLE parameter_type (
     created_on timestamp without time zone NOT NULL,
     description character varying(32) NOT NULL
 );
+
+--
+-- Name: report; Type: TABLE; Schema: reporting; Owner: dbtest; Tablespace: 
+--
 
 CREATE TABLE report (
     report_id uuid DEFAULT public.uuid_generate_v4() NOT NULL,
@@ -99,6 +162,10 @@ CREATE TABLE report (
     report_category_id uuid NOT NULL
 );
 
+--
+-- Name: report_category; Type: TABLE; Schema: reporting; Owner: dbtest; Tablespace: 
+--
+
 CREATE TABLE report_category (
     report_category_id uuid DEFAULT public.uuid_generate_v4() NOT NULL,
     abbreviation character varying(32) NOT NULL,
@@ -106,6 +173,10 @@ CREATE TABLE report_category (
     created_on timestamp without time zone NOT NULL,
     description character varying(32) NOT NULL
 );
+
+--
+-- Name: report_parameter; Type: TABLE; Schema: reporting; Owner: dbtest; Tablespace: 
+--
 
 CREATE TABLE report_parameter (
     report_parameter_id uuid DEFAULT public.uuid_generate_v4() NOT NULL,
@@ -120,6 +191,10 @@ CREATE TABLE report_parameter (
     widget_id uuid NOT NULL
 );
 
+--
+-- Name: report_version; Type: TABLE; Schema: reporting; Owner: dbtest; Tablespace: 
+--
+
 CREATE TABLE report_version (
     report_version_id uuid DEFAULT public.uuid_generate_v4() NOT NULL,
     active boolean NOT NULL,
@@ -130,6 +205,10 @@ CREATE TABLE report_version (
     report_id uuid NOT NULL
 );
 
+--
+-- Name: role; Type: TABLE; Schema: reporting; Owner: dbtest; Tablespace: 
+--
+
 CREATE TABLE role (
     role_id uuid DEFAULT public.uuid_generate_v4() NOT NULL,
     created_on timestamp without time zone NOT NULL,
@@ -139,6 +218,10 @@ CREATE TABLE role (
     username character varying(32) NOT NULL
 );
 
+--
+-- Name: role_parameter_value; Type: TABLE; Schema: reporting; Owner: dbtest; Tablespace: 
+--
+
 CREATE TABLE role_parameter_value (
     role_parameter_value_id uuid DEFAULT public.uuid_generate_v4() NOT NULL,
     created_on timestamp without time zone NOT NULL,
@@ -147,6 +230,10 @@ CREATE TABLE role_parameter_value (
     role_id uuid NOT NULL
 );
 
+--
+-- Name: role_report; Type: TABLE; Schema: reporting; Owner: dbtest; Tablespace: 
+--
+
 CREATE TABLE role_report (
     role_report_id uuid DEFAULT public.uuid_generate_v4() NOT NULL,
     created_on timestamp without time zone NOT NULL,
@@ -154,12 +241,20 @@ CREATE TABLE role_report (
     role_id uuid NOT NULL
 );
 
+--
+-- Name: role_role; Type: TABLE; Schema: reporting; Owner: dbtest; Tablespace: 
+--
+
 CREATE TABLE role_role (
     role_role_id uuid DEFAULT public.uuid_generate_v4() NOT NULL,
     created_on timestamp without time zone NOT NULL,
     child_role_id uuid NOT NULL,
     parent_role_id uuid NOT NULL
 );
+
+--
+-- Name: subscription; Type: TABLE; Schema: reporting; Owner: dbtest; Tablespace: 
+--
 
 CREATE TABLE subscription (
     subscription_id uuid DEFAULT public.uuid_generate_v4() NOT NULL,
@@ -172,6 +267,10 @@ CREATE TABLE subscription (
     report_version_id uuid NOT NULL,
     role_id uuid NOT NULL
 );
+
+--
+-- Name: subscription_parameter_value; Type: TABLE; Schema: reporting; Owner: dbtest; Tablespace: 
+--
 
 CREATE TABLE subscription_parameter_value (
     subscription_parameter_value_id uuid DEFAULT public.uuid_generate_v4() NOT NULL,
@@ -192,6 +291,10 @@ CREATE TABLE subscription_parameter_value (
     subscription_id uuid NOT NULL
 );
 
+--
+-- Name: widget; Type: TABLE; Schema: reporting; Owner: dbtest; Tablespace: 
+--
+
 CREATE TABLE widget (
     widget_id uuid DEFAULT public.uuid_generate_v4() NOT NULL,
     active boolean NOT NULL,
@@ -201,14 +304,26 @@ CREATE TABLE widget (
     name character varying(32) NOT NULL
 );
 
+--
+-- Name: job_id; Type: DEFAULT; Schema: reporting; Owner: dbtest
+--
 
 ALTER TABLE ONLY job ALTER COLUMN job_id SET DEFAULT nextval('job_job_id_seq1'::regclass);
+
+
+--
+-- Name: job_parameter_value_id; Type: DEFAULT; Schema: reporting; Owner: dbtest
+--
+
 ALTER TABLE ONLY job_parameter_value ALTER COLUMN job_parameter_value_id SET DEFAULT nextval('job_parameter_value_job_parameter_value_id_seq'::regclass);
 
-SELECT pg_catalog.setval('hibernate_sequence', 1, false);
-SELECT pg_catalog.setval('job_job_id_seq', 1, false);
-SELECT pg_catalog.setval('job_job_id_seq1', 5, true);
-SELECT pg_catalog.setval('job_parameter_value_job_parameter_value_id_seq', 3, true);
+
+--
+-- Name: configuration_pkey; Type: CONSTRAINT; Schema: reporting; Owner: dbtest; Tablespace: 
+--
+
+ALTER TABLE ONLY configuration
+    ADD CONSTRAINT configuration_pkey PRIMARY KEY (configuration_id);
 
 
 --
@@ -324,6 +439,14 @@ ALTER TABLE ONLY subscription
 
 
 --
+-- Name: uc_configuration_paramname_role; Type: CONSTRAINT; Schema: reporting; Owner: dbtest; Tablespace: 
+--
+
+ALTER TABLE ONLY configuration
+    ADD CONSTRAINT uc_configuration_paramname_role UNIQUE (param_name, role_id);
+
+
+--
 -- Name: uc_jobparametervalue_job_parameter_value; Type: CONSTRAINT; Schema: reporting; Owner: dbtest; Tablespace: 
 --
 
@@ -332,11 +455,11 @@ ALTER TABLE ONLY job_parameter_value
 
 
 --
--- Name: uc_report_parameter_order_index; Type: CONSTRAINT; Schema: reporting; Owner: dbtest; Tablespace: 
+-- Name: uc_reportparameter_reportversion_orderindex; Type: CONSTRAINT; Schema: reporting; Owner: dbtest; Tablespace: 
 --
 
 ALTER TABLE ONLY report_parameter
-    ADD CONSTRAINT uc_report_parameter_order_index UNIQUE (report_version_id, order_index);
+    ADD CONSTRAINT uc_reportparameter_reportversion_orderindex UNIQUE (report_version_id, order_index);
 
 
 --
@@ -344,7 +467,15 @@ ALTER TABLE ONLY report_parameter
 --
 
 ALTER TABLE ONLY report_version
-    ADD CONSTRAINT uc_reportversion_report_versioncode UNIQUE (report_id, version_code, version_name);
+    ADD CONSTRAINT uc_reportversion_report_versioncode UNIQUE (report_id, version_code);
+
+
+--
+-- Name: uc_reportversion_report_versionname; Type: CONSTRAINT; Schema: reporting; Owner: dbtest; Tablespace: 
+--
+
+ALTER TABLE ONLY report_version
+    ADD CONSTRAINT uc_reportversion_report_versionname UNIQUE (report_id, version_name);
 
 
 --
@@ -385,6 +516,14 @@ ALTER TABLE ONLY role_role
 
 ALTER TABLE ONLY widget
     ADD CONSTRAINT widget_pkey PRIMARY KEY (widget_id);
+
+
+--
+-- Name: fk_configuration_role; Type: FK CONSTRAINT; Schema: reporting; Owner: dbtest
+--
+
+ALTER TABLE ONLY configuration
+    ADD CONSTRAINT fk_configuration_role FOREIGN KEY (role_id) REFERENCES role(role_id);
 
 
 --
@@ -449,14 +588,6 @@ ALTER TABLE ONLY report_parameter
 
 ALTER TABLE ONLY report_parameter
     ADD CONSTRAINT fk_reportparameter_report FOREIGN KEY (report_version_id) REFERENCES report_version(report_version_id);
-
-
---
--- Name: fk_reportparameter_subscription; Type: FK CONSTRAINT; Schema: reporting; Owner: dbtest
---
-
-ALTER TABLE ONLY subscription_parameter_value
-    ADD CONSTRAINT fk_reportparameter_subscription FOREIGN KEY (subscription_id) REFERENCES subscription(subscription_id);
 
 
 --
@@ -532,11 +663,11 @@ ALTER TABLE ONLY subscription
 
 
 --
--- Name: fk_subscription_report; Type: FK CONSTRAINT; Schema: reporting; Owner: dbtest
+-- Name: fk_subscription_reportversion; Type: FK CONSTRAINT; Schema: reporting; Owner: dbtest
 --
 
 ALTER TABLE ONLY subscription
-    ADD CONSTRAINT fk_subscription_report FOREIGN KEY (report_version_id) REFERENCES report_version(report_version_id);
+    ADD CONSTRAINT fk_subscription_reportversion FOREIGN KEY (report_version_id) REFERENCES report_version(report_version_id);
 
 
 --
@@ -553,3 +684,11 @@ ALTER TABLE ONLY subscription
 
 ALTER TABLE ONLY subscription_parameter_value
     ADD CONSTRAINT fk_subscriptionparametervalue_reportparameter FOREIGN KEY (report_parameter_id) REFERENCES report_parameter(report_parameter_id);
+
+
+--
+-- Name: fk_subscriptionparametervalue_subscription; Type: FK CONSTRAINT; Schema: reporting; Owner: dbtest
+--
+
+ALTER TABLE ONLY subscription_parameter_value
+    ADD CONSTRAINT fk_subscriptionparametervalue_subscription FOREIGN KEY (subscription_id) REFERENCES subscription(subscription_id);

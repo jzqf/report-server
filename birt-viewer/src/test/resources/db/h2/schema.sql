@@ -10,6 +10,29 @@
 CREATE SCHEMA reporting;
 --------------------------------------------------------------------------------
 
+CREATE TABLE reporting.configuration (
+    configuration_id uuid NOT NULL,
+    boolean_value boolean,
+    bytea_value bytea,
+    created_on timestamp NOT NULL,
+    date_value date,
+    datetime_value timestamp,
+    double_value double precision,
+    float_value real,
+    integer_value integer,
+    long_value bigint,
+    param_name character varying(64) NOT NULL,
+    param_type character varying(16) NOT NULL,
+    string_value character varying(1000),
+    text_value text,
+    time_value time,
+    role_id uuid
+);
+
+--
+-- Name: document_format; Type: TABLE; Schema: reporting; Owner: dbtest; Tablespace: 
+--
+
 CREATE TABLE reporting.document_format (
     document_format_id uuid NOT NULL,
     active boolean NOT NULL,
@@ -20,6 +43,10 @@ CREATE TABLE reporting.document_format (
     media_type character varying(100) NOT NULL,
     name character varying(32) NOT NULL
 );
+
+--
+-- Name: job; Type: TABLE; Schema: reporting; Owner: dbtest; Tablespace: 
+--
 
 CREATE TABLE reporting.job (
     job_id identity NOT NULL,
@@ -33,6 +60,10 @@ CREATE TABLE reporting.job (
     role_id uuid NOT NULL
 );
 
+--
+-- Name: job_parameter_value; Type: TABLE; Schema: reporting; Owner: dbtest; Tablespace: 
+--
+
 CREATE TABLE reporting.job_parameter_value (
     job_parameter_value_id identity NOT NULL,
     created_on timestamp NOT NULL,
@@ -41,6 +72,10 @@ CREATE TABLE reporting.job_parameter_value (
     report_parameter_id uuid NOT NULL
 );
 
+--
+-- Name: parameter_type; Type: TABLE; Schema: reporting; Owner: dbtest; Tablespace: 
+--
+
 CREATE TABLE reporting.parameter_type (
     parameter_type_id uuid NOT NULL,
     abbreviation character varying(32) NOT NULL,
@@ -48,6 +83,10 @@ CREATE TABLE reporting.parameter_type (
     created_on timestamp NOT NULL,
     description character varying(32) NOT NULL
 );
+
+--
+-- Name: report; Type: TABLE; Schema: reporting; Owner: dbtest; Tablespace: 
+--
 
 CREATE TABLE reporting.report (
     report_id uuid NOT NULL,
@@ -58,6 +97,10 @@ CREATE TABLE reporting.report (
     report_category_id uuid NOT NULL
 );
 
+--
+-- Name: report_category; Type: TABLE; Schema: reporting; Owner: dbtest; Tablespace: 
+--
+
 CREATE TABLE reporting.report_category (
     report_category_id uuid NOT NULL,
     abbreviation character varying(32) NOT NULL,
@@ -65,6 +108,10 @@ CREATE TABLE reporting.report_category (
     created_on timestamp NOT NULL,
     description character varying(32) NOT NULL
 );
+
+--
+-- Name: report_parameter; Type: TABLE; Schema: reporting; Owner: dbtest; Tablespace: 
+--
 
 CREATE TABLE reporting.report_parameter (
     report_parameter_id uuid NOT NULL,
@@ -79,6 +126,10 @@ CREATE TABLE reporting.report_parameter (
     widget_id uuid NOT NULL
 );
 
+--
+-- Name: report_version; Type: TABLE; Schema: reporting; Owner: dbtest; Tablespace: 
+--
+
 CREATE TABLE reporting.report_version (
     report_version_id uuid NOT NULL,
     active boolean NOT NULL,
@@ -89,6 +140,10 @@ CREATE TABLE reporting.report_version (
     report_id uuid NOT NULL
 );
 
+--
+-- Name: role; Type: TABLE; Schema: reporting; Owner: dbtest; Tablespace: 
+--
+
 CREATE TABLE reporting.role (
     role_id uuid NOT NULL,
     created_on timestamp NOT NULL,
@@ -98,6 +153,10 @@ CREATE TABLE reporting.role (
     username character varying(32) NOT NULL
 );
 
+--
+-- Name: role_parameter_value; Type: TABLE; Schema: reporting; Owner: dbtest; Tablespace: 
+--
+
 CREATE TABLE reporting.role_parameter_value (
     role_parameter_value_id uuid NOT NULL,
     created_on timestamp NOT NULL,
@@ -106,6 +165,10 @@ CREATE TABLE reporting.role_parameter_value (
     role_id uuid NOT NULL
 );
 
+--
+-- Name: role_report; Type: TABLE; Schema: reporting; Owner: dbtest; Tablespace: 
+--
+
 CREATE TABLE reporting.role_report (
     role_report_id uuid NOT NULL,
     created_on timestamp NOT NULL,
@@ -113,12 +176,20 @@ CREATE TABLE reporting.role_report (
     role_id uuid NOT NULL
 );
 
+--
+-- Name: role_role; Type: TABLE; Schema: reporting; Owner: dbtest; Tablespace: 
+--
+
 CREATE TABLE reporting.role_role (
     role_role_id uuid NOT NULL,
     created_on timestamp NOT NULL,
     child_role_id uuid NOT NULL,
     parent_role_id uuid NOT NULL
 );
+
+--
+-- Name: subscription; Type: TABLE; Schema: reporting; Owner: dbtest; Tablespace: 
+--
 
 CREATE TABLE reporting.subscription (
     subscription_id uuid NOT NULL,
@@ -131,6 +202,10 @@ CREATE TABLE reporting.subscription (
     report_version_id uuid NOT NULL,
     role_id uuid NOT NULL
 );
+
+--
+-- Name: subscription_parameter_value; Type: TABLE; Schema: reporting; Owner: dbtest; Tablespace: 
+--
 
 CREATE TABLE reporting.subscription_parameter_value (
     subscription_parameter_value_id uuid NOT NULL,
@@ -151,6 +226,10 @@ CREATE TABLE reporting.subscription_parameter_value (
     subscription_id uuid NOT NULL
 );
 
+--
+-- Name: widget; Type: TABLE; Schema: reporting; Owner: dbtest; Tablespace: 
+--
+
 CREATE TABLE reporting.widget (
     widget_id uuid NOT NULL,
     active boolean NOT NULL,
@@ -159,6 +238,13 @@ CREATE TABLE reporting.widget (
     multiple_select boolean NOT NULL,
     name character varying(32) NOT NULL
 );
+
+--
+-- Name: configuration_pkey; Type: CONSTRAINT; Schema: reporting; Owner: dbtest; Tablespace: 
+--
+
+ALTER TABLE reporting.configuration
+    ADD CONSTRAINT configuration_pkey PRIMARY KEY (configuration_id);
 
 
 --
@@ -258,6 +344,14 @@ ALTER TABLE reporting.subscription
 
 
 --
+-- Name: uc_configuration_paramname_role; Type: CONSTRAINT; Schema: reporting; Owner: dbtest; Tablespace: 
+--
+
+ALTER TABLE reporting.configuration
+    ADD CONSTRAINT uc_configuration_paramname_role UNIQUE (param_name, role_id);
+
+
+--
 -- Name: uc_jobparametervalue_job_parameter_value; Type: CONSTRAINT; Schema: reporting; Owner: dbtest; Tablespace: 
 --
 
@@ -266,11 +360,11 @@ ALTER TABLE reporting.job_parameter_value
 
 
 --
--- Name: uc_report_parameter_order_index; Type: CONSTRAINT; Schema: reporting; Owner: dbtest; Tablespace: 
+-- Name: uc_reportparameter_reportversion_orderindex; Type: CONSTRAINT; Schema: reporting; Owner: dbtest; Tablespace: 
 --
 
 ALTER TABLE reporting.report_parameter
-    ADD CONSTRAINT uc_report_parameter_order_index UNIQUE (report_version_id, order_index);
+    ADD CONSTRAINT uc_reportparameter_reportversion_orderindex UNIQUE (report_version_id, order_index);
 
 
 --
@@ -278,7 +372,15 @@ ALTER TABLE reporting.report_parameter
 --
 
 ALTER TABLE reporting.report_version
-    ADD CONSTRAINT uc_reportversion_report_versioncode UNIQUE (report_id, version_code, version_name);
+    ADD CONSTRAINT uc_reportversion_report_versioncode UNIQUE (report_id, version_code);
+
+
+--
+-- Name: uc_reportversion_report_versionname; Type: CONSTRAINT; Schema: reporting; Owner: dbtest; Tablespace: 
+--
+
+ALTER TABLE reporting.report_version
+    ADD CONSTRAINT uc_reportversion_report_versionname UNIQUE (report_id, version_name);
 
 
 --
@@ -319,6 +421,14 @@ ALTER TABLE reporting.role_role
 
 ALTER TABLE reporting.widget
     ADD CONSTRAINT widget_pkey PRIMARY KEY (widget_id);
+
+
+--
+-- Name: fk_configuration_role; Type: FK CONSTRAINT; Schema: reporting; Owner: dbtest
+--
+
+ALTER TABLE reporting.configuration
+    ADD CONSTRAINT fk_configuration_role FOREIGN KEY (role_id) REFERENCES role(role_id);
 
 
 --
@@ -383,14 +493,6 @@ ALTER TABLE reporting.report_parameter
 
 ALTER TABLE reporting.report_parameter
     ADD CONSTRAINT fk_reportparameter_report FOREIGN KEY (report_version_id) REFERENCES report_version(report_version_id);
-
-
---
--- Name: fk_reportparameter_subscription; Type: FK CONSTRAINT; Schema: reporting; Owner: dbtest
---
-
-ALTER TABLE reporting.subscription_parameter_value
-    ADD CONSTRAINT fk_reportparameter_subscription FOREIGN KEY (subscription_id) REFERENCES subscription(subscription_id);
 
 
 --
@@ -466,11 +568,11 @@ ALTER TABLE reporting.subscription
 
 
 --
--- Name: fk_subscription_report; Type: FK CONSTRAINT; Schema: reporting; Owner: dbtest
+-- Name: fk_subscription_reportversion; Type: FK CONSTRAINT; Schema: reporting; Owner: dbtest
 --
 
 ALTER TABLE reporting.subscription
-    ADD CONSTRAINT fk_subscription_report FOREIGN KEY (report_version_id) REFERENCES report_version(report_version_id);
+    ADD CONSTRAINT fk_subscription_reportversion FOREIGN KEY (report_version_id) REFERENCES report_version(report_version_id);
 
 
 --
@@ -487,3 +589,11 @@ ALTER TABLE reporting.subscription
 
 ALTER TABLE reporting.subscription_parameter_value
     ADD CONSTRAINT fk_subscriptionparametervalue_reportparameter FOREIGN KEY (report_parameter_id) REFERENCES report_parameter(report_parameter_id);
+
+
+--
+-- Name: fk_subscriptionparametervalue_subscription; Type: FK CONSTRAINT; Schema: reporting; Owner: dbtest
+--
+
+ALTER TABLE reporting.subscription_parameter_value
+    ADD CONSTRAINT fk_subscriptionparametervalue_subscription FOREIGN KEY (subscription_id) REFERENCES subscription(subscription_id);
