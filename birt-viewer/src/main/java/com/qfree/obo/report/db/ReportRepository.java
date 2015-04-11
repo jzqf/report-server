@@ -16,7 +16,7 @@ import com.qfree.obo.report.domain.Report;
  * @author Jeffrey Zelt
  */
 public interface ReportRepository extends JpaRepository<Report, UUID>, ReportRepositoryCustom {
-  
+
 	List<Report> findByReportCategoryReportCategoryId(UUID reportCategoryId);
-  
+
 }

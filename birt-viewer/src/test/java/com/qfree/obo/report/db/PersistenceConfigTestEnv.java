@@ -133,20 +133,20 @@ public class PersistenceConfigTestEnv {
 		return properties;
 	}
 
-  @Configuration
-  @EnableTransactionManagement
-  public static class TransactionConfig {
+	@Configuration
+	@EnableTransactionManagement
+	public static class TransactionConfig {
 
-    @Inject
-    private EntityManagerFactory emf;
+		@Inject
+		private EntityManagerFactory emf;
 
-    @Bean
-    public PlatformTransactionManager transactionManager() {
-      JpaTransactionManager transactionManager = new JpaTransactionManager();
-      transactionManager.setEntityManagerFactory(emf);
-      return transactionManager;
-    }    
-  }
+		@Bean
+		public PlatformTransactionManager transactionManager() {
+			JpaTransactionManager transactionManager = new JpaTransactionManager();
+			transactionManager.setEntityManagerFactory(emf);
+			return transactionManager;
+		}
+	}
 
 	@Bean
 	public Config config() {

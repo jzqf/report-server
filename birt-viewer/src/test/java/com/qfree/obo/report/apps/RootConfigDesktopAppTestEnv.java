@@ -22,6 +22,8 @@ import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
+import com.qfree.obo.report.configuration.Config;
+
 @Configuration
 @EnableJpaRepositories(basePackages = "com.qfree.obo.report.db")
 @PropertySource("classpath:config.properties")
@@ -118,5 +120,10 @@ public class RootConfigDesktopAppTestEnv {
 			transactionManager.setEntityManagerFactory(emf);
 			return transactionManager;
 		}
+	}
+
+	@Bean
+	public Config config() {
+		return new Config();
 	}
 }

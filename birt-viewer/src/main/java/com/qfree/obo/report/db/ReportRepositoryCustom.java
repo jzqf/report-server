@@ -5,8 +5,8 @@ import java.util.List;
 import com.qfree.obo.report.domain.Report;
 
 /**
- * "Custom" repository interface for {@link Report} persistence.
- *
+ * "Custom" repository interface for {@link Report} persistence.<br>
+ * <br>
  * Only query methods that are implemented in 
  * {@link ReportRepositoryImpl} should be declared here.
  * 
@@ -14,8 +14,8 @@ import com.qfree.obo.report.domain.Report;
  */
 public interface ReportRepositoryCustom {
 
-  List<Report> findRecentlyCreated();
+	List<Report> findRecentlyCreated();
 
-  List<Report> findRecentlyCreated(int count);
+	List<Report> findRecentlyCreated(int count);
 
 }

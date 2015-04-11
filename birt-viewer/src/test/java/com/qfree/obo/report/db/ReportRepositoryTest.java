@@ -59,7 +59,7 @@ public class ReportRepositoryTest {
 		//			List<Report> recent = reportRepository.findRecentlyCreated();
 		//			assertRecent(recent, 10);
 		//		}
-		
+
 		// specific count case
 		{
 			List<Report> recent = reportRepository.findRecentlyCreated(4);
@@ -105,7 +105,7 @@ public class ReportRepositoryTest {
 				.findByReportCategoryReportCategoryId(uuidOf1stReportCategoryRow);
 		assertEquals(3, reports.size());
 	}
-	
+
 	@Test
 	@Transactional
 	public void save() {
@@ -150,18 +150,18 @@ public class ReportRepositoryTest {
 		assertNull(reportRepository.findOne(uuidOfReport02));
 		assertEquals(4, reportCategoryRepository.count());
 	}
-	
+
 	private void assertRecent(List<Report> recent, int count) {
 		assertEquals(count, recent.size());
 		for (int i = 0; i < count; i++) {
 			assertTrue(recentReportIds.contains(recent.get(i).getReportId()));
 		}
 	}
-	
+
 	//	private void assertNewReport(Report report) {
 	//		assertEquals(16, report.getReportId().longValue());
 	//	}
-	
+
 	private static List<UUID> recentReportIds;
 
 	@BeforeClass

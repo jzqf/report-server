@@ -39,16 +39,16 @@ public class ConfigurationRepositoryTest {
 	/*
 	 * Default values (role_id = null) in the test [configuration] records.
 	 */
-	private static final Boolean TEST_BOOLEAN_DEFAULT_VALUE=true;
-	private static final byte[] TEST_BYTEARRAY_DEFAULT_VALUE=null;
+	private static final Boolean TEST_BOOLEAN_DEFAULT_VALUE = true;
+	private static final byte[] TEST_BYTEARRAY_DEFAULT_VALUE = null;
 	private static final Date TEST_DATE_DEFAULT_VALUE = new GregorianCalendar(1958, 4, 6).getTime();
 	private static final Date TEST_DATETIME_DEFAULT_VALUE = new GregorianCalendar(2008, 10, 29, 01, 0, 0).getTime();
 	private static final Double TEST_DOUBLE_DEFAULT_VALUE = 299792458.467;
-	private static final Float TEST_FLOAT_DEFAULT_VALUE=3.14159F;
-	private static final Integer TEST_INTEGER_DEFAULT_VALUE=42;
+	private static final Float TEST_FLOAT_DEFAULT_VALUE = 3.14159F;
+	private static final Integer TEST_INTEGER_DEFAULT_VALUE = 42;
 	private static final Long TEST_LONG_DEFAULT_VALUE = 1234567890L;
-	private static final String TEST_STRING_DEFAULT_VALUE="Meaning of life";
-	private static final String TEST_TEXT_DEFAULT_VALUE="Meaning of life - really";
+	private static final String TEST_STRING_DEFAULT_VALUE = "Meaning of life";
+	private static final String TEST_TEXT_DEFAULT_VALUE = "Meaning of life - really";
 	// The year, month and day here are arbitrary and used only to construct a Date.
 	private static final Date TEST_TIME_DEFAULT_VALUE = new GregorianCalendar(2000, 0, 1, 16, 17, 18).getTime();
 	private static final LocalTime TEST_TIME_DEFAULT_VALUE_JODA = new LocalTime(TEST_TIME_DEFAULT_VALUE);
