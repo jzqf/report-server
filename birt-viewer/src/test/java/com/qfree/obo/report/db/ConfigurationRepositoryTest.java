@@ -34,7 +34,7 @@ public class ConfigurationRepositoryTest {
 
 	private static final Logger logger = LoggerFactory.getLogger(ConfigurationRepositoryTest.class);
 
-	private static final long NUM_TEST_CONFIGURATIONS = 20L;  // number of test [configuration] records
+	private static final long NUM_TEST_CONFIGURATIONS = 22L;  // number of test [configuration] records
 
 	/*
 	 * Default values (role_id = null) in the test [configuration] records.
@@ -46,6 +46,7 @@ public class ConfigurationRepositoryTest {
 	private static final Double TEST_DOUBLE_DEFAULT_VALUE = 299792458.467;
 	private static final Float TEST_FLOAT_DEFAULT_VALUE=3.14159F;
 	private static final Integer TEST_INTEGER_DEFAULT_VALUE=42;
+	private static final Long TEST_LONG_DEFAULT_VALUE = 1234567890L;
 	private static final String TEST_STRING_DEFAULT_VALUE="Meaning of life";
 	private static final String TEST_TEXT_DEFAULT_VALUE="Meaning of life - really";
 	// The year, month and day here are arbitrary and used only to construct a Date.
@@ -61,6 +62,7 @@ public class ConfigurationRepositoryTest {
 	private static final Double TEST_DOUBLE_ROLE_aabb_VALUE = 1.618033988749;
 	private static final Float TEST_FLOAT_ROLE_aabb_VALUE = 2.71828F;
 	private static final Integer TEST_INTEGER_ROLE_aabb_VALUE = 666;
+	private static final Long TEST_LONG_ROLE_aabb_VALUE = 9876543210L;
 	private static final String TEST_STRING_ROLE_aabb_VALUE = "Yada yada";
 	private static final String TEST_TEXT_ROLE_aabb_VALUE = "Yada yada yada yada";
 	// The year, month and day here are arbitrary and used only to construct a Date.
@@ -259,9 +261,6 @@ public class ConfigurationRepositoryTest {
 		Configuration defaultDateValueConfiguration = configurationRepository
 				.findOne(uuidOfDefaultDateValueConfiguration);
 		assertThat(defaultDateValueConfiguration, is(not(nullValue())));
-		//		System.out.println("defaultDateValueConfiguration.getDateValue() = "
-		//				+ defaultDateValueConfiguration.getDateValue());
-		//		System.out.println("TEST_DATE_DEFAULT_VALUE = " + TEST_DATE_DEFAULT_VALUE);
 		/*
 		 * TEST_DATE_DEFAULT_VALUE has time zone information, but the 
 		 * datetime from the Configuration does not. In order to compare the 
@@ -298,11 +297,28 @@ public class ConfigurationRepositoryTest {
 		assertThat(dateValueObject, is(instanceOf(Date.class)));
 		Date dateFromConfig = (Date) dateValueObject;
 		assertThat(dateFromConfig, is(not(nullValue())));
+
+		/*
+		 * [configuration]date_value contains '1958-05-06' in the database.
+		 * The string value logged here is:
+		 * 
+		 *     1958-05-06
+		 * 
+		 * Note that it does not contain a time portion and nor does it 
+		 * contain a time zone.
+		 */
+		//		logger.info("dateFromConfig = {}", dateFromConfig);
+		/*
+		 * If this changes, it means that dates are being treated differently
+		 * by the database or the ORM:
+		 */
+		assertThat(dateFromConfig.toString(), is("1958-05-06"));
+
 		Calendar calendar = new GregorianCalendar();
 		calendar.setTime(dateFromConfig);
 		Date dateWithTimeZone = calendar.getTime();
 		assertThat(dateWithTimeZone, is(equalTo(TEST_DATE_DEFAULT_VALUE)));
-		//		assertThat((Date) dateValueObject, is(TEST_INTEGER_DEFAULT_VALUE));
+		//		assertThat((Date) dateValueObject, is(TEST_DATE_DEFAULT_VALUE));
 	}
 
 	/*
@@ -353,7 +369,7 @@ public class ConfigurationRepositoryTest {
 		calendar.setTime(dateFromConfig);
 		Date dateWithTimeZone = calendar.getTime();
 		assertThat(dateWithTimeZone, is(equalTo(TEST_DATE_DEFAULT_VALUE)));
-		//		assertThat((Date) dateValueObject, is(TEST_INTEGER_DEFAULT_VALUE));
+		//		assertThat((Date) dateValueObject, is(TEST_DATE_DEFAULT_VALUE));
 	}
 
 	/*
@@ -665,6 +681,20 @@ public class ConfigurationRepositoryTest {
 		Object datetimeValueDefaultObject = config.get(ParamName.TEST_DATETIME);
 		assertThat(datetimeValueDefaultObject, is(instanceOf(Date.class)));
 		datetimeFromConfig = (Date) datetimeValueDefaultObject;
+
+		/*
+		 * [configuration]datetime_value contains '2008-11-29T01:00:00' in the 
+		 * database. The string value logged here is:
+		 * 
+		 *     2008-11-29 01:00:00.0
+		 */
+		//		logger.info("datetimeFromConfig = {}", datetimeFromConfig);
+		/*
+		 * If this changes, it means that dates are being treated differently
+		 * by the database or the ORM:
+		 */
+		assertThat(datetimeFromConfig.toString(), is("2008-11-29 01:00:00.0"));
+
 		assertThat(datetimeFromConfig, is(not(nullValue())));
 		calendar = new GregorianCalendar();
 		calendar.setTime(datetimeFromConfig);
@@ -1173,6 +1203,173 @@ public class ConfigurationRepositoryTest {
 		assertThat((Integer) integerValueDefaultObject, is(TEST_INTEGER_DEFAULT_VALUE));
 	}
 
+	// ======================== Long parameter tests ========================
+
+	@Test
+	@Transactional
+	public void longValueExistsDefault() {
+		UUID uuidOfDefaultLongValueConfiguration = UUID.fromString("334051cf-bea6-47d9-8bac-1b7c314ae985");
+		Configuration defaultLongValueConfiguration = configurationRepository
+				.findOne(uuidOfDefaultLongValueConfiguration);
+		assertThat(defaultLongValueConfiguration, is(not(nullValue())));
+		assertThat(defaultLongValueConfiguration.getLongValue(), is(TEST_LONG_DEFAULT_VALUE));
+	}
+
+	@Test
+	@Transactional
+	public void longValueFetchDefault() {
+		//		Configuration configuration = configurationRepository.findByParamName(ParamName.TEST_LONG.toString());
+		Configuration configuration = configurationRepository.findByParamName(ParamName.TEST_LONG);
+		assertThat(configuration, is(not(nullValue())));
+		Long longValue = configuration.getLongValue();
+		assertThat(longValue, is(not(nullValue())));
+		assertThat(longValue, is(TEST_LONG_DEFAULT_VALUE));
+	}
+
+	@Test
+	@Transactional
+	public void longValueFetchDefaultFromConfig() {
+		Object longValueObject = config.get(ParamName.TEST_LONG);
+		assertThat(longValueObject, is(instanceOf(Long.class)));
+		assertThat((Long) longValueObject, is(TEST_LONG_DEFAULT_VALUE));
+	}
+
+	/*
+	 * Get role-specific long value for a parameter that has both a default 
+	 * (Role==null) Configuration, and a role-specific value. This should
+	 * fetch the role-specific value.
+	 */
+	@Test
+	@Transactional
+	public void longValueGetRoleSpecificWithConfig() {
+		/*
+		 * Role "aabb" has a role-specific value for the TEST_LONG parameter.
+		 */
+		UUID uuidOfRole_aabb = UUID.fromString("ee56f34d-dbb4-41c1-9d30-ce29cf973820");
+		Role role_aabb = roleRepository.findOne(uuidOfRole_aabb);
+		assertThat(role_aabb, is(notNullValue()));
+		/*
+		 * Fetch the role-specific value for the TEST_LONG parameter for Role 
+		 * "aabb".
+		 */
+		Object longValueObject = config.get(ParamName.TEST_LONG, role_aabb);
+		assertThat(longValueObject, is(instanceOf(Long.class)));
+		assertThat((Long) longValueObject, is(TEST_LONG_ROLE_aabb_VALUE));
+	}
+
+	@Test
+	@Transactional
+	public void longValueFetchNonexistentRoleSpecificFromConfig() {
+		UUID uuidOfRole_bcbc = UUID.fromString("e918c8aa-c6d1-462c-9e91-f1db0fb9f346");
+		Role role_bcbc = roleRepository.findOne(uuidOfRole_bcbc);
+		assertThat(role_bcbc, is(notNullValue()));
+		/*
+		 * There is a default value for ParamName.TEST_LONG, but no
+		 * role-specific value for Role "bcbc".
+		 */
+		Object longValueObject = config.get(ParamName.TEST_LONG, role_bcbc);
+		assertThat(longValueObject, is(instanceOf(Long.class)));
+		assertThat((Long) longValueObject, is(TEST_LONG_DEFAULT_VALUE));
+	}
+
+	/*
+	 * Set default long value for a parameter that already has a default 
+	 * (Role==null) Configuration. This should update the existing Configuration
+	 * entity to store this new value.
+	 */
+	@Test
+	@Transactional
+	public void longValueSetDefaultWithConfig() {
+		assertThat(configurationRepository.count(), is(NUM_TEST_CONFIGURATIONS));
+		/*
+		 * Retrieve the existing default value.
+		 */
+		Object longValueDefaultObject = config.get(ParamName.TEST_LONG);
+		assertThat(longValueDefaultObject, is(instanceOf(Long.class)));
+		assertThat((Long) longValueDefaultObject, is(TEST_LONG_DEFAULT_VALUE));
+		/*
+		 * Update default value.
+		 */
+		Long newLongValue = 246801357901234L;
+		config.set(ParamName.TEST_LONG, newLongValue);
+		/*
+		 * The existing Configuration should have been updated, so there should
+		 * be the same number of entities in the database
+		 */
+		assertThat(configurationRepository.count(), is(NUM_TEST_CONFIGURATIONS));
+		/* 
+		 * Retrieve value just set.
+		 */
+		Object longValueNewDefaultObject = config.get(ParamName.TEST_LONG);
+		assertThat(longValueNewDefaultObject, is(instanceOf(Long.class)));
+		assertThat((Long) longValueNewDefaultObject, is(newLongValue));
+	}
+
+	/*
+	 * Set role-specific long value for a parameter that has a default 
+	 * (Role==null) Configuration, but no role-specific value. This should
+	 * create a new Configuration entity to store this value.
+	 */
+	@Test
+	@Transactional
+	public void longValueSetRoleSpecificWithConfig() {
+		assertThat(configurationRepository.count(), is(NUM_TEST_CONFIGURATIONS));
+
+		UUID uuidOfRole_bcbc = UUID.fromString("e918c8aa-c6d1-462c-9e91-f1db0fb9f346");
+		Role role_bcbc = roleRepository.findOne(uuidOfRole_bcbc);
+		assertThat(role_bcbc, is(notNullValue()));
+		/*
+		 * There is a default value for ParamName.TEST_LONG, but no
+		 * role-specific value for Role "bcbc".
+		 */
+		Object longValueObject = config.get(ParamName.TEST_LONG, role_bcbc);
+		assertThat(longValueObject, is(instanceOf(Long.class)));
+		assertThat((Long) longValueObject, is(TEST_LONG_DEFAULT_VALUE));
+
+		/*
+		 * Set role-specific value, which should override the default value for
+		 * the specified role.
+		 */
+		Long newLongValue = 246801357901234L;
+		config.set(ParamName.TEST_LONG, newLongValue, role_bcbc);
+		/*
+		 * This should have created a new Configuration.
+		 */
+		assertThat(configurationRepository.count(), is(NUM_TEST_CONFIGURATIONS + 1));
+		/*
+		 * Retrieve value just set. The new value should override the default.
+		 */
+		Object longValueRoleSpecificObject = config.get(ParamName.TEST_LONG, role_bcbc);
+		assertThat(longValueRoleSpecificObject, is(instanceOf(Long.class)));
+		assertThat((Long) longValueRoleSpecificObject, is(newLongValue));
+
+		/*
+		 * Update the role-specific value. This should override the default 
+		 * value for the specified role and RE-USE the new role-specific
+		 * Configuration just created, i.e., not create a new Configuration
+		 */
+		newLongValue = 666666666666L;
+		config.set(ParamName.TEST_LONG, newLongValue, role_bcbc);
+		/*
+		 * This should have re-used the Configuration just created.
+		 */
+		assertThat(configurationRepository.count(), is(NUM_TEST_CONFIGURATIONS + 1));
+		/*
+		 * Retrieve value just set. The new value should override the default.
+		 */
+		longValueRoleSpecificObject = config.get(ParamName.TEST_LONG, role_bcbc);
+		assertThat(longValueRoleSpecificObject, is(instanceOf(Long.class)));
+		assertThat((Long) longValueRoleSpecificObject, is(newLongValue));
+
+		/*
+		 * The default value for ParamName.TEST_LONG should still be the
+		 * same.
+		 */
+		Object longValueDefaultObject = config.get(ParamName.TEST_LONG);
+		assertThat(longValueDefaultObject, is(instanceOf(Long.class)));
+		assertThat((Long) longValueDefaultObject, is(TEST_LONG_DEFAULT_VALUE));
+	}
+
 	// ======================== String parameter tests =========================
 
 	@Test
@@ -1614,6 +1811,20 @@ public class ConfigurationRepositoryTest {
 		Object timeValueObject = config.get(ParamName.TEST_TIME);
 		assertThat(timeValueObject, is(instanceOf(Date.class)));
 		Date timeFromConfig = (Date) timeValueObject;
+
+		/*
+		 * [configuration]time_value contains '16:17:18' in the database. The 
+		 * string value logged here is:
+		 * 
+		 *     16:17:18
+		 */
+		//		logger.info("timeFromConfig = {}", timeFromConfig);
+		/*
+		 * If this changes, it means that dates are being treated differently
+		 * by the database or the ORM:
+		 */
+		assertThat(timeFromConfig.toString(), is("16:17:18"));
+
 		assertThat(timeFromConfig, is(not(nullValue())));
 
 		/*

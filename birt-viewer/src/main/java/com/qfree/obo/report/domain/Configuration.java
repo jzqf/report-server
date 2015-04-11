@@ -100,6 +100,9 @@ public class Configuration implements Serializable {
 	@Column(name = "integer_value", nullable = true)
 	private Integer integerValue;
 
+	@Column(name = "long_value", nullable = true)
+	private Long longValue;
+
 	@Column(name = "string_value", nullable = true, length = 1000)
 	private String stringValue;
 
@@ -223,6 +226,14 @@ public class Configuration implements Serializable {
 
 	public void setIntegerValue(Integer integerValue) {
 		this.integerValue = integerValue;
+	}
+
+	public Long getLongValue() {
+		return longValue;
+	}
+
+	public void setLongValue(Long longValue) {
+		this.longValue = longValue;
 	}
 
 	public String getStringValue() {

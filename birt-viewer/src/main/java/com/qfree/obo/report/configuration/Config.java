@@ -34,6 +34,7 @@ public class Config {
 		TEST_DOUBLE(ParamType.DOUBLE),
 		TEST_FLOAT(ParamType.FLOAT),
 		TEST_INTEGER(ParamType.INTEGER),
+		TEST_LONG(ParamType.LONG),
 		TEST_STRING(ParamType.STRING),
 		TEST_TEXT(ParamType.TEXT),
 		TEST_TIME(ParamType.TIME),
@@ -68,6 +69,7 @@ public class Config {
 		DOUBLE,
 		FLOAT,
 		INTEGER,
+		LONG,
 		STRING,
 		TEXT,
 		TIME
@@ -131,6 +133,9 @@ public class Config {
 				break;
 			case INTEGER:
 				object = configuration.getIntegerValue();
+				break;
+			case LONG:
+				object = configuration.getLongValue();
 				break;
 			case STRING:
 				object = configuration.getStringValue();
@@ -212,6 +217,9 @@ public class Config {
 			break;
 		case INTEGER:
 			configuration.setIntegerValue((Integer) value);
+			break;
+		case LONG:
+			configuration.setLongValue((Long) value);
 			break;
 		case STRING:
 			configuration.setStringValue((String) value);
