@@ -43,12 +43,6 @@ public class JobRepositoryTest {
 	@Autowired
 	DocumentFormatRepository documentFormatRepository;
 
-	//	@Autowired
-	//	ReportParameterRepository reportParameterRepository;
-	//
-	//	@Autowired
-	//	ParameterTypeRepository parameterTypeRepository;
-
 	@Test
 	@Transactional
 	public void count() {
@@ -83,14 +77,8 @@ public class JobRepositoryTest {
 		Role role_aabb = roleRepository.findOne(uuidOfRole_aabb);
 		assertThat(role_aabb, is(notNullValue()));
 
-		//		Job unsavedJob = new Job(report04, role_aabb);
 		Job unsavedJob = new Job(report04Version01, role_aabb, pdfFormat);
-		//		logger.info("unsavedJob = {}", unsavedJob);
-
 		Job savedJob = jobRepository.save(unsavedJob);
-		//		logger.info("savedJob = {}", savedJob);
-		//		logger.info("savedJob.getjobId() = {}", savedJob.getJobId());
-		//		logger.info("After save: unsavedJob.getJobId() = {}", unsavedJob.getJobId());
 
 		assertEquals(3, jobRepository.count());
 

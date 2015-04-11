@@ -100,7 +100,6 @@ public class ConfigurationRepositoryTest {
 	@Test
 	@Transactional
 	public void booleanValueFetchDefault() {
-		//		Configuration configuration = configurationRepository.findByParamName(ParamName.TEST_BOOLEAN.toString());
 		Configuration configuration = configurationRepository.findByParamName(ParamName.TEST_BOOLEAN);
 		assertThat(configuration, is(not(nullValue())));
 		Boolean booleanValue = configuration.getBooleanValue();
@@ -273,13 +272,11 @@ public class ConfigurationRepositoryTest {
 		calendar.setTime(dateFromConfig);
 		Date dateWithTimeZone = calendar.getTime();
 		assertThat(dateWithTimeZone, is(equalTo(TEST_DATE_DEFAULT_VALUE)));
-		//		assertThat(defaultDateValueConfiguration.getDateValue(), is(equalTo(TEST_DATE_DEFAULT_VALUE)));
 	}
 
 	@Test
 	@Transactional
 	public void dateValueFetchDefault() {
-		//		Configuration configuration = configurationRepository.findByParamName(ParamName.TEST_DATE.toString());
 		Configuration configuration = configurationRepository.findByParamName(ParamName.TEST_DATE);
 		assertThat(configuration, is(not(nullValue())));
 		Date dateFromConfig = configuration.getDateValue();
@@ -318,7 +315,6 @@ public class ConfigurationRepositoryTest {
 		calendar.setTime(dateFromConfig);
 		Date dateWithTimeZone = calendar.getTime();
 		assertThat(dateWithTimeZone, is(equalTo(TEST_DATE_DEFAULT_VALUE)));
-		//		assertThat((Date) dateValueObject, is(TEST_DATE_DEFAULT_VALUE));
 	}
 
 	/*
@@ -369,7 +365,6 @@ public class ConfigurationRepositoryTest {
 		calendar.setTime(dateFromConfig);
 		Date dateWithTimeZone = calendar.getTime();
 		assertThat(dateWithTimeZone, is(equalTo(TEST_DATE_DEFAULT_VALUE)));
-		//		assertThat((Date) dateValueObject, is(TEST_DATE_DEFAULT_VALUE));
 	}
 
 	/*
@@ -392,7 +387,6 @@ public class ConfigurationRepositoryTest {
 		calendar.setTime(dateFromConfig);
 		Date dateWithTimeZone = calendar.getTime();
 		assertThat(dateWithTimeZone, is(equalTo(TEST_DATE_DEFAULT_VALUE)));
-		//		assertThat((Date) dateValueObject, is(TEST_DATE_DEFAULT_VALUE));
 		/*
 		 * Update default value.
 		 */
@@ -441,7 +435,6 @@ public class ConfigurationRepositoryTest {
 		calendar.setTime(dateFromConfig);
 		Date dateWithTimeZone = calendar.getTime();
 		assertThat(dateWithTimeZone, is(equalTo(TEST_DATE_DEFAULT_VALUE)));
-		//		assertThat((Date) dateValueObject, is(TEST_DATE_DEFAULT_VALUE));
 
 		/*
 		 * Set role-specific value, which should override the default value for
@@ -464,7 +457,6 @@ public class ConfigurationRepositoryTest {
 		calendarUpdated.setTime(dateFromRoleSpecific);
 		Date dateWithTimeZoneUpdated = calendarUpdated.getTime();
 		assertThat(dateWithTimeZoneUpdated, is(equalTo(newDateValue)));
-		//		assertThat((Date) dateValueRoleSpecificObject, is(newDateValue));
 
 		/*
 		 * Update the role-specific value. This should override the default 
@@ -488,7 +480,6 @@ public class ConfigurationRepositoryTest {
 		calendarUpdated.setTime(dateFromRoleSpecific);
 		dateWithTimeZoneUpdated = calendarUpdated.getTime();
 		assertThat(dateWithTimeZoneUpdated, is(equalTo(newDateValue)));
-		//		assertThat((Date) dateValueRoleSpecificObject, is(newDateValue));
 
 		/*
 		 * The default value for ParamName.TEST_DATE should still be the
@@ -513,9 +504,6 @@ public class ConfigurationRepositoryTest {
 		Configuration defaultDatetimeValueConfiguration = configurationRepository
 				.findOne(uuidOfDefaultDatetimeValueConfiguration);
 		assertThat(defaultDatetimeValueConfiguration, is(not(nullValue())));
-		//		System.out.println("defaultDatetimeValueConfiguration.getDatetimeValue() = "
-		//				+ defaultDatetimeValueConfiguration.getDatetimeValue());
-		//		System.out.println("TEST_DATETIME_DEFAULT_VALUE = " + TEST_DATETIME_DEFAULT_VALUE);
 		/*
 		 * TEST_DATETIME_DEFAULT_VALUE has time zone information, but the 
 		 * datetime from the Configuration does not. In order to compare the 
@@ -528,7 +516,6 @@ public class ConfigurationRepositoryTest {
 		calendar.setTime(datetimeFromConfig);
 		Date dateWithTimeZone = calendar.getTime();
 		assertThat(dateWithTimeZone, is(equalTo(TEST_DATETIME_DEFAULT_VALUE)));
-		//		assertThat(defaultDatetimeValueConfiguration.getDatetimeValue(), is(equalTo(TEST_DATETIME_DEFAULT_VALUE)));
 	}
 
 	/*
@@ -717,7 +704,6 @@ public class ConfigurationRepositoryTest {
 	@Test
 	@Transactional
 	public void doubleValueFetchDefault() {
-		//		Configuration configuration = configurationRepository.findByParamName(ParamName.TEST_DOUBLE.toString());
 		Configuration configuration = configurationRepository.findByParamName(ParamName.TEST_DOUBLE);
 		assertThat(configuration, is(not(nullValue())));
 		Double doubleValue = configuration.getDoubleValue();
@@ -884,7 +870,6 @@ public class ConfigurationRepositoryTest {
 	@Test
 	@Transactional
 	public void floatValueFetchDefault() {
-		//		Configuration configuration = configurationRepository.findByParamName(ParamName.TEST_FLOAT.toString());
 		Configuration configuration = configurationRepository.findByParamName(ParamName.TEST_FLOAT);
 		assertThat(configuration, is(not(nullValue())));
 		Float floatValue = configuration.getFloatValue();
@@ -1051,7 +1036,6 @@ public class ConfigurationRepositoryTest {
 	@Test
 	@Transactional
 	public void integerValueFetchDefault() {
-		//		Configuration configuration = configurationRepository.findByParamName(ParamName.TEST_INTEGER.toString());
 		Configuration configuration = configurationRepository.findByParamName(ParamName.TEST_INTEGER);
 		assertThat(configuration, is(not(nullValue())));
 		Integer integerValue = configuration.getIntegerValue();
@@ -1218,7 +1202,6 @@ public class ConfigurationRepositoryTest {
 	@Test
 	@Transactional
 	public void longValueFetchDefault() {
-		//		Configuration configuration = configurationRepository.findByParamName(ParamName.TEST_LONG.toString());
 		Configuration configuration = configurationRepository.findByParamName(ParamName.TEST_LONG);
 		assertThat(configuration, is(not(nullValue())));
 		Long longValue = configuration.getLongValue();
@@ -1385,21 +1368,12 @@ public class ConfigurationRepositoryTest {
 	@Test
 	@Transactional
 	public void stringValueFetchDefault() {
-		//		Configuration configuration = configurationRepository.findByParamName(ParamName.TEST_STRING.toString());
 		Configuration configuration = configurationRepository.findByParamName(ParamName.TEST_STRING);
 		assertThat(configuration, is(not(nullValue())));
 		String stringValue = configuration.getStringValue();
 		assertThat(stringValue, is(not(nullValue())));
 		assertThat(stringValue, is(TEST_STRING_DEFAULT_VALUE));
 	}
-
-	//	@Test
-	//	@Transactional
-	//	public void stringValueFetchDefaultFromConfig() {
-	//		Object stringValueObject = Config.get(ParamName.TEST_STRING);
-	//		assertThat(stringValueObject, is(instanceOf(String.class)));
-	//		assertThat((String) stringValueObject, is(TEST_STRING_DEFAULT_VALUE));
-	//	}
 
 	@Test
 	@Transactional
@@ -1585,7 +1559,6 @@ public class ConfigurationRepositoryTest {
 	@Test
 	@Transactional
 	public void textValueFetchDefault() {
-		//		Configuration configuration = configurationRepository.findByParamName(ParamName.TEST_TEXT.toString());
 		Configuration configuration = configurationRepository.findByParamName(ParamName.TEST_TEXT);
 		assertThat(configuration, is(not(nullValue())));
 		String textValue = configuration.getTextValue();

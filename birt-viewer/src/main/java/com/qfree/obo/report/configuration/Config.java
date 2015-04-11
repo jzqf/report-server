@@ -43,7 +43,7 @@ public class Config {
 		 * data created by .../test-data.sql. This allows it to be used for unit
 		 * tests related to configuration parameters that have not been set.
 		 */
-		TEST_NOTSET(ParamType.STRING);//TODO CREATE TEST CASE THAT READS AND SETS THIS PARAMETER!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!1
+		TEST_NOTSET(ParamType.STRING);
 
 		private ParamType paramType;
 
@@ -101,8 +101,6 @@ public class Config {
 			 * role=null. This will not work set comments where this query is
 			 * defined in ConfigurationRepository.
 			 */
-			//			Configuration configuration = configurationRepository.findByParamName(ParamName.TEST_STRING
-			//					.toString());
 			configuration = configurationRepository.findByParamName(paramName);
 		}
 
@@ -183,18 +181,9 @@ public class Config {
 			 */
 			configuration = configurationRepository.findByParamName(paramName, role);
 		}
-		logger.info("After findByParamName: configuration={}", configuration);
 		if (configuration == null) {
-			logger.info("Creating new Configuration");
 			configuration = new Configuration(paramName, role);
-		} else {
-			logger.info(
-					"After findByParamName: paramName={}, value={}, role={}, configuration={}, configuration.getConfigurationId()={}",
-					paramName, value, role, configuration, configuration.getConfigurationId());
 		}
-		logger.info(
-				"Before setStringValue: paramName={}, value={}, role={}, configuration={}, configuration.getConfigurationId()={}",
-				paramName, value, role, configuration, configuration.getConfigurationId());
 
 		switch (paramName.paramType()) {
 		case BOOLEAN:
@@ -259,13 +248,6 @@ public class Config {
 			}
 		}
 
-		logger.info(
-				"After  setStringValue: paramName={}, value={}, role={}, configuration={}, configuration.getConfigurationId()={}",
-				paramName, value, role, configuration, configuration.getConfigurationId());
 		configurationRepository.save(configuration);
-		logger.info(
-				"After save           : paramName={}, value={}, role={}, configuration={}, configuration.getConfigurationId()={}",
-				paramName, value, role, configuration, configuration.getConfigurationId());
-		//TODO Write me!  Set string_value always!
 	}
 }

@@ -68,12 +68,10 @@ public class Configuration implements Serializable {
 	private Role role;
 
 	@Column(name = "param_name", nullable = false, length = 64)
-	//	private String paramName;
 	@Enumerated(EnumType.STRING)
 	private ParamName paramName;
 
 	@Column(name = "param_type", nullable = false, length = 16)
-	//	private String paramType;
 	@Enumerated(EnumType.STRING)
 	private ParamType paramType;
 
@@ -147,14 +145,6 @@ public class Configuration implements Serializable {
 	public void setRole(Role role) {
 		this.role = role;
 	}
-
-	//	public String getParamName() {
-	//		return paramName;
-	//	}
-	//
-	//	public void setParamName(String paramName) {
-	//		this.paramName = paramName;
-	//	}
 
 	public ParamName getParamName() {
 		return paramName;
