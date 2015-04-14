@@ -98,12 +98,12 @@ public class Job implements Serializable {
 	private List<JobParameterValue> jobParameterValues;
 
 	/**
-	 * The URL used to request the report from the report server.<br>
-	 * <br>
+	 * The URL used to request the report from the report server.
+	 * <p>
 	 * This will include the name of the rptdesign document from the report 
 	 * server's file system, the document format (&__format=...) and other
-	 * details.<br>
-	 * <br>
+	 * details.
+	 * <p>
 	 * If this {@link Job} is created for a Subscription, it will include query 
 	 * parameters for all of the report parameters. If this report is run 
 	 * manually, the user will be prompted for the report parameter values when 
@@ -114,8 +114,8 @@ public class Job implements Serializable {
 
 	/**
 	 * The name of the file to generate from the document stored in 
-	 * {@link #document}.<br>
-	 * <br>
+	 * {@link #document}.
+	 * <p>
 	 * This includes the file extension, but no path 
 	 * information. This will normally be generated automatically from the 
 	 * report number, name, version and document format (for the extension).
@@ -125,12 +125,12 @@ public class Job implements Serializable {
 
 	/**
 	 * The response from the report server returned for a request for a 
-	 * report.<br>
-	 * <br>
+	 * report.
+	 * <p>
 	 * This is Base64-encoded if the response represents a binary document
 	 * format. This can be determined by checking the value of 
-	 * {@link #encoded}.<br>
-	 * <br>
+	 * {@link #encoded}.
+	 * <p>
 	 * If this {@link Job} is created for a Subscription, the decoded value of 
 	 * this field is delivered to the recipient's e-mail address as an 
 	 * attachment.

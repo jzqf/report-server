@@ -1,9 +1,19 @@
 package com.qfree.obo.report.rest.server;
 
 import javax.ws.rs.ApplicationPath;
-import javax.ws.rs.core.Application;
+
+import org.glassfish.jersey.server.ResourceConfig;
 
 @ApplicationPath("/rest")
-public class JAXRSConfiguration extends Application {
-
+public class JAXRSConfiguration extends ResourceConfig {
+	public JAXRSConfiguration() {
+		/*
+		 * TODO Decide whether to register *packages* here (not type-safe) or *classes* (type-safe and refactor-safe, but more tedious).
+		 */
+		packages("com.qfree.obo.report.rest.server");
+		//		register(TestController.class);
+	}
 }
+//public class JAXRSConfiguration extends Application {
+//
+//}

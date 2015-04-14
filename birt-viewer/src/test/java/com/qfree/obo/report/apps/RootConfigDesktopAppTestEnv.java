@@ -126,4 +126,14 @@ public class RootConfigDesktopAppTestEnv {
 	public Config config() {
 		return new Config();
 	}
+
+	//	@Bean
+	//	public HttpServer httpServer() {
+	//		URI baseUri = UriBuilder.fromUri("http://localhost/").port(9998).build();
+	//		ResourceConfig config = new JAXRSConfiguration();
+	//		HttpServer server = GrizzlyHttpServerFactory.createHttpServer(baseUri, config);
+	//		//		server.shutdownNow();
+	//		return server;
+	//	}
+
 }

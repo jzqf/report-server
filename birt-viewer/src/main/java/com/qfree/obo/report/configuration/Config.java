@@ -11,6 +11,12 @@ import com.qfree.obo.report.db.ConfigurationRepository;
 import com.qfree.obo.report.domain.Configuration;
 import com.qfree.obo.report.domain.Role;
 
+/*
+ * TODO If this class is annotated with @Component and picked up by Spring 
+ * component scanning, remove the bean definition for this class from all 
+ * Javaconfig @Configuration classes; otherwise, the bean could be defined 
+ * twice, which is decidedly bad. Just search all files for "return new Config()".
+ */
 public class Config {
 
 	private static final Logger logger = LoggerFactory.getLogger(Config.class);
@@ -75,10 +81,12 @@ public class Config {
 		TIME
 	}
 
+	@Transactional(readOnly = true)
 	public Object get(ParamName paramName) {
 		return get(paramName, null);
 	}
 
+	@Transactional(readOnly = true)
 	public Object get(ParamName paramName, Role role) {
 		/*
 		 * First look for role-specific value if a Role is specified.

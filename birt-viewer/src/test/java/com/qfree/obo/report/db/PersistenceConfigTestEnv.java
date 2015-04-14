@@ -153,4 +153,9 @@ public class PersistenceConfigTestEnv {
 		return new Config();
 	}
 
+	//	@Bean
+	//	public TestController testController() {
+	//		return new TestController();
+	//	}
+
 }
