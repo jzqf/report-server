@@ -46,24 +46,23 @@ public class TestControllerTest {
 	//		 * 
 	//		 * http://stackoverflow.com/questions/10607168/unit-testing-with-spring-and-the-jersey-test-framework
 	//		 */
-	//		rc.register(SpringLifecycleListener.class); // org.glassfish.jersey.server.spring.SpringLifecycleListener
-	//		rc.register(RequestContextFilter.class);    // org.glassfish.jersey.server.spring.scope.RequestContextFilter
+	//		//		rc.register(SpringLifecycleListener.class); // org.glassfish.jersey.server.spring.SpringLifecycleListener
+	//		//		rc.register(RequestContextFilter.class);    // org.glassfish.jersey.server.spring.scope.RequestContextFilter
 	//		//		rc.register(ContextLoaderListener.class);
 	//		//		rc.property("contextConfigLocation", "");
-	//		rc.property("contextConfigLocation", "classpath:XXXapplicationContext.xml");
+	//		//		rc.property("contextConfigLocation", "classpath:XXXapplicationContext.xml");
 	//		//		rc.property("contextClass", "org.springframework.web.context.support.AnnotationConfigWebApplicationContext");
 	//		//		rc.property("contextConfigLocation", "com.qfree.obo.report.db.PersistenceConfigTestEnv");//TODO Derive this from the class object PersistenceConfigTestEnv.class!
 	//		//		rc.property("javax.ws.rs.Application", "com.qfree.obo.report.rest.server.JAXRSConfiguration");
-	//		rc.register(TestController.class);
-	//		rc.register(Config.class);
+	//		//		rc.register(TestController.class);
+	//		//		rc.register(Config.class);
 	//		//		rc.registerInstances(config);
-	//		rc.packages("com.qfree.obo.report.configuration");
+	//		//		rc.packages("com.qfree.obo.report.configuration");
 	//		//				.property(
 	//		//						"contextConfigLocation",
 	//		//						"classpath:applicationContext.xml"
 	//		//				);
 	//		return rc;
-	//
 	//
 	//		//		ApplicationContext context = new AnnotationConfigApplicationContext(PersistenceConfigTestEnv.class);
 	//		//		logger.info("Created ApplicationContext context.");
@@ -79,19 +78,20 @@ public class TestControllerTest {
 	//
 	//		//		return new ResourceConfig(TestController.class);
 	//		//			return new JAXRSConfiguration(TestController.class);
+	//		return new ResourceConfig(TestController.class);
 	//	}
 
 	@Test
 	@Ignore
 	public void testGetTest() {
-//		logger.info("Enter method.");
-//		//		//		final Response response = target("set/add").request(MediaType.APPLICATION_JSON_TYPE).get();
-//		final Response response = target("test").request(MediaType.TEXT_PLAIN).get();
-//		String responseString = response.readEntity(String.class);
-//		logger.info("responseString = {}", responseString);
-//		//		//		assertEquals(Response.Status.METHOD_NOT_ALLOWED.getStatusCode(), response.getStatus());
-//		//
-//		assertThat(responseString, is("/test"));
+		logger.info("Enter method.");
+		//		//		//		final Response response = target("set/add").request(MediaType.APPLICATION_JSON_TYPE).get();
+		//		final Response response = target("test").request(MediaType.TEXT_PLAIN).get();
+		//		String responseString = response.readEntity(String.class);
+		//		logger.info("responseString = {}", responseString);
+		//		//		//		assertEquals(Response.Status.METHOD_NOT_ALLOWED.getStatusCode(), response.getStatus());
+		//		//
+		//		assertThat(responseString, is("/test"));
 	}
 
 	//	/**
