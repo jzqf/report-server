@@ -12,12 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.qfree.obo.report.configuration.Config;
 import com.qfree.obo.report.configuration.Config.ParamName;
 
-/*
- * TODO If I use a @Controller or @Component annotation here and pick up this controller by Spring component scanning:
- *     1. Create a marker interface and add it to the @ComponentScan annotation of the appropriate @Configuration classes.
- *     2. Check whether it is still necessary to register this class in JAXRSConfiguration.
- */
-//@Controller
 @Path("/test")
 public class TestController {
 

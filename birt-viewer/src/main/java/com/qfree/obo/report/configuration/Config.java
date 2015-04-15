@@ -5,18 +5,14 @@ import java.util.Date;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.qfree.obo.report.db.ConfigurationRepository;
 import com.qfree.obo.report.domain.Configuration;
 import com.qfree.obo.report.domain.Role;
 
-/*
- * TODO If this class is annotated with @Component and picked up by Spring 
- * component scanning, remove the bean definition for this class from all 
- * Javaconfig @Configuration classes; otherwise, the bean could be defined 
- * twice, which is decidedly bad. Just search all files for "return new Config()".
- */
+@Component
 public class Config {
 
 	private static final Logger logger = LoggerFactory.getLogger(Config.class);

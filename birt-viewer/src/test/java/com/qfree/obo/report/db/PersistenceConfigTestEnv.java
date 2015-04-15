@@ -11,6 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
@@ -26,9 +27,11 @@ import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
-import com.qfree.obo.report.configuration.Config;
-
 @Configuration
+@ComponentScan(basePackageClasses = {
+		com.qfree.obo.report.rest.server.ComponentScanPackageMarker.class,
+		com.qfree.obo.report.configuration.ComponentScanPackageMarker.class,
+})
 @EnableJpaRepositories(basePackages = "com.qfree.obo.report.db")
 @PropertySource("classpath:config.properties")
 //This is for *multiple* properties files (Spring 4+). The @PropertySource 
@@ -147,15 +150,5 @@ public class PersistenceConfigTestEnv {
 			return transactionManager;
 		}
 	}
-
-	@Bean
-	public Config config() {
-		return new Config();
-	}
-
-	//	@Bean
-	//	public TestController testController() {
-	//		return new TestController();
-	//	}
 
 }
