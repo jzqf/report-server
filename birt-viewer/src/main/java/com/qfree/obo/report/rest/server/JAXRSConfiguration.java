@@ -12,8 +12,8 @@ public class JAXRSConfiguration extends ResourceConfig {
 		/*
 		 * TODO Decide whether to register *packages* here (not type-safe) or *classes* (type-safe and refactor-safe, but more tedious).
 		 */
-		packages("com.qfree.obo.report.rest.server");
-		//		register(TestController.class);
+		//		packages("com.qfree.obo.report.rest.server");
+		register(TestController.class);
 	}
 }
 //public class JAXRSConfiguration extends Application {

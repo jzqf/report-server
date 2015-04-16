@@ -60,12 +60,12 @@
 		  requirements on attribute versions, and if you don'yt get them right,
 		  strange exceptions will be thrown with no useful explanation to debug
 		  the problem. This version of Spring Boot is defined by the property 
-		  "spring.boot.version" in reporting-master/pom.xml.
+		  "spring-boot.version" in reporting-master/pom.xml.
 		  
 		  The procedure for updating the version of Spring Boot used by this 
 		  application is:
 		  
-			1. Update "spring.boot.version" in reporting-master/pom.xml.
+			1. Update "spring-boot.version" in reporting-master/pom.xml.
 			
 			2. Browse through the URL above, but for the new Spring Boot version
 			   number. Ensure that all version numbers defined by properties in
@@ -262,27 +262,40 @@
 			<!-- <version>${spring.data.jpa.version}</version> -->
 		</dependency>
 
-	   <!-- <dependency>
+		<!-- Spring Boot -->
+		<dependency>
 			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-web</artifactId>
+			<artifactId>spring-boot-starter-jersey</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-actuator</artifactId>
+			<artifactId>spring-boot-starter-tomcat</artifactId>
+			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-maven-plugin</artifactId>
-			<version>1.2.3.RELEASE</version>
-			<type>maven-plugin</type>
-		</dependency> -->
-
-		<!-- Testing -->
-		<!-- <dependency>
+			<artifactId>spring-boot-starter-actuator</artifactId>
+		</dependency>
+		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
-		</dependency> -->
+		</dependency>
+
+
+
+
+<!-- <dependency>
+	<groupId>org.aspectj</groupId>
+	<artifactId>aspectjweaver</artifactId>
+	<version>1.8.5</version>
+</dependency>
+ -->
+
+
+
+
+		<!-- Testing -->
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-test</artifactId>
@@ -386,6 +399,11 @@
 					<attachClasses>true</attachClasses>
 				</configuration>
 			</plugin>
+
+			<!-- <plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+			</plugin> -->
 
 			<!-- <plugin>
 				<groupId>org.apache.maven.plugins</groupId>

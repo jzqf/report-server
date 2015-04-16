@@ -2,6 +2,8 @@ package com.qfree.obo.report.apps;
 
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
+import com.qfree.obo.report.db.PersistenceConfigTestEnv;
+
 public class CreateCloseApplicationContextTestEnv {
 
 	/**
@@ -11,7 +13,8 @@ public class CreateCloseApplicationContextTestEnv {
 	 */
 	public static void main(String[] args) throws Exception {
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(
-				RootConfigDesktopAppTestEnv.class);
+				PersistenceConfigTestEnv.class);
+		//		RootConfigDesktopAppTestEnv.class);
 
 		//		URI baseUri = UriBuilder.fromUri("http://localhost/").port(9998).build();
 		//		ResourceConfig config = new JAXRSConfiguration();

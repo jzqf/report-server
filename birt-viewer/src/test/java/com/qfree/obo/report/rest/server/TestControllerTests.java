@@ -1,11 +1,14 @@
 package com.qfree.obo.report.rest.server;
 
-import org.junit.Ignore;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.test.context.ContextConfiguration;
+import org.springframework.boot.test.SpringApplicationConfiguration;
+import org.springframework.boot.test.WebIntegrationTest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import com.qfree.obo.report.db.PersistenceConfigTestEnv;
@@ -16,11 +19,35 @@ import com.qfree.obo.report.db.PersistenceConfigTestEnv;
  *
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = PersistenceConfigTestEnv.class)
+//@ContextConfiguration(classes = PersistenceConfigTestEnv.class)
+@SpringApplicationConfiguration(classes = PersistenceConfigTestEnv.class)
+//@SpringApplicationConfiguration(classes = SampleJerseyApplication.class)
+//@SpringApplicationConfiguration(classes = { PersistenceConfigTestEnv.class, SampleJerseyApplication.class })
+@WebIntegrationTest("server.port=0")
 //public class TestControllerTest extends JerseyTest {
-public class TestControllerTest {
+public class TestControllerTests {
 
-	private static final Logger logger = LoggerFactory.getLogger(TestControllerTest.class);
+	private static final Logger logger = LoggerFactory.getLogger(TestControllerTests.class);
+
+	//	@Autowired
+	//	TestController testController;
+
+	//	@Value("${local.server.port}")
+	//	private int port;
+
+	@Test
+	public void testGetTest() {
+		//		logger.info("port = {}", port);
+		//		logger.info("testController = {}", testController);
+		//		//		//		final Response response = target("set/add").request(MediaType.APPLICATION_JSON_TYPE).get();
+		//		final Response response = target("test").request(MediaType.TEXT_PLAIN).get();
+		//		String responseString = response.readEntity(String.class);
+		//		logger.info("responseString = {}", responseString);
+		//		//		//		assertEquals(Response.Status.METHOD_NOT_ALLOWED.getStatusCode(), response.getStatus());
+		//		//
+		//		assertThat(responseString, is("/test"));
+		assertThat("xxx", is("xxx"));
+	}
 
 	//	@Autowired
 	//	Config config;
@@ -80,19 +107,6 @@ public class TestControllerTest {
 	//		//			return new JAXRSConfiguration(TestController.class);
 	//		return new ResourceConfig(TestController.class);
 	//	}
-
-	@Test
-	@Ignore
-	public void testGetTest() {
-		logger.info("Enter method.");
-		//		//		//		final Response response = target("set/add").request(MediaType.APPLICATION_JSON_TYPE).get();
-		//		final Response response = target("test").request(MediaType.TEXT_PLAIN).get();
-		//		String responseString = response.readEntity(String.class);
-		//		logger.info("responseString = {}", responseString);
-		//		//		//		assertEquals(Response.Status.METHOD_NOT_ALLOWED.getStatusCode(), response.getStatus());
-		//		//
-		//		assertThat(responseString, is("/test"));
-	}
 
 	//	/**
 	//	 * Makes multiple calls to {@link SetResource#addSingle(javax.ws.rs.core.UriInfo, String)} and checks that the
