@@ -83,6 +83,9 @@
 			   comments that explain they were copied from that POM file.
 		-->
 		<jersey.version>2.14</jersey.version>
+		
+		<!-- The main class to start by executing java -jar -->
+		<start-class>com.qfree.obo.report.spring.config.RootConfig</start-class>
 	</properties>
 	
 	<dependencies>
@@ -282,19 +285,6 @@
 			<scope>test</scope>
 		</dependency>
 
-
-
-
-<!-- <dependency>
-	<groupId>org.aspectj</groupId>
-	<artifactId>aspectjweaver</artifactId>
-	<version>1.8.5</version>
-</dependency>
- -->
-
-
-
-
 		<!-- Testing -->
 		<dependency>
 			<groupId>org.springframework</groupId>
@@ -400,10 +390,10 @@
 				</configuration>
 			</plugin>
 
-			<!-- <plugin>
+			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
-			</plugin> -->
+			</plugin>
 
 			<!-- <plugin>
 				<groupId>org.apache.maven.plugins</groupId>

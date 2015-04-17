@@ -14,7 +14,7 @@ public class CreateCloseApplicationContextTestEnv {
 	public static void main(String[] args) throws Exception {
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(
 				PersistenceConfigTestEnv.class);
-		//		RootConfigDesktopAppTestEnv.class);
+		//				RootConfigDesktopAppTestEnv.class);
 
 		//		URI baseUri = UriBuilder.fromUri("http://localhost/").port(9998).build();
 		//		ResourceConfig config = new JAXRSConfiguration();

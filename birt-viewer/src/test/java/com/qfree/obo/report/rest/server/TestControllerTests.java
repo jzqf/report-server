@@ -3,13 +3,23 @@ package com.qfree.obo.report.rest.server;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
+import javax.ws.rs.client.Client;
+import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+
+import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.boot.test.WebIntegrationTest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.qfree.obo.report.db.PersistenceConfigTestEnv;
 
@@ -21,36 +31,63 @@ import com.qfree.obo.report.db.PersistenceConfigTestEnv;
 @RunWith(SpringJUnit4ClassRunner.class)
 //@ContextConfiguration(classes = PersistenceConfigTestEnv.class)
 @SpringApplicationConfiguration(classes = PersistenceConfigTestEnv.class)
-//@SpringApplicationConfiguration(classes = SampleJerseyApplication.class)
-//@SpringApplicationConfiguration(classes = { PersistenceConfigTestEnv.class, SampleJerseyApplication.class })
 @WebIntegrationTest("server.port=0")
 //public class TestControllerTest extends JerseyTest {
 public class TestControllerTests {
 
 	private static final Logger logger = LoggerFactory.getLogger(TestControllerTests.class);
 
-	//	@Autowired
-	//	TestController testController;
+	@Value("${local.server.port}")
+	private int port;
 
-	//	@Value("${local.server.port}")
-	//	private int port;
+	private static Client client = null;
+	private WebTarget webTarget = null;
 
-	@Test
-	public void testGetTest() {
-		//		logger.info("port = {}", port);
-		//		logger.info("testController = {}", testController);
-		//		//		//		final Response response = target("set/add").request(MediaType.APPLICATION_JSON_TYPE).get();
-		//		final Response response = target("test").request(MediaType.TEXT_PLAIN).get();
-		//		String responseString = response.readEntity(String.class);
-		//		logger.info("responseString = {}", responseString);
-		//		//		//		assertEquals(Response.Status.METHOD_NOT_ALLOWED.getStatusCode(), response.getStatus());
-		//		//
-		//		assertThat(responseString, is("/test"));
-		assertThat("xxx", is("xxx"));
+	@BeforeClass
+	public static void setUpBeforeClass() {
+		System.out.println("@BeforeClass: Setting up JAX-RS Client...");
+		client = ClientBuilder.newBuilder()
+				//	.register(JsonProcessingFeature.class)
+				//	.property(JsonGenerator.PRETTY_PRINTING, true)
+				.build();
 	}
 
-	//	@Autowired
-	//	Config config;
+	@Before
+	public void setUp() {
+		/*
+		 * This WebTarget can be used below in each test to derive a target that
+		 * is specific to a particular resource associated with the test. This
+		 * cannot go in @BeforeClass method because that is a static method and
+		 * "port" is an instance variable.
+		 */
+		this.webTarget = client.target("http://localhost:" + port + "/rest");
+	}
+
+	@Test
+	//	@Ignore
+	@Transactional
+	public void testGetTest() {
+		Response response = webTarget
+				.path("test")
+				.request(MediaType.TEXT_PLAIN_TYPE)
+				//	.request(MediaType.APPLICATION_JSON_TYPE);
+				//	.header("some-header", "some-value");
+				.get();
+		assertThat(response.getStatus(), is(Response.Status.OK.getStatusCode()));
+		assertThat(response.readEntity(String.class), is("/test"));
+	}
+
+	@Test
+	//	@Ignore
+	@Transactional
+	public void testGetTestStringParamDefault() {
+		Response response = webTarget
+				.path("test/string_param_default")
+				.request(MediaType.TEXT_PLAIN_TYPE)
+				.get();
+		assertThat(response.getStatus(), is(Response.Status.OK.getStatusCode()));
+		assertThat(response.readEntity(String.class), is("Default value for ParamName.TEST_STRING"));
+	}
 
 	//	/**
 	//	 * Used to specify the format expected for the return type of the add call.

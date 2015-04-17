@@ -10,8 +10,10 @@ import org.apache.commons.dbcp2.BasicDataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.context.embedded.EmbeddedServletContainerFactory;
-import org.springframework.boot.context.embedded.tomcat.TomcatEmbeddedServletContainerFactory;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.aop.AopAutoConfiguration;
+import org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -30,7 +32,65 @@ import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 @Configuration
-//@EnableAutoConfiguration(exclude = MongoAutoConfiguration.class)
+/*
+ * Auto-configuration note 1:
+ * 
+ * The "org.eclipse.birt.runtime:viewservlets" Maven artifact used in this 
+ * project includes MongoDB dependencies (probably in order to support MongoDB 
+ * data sources). This seems to trigger Spring Boot's auto-configuration 
+ * mechanism to try to set up MongoDB support which fails because there are no 
+ * appropriate MongoDB Maven dependencies. In order to fix this problem, MongoDB
+ * auto-configuration is explicitly excluded here.
+ * 
+ * Auto-configuration note 2:
+ * 
+ * The "org.springframework.data:spring-data-jpa" Maven artifact used in this 
+ * project includes a dependency for the "org.aspectj:aspectjrt" Maven artifact.
+ * This seems to trigger Spring Boot's auto-configuration mechanism to try to 
+ * set up AOP support which fails because there are missing Maven dependencies. 
+ * There are three fixes for this problem (only one needs to be implemented):
+ * 
+ *   1. Explicitly exclude AOP auto-configuration. This is the approach used 
+ *      here.
+ *      
+ *   2. Add an extra Maven dependency to this project. The following seems to
+ *      work:
+ *   
+ *		<dependency>
+ *			<groupId>org.aspectj</groupId>
+ *			<artifactId>aspectjweaver</artifactId>
+ *			<version>1.8.5</version>
+ *		</dependency>
+ *
+ *      It is unsatisfying to solve the problem this way because this may cease
+ *      to solve the problem in the future. Therefore, this solution was 
+ *      rejected.
+ *   
+ *   3. Add an exclusion for the existing 
+ *      "org.springframework.data:spring-data-jpa" Maven artifact used in this 
+ *      project:
+ *   
+ *		<dependency>
+ *			<groupId>org.springframework.data</groupId>
+ *			<artifactId>spring-data-jpa</artifactId>
+ *			<exclusions>
+ *				<exclusion>
+ *					<groupId>org.aspectj</groupId>
+ *					<artifactId>aspectjrt</artifactId>
+ *				</exclusion>
+ *			</exclusions>
+ *		</dependency>
+ *
+ *      As with solution #2, it is unsatisfying to solve the problem this way 
+ *      because this may cease to solve the problem in the future. Therefore, 
+ *      this solution was also rejected.
+ */
+@EnableAutoConfiguration(exclude = { MongoAutoConfiguration.class, AopAutoConfiguration.class
+		//		AuditAutoConfiguration.class,
+		//		DataSourceAutoConfiguration.class, DataSourceTransactionManagerAutoConfiguration.class,
+		//		HibernateJpaAutoConfiguration.class,
+		//		JpaRepositoriesAutoConfiguration.class 
+})
 @ComponentScan(basePackageClasses = {
 		com.qfree.obo.report.rest.server.ComponentScanPackageMarker.class,
 		com.qfree.obo.report.configuration.ComponentScanPackageMarker.class,
@@ -154,13 +214,17 @@ public class PersistenceConfigTestEnv {
 		}
 	}
 
-	@Bean
-	public EmbeddedServletContainerFactory servletContainer() {
-		TomcatEmbeddedServletContainerFactory factory = new TomcatEmbeddedServletContainerFactory();
-		//		factory.setPort(9000);
-		//		factory.setSessionTimeout(10, TimeUnit.MINUTES);
-		//		factory.addErrorPages(new ErrorPage(HttpStatus.NOT_FOUND, "/notfound.html"));
-		return factory;
+	//	@Bean
+	//	public EmbeddedServletContainerFactory servletContainer() {
+	//		TomcatEmbeddedServletContainerFactory factory = new TomcatEmbeddedServletContainerFactory();
+	//		//		factory.setPort(9000);
+	//		//		factory.setSessionTimeout(10, TimeUnit.MINUTES);
+	//		//		factory.addErrorPages(new ErrorPage(HttpStatus.NOT_FOUND, "/notfound.html"));
+	//		return factory;
+	//	}
+
+	public static void main(String[] args) {
+		SpringApplication.run(PersistenceConfigTestEnv.class, args);
 	}
 
 }

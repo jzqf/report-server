@@ -42,8 +42,7 @@ public class TestController {
 			stringParam = (String) stringValueDefaultObject;
 		}
 		logger.info("apiVersion = {}", apiVersion);
-		logger.info("config = {}", config);
-		return "Default value for TEST_STRING configuration parameter = \"" + stringParam + "\"";
+		return stringParam;
 	}
 
 	@GET
@@ -51,6 +50,7 @@ public class TestController {
 	@Produces("text/plain")
 	public String state(@HeaderParam("Accept") String acceptHeader) {
 		String apiVersion = ReST.extractAPIVersion(acceptHeader);
+		logger.info("apiVersion = {}", apiVersion);
 		return "/test/state";
 	}
 
