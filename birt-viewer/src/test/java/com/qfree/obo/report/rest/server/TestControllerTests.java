@@ -18,6 +18,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.boot.test.WebIntegrationTest;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.annotation.DirtiesContext.ClassMode;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,10 +31,19 @@ import com.qfree.obo.report.db.PersistenceConfigTestEnv;
  *
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-//@ContextConfiguration(classes = PersistenceConfigTestEnv.class)
 @SpringApplicationConfiguration(classes = PersistenceConfigTestEnv.class)
 @WebIntegrationTest("server.port=0")
-//public class TestControllerTest extends JerseyTest {
+/*
+ * These integration tests can modify the test database via the ReST call via
+ * the HTTP connection to the embedded server that receives the request. They
+ * may "dirty" trhe application context in other ways as well. This causes
+ * other unit/integration tests in other test classes to fail when using an H2
+ * embedded database. The @DirtiesContext annotation here tells Spring to reset 
+ * the application context after all tests in the class. In addition, 
+ * @DirtiesContext on each test method resets the application context after each
+ * test.
+ */
+@DirtiesContext(classMode = ClassMode.AFTER_CLASS)
 public class TestControllerTests {
 
 	private static final Logger logger = LoggerFactory.getLogger(TestControllerTests.class);
@@ -65,6 +76,7 @@ public class TestControllerTests {
 
 	@Test
 	//	@Ignore
+	//	@DirtiesContext
 	@Transactional
 	public void testGetTest() {
 		Response response = webTarget
@@ -79,6 +91,7 @@ public class TestControllerTests {
 
 	@Test
 	//	@Ignore
+	@DirtiesContext
 	@Transactional
 	public void testGetTestStringParamDefault() {
 		Response response = webTarget

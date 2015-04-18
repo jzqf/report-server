@@ -85,11 +85,33 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
  *      because this may cease to solve the problem in the future. Therefore, 
  *      this solution was also rejected.
  */
-@EnableAutoConfiguration(exclude = { MongoAutoConfiguration.class, AopAutoConfiguration.class
+@EnableAutoConfiguration(exclude = { MongoAutoConfiguration.class, AopAutoConfiguration.class,
 		//		AuditAutoConfiguration.class,
-		//		DataSourceAutoConfiguration.class, DataSourceTransactionManagerAutoConfiguration.class,
+		//		DataSourceAutoConfiguration.class,
+		//		DataSourceTransactionManagerAutoConfiguration.class,
+		//		//EmbeddedServletContainerAutoConfiguration.class, REQUIRED
+		//		EndpointAutoConfiguration.class,
+		//		EndpointMBeanExportAutoConfiguration.class,
+		//		HealthIndicatorAutoConfiguration.class,
 		//		HibernateJpaAutoConfiguration.class,
-		//		JpaRepositoriesAutoConfiguration.class 
+		//		HttpEncodingAutoConfiguration.class,
+		//		HttpMessageConvertersAutoConfiguration.class,
+		//		JacksonAutoConfiguration.class,
+		//		//JerseyAutoConfiguration.class,                   REQUIRED
+		//		JmxAutoConfiguration.class,
+		//		JpaBaseConfiguration.class,
+		//		JtaAutoConfiguration.class,
+		//		ManagementServerPropertiesAutoConfiguration.class,
+		//		MetricRepositoryAutoConfiguration.class,
+		//		MultipartAutoConfiguration.class,
+		//		PersistenceExceptionTranslationAutoConfiguration.class,
+		//		//PropertyPlaceholderAutoConfiguration.class,      REQUIRED for "${local.server.port}", ...
+		//		PublicMetricsAutoConfiguration.class,
+		//		ServerPropertiesAutoConfiguration.class,
+		//		TraceRepositoryAutoConfiguration.class,
+		//		WebSocketAutoConfiguration.class,
+		//		// Not matched:
+		//		JpaRepositoriesAutoConfiguration.class
 })
 @ComponentScan(basePackageClasses = {
 		com.qfree.obo.report.rest.server.ComponentScanPackageMarker.class,
