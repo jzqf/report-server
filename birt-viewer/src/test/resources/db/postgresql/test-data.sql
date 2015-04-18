@@ -64,6 +64,8 @@ insert into reporting.report_version (report_version_id, report_id, rptdesign, v
 -- 'Report name #06' version 1:
 insert into reporting.report_version (report_version_id, report_id, rptdesign, version_name, version_code, active, created_on) VALUES ('d481c452-990c-4ea3-9afa-3ea60cef04ab', 'adc50b28-cb84-4ede-9759-43f467ac22ec', (SELECT rptdesign FROM tmp_rptdesign), '0.5', 1, true, '2015-05-06T15:10:00');
 
+DROP TABLE IF EXISTS tmp_rptdesign;    -- for H2, not PostgreSQL
+
 
 insert into reporting.widget (widget_id, name, description, multiple_select ,active, created_on ) values ('b8e91527-8b0e-4ed2-8cba-8cb8989ba8e2', 'widget #1', 'widget #1 description', false, true, '2015-03-31T02:00:00');
 

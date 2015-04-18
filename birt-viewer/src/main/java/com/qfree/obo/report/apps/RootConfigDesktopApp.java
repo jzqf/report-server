@@ -10,6 +10,9 @@ import org.apache.commons.dbcp2.BasicDataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.aop.AopAutoConfiguration;
+import org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -24,11 +27,17 @@ import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 @Configuration
-@EnableJpaRepositories(basePackages = "com.qfree.obo.report.db")
+@EnableAutoConfiguration(exclude = { MongoAutoConfiguration.class, AopAutoConfiguration.class,
+		// Do not exclude:
+		//	//EmbeddedServletContainerAutoConfiguration.class, REQUIRED
+		//	//JerseyAutoConfiguration.class,                   REQUIRED
+		//	//PropertyPlaceholderAutoConfiguration.class,      REQUIRED for "${local.server.port}", ...
+})
 @ComponentScan(basePackageClasses = {
 		com.qfree.obo.report.rest.server.ComponentScanPackageMarker.class,
 		com.qfree.obo.report.configuration.ComponentScanPackageMarker.class,
 })
+@EnableJpaRepositories(basePackages = "com.qfree.obo.report.db")
 @PropertySource("classpath:config.properties")
 //This is for *multiple* properties files. The @PropertySource elements must be
 //comma-separated:
@@ -70,16 +79,6 @@ public class RootConfigDesktopApp {
 	}
 
 	@Bean
-	public JpaVendorAdapter jpaVendorAdapter() {
-		HibernateJpaVendorAdapter adapter = new HibernateJpaVendorAdapter();
-		//		adapter.setDatabase(Database.H2);
-		//		adapter.setShowSql(true);
-		//		adapter.setGenerateDdl(false);
-		//		adapter.setDatabasePlatform("org.hibernate.dialect.H2Dialect");
-		return adapter;
-	}
-
-	@Bean
 	public LocalContainerEntityManagerFactoryBean
 			entityManagerFactory(DataSource dataSource, JpaVendorAdapter jpaVendorAdapter) {
 		LocalContainerEntityManagerFactoryBean emf = new LocalContainerEntityManagerFactoryBean();
@@ -89,6 +88,16 @@ public class RootConfigDesktopApp {
 		emf.setJpaProperties(additionalProperties());
 		emf.setPackagesToScan("com.qfree.obo.report.domain");
 		return emf;
+	}
+
+	@Bean
+	public JpaVendorAdapter jpaVendorAdapter() {
+		HibernateJpaVendorAdapter adapter = new HibernateJpaVendorAdapter();
+		//		adapter.setDatabase(Database.H2);
+		//		adapter.setShowSql(true);
+		//		adapter.setGenerateDdl(false);
+		//		adapter.setDatabasePlatform("org.hibernate.dialect.H2Dialect");
+		return adapter;
 	}
 
 	Properties additionalProperties() {

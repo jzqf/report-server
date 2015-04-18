@@ -26,7 +26,12 @@ import com.qfree.obo.report.db.PersistenceConfig;
  * container shared by all servlets and filters.
  */
 @Configuration
-@EnableAutoConfiguration(exclude = { MongoAutoConfiguration.class, AopAutoConfiguration.class })
+@EnableAutoConfiguration(exclude = { MongoAutoConfiguration.class, AopAutoConfiguration.class,
+		// Do not exclude:
+		//	//EmbeddedServletContainerAutoConfiguration.class, REQUIRED
+		//	//JerseyAutoConfiguration.class,                   REQUIRED
+		//	//PropertyPlaceholderAutoConfiguration.class,      REQUIRED for "${local.server.port}", ...
+		})
 @ComponentScan(basePackageClasses = {
 		com.qfree.obo.report.rest.server.ComponentScanPackageMarker.class,
 		com.qfree.obo.report.configuration.ComponentScanPackageMarker.class,
@@ -41,7 +46,6 @@ import com.qfree.obo.report.db.PersistenceConfig;
 //@PropertySources({
 //		@PropertySource("classpath:config.properties")
 //})
-//@ComponentScan(basePackageClasses={com.qfree...PackageMarker.class, ...}
 public class RootConfig {
 
 	private static final Logger logger = LoggerFactory.getLogger(RootConfig.class);
