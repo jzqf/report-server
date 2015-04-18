@@ -18,11 +18,11 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.qfree.obo.report.PersistenceConfigTestEnv;
+import com.qfree.obo.report.ApplicationConfig;
 import com.qfree.obo.report.domain.ReportCategory;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = PersistenceConfigTestEnv.class)
+@ContextConfiguration(classes = ApplicationConfig.class)
 public class ReportCategoryRepositoryTests {
 
 	private static final Logger logger = LoggerFactory.getLogger(ReportParameterRepositoryTests.class);

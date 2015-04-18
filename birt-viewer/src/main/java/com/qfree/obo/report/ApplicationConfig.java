@@ -87,14 +87,12 @@ import org.springframework.core.env.Environment;
 		com.qfree.obo.report.rest.server.ComponentScanPackageMarker.class,
 		com.qfree.obo.report.configuration.ComponentScanPackageMarker.class,
 })
-@Import({ DELETEME_PersistenceConfig.class })
-//@Import({ PersistenceConfigTestEnv.class })
+@Import({ PersistenceConfigTestEnv.class })
 @ImportResource("classpath:spring/root-context.xml")
 //@ImportResource("/WEB-INF/spring/root-context.xml")
-// This is for a *single* properties file:
 @PropertySource("classpath:config.properties")
-// This is for *multiple* properties files (Spring 4+). The @PropertySource 
-// elements must be comma-separated:
+//This is for *multiple* properties files. The @PropertySource elements must be
+//comma-separated:
 //@PropertySources({
 //		@PropertySource("classpath:config.properties")
 //})

@@ -23,7 +23,7 @@ import org.springframework.test.annotation.DirtiesContext.ClassMode;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.qfree.obo.report.PersistenceConfigTestEnv;
+import com.qfree.obo.report.ApplicationConfig;
 
 /**
  * 
@@ -31,7 +31,7 @@ import com.qfree.obo.report.PersistenceConfigTestEnv;
  *
  */
 @RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes = PersistenceConfigTestEnv.class)
+@SpringApplicationConfiguration(classes = ApplicationConfig.class)
 @WebIntegrationTest("server.port=0")
 /*
  * These integration tests can modify the test database via the ReST call via

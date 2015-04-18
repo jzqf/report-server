@@ -20,7 +20,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.qfree.obo.report.PersistenceConfigTestEnv;
+import com.qfree.obo.report.ApplicationConfig;
 import com.qfree.obo.report.domain.ParameterType;
 import com.qfree.obo.report.domain.Report;
 import com.qfree.obo.report.domain.ReportParameter;
@@ -28,7 +28,7 @@ import com.qfree.obo.report.domain.ReportVersion;
 import com.qfree.obo.report.domain.Widget;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = PersistenceConfigTestEnv.class)
+@ContextConfiguration(classes = ApplicationConfig.class)
 public class ReportParameterRepositoryTests {
 
 	private static final Logger logger = LoggerFactory.getLogger(ReportParameterRepositoryTests.class);

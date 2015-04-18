@@ -2,7 +2,7 @@ package com.qfree.obo.report.apps;
 
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
-import com.qfree.obo.report.PersistenceConfigTestEnv;
+import com.qfree.obo.report.ApplicationConfig;
 
 public class CreateCloseApplicationContextTestEnv {
 
@@ -13,7 +13,7 @@ public class CreateCloseApplicationContextTestEnv {
 	 */
 	public static void main(String[] args) throws Exception {
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(
-				PersistenceConfigTestEnv.class);
+				ApplicationConfig.class);
 		context.close();
 	}
 
