@@ -2,7 +2,7 @@ package com.qfree.obo.report.apps;
 
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
-import com.qfree.obo.report.spring.config.RootConfig;
+import com.qfree.obo.report.ApplicationConfig;
 
 public class CreateCloseApplicationContext {
 
@@ -12,7 +12,7 @@ public class CreateCloseApplicationContext {
 	 * "hibernate.hbm2ddl.auto" property.
 	 */
 	public static void main(String[] args) throws Exception {
-		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(RootConfig.class);
+		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(ApplicationConfig.class);
 		context.close();
 	}
 

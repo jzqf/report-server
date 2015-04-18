@@ -85,7 +85,7 @@
 		<jersey.version>2.14</jersey.version>
 		
 		<!-- The main class to start by executing java -jar -->
-		<start-class>com.qfree.obo.report.spring.config.RootConfig</start-class>
+		<start-class>com.qfree.obo.report.ApplicationConfig</start-class>
 	</properties>
 	
 	<dependencies>

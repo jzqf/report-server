@@ -1,4 +1,4 @@
-package com.qfree.obo.report.spring.config;
+package com.qfree.obo.report;
 
 //import javax.naming.Context;
 //import javax.naming.InitialContext;
@@ -46,9 +46,9 @@ import com.qfree.obo.report.db.PersistenceConfig;
 //@PropertySources({
 //		@PropertySource("classpath:config.properties")
 //})
-public class RootConfig {
+public class ApplicationConfig {
 
-	private static final Logger logger = LoggerFactory.getLogger(RootConfig.class);
+	private static final Logger logger = LoggerFactory.getLogger(ApplicationConfig.class);
 
 	/*
 	 * The injected "env" object here will contain key/value pairs for each 
@@ -77,23 +77,12 @@ public class RootConfig {
 	//	@Value("${db.jdbc.url}")
 	//	private String jdbcUrl;
 	//
-	//    /**
+	//  /*
 	//	 * This bean must be declared if any beans associated with this Spring
 	//	 * container use {@literal @}Value notation to inject property values stored
 	//	 * in a property file specified with a {@literal @}PropertySource annotation
 	//	 * above. The {@literal @}PropertySource annotation may appear in this
 	//	 * configuration class or in another class processed by this container.
-	//	 * 
-	//	 * Note that each Spring container needs its own
-	//	 * PropertySourcesPlaceholderConfigurer bean if {@literal @}Value is used
-	//	 * with beans/classes defined in that container. For example, we need this
-	//	 * PropertySourcesPlaceholderConfigurerbean if beans created by this
-	//	 * container use {@literal @}Value, but Config.java *also* needs its own
-	//	 * PropertySourcesPlaceholderConfigurer bean for beans/classes that use
-	//	 * {@literal @}Value that are defined in that container, e.g., MVC
-	//	 * controller classes/beans.
-	//	 * 
-	//	 * @return
 	//	 */
 	//	@Bean
 	//	public static PropertySourcesPlaceholderConfigurer
@@ -101,12 +90,10 @@ public class RootConfig {
 	//		return new PropertySourcesPlaceholderConfigurer();
 	//	}
 	//
-	//    /**
+	//    /*
 	//     * This is an alternate way to set up a PropertySourcesPlaceholderConfigurer
 	//     * bean, but here we specify the property files in the bean definition and
 	//     * not in one or more @PropertySource entries above.
-	//     * 
-	//     * @return
 	//     */
 	//	//    @Bean
 	//	//    public static PropertySourcesPlaceholderConfigurer myPropertySourcesPlaceholderConfigurer() {
@@ -120,6 +107,6 @@ public class RootConfig {
 	//	//    }
 
 	public static void main(String[] args) {
-		SpringApplication.run(RootConfig.class, args);
+		SpringApplication.run(ApplicationConfig.class, args);
 	}
 }

@@ -10,7 +10,6 @@ import org.apache.commons.dbcp2.BasicDataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.aop.AopAutoConfiguration;
 import org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration;
@@ -223,8 +222,8 @@ public class PersistenceConfigTestEnv {
 	//		return factory;
 	//	}
 
-	public static void main(String[] args) {
-		SpringApplication.run(PersistenceConfigTestEnv.class, args);
-	}
+	//	public static void main(String[] args) {
+	//		SpringApplication.run(PersistenceConfigTestEnv.class, args);
+	//	}
 
 }
