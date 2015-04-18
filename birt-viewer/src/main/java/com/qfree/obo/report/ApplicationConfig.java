@@ -17,8 +17,6 @@ import org.springframework.context.annotation.ImportResource;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
 
-import com.qfree.obo.report.db.PersistenceConfig;
-
 //import com.borgsoftware.springmvc.spring.web.PropertyTest;
 
 /**
@@ -26,6 +24,59 @@ import com.qfree.obo.report.db.PersistenceConfig;
  * container shared by all servlets and filters.
  */
 @Configuration
+/*
+ * Auto-configuration note 1:
+ * 
+ * The "org.eclipse.birt.runtime:viewservlets" Maven artifact used in this 
+ * project includes MongoDB dependencies (probably in order to support MongoDB 
+ * data sources). This seems to trigger Spring Boot's auto-configuration 
+ * mechanism to try to set up MongoDB support which fails because there are no 
+ * appropriate MongoDB Maven dependencies. In order to fix this problem, MongoDB
+ * auto-configuration is explicitly excluded here.
+ * 
+ * Auto-configuration note 2:
+ * 
+ * The "org.springframework.data:spring-data-jpa" Maven artifact used in this 
+ * project includes a dependency for the "org.aspectj:aspectjrt" Maven artifact.
+ * This seems to trigger Spring Boot's auto-configuration mechanism to try to 
+ * set up AOP support which fails because there are missing Maven dependencies. 
+ * There are three fixes for this problem (only one needs to be implemented):
+ * 
+ *   1. Explicitly exclude AOP auto-configuration. This is the approach used 
+ *      here.
+ *      
+ *   2. Add an extra Maven dependency to this project. The following seems to
+ *      work:
+ *   
+ *		<dependency>
+ *			<groupId>org.aspectj</groupId>
+ *			<artifactId>aspectjweaver</artifactId>
+ *			<version>1.8.5</version>
+ *		</dependency>
+ *
+ *      It is unsatisfying to solve the problem this way because this may cease
+ *      to solve the problem in the future. Therefore, this solution was 
+ *      rejected.
+ *   
+ *   3. Add an exclusion for the existing 
+ *      "org.springframework.data:spring-data-jpa" Maven artifact used in this 
+ *      project:
+ *   
+ *		<dependency>
+ *			<groupId>org.springframework.data</groupId>
+ *			<artifactId>spring-data-jpa</artifactId>
+ *			<exclusions>
+ *				<exclusion>
+ *					<groupId>org.aspectj</groupId>
+ *					<artifactId>aspectjrt</artifactId>
+ *				</exclusion>
+ *			</exclusions>
+ *		</dependency>
+ *
+ *      As with solution #2, it is unsatisfying to solve the problem this way 
+ *      because this may cease to solve the problem in the future. Therefore, 
+ *      this solution was also rejected.
+ */
 @EnableAutoConfiguration(exclude = { MongoAutoConfiguration.class, AopAutoConfiguration.class,
 		// Do not exclude:
 		//	//EmbeddedServletContainerAutoConfiguration.class, REQUIRED
@@ -36,7 +87,8 @@ import com.qfree.obo.report.db.PersistenceConfig;
 		com.qfree.obo.report.rest.server.ComponentScanPackageMarker.class,
 		com.qfree.obo.report.configuration.ComponentScanPackageMarker.class,
 })
-@Import({ PersistenceConfig.class })
+@Import({ DELETEME_PersistenceConfig.class })
+//@Import({ PersistenceConfigTestEnv.class })
 @ImportResource("classpath:spring/root-context.xml")
 //@ImportResource("/WEB-INF/spring/root-context.xml")
 // This is for a *single* properties file:

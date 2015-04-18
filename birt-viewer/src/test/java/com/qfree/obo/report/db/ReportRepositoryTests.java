@@ -28,6 +28,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.qfree.obo.report.PersistenceConfigTestEnv;
 import com.qfree.obo.report.domain.Report;
 import com.qfree.obo.report.domain.ReportCategory;
 

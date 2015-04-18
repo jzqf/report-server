@@ -23,7 +23,7 @@ import org.springframework.test.annotation.DirtiesContext.ClassMode;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.qfree.obo.report.db.PersistenceConfigTestEnv;
+import com.qfree.obo.report.PersistenceConfigTestEnv;
 
 /**
  * 
@@ -111,52 +111,6 @@ public class TestControllerTests {
 	//	};
 	//	private final GenericType<Set<String>> STRING_SET_RETURN_TYPE = new GenericType<Set<String>>() {
 	//	};
-
-	//	@Override
-	//	protected Application configure() {
-	//		//		return new JAXRSConfiguration();
-	//		//		logger.info("config = {}", config);
-	//
-	//		ResourceConfig rc = new JAXRSConfiguration();
-	//		/*
-	//		 * For a reference on these settings see:
-	//		 * 
-	//		 * http://stackoverflow.com/questions/10607168/unit-testing-with-spring-and-the-jersey-test-framework
-	//		 */
-	//		//		rc.register(SpringLifecycleListener.class); // org.glassfish.jersey.server.spring.SpringLifecycleListener
-	//		//		rc.register(RequestContextFilter.class);    // org.glassfish.jersey.server.spring.scope.RequestContextFilter
-	//		//		rc.register(ContextLoaderListener.class);
-	//		//		rc.property("contextConfigLocation", "");
-	//		//		rc.property("contextConfigLocation", "classpath:XXXapplicationContext.xml");
-	//		//		rc.property("contextClass", "org.springframework.web.context.support.AnnotationConfigWebApplicationContext");
-	//		//		rc.property("contextConfigLocation", "com.qfree.obo.report.db.PersistenceConfigTestEnv");//TODO Derive this from the class object PersistenceConfigTestEnv.class!
-	//		//		rc.property("javax.ws.rs.Application", "com.qfree.obo.report.rest.server.JAXRSConfiguration");
-	//		//		rc.register(TestController.class);
-	//		//		rc.register(Config.class);
-	//		//		rc.registerInstances(config);
-	//		//		rc.packages("com.qfree.obo.report.configuration");
-	//		//				.property(
-	//		//						"contextConfigLocation",
-	//		//						"classpath:applicationContext.xml"
-	//		//				);
-	//		return rc;
-	//
-	//		//		ApplicationContext context = new AnnotationConfigApplicationContext(PersistenceConfigTestEnv.class);
-	//		//		logger.info("Created ApplicationContext context.");
-	//		//		TestController testController = context.getBean(TestController.class);
-	//		//		logger.info("TestController testController bean.");
-	//		//		Config config = context.getBean(Config.class);
-	//		//		//		ResourceConfig rc = new JAXRSConfiguration().registerInstances(testController, config);
-	//		//		ResourceConfig rc = new JAXRSConfiguration().registerInstances(testController);
-	//		//		//		rc = rc.register(config);
-	//		//		logger.info("Registered testController.");
-	//		//		//		ResourceConfig rc = new JAXRSConfiguration().register(context);
-	//		//		return rc;
-	//
-	//		//		return new ResourceConfig(TestController.class);
-	//		//			return new JAXRSConfiguration(TestController.class);
-	//		return new ResourceConfig(TestController.class);
-	//	}
 
 	//	/**
 	//	 * Makes multiple calls to {@link SetResource#addSingle(javax.ws.rs.core.UriInfo, String)} and checks that the

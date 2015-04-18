@@ -1,4 +1,4 @@
-package com.qfree.obo.report.apps;
+package com.qfree.obo.report;
 
 import java.util.Properties;
 
@@ -11,7 +11,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
@@ -24,10 +23,6 @@ import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 @Configuration
-@ComponentScan(basePackageClasses = {
-		com.qfree.obo.report.rest.server.ComponentScanPackageMarker.class,
-		com.qfree.obo.report.configuration.ComponentScanPackageMarker.class,
-})
 @EnableJpaRepositories(basePackages = "com.qfree.obo.report.db")
 @PropertySource("classpath:config.properties")
 //This is for *multiple* properties files. The @PropertySource elements must be
@@ -35,9 +30,9 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 //@PropertySources({
 //		@PropertySource("classpath:config.properties")
 //})
-public class RootConfigDesktopAppTestEnv {
+public class DELETEME_PersistenceConfig {
 
-	private static final Logger logger = LoggerFactory.getLogger(RootConfigDesktopAppTestEnv.class);
+	private static final Logger logger = LoggerFactory.getLogger(DELETEME_PersistenceConfig.class);
 
 	/*
 	 * The injected "env" object here will contain key/value pairs for each 
@@ -46,6 +41,20 @@ public class RootConfigDesktopAppTestEnv {
 	 */
 	@Autowired
 	private Environment env;
+
+	/* This is a simple DataSource provided by Spring. Not suitable for 
+	 * production, but can be used for testing. Returns a new connection each
+	 * time a connection is requested.
+	 */
+	//	@Bean
+	//	public DataSource dataSource() {
+	//		DriverManagerDataSource dataSource = new DriverManagerDataSource();
+	//		dataSource.setDriverClassName(env.getProperty("db.jdbc.driverclass"));
+	//		dataSource.setUrl(env.getProperty("db.jdbc.url"));
+	//		dataSource.setUsername(env.getProperty("db.username"));
+	//		dataSource.setPassword(env.getProperty("db.password"));
+	//		return dataSource;
+	//	}
 
 	/*
 	 * Apache Commons DBCP 2.x pooled DataSource
@@ -69,15 +78,34 @@ public class RootConfigDesktopAppTestEnv {
 		return dataSource;
 	}
 
-	@Bean
-	public JpaVendorAdapter jpaVendorAdapter() {
-		HibernateJpaVendorAdapter adapter = new HibernateJpaVendorAdapter();
-		//		adapter.setDatabase(Database.H2);
-		//		adapter.setShowSql(true);
-		//		adapter.setGenerateDdl(false);
-		//		adapter.setDatabasePlatform("org.hibernate.dialect.H2Dialect");
-		return adapter;
-	}
+	/* JNDI DataSource. 
+	 * 
+	 * This may be a Apache Commons DBCP 2.x pooled DataSource, but we don't 
+	 * really know or care here.
+	 *
+	 * The required JDBC driver must be present in the local Maven
+	 * repository as well as in the application server, e.g., the Tomcat 
+	 * $CATALINA_HOME/lib directory.  The DataSource object is created by the 
+	 * container, e.g., Tomcat.  Tomcat has, by default, the Apache Commons 
+	 * "dbcp" & "pool" libraries installed in 
+	 * $CATALINA_HOME/lib/tomcat-dbcp.jar.
+	 * 
+	 *	TODO See page 289 of Spring in Action for Spring-specific code!!!!!!!!!!!!!!!!!!!
+	 */
+	//	@Bean
+	//	public DataSource dataSource() {
+	//		DataSource dataSource = null;
+	//		//			JndiTemplate jndi = new JndiTemplate();
+	//		try {
+	//			//			dataSource = (DataSource) jndi.lookup("java:comp/env/jdbc/autopass");
+	//			Context initContext = new InitialContext();
+	//			Context envContext = (Context) initContext.lookup("java:comp/env");
+	//			dataSource = (DataSource) envContext.lookup("jdbc/autopass");
+	//		} catch (NamingException e) {
+	//			logger.error("NamingException for java:comp/env/jdbc/autopass", e);
+	//		}
+	//		return dataSource;
+	//	}
 
 	@Bean
 	public LocalContainerEntityManagerFactoryBean
@@ -89,6 +117,16 @@ public class RootConfigDesktopAppTestEnv {
 		emf.setJpaProperties(additionalProperties());
 		emf.setPackagesToScan("com.qfree.obo.report.domain");
 		return emf;
+	}
+
+	@Bean
+	public JpaVendorAdapter jpaVendorAdapter() {
+		HibernateJpaVendorAdapter adapter = new HibernateJpaVendorAdapter();
+		//		adapter.setDatabase(Database.H2);
+		//		adapter.setShowSql(true);
+		//		adapter.setGenerateDdl(false);
+		//		adapter.setDatabasePlatform("org.hibernate.dialect.H2Dialect");
+		return adapter;
 	}
 
 	Properties additionalProperties() {
@@ -110,6 +148,24 @@ public class RootConfigDesktopAppTestEnv {
 		return properties;
 	}
 
+	//	Properties additionalProperties() {
+	//		Properties properties = new Properties();
+	//		properties.setProperty("hibernate.dialect", env.getProperty("hibernate.dialect"));
+	//		properties.setProperty("hibernate.show_sql", env.getProperty("hibernate.show_sql"));
+	//		//TODO REMEMBER TO UNDO THIS IF I COMMENT IT OUT: !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+	//		//		properties.setProperty("hibernate.hbm2ddl.auto", env.getProperty("hibernate.hbm2ddl.auto"));
+	//		/*
+	//		 * Hardwired settings.
+	//		 */
+	//		//		properties.setProperty("hibernate.default_schema", "reporting");
+	//		/* The "import_files" scripts are only executed if the schema is created, 
+	//		 * i.e., if hibernate.hbm2ddl.auto is set to "create" or "create-drop".
+	//		 */
+	//		//properties.setProperty("hibernate.hbm2ddl.import_files", "/db/postgresql/test-data.sql");
+	//
+	//		return properties;
+	//	}
+
 	@Configuration
 	@EnableTransactionManagement
 	public static class TransactionConfig {
@@ -126,12 +182,8 @@ public class RootConfigDesktopAppTestEnv {
 	}
 
 	//	@Bean
-	//	public HttpServer httpServer() {
-	//		URI baseUri = UriBuilder.fromUri("http://localhost/").port(9998).build();
-	//		ResourceConfig config = new JAXRSConfiguration();
-	//		HttpServer server = GrizzlyHttpServerFactory.createHttpServer(baseUri, config);
-	//		//		server.shutdownNow();
-	//		return server;
+	//	public JpaTransactionManager transactionManager() {
+	//		return new JpaTransactionManager(); // does this need an emf???
 	//	}
 
 }
