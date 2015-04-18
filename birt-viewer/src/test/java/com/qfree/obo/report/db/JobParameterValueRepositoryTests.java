@@ -32,9 +32,9 @@ import com.qfree.obo.report.domain.Role;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = PersistenceConfigTestEnv.class)
-public class JobParameterValueRepositoryTest {
+public class JobParameterValueRepositoryTests {
 
-	private static final Logger logger = LoggerFactory.getLogger(JobParameterValueRepositoryTest.class);
+	private static final Logger logger = LoggerFactory.getLogger(JobParameterValueRepositoryTests.class);
 
 	@Autowired
 	JobParameterValueRepository jobParameterValueRepository;

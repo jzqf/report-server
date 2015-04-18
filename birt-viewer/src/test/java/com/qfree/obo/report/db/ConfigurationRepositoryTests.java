@@ -30,9 +30,9 @@ import com.qfree.obo.report.domain.Role;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = PersistenceConfigTestEnv.class)
-public class ConfigurationRepositoryTest {
+public class ConfigurationRepositoryTests {
 
-	private static final Logger logger = LoggerFactory.getLogger(ConfigurationRepositoryTest.class);
+	private static final Logger logger = LoggerFactory.getLogger(ConfigurationRepositoryTests.class);
 
 	private static final long NUM_TEST_CONFIGURATIONS = 22L;  // number of test [configuration] records
 

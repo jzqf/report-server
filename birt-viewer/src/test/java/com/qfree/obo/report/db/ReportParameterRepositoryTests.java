@@ -28,9 +28,9 @@ import com.qfree.obo.report.domain.Widget;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = PersistenceConfigTestEnv.class)
-public class ReportParameterRepositoryTest {
+public class ReportParameterRepositoryTests {
 
-	private static final Logger logger = LoggerFactory.getLogger(ReportParameterRepositoryTest.class);
+	private static final Logger logger = LoggerFactory.getLogger(ReportParameterRepositoryTests.class);
 
 	@Autowired
 	ReportParameterRepository reportParameterRepository;
