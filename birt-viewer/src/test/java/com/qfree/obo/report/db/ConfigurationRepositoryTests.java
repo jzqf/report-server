@@ -77,7 +77,7 @@ public class ConfigurationRepositoryTests {
 	RoleRepository roleRepository;
 
 	@Autowired
-	ConfigurationService config;
+	ConfigurationService configurationService;
 
 	@Test
 	@Transactional
@@ -111,7 +111,7 @@ public class ConfigurationRepositoryTests {
 	@Test
 	@Transactional
 	public void booleanValueFetchDefaultFromConfig() {
-		Object booleanValueObject = config.get(ParamName.TEST_BOOLEAN);
+		Object booleanValueObject = configurationService.get(ParamName.TEST_BOOLEAN);
 		assertThat(booleanValueObject, is(instanceOf(Boolean.class)));
 		assertThat((Boolean) booleanValueObject, is(TEST_BOOLEAN_DEFAULT_VALUE));
 	}
@@ -134,7 +134,7 @@ public class ConfigurationRepositoryTests {
 		 * Fetch the role-specific value for the TEST_BOOLEAN parameter for Role 
 		 * "aabb".
 		 */
-		Object booleanValueObject = config.get(ParamName.TEST_BOOLEAN, role_aabb);
+		Object booleanValueObject = configurationService.get(ParamName.TEST_BOOLEAN, role_aabb);
 		assertThat(booleanValueObject, is(instanceOf(Boolean.class)));
 		assertThat((Boolean) booleanValueObject, is(TEST_BOOLEAN_ROLE_aabb_VALUE));
 	}
@@ -149,7 +149,7 @@ public class ConfigurationRepositoryTests {
 		 * There is a default value for ParamName.TEST_BOOLEAN, but no
 		 * role-specific value for Role "bcbc".
 		 */
-		Object booleanValueObject = config.get(ParamName.TEST_BOOLEAN, role_bcbc);
+		Object booleanValueObject = configurationService.get(ParamName.TEST_BOOLEAN, role_bcbc);
 		assertThat(booleanValueObject, is(instanceOf(Boolean.class)));
 		assertThat((Boolean) booleanValueObject, is(TEST_BOOLEAN_DEFAULT_VALUE));
 	}
@@ -166,14 +166,14 @@ public class ConfigurationRepositoryTests {
 		/*
 		 * Retrieve the existing default value.
 		 */
-		Object booleanValueDefaultObject = config.get(ParamName.TEST_BOOLEAN);
+		Object booleanValueDefaultObject = configurationService.get(ParamName.TEST_BOOLEAN);
 		assertThat(booleanValueDefaultObject, is(instanceOf(Boolean.class)));
 		assertThat((Boolean) booleanValueDefaultObject, is(TEST_BOOLEAN_DEFAULT_VALUE));
 		/*
 		 * Update default value.
 		 */
 		Boolean newBooleanValue = false;
-		config.set(ParamName.TEST_BOOLEAN, newBooleanValue);
+		configurationService.set(ParamName.TEST_BOOLEAN, newBooleanValue);
 		/*
 		 * The existing Configuration should have been updated, so there should
 		 * be the same number of entities in the database
@@ -182,7 +182,7 @@ public class ConfigurationRepositoryTests {
 		/* 
 		 * Retrieve value just set.
 		 */
-		Object booleanValueNewDefaultObject = config.get(ParamName.TEST_BOOLEAN);
+		Object booleanValueNewDefaultObject = configurationService.get(ParamName.TEST_BOOLEAN);
 		assertThat(booleanValueNewDefaultObject, is(instanceOf(Boolean.class)));
 		assertThat((Boolean) booleanValueNewDefaultObject, is(newBooleanValue));
 	}
@@ -204,7 +204,7 @@ public class ConfigurationRepositoryTests {
 		 * There is a default value for ParamName.TEST_BOOLEAN, but no
 		 * role-specific value for Role "bcbc".
 		 */
-		Object booleanValueObject = config.get(ParamName.TEST_BOOLEAN, role_bcbc);
+		Object booleanValueObject = configurationService.get(ParamName.TEST_BOOLEAN, role_bcbc);
 		assertThat(booleanValueObject, is(instanceOf(Boolean.class)));
 		assertThat((Boolean) booleanValueObject, is(TEST_BOOLEAN_DEFAULT_VALUE));
 
@@ -213,7 +213,7 @@ public class ConfigurationRepositoryTests {
 		 * the specified role.
 		 */
 		Boolean newBooleanValue = false;
-		config.set(ParamName.TEST_BOOLEAN, newBooleanValue, role_bcbc);
+		configurationService.set(ParamName.TEST_BOOLEAN, newBooleanValue, role_bcbc);
 		/*
 		 * This should have created a new Configuration.
 		 */
@@ -221,7 +221,7 @@ public class ConfigurationRepositoryTests {
 		/*
 		 * Retrieve value just set. The new value should override the default.
 		 */
-		Object booleanValueRoleSpecificObject = config.get(ParamName.TEST_BOOLEAN, role_bcbc);
+		Object booleanValueRoleSpecificObject = configurationService.get(ParamName.TEST_BOOLEAN, role_bcbc);
 		assertThat(booleanValueRoleSpecificObject, is(instanceOf(Boolean.class)));
 		assertThat((Boolean) booleanValueRoleSpecificObject, is(newBooleanValue));
 
@@ -231,7 +231,7 @@ public class ConfigurationRepositoryTests {
 		 * Configuration just created, i.e., not create a new Configuration
 		 */
 		newBooleanValue = true;
-		config.set(ParamName.TEST_BOOLEAN, newBooleanValue, role_bcbc);
+		configurationService.set(ParamName.TEST_BOOLEAN, newBooleanValue, role_bcbc);
 		/*
 		 * This should have re-used the Configuration just created.
 		 */
@@ -239,7 +239,7 @@ public class ConfigurationRepositoryTests {
 		/*
 		 * Retrieve value just set. The new value should override the default.
 		 */
-		booleanValueRoleSpecificObject = config.get(ParamName.TEST_BOOLEAN, role_bcbc);
+		booleanValueRoleSpecificObject = configurationService.get(ParamName.TEST_BOOLEAN, role_bcbc);
 		assertThat(booleanValueRoleSpecificObject, is(instanceOf(Boolean.class)));
 		assertThat((Boolean) booleanValueRoleSpecificObject, is(newBooleanValue));
 
@@ -247,7 +247,7 @@ public class ConfigurationRepositoryTests {
 		 * The default value for ParamName.TEST_BOOLEAN should still be the
 		 * same.
 		 */
-		Object booleanValueDefaultObject = config.get(ParamName.TEST_BOOLEAN);
+		Object booleanValueDefaultObject = configurationService.get(ParamName.TEST_BOOLEAN);
 		assertThat(booleanValueDefaultObject, is(instanceOf(Boolean.class)));
 		assertThat((Boolean) booleanValueDefaultObject, is(TEST_BOOLEAN_DEFAULT_VALUE));
 	}
@@ -291,7 +291,7 @@ public class ConfigurationRepositoryTests {
 	@Test
 	@Transactional
 	public void dateValueFetchDefaultFromConfig() {
-		Object dateValueObject = config.get(ParamName.TEST_DATE);
+		Object dateValueObject = configurationService.get(ParamName.TEST_DATE);
 		assertThat(dateValueObject, is(instanceOf(Date.class)));
 		Date dateFromConfig = (Date) dateValueObject;
 		assertThat(dateFromConfig, is(not(nullValue())));
@@ -336,7 +336,7 @@ public class ConfigurationRepositoryTests {
 		 * Fetch the role-specific value for the TEST_DATE parameter for Role 
 		 * "aabb".
 		 */
-		Object dateValueObject = config.get(ParamName.TEST_DATE, role_aabb);
+		Object dateValueObject = configurationService.get(ParamName.TEST_DATE, role_aabb);
 		assertThat(dateValueObject, is(instanceOf(Date.class)));
 
 		Date dateFromConfig = (Date) dateValueObject;
@@ -357,7 +357,7 @@ public class ConfigurationRepositoryTests {
 		 * There is a default value for ParamName.TEST_DATE, but no
 		 * role-specific value for Role "bcbc".
 		 */
-		Object dateValueObject = config.get(ParamName.TEST_DATE, role_bcbc);
+		Object dateValueObject = configurationService.get(ParamName.TEST_DATE, role_bcbc);
 		assertThat(dateValueObject, is(instanceOf(Date.class)));
 
 		Date dateFromConfig = (Date) dateValueObject;
@@ -380,7 +380,7 @@ public class ConfigurationRepositoryTests {
 		/*
 		 * Retrieve the existing default value.
 		 */
-		Object dateValueObject = config.get(ParamName.TEST_DATE);
+		Object dateValueObject = configurationService.get(ParamName.TEST_DATE);
 		assertThat(dateValueObject, is(instanceOf(Date.class)));
 		Date dateFromConfig = (Date) dateValueObject;
 		assertThat(dateFromConfig, is(not(nullValue())));
@@ -392,7 +392,7 @@ public class ConfigurationRepositoryTests {
 		 * Update default value.
 		 */
 		Date newDateValue = new GregorianCalendar(1927, 1, 15).getTime();
-		config.set(ParamName.TEST_DATE, newDateValue);
+		configurationService.set(ParamName.TEST_DATE, newDateValue);
 		/*
 		 * The existing Configuration should have been updated, so there should
 		 * be the same number of entities in the database
@@ -401,7 +401,7 @@ public class ConfigurationRepositoryTests {
 		/* 
 		 * Retrieve value just set.
 		 */
-		Object dateValueObjectUpdated = config.get(ParamName.TEST_DATE);
+		Object dateValueObjectUpdated = configurationService.get(ParamName.TEST_DATE);
 		assertThat(dateValueObjectUpdated, is(instanceOf(Date.class)));
 		Date dateFromConfigUpdated = (Date) dateValueObjectUpdated;
 		assertThat(dateFromConfigUpdated, is(not(nullValue())));
@@ -428,7 +428,7 @@ public class ConfigurationRepositoryTests {
 		 * There is a default value for ParamName.TEST_DATE, but no
 		 * role-specific value for Role "bcbc".
 		 */
-		Object dateValueObject = config.get(ParamName.TEST_DATE, role_bcbc);
+		Object dateValueObject = configurationService.get(ParamName.TEST_DATE, role_bcbc);
 		assertThat(dateValueObject, is(instanceOf(Date.class)));
 		Date dateFromConfig = (Date) dateValueObject;
 		assertThat(dateFromConfig, is(not(nullValue())));
@@ -442,7 +442,7 @@ public class ConfigurationRepositoryTests {
 		 * the specified role.
 		 */
 		Date newDateValue = new GregorianCalendar(1932, 3, 17).getTime();
-		config.set(ParamName.TEST_DATE, newDateValue, role_bcbc);
+		configurationService.set(ParamName.TEST_DATE, newDateValue, role_bcbc);
 		/*
 		 * This should have created a new Configuration.
 		 */
@@ -450,7 +450,7 @@ public class ConfigurationRepositoryTests {
 		/*
 		 * Retrieve value just set. The new value should override the default.
 		 */
-		Object dateValueRoleSpecificObject = config.get(ParamName.TEST_DATE, role_bcbc);
+		Object dateValueRoleSpecificObject = configurationService.get(ParamName.TEST_DATE, role_bcbc);
 		assertThat(dateValueRoleSpecificObject, is(instanceOf(Date.class)));
 		Date dateFromRoleSpecific = (Date) dateValueRoleSpecificObject;
 		assertThat(dateFromRoleSpecific, is(not(nullValue())));
@@ -465,7 +465,7 @@ public class ConfigurationRepositoryTests {
 		 * Configuration just created, i.e., not create a new Configuration
 		 */
 		newDateValue = new GregorianCalendar(1955, 2, 24).getTime();
-		config.set(ParamName.TEST_DATE, newDateValue, role_bcbc);
+		configurationService.set(ParamName.TEST_DATE, newDateValue, role_bcbc);
 		/*
 		 * This should have created a new Configuration.
 		 */
@@ -473,7 +473,7 @@ public class ConfigurationRepositoryTests {
 		/*
 		 * Retrieve value just set. The new value should override the default.
 		 */
-		dateValueRoleSpecificObject = config.get(ParamName.TEST_DATE, role_bcbc);
+		dateValueRoleSpecificObject = configurationService.get(ParamName.TEST_DATE, role_bcbc);
 		assertThat(dateValueRoleSpecificObject, is(instanceOf(Date.class)));
 		dateFromRoleSpecific = (Date) dateValueRoleSpecificObject;
 		assertThat(dateFromRoleSpecific, is(not(nullValue())));
@@ -486,7 +486,7 @@ public class ConfigurationRepositoryTests {
 		 * The default value for ParamName.TEST_DATE should still be the
 		 * same.
 		 */
-		Object dateValueDefaultObject = config.get(ParamName.TEST_DATE);
+		Object dateValueDefaultObject = configurationService.get(ParamName.TEST_DATE);
 		assertThat(dateValueDefaultObject, is(instanceOf(Date.class)));
 		dateFromConfig = (Date) dateValueDefaultObject;
 		assertThat(dateFromConfig, is(not(nullValue())));
@@ -537,7 +537,7 @@ public class ConfigurationRepositoryTests {
 		 * Fetch the role-specific value for the TEST_DATETIME parameter for Role 
 		 * "aabb".
 		 */
-		Object datetimeValueObject = config.get(ParamName.TEST_DATETIME, role_aabb);
+		Object datetimeValueObject = configurationService.get(ParamName.TEST_DATETIME, role_aabb);
 		assertThat(datetimeValueObject, is(instanceOf(Date.class)));
 
 		Date datetimeFromConfig = (Date) datetimeValueObject;
@@ -560,7 +560,7 @@ public class ConfigurationRepositoryTests {
 		/*
 		 * Retrieve the existing default value.
 		 */
-		Object datetimeValueObject = config.get(ParamName.TEST_DATETIME);
+		Object datetimeValueObject = configurationService.get(ParamName.TEST_DATETIME);
 		assertThat(datetimeValueObject, is(instanceOf(Date.class)));
 		Date datetimeFromConfig = (Date) datetimeValueObject;
 		assertThat(datetimeFromConfig, is(not(nullValue())));
@@ -572,7 +572,7 @@ public class ConfigurationRepositoryTests {
 		 * Update default value.
 		 */
 		Date newDatetimeValue = new GregorianCalendar(1960, 4, 14, 1, 2, 3).getTime();
-		config.set(ParamName.TEST_DATETIME, newDatetimeValue);
+		configurationService.set(ParamName.TEST_DATETIME, newDatetimeValue);
 		/*
 		 * The existing Configuration should have been updated, so there should
 		 * be the same number of entities in the database
@@ -581,7 +581,7 @@ public class ConfigurationRepositoryTests {
 		/* 
 		 * Retrieve value just set.
 		 */
-		Object datetimeValueObjectUpdated = config.get(ParamName.TEST_DATETIME);
+		Object datetimeValueObjectUpdated = configurationService.get(ParamName.TEST_DATETIME);
 		assertThat(datetimeValueObjectUpdated, is(instanceOf(Date.class)));
 		Date datetimeFromConfigUpdated = (Date) datetimeValueObjectUpdated;
 		assertThat(datetimeFromConfigUpdated, is(not(nullValue())));
@@ -608,7 +608,7 @@ public class ConfigurationRepositoryTests {
 		 * There is a default value for ParamName.TEST_DATETIME, but no
 		 * role-specific value for Role "bcbc".
 		 */
-		Object datetimeValueObject = config.get(ParamName.TEST_DATETIME, role_bcbc);
+		Object datetimeValueObject = configurationService.get(ParamName.TEST_DATETIME, role_bcbc);
 		assertThat(datetimeValueObject, is(instanceOf(Date.class)));
 		Date datetimeFromConfig = (Date) datetimeValueObject;
 		assertThat(datetimeFromConfig, is(not(nullValue())));
@@ -622,7 +622,7 @@ public class ConfigurationRepositoryTests {
 		 * the specified role.
 		 */
 		Date newDatetimeValue = new GregorianCalendar(1960, 4, 14, 1, 2, 3).getTime();
-		config.set(ParamName.TEST_DATETIME, newDatetimeValue, role_bcbc);
+		configurationService.set(ParamName.TEST_DATETIME, newDatetimeValue, role_bcbc);
 		/*
 		 * This should have created a new Configuration.
 		 */
@@ -630,7 +630,7 @@ public class ConfigurationRepositoryTests {
 		/*
 		 * Retrieve value just set. The new value should override the default.
 		 */
-		Object datetimeValueRoleSpecificObject = config.get(ParamName.TEST_DATETIME, role_bcbc);
+		Object datetimeValueRoleSpecificObject = configurationService.get(ParamName.TEST_DATETIME, role_bcbc);
 		assertThat(datetimeValueRoleSpecificObject, is(instanceOf(Date.class)));
 		Date datetimeFromRoleSpecific = (Date) datetimeValueRoleSpecificObject;
 		assertThat(datetimeFromRoleSpecific, is(not(nullValue())));
@@ -645,7 +645,7 @@ public class ConfigurationRepositoryTests {
 		 * Configuration just created, i.e., not create a new Configuration
 		 */
 		newDatetimeValue = new GregorianCalendar(1961, 10, 4, 18, 30, 15).getTime();
-		config.set(ParamName.TEST_DATETIME, newDatetimeValue, role_bcbc);
+		configurationService.set(ParamName.TEST_DATETIME, newDatetimeValue, role_bcbc);
 		/*
 		 * This should have created a new Configuration.
 		 */
@@ -653,7 +653,7 @@ public class ConfigurationRepositoryTests {
 		/*
 		 * Retrieve value just set. The new value should override the default.
 		 */
-		datetimeValueRoleSpecificObject = config.get(ParamName.TEST_DATETIME, role_bcbc);
+		datetimeValueRoleSpecificObject = configurationService.get(ParamName.TEST_DATETIME, role_bcbc);
 		assertThat(datetimeValueRoleSpecificObject, is(instanceOf(Date.class)));
 		datetimeFromRoleSpecific = (Date) datetimeValueRoleSpecificObject;
 		assertThat(datetimeFromRoleSpecific, is(not(nullValue())));
@@ -666,7 +666,7 @@ public class ConfigurationRepositoryTests {
 		 * The default value for ParamName.TEST_DATETIME should still be the
 		 * same.
 		 */
-		Object datetimeValueDefaultObject = config.get(ParamName.TEST_DATETIME);
+		Object datetimeValueDefaultObject = configurationService.get(ParamName.TEST_DATETIME);
 		assertThat(datetimeValueDefaultObject, is(instanceOf(Date.class)));
 		datetimeFromConfig = (Date) datetimeValueDefaultObject;
 
@@ -715,7 +715,7 @@ public class ConfigurationRepositoryTests {
 	@Test
 	@Transactional
 	public void doubleValueFetchDefaultFromConfig() {
-		Object doubleValueObject = config.get(ParamName.TEST_DOUBLE);
+		Object doubleValueObject = configurationService.get(ParamName.TEST_DOUBLE);
 		assertThat(doubleValueObject, is(instanceOf(Double.class)));
 		assertThat((Double) doubleValueObject, is(TEST_DOUBLE_DEFAULT_VALUE));
 	}
@@ -738,7 +738,7 @@ public class ConfigurationRepositoryTests {
 		 * Fetch the role-specific value for the TEST_DOUBLE parameter for Role 
 		 * "aabb".
 		 */
-		Object doubleValueObject = config.get(ParamName.TEST_DOUBLE, role_aabb);
+		Object doubleValueObject = configurationService.get(ParamName.TEST_DOUBLE, role_aabb);
 		assertThat(doubleValueObject, is(instanceOf(Double.class)));
 		assertThat((Double) doubleValueObject, is(TEST_DOUBLE_ROLE_aabb_VALUE));
 	}
@@ -753,7 +753,7 @@ public class ConfigurationRepositoryTests {
 		 * There is a default value for ParamName.TEST_DOUBLE, but no
 		 * role-specific value for Role "bcbc".
 		 */
-		Object doubleValueObject = config.get(ParamName.TEST_DOUBLE, role_bcbc);
+		Object doubleValueObject = configurationService.get(ParamName.TEST_DOUBLE, role_bcbc);
 		assertThat(doubleValueObject, is(instanceOf(Double.class)));
 		assertThat((Double) doubleValueObject, is(TEST_DOUBLE_DEFAULT_VALUE));
 	}
@@ -770,14 +770,14 @@ public class ConfigurationRepositoryTests {
 		/*
 		 * Retrieve the existing default value.
 		 */
-		Object doubleValueDefaultObject = config.get(ParamName.TEST_DOUBLE);
+		Object doubleValueDefaultObject = configurationService.get(ParamName.TEST_DOUBLE);
 		assertThat(doubleValueDefaultObject, is(instanceOf(Double.class)));
 		assertThat((Double) doubleValueDefaultObject, is(TEST_DOUBLE_DEFAULT_VALUE));
 		/*
 		 * Update default value.
 		 */
 		Double newDoubleValue = 111222333.444;
-		config.set(ParamName.TEST_DOUBLE, newDoubleValue);
+		configurationService.set(ParamName.TEST_DOUBLE, newDoubleValue);
 		/*
 		 * The existing Configuration should have been updated, so there should
 		 * be the same number of entities in the database
@@ -786,7 +786,7 @@ public class ConfigurationRepositoryTests {
 		/* 
 		 * Retrieve value just set.
 		 */
-		Object doubleValueNewDefaultObject = config.get(ParamName.TEST_DOUBLE);
+		Object doubleValueNewDefaultObject = configurationService.get(ParamName.TEST_DOUBLE);
 		assertThat(doubleValueNewDefaultObject, is(instanceOf(Double.class)));
 		assertThat((Double) doubleValueNewDefaultObject, is(newDoubleValue));
 	}
@@ -808,7 +808,7 @@ public class ConfigurationRepositoryTests {
 		 * There is a default value for ParamName.TEST_DOUBLE, but no
 		 * role-specific value for Role "bcbc".
 		 */
-		Object doubleValueObject = config.get(ParamName.TEST_DOUBLE, role_bcbc);
+		Object doubleValueObject = configurationService.get(ParamName.TEST_DOUBLE, role_bcbc);
 		assertThat(doubleValueObject, is(instanceOf(Double.class)));
 		assertThat((Double) doubleValueObject, is(TEST_DOUBLE_DEFAULT_VALUE));
 
@@ -817,7 +817,7 @@ public class ConfigurationRepositoryTests {
 		 * the specified role.
 		 */
 		Double newDoubleValue = 483.128444;
-		config.set(ParamName.TEST_DOUBLE, newDoubleValue, role_bcbc);
+		configurationService.set(ParamName.TEST_DOUBLE, newDoubleValue, role_bcbc);
 		/*
 		 * This should have created a new Configuration.
 		 */
@@ -825,7 +825,7 @@ public class ConfigurationRepositoryTests {
 		/*
 		 * Retrieve value just set. The new value should override the default.
 		 */
-		Object doubleValueRoleSpecificObject = config.get(ParamName.TEST_DOUBLE, role_bcbc);
+		Object doubleValueRoleSpecificObject = configurationService.get(ParamName.TEST_DOUBLE, role_bcbc);
 		assertThat(doubleValueRoleSpecificObject, is(instanceOf(Double.class)));
 		assertThat((Double) doubleValueRoleSpecificObject, is(newDoubleValue));
 
@@ -835,7 +835,7 @@ public class ConfigurationRepositoryTests {
 		 * Configuration just created, i.e., not create a new Configuration
 		 */
 		newDoubleValue = 0.000001;
-		config.set(ParamName.TEST_DOUBLE, newDoubleValue, role_bcbc);
+		configurationService.set(ParamName.TEST_DOUBLE, newDoubleValue, role_bcbc);
 		/*
 		 * This should have re-used the Configuration just created.
 		 */
@@ -843,7 +843,7 @@ public class ConfigurationRepositoryTests {
 		/*
 		 * Retrieve value just set. The new value should override the default.
 		 */
-		doubleValueRoleSpecificObject = config.get(ParamName.TEST_DOUBLE, role_bcbc);
+		doubleValueRoleSpecificObject = configurationService.get(ParamName.TEST_DOUBLE, role_bcbc);
 		assertThat(doubleValueRoleSpecificObject, is(instanceOf(Double.class)));
 		assertThat((Double) doubleValueRoleSpecificObject, is(newDoubleValue));
 
@@ -851,7 +851,7 @@ public class ConfigurationRepositoryTests {
 		 * The default value for ParamName.TEST_DOUBLE should still be the
 		 * same.
 		 */
-		Object doubleValueDefaultObject = config.get(ParamName.TEST_DOUBLE);
+		Object doubleValueDefaultObject = configurationService.get(ParamName.TEST_DOUBLE);
 		assertThat(doubleValueDefaultObject, is(instanceOf(Double.class)));
 		assertThat((Double) doubleValueDefaultObject, is(TEST_DOUBLE_DEFAULT_VALUE));
 	}
@@ -881,7 +881,7 @@ public class ConfigurationRepositoryTests {
 	@Test
 	@Transactional
 	public void floatValueFetchDefaultFromConfig() {
-		Object floatValueObject = config.get(ParamName.TEST_FLOAT);
+		Object floatValueObject = configurationService.get(ParamName.TEST_FLOAT);
 		assertThat(floatValueObject, is(instanceOf(Float.class)));
 		assertThat((Float) floatValueObject, is(TEST_FLOAT_DEFAULT_VALUE));
 	}
@@ -904,7 +904,7 @@ public class ConfigurationRepositoryTests {
 		 * Fetch the role-specific value for the TEST_FLOAT parameter for Role 
 		 * "aabb".
 		 */
-		Object floatValueObject = config.get(ParamName.TEST_FLOAT, role_aabb);
+		Object floatValueObject = configurationService.get(ParamName.TEST_FLOAT, role_aabb);
 		assertThat(floatValueObject, is(instanceOf(Float.class)));
 		assertThat((Float) floatValueObject, is(TEST_FLOAT_ROLE_aabb_VALUE));
 	}
@@ -919,7 +919,7 @@ public class ConfigurationRepositoryTests {
 		 * There is a default value for ParamName.TEST_FLOAT, but no
 		 * role-specific value for Role "bcbc".
 		 */
-		Object floatValueObject = config.get(ParamName.TEST_FLOAT, role_bcbc);
+		Object floatValueObject = configurationService.get(ParamName.TEST_FLOAT, role_bcbc);
 		assertThat(floatValueObject, is(instanceOf(Float.class)));
 		assertThat((Float) floatValueObject, is(TEST_FLOAT_DEFAULT_VALUE));
 	}
@@ -936,14 +936,14 @@ public class ConfigurationRepositoryTests {
 		/*
 		 * Retrieve the existing default value.
 		 */
-		Object floatValueDefaultObject = config.get(ParamName.TEST_FLOAT);
+		Object floatValueDefaultObject = configurationService.get(ParamName.TEST_FLOAT);
 		assertThat(floatValueDefaultObject, is(instanceOf(Float.class)));
 		assertThat((Float) floatValueDefaultObject, is(TEST_FLOAT_DEFAULT_VALUE));
 		/*
 		 * Update default value.
 		 */
 		Float newFloatValue = 1234.56F;
-		config.set(ParamName.TEST_FLOAT, newFloatValue);
+		configurationService.set(ParamName.TEST_FLOAT, newFloatValue);
 		/*
 		 * The existing Configuration should have been updated, so there should
 		 * be the same number of entities in the database
@@ -952,7 +952,7 @@ public class ConfigurationRepositoryTests {
 		/* 
 		 * Retrieve value just set.
 		 */
-		Object floatValueNewDefaultObject = config.get(ParamName.TEST_FLOAT);
+		Object floatValueNewDefaultObject = configurationService.get(ParamName.TEST_FLOAT);
 		assertThat(floatValueNewDefaultObject, is(instanceOf(Float.class)));
 		assertThat((Float) floatValueNewDefaultObject, is(newFloatValue));
 	}
@@ -974,7 +974,7 @@ public class ConfigurationRepositoryTests {
 		 * There is a default value for ParamName.TEST_FLOAT, but no
 		 * role-specific value for Role "bcbc".
 		 */
-		Object floatValueObject = config.get(ParamName.TEST_FLOAT, role_bcbc);
+		Object floatValueObject = configurationService.get(ParamName.TEST_FLOAT, role_bcbc);
 		assertThat(floatValueObject, is(instanceOf(Float.class)));
 		assertThat((Float) floatValueObject, is(TEST_FLOAT_DEFAULT_VALUE));
 
@@ -983,7 +983,7 @@ public class ConfigurationRepositoryTests {
 		 * the specified role.
 		 */
 		Float newFloatValue = 82.583F;
-		config.set(ParamName.TEST_FLOAT, newFloatValue, role_bcbc);
+		configurationService.set(ParamName.TEST_FLOAT, newFloatValue, role_bcbc);
 		/*
 		 * This should have created a new Configuration.
 		 */
@@ -991,7 +991,7 @@ public class ConfigurationRepositoryTests {
 		/*
 		 * Retrieve value just set. The new value should override the default.
 		 */
-		Object floatValueRoleSpecificObject = config.get(ParamName.TEST_FLOAT, role_bcbc);
+		Object floatValueRoleSpecificObject = configurationService.get(ParamName.TEST_FLOAT, role_bcbc);
 		assertThat(floatValueRoleSpecificObject, is(instanceOf(Float.class)));
 		assertThat((Float) floatValueRoleSpecificObject, is(newFloatValue));
 
@@ -1001,7 +1001,7 @@ public class ConfigurationRepositoryTests {
 		 * Configuration just created, i.e., not create a new Configuration
 		 */
 		newFloatValue = 0.001F;
-		config.set(ParamName.TEST_FLOAT, newFloatValue, role_bcbc);
+		configurationService.set(ParamName.TEST_FLOAT, newFloatValue, role_bcbc);
 		/*
 		 * This should have re-used the Configuration just created.
 		 */
@@ -1009,7 +1009,7 @@ public class ConfigurationRepositoryTests {
 		/*
 		 * Retrieve value just set. The new value should override the default.
 		 */
-		floatValueRoleSpecificObject = config.get(ParamName.TEST_FLOAT, role_bcbc);
+		floatValueRoleSpecificObject = configurationService.get(ParamName.TEST_FLOAT, role_bcbc);
 		assertThat(floatValueRoleSpecificObject, is(instanceOf(Float.class)));
 		assertThat((Float) floatValueRoleSpecificObject, is(newFloatValue));
 
@@ -1017,7 +1017,7 @@ public class ConfigurationRepositoryTests {
 		 * The default value for ParamName.TEST_FLOAT should still be the
 		 * same.
 		 */
-		Object floatValueDefaultObject = config.get(ParamName.TEST_FLOAT);
+		Object floatValueDefaultObject = configurationService.get(ParamName.TEST_FLOAT);
 		assertThat(floatValueDefaultObject, is(instanceOf(Float.class)));
 		assertThat((Float) floatValueDefaultObject, is(TEST_FLOAT_DEFAULT_VALUE));
 	}
@@ -1047,7 +1047,7 @@ public class ConfigurationRepositoryTests {
 	@Test
 	@Transactional
 	public void integerValueFetchDefaultFromConfig() {
-		Object integerValueObject = config.get(ParamName.TEST_INTEGER);
+		Object integerValueObject = configurationService.get(ParamName.TEST_INTEGER);
 		assertThat(integerValueObject, is(instanceOf(Integer.class)));
 		assertThat((Integer) integerValueObject, is(TEST_INTEGER_DEFAULT_VALUE));
 	}
@@ -1070,7 +1070,7 @@ public class ConfigurationRepositoryTests {
 		 * Fetch the role-specific value for the TEST_INTEGER parameter for Role 
 		 * "aabb".
 		 */
-		Object integerValueObject = config.get(ParamName.TEST_INTEGER, role_aabb);
+		Object integerValueObject = configurationService.get(ParamName.TEST_INTEGER, role_aabb);
 		assertThat(integerValueObject, is(instanceOf(Integer.class)));
 		assertThat((Integer) integerValueObject, is(TEST_INTEGER_ROLE_aabb_VALUE));
 	}
@@ -1085,7 +1085,7 @@ public class ConfigurationRepositoryTests {
 		 * There is a default value for ParamName.TEST_INTEGER, but no
 		 * role-specific value for Role "bcbc".
 		 */
-		Object integerValueObject = config.get(ParamName.TEST_INTEGER, role_bcbc);
+		Object integerValueObject = configurationService.get(ParamName.TEST_INTEGER, role_bcbc);
 		assertThat(integerValueObject, is(instanceOf(Integer.class)));
 		assertThat((Integer) integerValueObject, is(TEST_INTEGER_DEFAULT_VALUE));
 	}
@@ -1102,14 +1102,14 @@ public class ConfigurationRepositoryTests {
 		/*
 		 * Retrieve the existing default value.
 		 */
-		Object integerValueDefaultObject = config.get(ParamName.TEST_INTEGER);
+		Object integerValueDefaultObject = configurationService.get(ParamName.TEST_INTEGER);
 		assertThat(integerValueDefaultObject, is(instanceOf(Integer.class)));
 		assertThat((Integer) integerValueDefaultObject, is(TEST_INTEGER_DEFAULT_VALUE));
 		/*
 		 * Update default value.
 		 */
 		Integer newIntegerValue = 123456;
-		config.set(ParamName.TEST_INTEGER, newIntegerValue);
+		configurationService.set(ParamName.TEST_INTEGER, newIntegerValue);
 		/*
 		 * The existing Configuration should have been updated, so there should
 		 * be the same number of entities in the database
@@ -1118,7 +1118,7 @@ public class ConfigurationRepositoryTests {
 		/* 
 		 * Retrieve value just set.
 		 */
-		Object integerValueNewDefaultObject = config.get(ParamName.TEST_INTEGER);
+		Object integerValueNewDefaultObject = configurationService.get(ParamName.TEST_INTEGER);
 		assertThat(integerValueNewDefaultObject, is(instanceOf(Integer.class)));
 		assertThat((Integer) integerValueNewDefaultObject, is(newIntegerValue));
 	}
@@ -1140,7 +1140,7 @@ public class ConfigurationRepositoryTests {
 		 * There is a default value for ParamName.TEST_INTEGER, but no
 		 * role-specific value for Role "bcbc".
 		 */
-		Object integerValueObject = config.get(ParamName.TEST_INTEGER, role_bcbc);
+		Object integerValueObject = configurationService.get(ParamName.TEST_INTEGER, role_bcbc);
 		assertThat(integerValueObject, is(instanceOf(Integer.class)));
 		assertThat((Integer) integerValueObject, is(TEST_INTEGER_DEFAULT_VALUE));
 
@@ -1149,7 +1149,7 @@ public class ConfigurationRepositoryTests {
 		 * the specified role.
 		 */
 		Integer newIntegerValue = 1000001;
-		config.set(ParamName.TEST_INTEGER, newIntegerValue, role_bcbc);
+		configurationService.set(ParamName.TEST_INTEGER, newIntegerValue, role_bcbc);
 		/*
 		 * This should have created a new Configuration.
 		 */
@@ -1157,7 +1157,7 @@ public class ConfigurationRepositoryTests {
 		/*
 		 * Retrieve value just set. The new value should override the default.
 		 */
-		Object integerValueRoleSpecificObject = config.get(ParamName.TEST_INTEGER, role_bcbc);
+		Object integerValueRoleSpecificObject = configurationService.get(ParamName.TEST_INTEGER, role_bcbc);
 		assertThat(integerValueRoleSpecificObject, is(instanceOf(Integer.class)));
 		assertThat((Integer) integerValueRoleSpecificObject, is(newIntegerValue));
 
@@ -1167,7 +1167,7 @@ public class ConfigurationRepositoryTests {
 		 * Configuration just created, i.e., not create a new Configuration
 		 */
 		newIntegerValue = 666666;
-		config.set(ParamName.TEST_INTEGER, newIntegerValue, role_bcbc);
+		configurationService.set(ParamName.TEST_INTEGER, newIntegerValue, role_bcbc);
 		/*
 		 * This should have re-used the Configuration just created.
 		 */
@@ -1175,7 +1175,7 @@ public class ConfigurationRepositoryTests {
 		/*
 		 * Retrieve value just set. The new value should override the default.
 		 */
-		integerValueRoleSpecificObject = config.get(ParamName.TEST_INTEGER, role_bcbc);
+		integerValueRoleSpecificObject = configurationService.get(ParamName.TEST_INTEGER, role_bcbc);
 		assertThat(integerValueRoleSpecificObject, is(instanceOf(Integer.class)));
 		assertThat((Integer) integerValueRoleSpecificObject, is(newIntegerValue));
 
@@ -1183,7 +1183,7 @@ public class ConfigurationRepositoryTests {
 		 * The default value for ParamName.TEST_INTEGER should still be the
 		 * same.
 		 */
-		Object integerValueDefaultObject = config.get(ParamName.TEST_INTEGER);
+		Object integerValueDefaultObject = configurationService.get(ParamName.TEST_INTEGER);
 		assertThat(integerValueDefaultObject, is(instanceOf(Integer.class)));
 		assertThat((Integer) integerValueDefaultObject, is(TEST_INTEGER_DEFAULT_VALUE));
 	}
@@ -1213,7 +1213,7 @@ public class ConfigurationRepositoryTests {
 	@Test
 	@Transactional
 	public void longValueFetchDefaultFromConfig() {
-		Object longValueObject = config.get(ParamName.TEST_LONG);
+		Object longValueObject = configurationService.get(ParamName.TEST_LONG);
 		assertThat(longValueObject, is(instanceOf(Long.class)));
 		assertThat((Long) longValueObject, is(TEST_LONG_DEFAULT_VALUE));
 	}
@@ -1236,7 +1236,7 @@ public class ConfigurationRepositoryTests {
 		 * Fetch the role-specific value for the TEST_LONG parameter for Role 
 		 * "aabb".
 		 */
-		Object longValueObject = config.get(ParamName.TEST_LONG, role_aabb);
+		Object longValueObject = configurationService.get(ParamName.TEST_LONG, role_aabb);
 		assertThat(longValueObject, is(instanceOf(Long.class)));
 		assertThat((Long) longValueObject, is(TEST_LONG_ROLE_aabb_VALUE));
 	}
@@ -1251,7 +1251,7 @@ public class ConfigurationRepositoryTests {
 		 * There is a default value for ParamName.TEST_LONG, but no
 		 * role-specific value for Role "bcbc".
 		 */
-		Object longValueObject = config.get(ParamName.TEST_LONG, role_bcbc);
+		Object longValueObject = configurationService.get(ParamName.TEST_LONG, role_bcbc);
 		assertThat(longValueObject, is(instanceOf(Long.class)));
 		assertThat((Long) longValueObject, is(TEST_LONG_DEFAULT_VALUE));
 	}
@@ -1268,14 +1268,14 @@ public class ConfigurationRepositoryTests {
 		/*
 		 * Retrieve the existing default value.
 		 */
-		Object longValueDefaultObject = config.get(ParamName.TEST_LONG);
+		Object longValueDefaultObject = configurationService.get(ParamName.TEST_LONG);
 		assertThat(longValueDefaultObject, is(instanceOf(Long.class)));
 		assertThat((Long) longValueDefaultObject, is(TEST_LONG_DEFAULT_VALUE));
 		/*
 		 * Update default value.
 		 */
 		Long newLongValue = 246801357901234L;
-		config.set(ParamName.TEST_LONG, newLongValue);
+		configurationService.set(ParamName.TEST_LONG, newLongValue);
 		/*
 		 * The existing Configuration should have been updated, so there should
 		 * be the same number of entities in the database
@@ -1284,7 +1284,7 @@ public class ConfigurationRepositoryTests {
 		/* 
 		 * Retrieve value just set.
 		 */
-		Object longValueNewDefaultObject = config.get(ParamName.TEST_LONG);
+		Object longValueNewDefaultObject = configurationService.get(ParamName.TEST_LONG);
 		assertThat(longValueNewDefaultObject, is(instanceOf(Long.class)));
 		assertThat((Long) longValueNewDefaultObject, is(newLongValue));
 	}
@@ -1306,7 +1306,7 @@ public class ConfigurationRepositoryTests {
 		 * There is a default value for ParamName.TEST_LONG, but no
 		 * role-specific value for Role "bcbc".
 		 */
-		Object longValueObject = config.get(ParamName.TEST_LONG, role_bcbc);
+		Object longValueObject = configurationService.get(ParamName.TEST_LONG, role_bcbc);
 		assertThat(longValueObject, is(instanceOf(Long.class)));
 		assertThat((Long) longValueObject, is(TEST_LONG_DEFAULT_VALUE));
 
@@ -1315,7 +1315,7 @@ public class ConfigurationRepositoryTests {
 		 * the specified role.
 		 */
 		Long newLongValue = 246801357901234L;
-		config.set(ParamName.TEST_LONG, newLongValue, role_bcbc);
+		configurationService.set(ParamName.TEST_LONG, newLongValue, role_bcbc);
 		/*
 		 * This should have created a new Configuration.
 		 */
@@ -1323,7 +1323,7 @@ public class ConfigurationRepositoryTests {
 		/*
 		 * Retrieve value just set. The new value should override the default.
 		 */
-		Object longValueRoleSpecificObject = config.get(ParamName.TEST_LONG, role_bcbc);
+		Object longValueRoleSpecificObject = configurationService.get(ParamName.TEST_LONG, role_bcbc);
 		assertThat(longValueRoleSpecificObject, is(instanceOf(Long.class)));
 		assertThat((Long) longValueRoleSpecificObject, is(newLongValue));
 
@@ -1333,7 +1333,7 @@ public class ConfigurationRepositoryTests {
 		 * Configuration just created, i.e., not create a new Configuration
 		 */
 		newLongValue = 666666666666L;
-		config.set(ParamName.TEST_LONG, newLongValue, role_bcbc);
+		configurationService.set(ParamName.TEST_LONG, newLongValue, role_bcbc);
 		/*
 		 * This should have re-used the Configuration just created.
 		 */
@@ -1341,7 +1341,7 @@ public class ConfigurationRepositoryTests {
 		/*
 		 * Retrieve value just set. The new value should override the default.
 		 */
-		longValueRoleSpecificObject = config.get(ParamName.TEST_LONG, role_bcbc);
+		longValueRoleSpecificObject = configurationService.get(ParamName.TEST_LONG, role_bcbc);
 		assertThat(longValueRoleSpecificObject, is(instanceOf(Long.class)));
 		assertThat((Long) longValueRoleSpecificObject, is(newLongValue));
 
@@ -1349,7 +1349,7 @@ public class ConfigurationRepositoryTests {
 		 * The default value for ParamName.TEST_LONG should still be the
 		 * same.
 		 */
-		Object longValueDefaultObject = config.get(ParamName.TEST_LONG);
+		Object longValueDefaultObject = configurationService.get(ParamName.TEST_LONG);
 		assertThat(longValueDefaultObject, is(instanceOf(Long.class)));
 		assertThat((Long) longValueDefaultObject, is(TEST_LONG_DEFAULT_VALUE));
 	}
@@ -1379,7 +1379,7 @@ public class ConfigurationRepositoryTests {
 	@Test
 	@Transactional
 	public void stringValueFetchDefaultFromConfig() {
-		Object stringValueObject = config.get(ParamName.TEST_STRING);
+		Object stringValueObject = configurationService.get(ParamName.TEST_STRING);
 		assertThat(stringValueObject, is(instanceOf(String.class)));
 		assertThat((String) stringValueObject, is(TEST_STRING_DEFAULT_VALUE));
 	}
@@ -1402,7 +1402,7 @@ public class ConfigurationRepositoryTests {
 		 * Fetch the role-specific value for the TEST_STRING parameter for Role 
 		 * "aabb".
 		 */
-		Object stringValueObject = config.get(ParamName.TEST_STRING, role_aabb);
+		Object stringValueObject = configurationService.get(ParamName.TEST_STRING, role_aabb);
 		assertThat(stringValueObject, is(instanceOf(String.class)));
 		assertThat((String) stringValueObject, is(TEST_STRING_ROLE_aabb_VALUE));
 	}
@@ -1422,7 +1422,7 @@ public class ConfigurationRepositoryTests {
 		 * There is a default value for ParamName.TEST_STRING, but no
 		 * role-specific value for Role "bcbc".
 		 */
-		Object stringValueObject = config.get(ParamName.TEST_STRING, role_bcbc);
+		Object stringValueObject = configurationService.get(ParamName.TEST_STRING, role_bcbc);
 		assertThat(stringValueObject, is(instanceOf(String.class)));
 		assertThat((String) stringValueObject, is(TEST_STRING_DEFAULT_VALUE));
 	}
@@ -1439,7 +1439,7 @@ public class ConfigurationRepositoryTests {
 		 * Parameter ParamName.TEST_NOTSET does not exist in the test data for
 		 * the [configuration] table.
 		 */
-		Object stringValueObject = config.get(ParamName.TEST_NOTSET);
+		Object stringValueObject = configurationService.get(ParamName.TEST_NOTSET);
 		assertThat(stringValueObject, is(nullValue()));
 	}
 
@@ -1455,14 +1455,14 @@ public class ConfigurationRepositoryTests {
 		/*
 		 * Retrieve the existing default value.
 		 */
-		Object stringValueDefaultObject = config.get(ParamName.TEST_STRING);
+		Object stringValueDefaultObject = configurationService.get(ParamName.TEST_STRING);
 		assertThat(stringValueDefaultObject, is(instanceOf(String.class)));
 		assertThat((String) stringValueDefaultObject, is(TEST_STRING_DEFAULT_VALUE));
 		/*
 		 * Update default value.
 		 */
 		String newStringValue = "New default value";
-		config.set(ParamName.TEST_STRING, newStringValue);
+		configurationService.set(ParamName.TEST_STRING, newStringValue);
 		/*
 		 * The existing Configuration should have been updated, so there should
 		 * be the same number of entities in the database
@@ -1471,7 +1471,7 @@ public class ConfigurationRepositoryTests {
 		/* 
 		 * Retrieve value just set.
 		 */
-		Object stringValueNewDefaultObject = config.get(ParamName.TEST_STRING);
+		Object stringValueNewDefaultObject = configurationService.get(ParamName.TEST_STRING);
 		assertThat(stringValueNewDefaultObject, is(instanceOf(String.class)));
 		assertThat((String) stringValueNewDefaultObject, is(newStringValue));
 	}
@@ -1493,7 +1493,7 @@ public class ConfigurationRepositoryTests {
 		 * There is a default value for ParamName.TEST_STRING, but no
 		 * role-specific value for Role "bcbc".
 		 */
-		Object stringValueObject = config.get(ParamName.TEST_STRING, role_bcbc);
+		Object stringValueObject = configurationService.get(ParamName.TEST_STRING, role_bcbc);
 		assertThat(stringValueObject, is(instanceOf(String.class)));
 		assertThat((String) stringValueObject, is(TEST_STRING_DEFAULT_VALUE));
 
@@ -1502,7 +1502,7 @@ public class ConfigurationRepositoryTests {
 		 * the specified role.
 		 */
 		String newStringValue = "String value for role 'bcbc'";
-		config.set(ParamName.TEST_STRING, newStringValue, role_bcbc);
+		configurationService.set(ParamName.TEST_STRING, newStringValue, role_bcbc);
 		/*
 		 * This should have created a new Configuration.
 		 */
@@ -1510,7 +1510,7 @@ public class ConfigurationRepositoryTests {
 		/*
 		 * Retrieve value just set. The new value should override the default.
 		 */
-		Object stringValueRoleSpecificObject = config.get(ParamName.TEST_STRING, role_bcbc);
+		Object stringValueRoleSpecificObject = configurationService.get(ParamName.TEST_STRING, role_bcbc);
 		assertThat(stringValueRoleSpecificObject, is(instanceOf(String.class)));
 		assertThat((String) stringValueRoleSpecificObject, is(newStringValue));
 
@@ -1524,7 +1524,7 @@ public class ConfigurationRepositoryTests {
 		 * the specified role.
 		 */
 		newStringValue = "Updated role-specific value";
-		config.set(ParamName.TEST_STRING, newStringValue, role_bcbc);
+		configurationService.set(ParamName.TEST_STRING, newStringValue, role_bcbc);
 		/*
 		 * This should have re-used the Configuration just created.
 		 */
@@ -1532,7 +1532,7 @@ public class ConfigurationRepositoryTests {
 		/*
 		 * Retrieve value just set. The new value should override the default.
 		 */
-		stringValueRoleSpecificObject = config.get(ParamName.TEST_STRING, role_bcbc);
+		stringValueRoleSpecificObject = configurationService.get(ParamName.TEST_STRING, role_bcbc);
 		assertThat(stringValueRoleSpecificObject, is(instanceOf(String.class)));
 		assertThat((String) stringValueRoleSpecificObject, is(newStringValue));
 
@@ -1540,7 +1540,7 @@ public class ConfigurationRepositoryTests {
 		 * The default value for ParamName.TEST_STRING should still be the
 		 * same.
 		 */
-		Object stringValueDefaultObject = config.get(ParamName.TEST_STRING);
+		Object stringValueDefaultObject = configurationService.get(ParamName.TEST_STRING);
 		assertThat(stringValueDefaultObject, is(instanceOf(String.class)));
 		assertThat((String) stringValueDefaultObject, is(TEST_STRING_DEFAULT_VALUE));
 	}
@@ -1570,7 +1570,7 @@ public class ConfigurationRepositoryTests {
 	@Test
 	@Transactional
 	public void textValueFetchDefaultFromConfig() {
-		Object textValueObject = config.get(ParamName.TEST_TEXT);
+		Object textValueObject = configurationService.get(ParamName.TEST_TEXT);
 		assertThat(textValueObject, is(instanceOf(String.class)));
 		assertThat((String) textValueObject, is(TEST_TEXT_DEFAULT_VALUE));
 	}
@@ -1593,7 +1593,7 @@ public class ConfigurationRepositoryTests {
 		 * Fetch the role-specific value for the TEST_TEXT parameter for Role 
 		 * "aabb".
 		 */
-		Object textValueObject = config.get(ParamName.TEST_TEXT, role_aabb);
+		Object textValueObject = configurationService.get(ParamName.TEST_TEXT, role_aabb);
 		assertThat(textValueObject, is(instanceOf(String.class)));
 		assertThat((String) textValueObject, is(TEST_TEXT_ROLE_aabb_VALUE));
 	}
@@ -1613,7 +1613,7 @@ public class ConfigurationRepositoryTests {
 		 * There is a default value for ParamName.TEST_TEXT, but no
 		 * role-specific value for Role "bcbc".
 		 */
-		Object textValueObject = config.get(ParamName.TEST_TEXT, role_bcbc);
+		Object textValueObject = configurationService.get(ParamName.TEST_TEXT, role_bcbc);
 		assertThat(textValueObject, is(instanceOf(String.class)));
 		assertThat((String) textValueObject, is(TEST_TEXT_DEFAULT_VALUE));
 	}
@@ -1630,14 +1630,14 @@ public class ConfigurationRepositoryTests {
 		/*
 		 * Retrieve the existing default value.
 		 */
-		Object textValueDefaultObject = config.get(ParamName.TEST_TEXT);
+		Object textValueDefaultObject = configurationService.get(ParamName.TEST_TEXT);
 		assertThat(textValueDefaultObject, is(instanceOf(String.class)));
 		assertThat((String) textValueDefaultObject, is(TEST_TEXT_DEFAULT_VALUE));
 		/*
 		 * Update default value.
 		 */
 		String newTextValue = "New default text value, which could be very long";
-		config.set(ParamName.TEST_TEXT, newTextValue);
+		configurationService.set(ParamName.TEST_TEXT, newTextValue);
 		/*
 		 * The existing Configuration should have been updated, so there should
 		 * be the same number of entities in the database
@@ -1646,7 +1646,7 @@ public class ConfigurationRepositoryTests {
 		/* 
 		 * Retrieve value just set.
 		 */
-		Object textValueNewDefaultObject = config.get(ParamName.TEST_TEXT);
+		Object textValueNewDefaultObject = configurationService.get(ParamName.TEST_TEXT);
 		assertThat(textValueNewDefaultObject, is(instanceOf(String.class)));
 		assertThat((String) textValueNewDefaultObject, is(newTextValue));
 	}
@@ -1668,7 +1668,7 @@ public class ConfigurationRepositoryTests {
 		 * There is a default value for ParamName.TEST_TEXT, but no
 		 * role-specific value for Role "bcbc".
 		 */
-		Object textValueObject = config.get(ParamName.TEST_TEXT, role_bcbc);
+		Object textValueObject = configurationService.get(ParamName.TEST_TEXT, role_bcbc);
 		assertThat(textValueObject, is(instanceOf(String.class)));
 		assertThat((String) textValueObject, is(TEST_TEXT_DEFAULT_VALUE));
 
@@ -1677,7 +1677,7 @@ public class ConfigurationRepositoryTests {
 		 * the specified role.
 		 */
 		String newTextValue = "A potentially very long string.";
-		config.set(ParamName.TEST_TEXT, newTextValue, role_bcbc);
+		configurationService.set(ParamName.TEST_TEXT, newTextValue, role_bcbc);
 		/*
 		 * This should have created a new Configuration.
 		 */
@@ -1685,7 +1685,7 @@ public class ConfigurationRepositoryTests {
 		/*
 		 * Retrieve value just set. The new value should override the default.
 		 */
-		Object textValueRoleSpecificObject = config.get(ParamName.TEST_TEXT, role_bcbc);
+		Object textValueRoleSpecificObject = configurationService.get(ParamName.TEST_TEXT, role_bcbc);
 		assertThat(textValueRoleSpecificObject, is(instanceOf(String.class)));
 		assertThat((String) textValueRoleSpecificObject, is(newTextValue));
 
@@ -1699,7 +1699,7 @@ public class ConfigurationRepositoryTests {
 		 * the specified role.
 		 */
 		newTextValue = "Updated role-specific text value";
-		config.set(ParamName.TEST_TEXT, newTextValue, role_bcbc);
+		configurationService.set(ParamName.TEST_TEXT, newTextValue, role_bcbc);
 		/*
 		 * This should have re-used the Configuration just created.
 		 */
@@ -1707,7 +1707,7 @@ public class ConfigurationRepositoryTests {
 		/*
 		 * Retrieve value just set. The new value should override the default.
 		 */
-		textValueRoleSpecificObject = config.get(ParamName.TEST_TEXT, role_bcbc);
+		textValueRoleSpecificObject = configurationService.get(ParamName.TEST_TEXT, role_bcbc);
 		assertThat(textValueRoleSpecificObject, is(instanceOf(String.class)));
 		assertThat((String) textValueRoleSpecificObject, is(newTextValue));
 
@@ -1715,7 +1715,7 @@ public class ConfigurationRepositoryTests {
 		 * The default value for ParamName.TEST_TEXT should still be the
 		 * same.
 		 */
-		Object textValueDefaultObject = config.get(ParamName.TEST_TEXT);
+		Object textValueDefaultObject = configurationService.get(ParamName.TEST_TEXT);
 		assertThat(textValueDefaultObject, is(instanceOf(String.class)));
 		assertThat((String) textValueDefaultObject, is(TEST_TEXT_DEFAULT_VALUE));
 	}
@@ -1760,7 +1760,7 @@ public class ConfigurationRepositoryTests {
 		 * Fetch the role-specific value for the TEST_TIME parameter for Role 
 		 * "aabb".
 		 */
-		Object timeValueObject = config.get(ParamName.TEST_TIME, role_aabb);
+		Object timeValueObject = configurationService.get(ParamName.TEST_TIME, role_aabb);
 		assertThat(timeValueObject, is(instanceOf(Date.class)));
 
 		Date timeFromConfig = (Date) timeValueObject;
@@ -1782,7 +1782,7 @@ public class ConfigurationRepositoryTests {
 		/*
 		 * Retrieve the existing default value.
 		 */
-		Object timeValueObject = config.get(ParamName.TEST_TIME);
+		Object timeValueObject = configurationService.get(ParamName.TEST_TIME);
 		assertThat(timeValueObject, is(instanceOf(Date.class)));
 		Date timeFromConfig = (Date) timeValueObject;
 
@@ -1815,7 +1815,7 @@ public class ConfigurationRepositoryTests {
 		 * used because it is only the time portion that we work with.
 		 */
 		Date newTimeValue = new GregorianCalendar(1800, 6, 15, 13, 45, 59).getTime();
-		config.set(ParamName.TEST_TIME, newTimeValue);
+		configurationService.set(ParamName.TEST_TIME, newTimeValue);
 		/*
 		* The existing Configuration should have been updated, so there should
 		* be the same number of entities in the database
@@ -1824,7 +1824,7 @@ public class ConfigurationRepositoryTests {
 		/* 
 		 * Retrieve value just set.
 		 */
-		Object timeValueObjectUpdated = config.get(ParamName.TEST_TIME);
+		Object timeValueObjectUpdated = configurationService.get(ParamName.TEST_TIME);
 		assertThat(timeValueObjectUpdated, is(instanceOf(Date.class)));
 		Date timeFromConfigUpdated = (Date) timeValueObjectUpdated;
 		assertThat(timeFromConfigUpdated, is(not(nullValue())));
@@ -1851,7 +1851,7 @@ public class ConfigurationRepositoryTests {
 		 * There is a default value for ParamName.TEST_TIME, but no
 		 * role-specific value for Role "bcbc".
 		 */
-		Object timeValueObject = config.get(ParamName.TEST_TIME, role_bcbc);
+		Object timeValueObject = configurationService.get(ParamName.TEST_TIME, role_bcbc);
 		assertThat(timeValueObject, is(instanceOf(Date.class)));
 		Date timeFromConfig = (Date) timeValueObject;
 		assertThat(timeFromConfig, is(not(nullValue())));
@@ -1871,7 +1871,7 @@ public class ConfigurationRepositoryTests {
 		 * used because it is only the time portion that we work with.
 		 */
 		Date newTimeValue = new GregorianCalendar(1960, 4, 14, 23, 30, 59).getTime();
-		config.set(ParamName.TEST_TIME, newTimeValue, role_bcbc);
+		configurationService.set(ParamName.TEST_TIME, newTimeValue, role_bcbc);
 		/*
 		 * This should have created a new Configuration.
 		 */
@@ -1879,7 +1879,7 @@ public class ConfigurationRepositoryTests {
 		/*
 		 * Retrieve value just set. The new value should override the default.
 		 */
-		Object timeValueRoleSpecificObject = config.get(ParamName.TEST_TIME, role_bcbc);
+		Object timeValueRoleSpecificObject = configurationService.get(ParamName.TEST_TIME, role_bcbc);
 		assertThat(timeValueRoleSpecificObject, is(instanceOf(Date.class)));
 		Date timeFromRoleSpecific = (Date) timeValueRoleSpecificObject;
 		assertThat(timeFromRoleSpecific, is(not(nullValue())));
@@ -1897,7 +1897,7 @@ public class ConfigurationRepositoryTests {
 		 * used because it is only the time portion that we work with.
 		 */
 		newTimeValue = new GregorianCalendar(1961, 10, 4, 00, 00, 00).getTime();
-		config.set(ParamName.TEST_TIME, newTimeValue, role_bcbc);
+		configurationService.set(ParamName.TEST_TIME, newTimeValue, role_bcbc);
 		/*
 		 * This should have created a new Configuration.
 		 */
@@ -1905,7 +1905,7 @@ public class ConfigurationRepositoryTests {
 		/*
 		 * Retrieve value just set. The new value should override the default.
 		 */
-		timeValueRoleSpecificObject = config.get(ParamName.TEST_TIME, role_bcbc);
+		timeValueRoleSpecificObject = configurationService.get(ParamName.TEST_TIME, role_bcbc);
 		assertThat(timeValueRoleSpecificObject, is(instanceOf(Date.class)));
 		timeFromRoleSpecific = (Date) timeValueRoleSpecificObject;
 		assertThat(timeFromRoleSpecific, is(not(nullValue())));
@@ -1918,7 +1918,7 @@ public class ConfigurationRepositoryTests {
 		 * The default value for ParamName.TEST_TIME should still be the
 		 * same.
 		 */
-		Object timeValueDefaultObject = config.get(ParamName.TEST_TIME);
+		Object timeValueDefaultObject = configurationService.get(ParamName.TEST_TIME);
 		assertThat(timeValueDefaultObject, is(instanceOf(Date.class)));
 		timeFromConfig = (Date) timeValueDefaultObject;
 		assertThat(timeFromConfig, is(not(nullValue())));

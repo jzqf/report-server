@@ -19,11 +19,11 @@ public class TestController {
 
 	private static final Logger logger = LoggerFactory.getLogger(TestController.class);
 
-	private final ConfigurationService config;
+	private final ConfigurationService configurationService;
 
 	@Autowired
-	public TestController(ConfigurationService config) {
-		this.config = config;
+	public TestController(ConfigurationService configurationService) {
+		this.configurationService = configurationService;
 	}
 
 	@GET
@@ -39,8 +39,8 @@ public class TestController {
 	@Produces("text/plain")
 	public String getTestStringParamDefault(@HeaderParam("Accept") String acceptHeader) {
 		String apiVersion = ReST.extractAPIVersion(acceptHeader);
-		config.set(ParamName.TEST_STRING, "Default value for ParamName.TEST_STRING");
-		Object stringValueDefaultObject = config.get(ParamName.TEST_STRING);
+		configurationService.set(ParamName.TEST_STRING, "Default value for ParamName.TEST_STRING");
+		Object stringValueDefaultObject = configurationService.get(ParamName.TEST_STRING);
 		String stringParam = null;
 		if (stringValueDefaultObject instanceof String) {
 			stringParam = (String) stringValueDefaultObject;
