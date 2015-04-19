@@ -1,4 +1,4 @@
-package com.qfree.obo.report.configuration;
+package com.qfree.obo.report.service;
 
 /**
  * This interface exists only for marking its containing package for recursive

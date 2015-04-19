@@ -1,4 +1,4 @@
-package com.qfree.obo.report.configuration;
+package com.qfree.obo.report.service;
 
 import java.util.Date;
 
@@ -10,71 +10,21 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.qfree.obo.report.db.ConfigurationRepository;
 import com.qfree.obo.report.domain.Configuration;
+import com.qfree.obo.report.domain.Configuration.ParamName;
+import com.qfree.obo.report.domain.Configuration.ParamType;
 import com.qfree.obo.report.domain.Role;
 
 @Component
-public class Config {
+@Transactional
+public class ConfigurationService {
 
-	private static final Logger logger = LoggerFactory.getLogger(Config.class);
+	private static final Logger logger = LoggerFactory.getLogger(ConfigurationService.class);
+
+	private final ConfigurationRepository configurationRepository;
 
 	@Autowired
-	ConfigurationRepository configurationRepository;
-
-	/**
-	 * These enum elements are stored in the report server database as
-	 * strings. They are used by the {@link Configuration} entity class. 
-	 * Therefore, they should never be changed or deleted.
-	 */
-	public enum ParamName {
-		/*
-		 * For unit tests:
-		 */
-		TEST_BOOLEAN(ParamType.BOOLEAN),
-		TEST_BYTEARRAY(ParamType.BYTEARRAY),
-		TEST_DATE(ParamType.DATE),
-		TEST_DATETIME(ParamType.DATETIME),
-		TEST_DOUBLE(ParamType.DOUBLE),
-		TEST_FLOAT(ParamType.FLOAT),
-		TEST_INTEGER(ParamType.INTEGER),
-		TEST_LONG(ParamType.LONG),
-		TEST_STRING(ParamType.STRING),
-		TEST_TEXT(ParamType.TEXT),
-		TEST_TIME(ParamType.TIME),
-		/* 
-		 * No [configuration] record is created for this parameter in the test
-		 * data created by .../test-data.sql. This allows it to be used for unit
-		 * tests related to configuration parameters that have not been set.
-		 */
-		TEST_NOTSET(ParamType.STRING);
-
-		private ParamType paramType;
-
-		private ParamName(ParamType paramType) {
-			this.paramType = paramType;
-		}
-
-		public ParamType paramType() {
-			return paramType;
-		}
-	}
-
-	/**
-	 * These enum elements are stored in the report server database as
-	 * strings. They are used by the {@link Configuration} entity class. 
-	 * Therefore, they should never be changed or deleted.
-	 */
-	public enum ParamType {
-		BOOLEAN,
-		BYTEARRAY,
-		DATE,
-		DATETIME,
-		DOUBLE,
-		FLOAT,
-		INTEGER,
-		LONG,
-		STRING,
-		TEXT,
-		TIME
+	public ConfigurationService(ConfigurationRepository configurationRepository) {
+		this.configurationRepository = configurationRepository;
 	}
 
 	@Transactional(readOnly = true)

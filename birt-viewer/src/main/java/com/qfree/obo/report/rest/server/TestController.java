@@ -10,8 +10,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.qfree.obo.report.configuration.Config;
-import com.qfree.obo.report.configuration.Config.ParamName;
+import com.qfree.obo.report.domain.Configuration.ParamName;
+import com.qfree.obo.report.service.ConfigurationService;
 
 @Component
 @Path("/test")
@@ -19,8 +19,12 @@ public class TestController {
 
 	private static final Logger logger = LoggerFactory.getLogger(TestController.class);
 
+	private final ConfigurationService config;
+
 	@Autowired
-	Config config;
+	public TestController(ConfigurationService config) {
+		this.config = config;
+	}
 
 	@GET
 	@Produces("text/plain")

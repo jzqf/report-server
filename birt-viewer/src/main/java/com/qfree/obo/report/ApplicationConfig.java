@@ -85,7 +85,7 @@ import org.springframework.core.env.Environment;
 		})
 @ComponentScan(basePackageClasses = {
 		com.qfree.obo.report.rest.server.ComponentScanPackageMarker.class,
-		com.qfree.obo.report.configuration.ComponentScanPackageMarker.class,
+		com.qfree.obo.report.service.ComponentScanPackageMarker.class,
 })
 @Import({ PersistenceConfigTestEnv.class })
 @ImportResource("classpath:spring/root-context.xml")

@@ -24,10 +24,10 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.qfree.obo.report.ApplicationConfig;
-import com.qfree.obo.report.configuration.Config;
-import com.qfree.obo.report.configuration.Config.ParamName;
 import com.qfree.obo.report.domain.Configuration;
+import com.qfree.obo.report.domain.Configuration.ParamName;
 import com.qfree.obo.report.domain.Role;
+import com.qfree.obo.report.service.ConfigurationService;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = ApplicationConfig.class)
@@ -77,7 +77,7 @@ public class ConfigurationRepositoryTests {
 	RoleRepository roleRepository;
 
 	@Autowired
-	Config config;
+	ConfigurationService config;
 
 	@Test
 	@Transactional
@@ -156,7 +156,7 @@ public class ConfigurationRepositoryTests {
 
 	/*
 	 * Set default boolean value for a parameter that already has a default 
-	 * (Role==null) Configuration. This should update the existing Configuration
+	 *Configuration. This should update the existing Configuration
 	 * entity to store this new value.
 	 */
 	@Test
