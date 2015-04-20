@@ -1,4 +1,4 @@
-package com.qfree.obo.report.db;
+package com.qfree.obo.report;
 
 import java.util.Properties;
 
@@ -26,13 +26,11 @@ import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
-import com.qfree.obo.report.configuration.Config;
-
 @Configuration
 @EnableJpaRepositories(basePackages = "com.qfree.obo.report.db")
 @PropertySource("classpath:config.properties")
-//This is for *multiple* properties files (Spring 4+). The @PropertySource 
-//elements must be comma-separated:
+//This is for *multiple* properties files. The @PropertySource elements must be
+//comma-separated:
 //@PropertySources({
 //		@PropertySource("classpath:config.properties")
 //})
@@ -47,6 +45,20 @@ public class PersistenceConfigTestEnv {
 	 */
 	@Autowired
 	private Environment env;
+
+	/* This is a simple DataSource provided by Spring. Not suitable for 
+	 * production, but can be used for testing. Returns a new connection each
+	 * time a connection is requested.
+	 */
+	//	@Bean
+	//	public DataSource dataSource() {
+	//		DriverManagerDataSource dataSource = new DriverManagerDataSource();
+	//		dataSource.setDriverClassName(env.getProperty("db.jdbc.driverclass"));
+	//		dataSource.setUrl(env.getProperty("db.jdbc.url"));
+	//		dataSource.setUsername(env.getProperty("db.username"));
+	//		dataSource.setPassword(env.getProperty("db.password"));
+	//		return dataSource;
+	//	}
 
 	@Bean
 	public DataSource dataSource() {
@@ -87,6 +99,35 @@ public class PersistenceConfigTestEnv {
 		}
 		return dataSource;
 	}
+
+	/* JNDI DataSource. 
+	 * 
+	 * This may be a Apache Commons DBCP 2.x pooled DataSource, but we don't 
+	 * really know or care here.
+	 *
+	 * The required JDBC driver must be present in the local Maven
+	 * repository as well as in the application server, e.g., the Tomcat 
+	 * $CATALINA_HOME/lib directory.  The DataSource object is created by the 
+	 * container, e.g., Tomcat.  Tomcat has, by default, the Apache Commons 
+	 * "dbcp" & "pool" libraries installed in 
+	 * $CATALINA_HOME/lib/tomcat-dbcp.jar.
+	 * 
+	 *	TODO See page 289 of Spring in Action for Spring-specific code!!!!!!!!!!!!!!!!!!!
+	 */
+	//	@Bean
+	//	public DataSource dataSource() {
+	//		DataSource dataSource = null;
+	//		//			JndiTemplate jndi = new JndiTemplate();
+	//		try {
+	//			//			dataSource = (DataSource) jndi.lookup("java:comp/env/jdbc/autopass");
+	//			Context initContext = new InitialContext();
+	//			Context envContext = (Context) initContext.lookup("java:comp/env");
+	//			dataSource = (DataSource) envContext.lookup("jdbc/autopass");
+	//		} catch (NamingException e) {
+	//			logger.error("NamingException for java:comp/env/jdbc/autopass", e);
+	//		}
+	//		return dataSource;
+	//	}
 
 	@Bean
 	public LocalContainerEntityManagerFactoryBean
@@ -148,9 +189,17 @@ public class PersistenceConfigTestEnv {
 		}
 	}
 
-	@Bean
-	public Config config() {
-		return new Config();
-	}
+	//	@Bean
+	//	public EmbeddedServletContainerFactory servletContainer() {
+	//		TomcatEmbeddedServletContainerFactory factory = new TomcatEmbeddedServletContainerFactory();
+	//		//		factory.setPort(9000);
+	//		//		factory.setSessionTimeout(10, TimeUnit.MINUTES);
+	//		//		factory.addErrorPages(new ErrorPage(HttpStatus.NOT_FOUND, "/notfound.html"));
+	//		return factory;
+	//	}
+
+	//	public static void main(String[] args) {
+	//		SpringApplication.run(PersistenceConfigTestEnv.class, args);
+	//	}
 
 }

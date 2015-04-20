@@ -22,6 +22,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.qfree.obo.report.ApplicationConfig;
 import com.qfree.obo.report.domain.DocumentFormat;
 import com.qfree.obo.report.domain.Job;
 import com.qfree.obo.report.domain.JobParameterValue;
@@ -31,10 +32,10 @@ import com.qfree.obo.report.domain.ReportVersion;
 import com.qfree.obo.report.domain.Role;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = PersistenceConfigTestEnv.class)
-public class JobParameterValueRepositoryTest {
+@ContextConfiguration(classes = ApplicationConfig.class)
+public class JobParameterValueRepositoryTests {
 
-	private static final Logger logger = LoggerFactory.getLogger(JobParameterValueRepositoryTest.class);
+	private static final Logger logger = LoggerFactory.getLogger(JobParameterValueRepositoryTests.class);
 
 	@Autowired
 	JobParameterValueRepository jobParameterValueRepository;

@@ -24,9 +24,6 @@ import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;
 
-import com.qfree.obo.report.configuration.Config.ParamName;
-import com.qfree.obo.report.configuration.Config.ParamType;
-
 /**
  * The persistent class for the "configuration" database table.
  * 
@@ -43,6 +40,61 @@ import com.qfree.obo.report.configuration.Config.ParamType;
 public class Configuration implements Serializable {
 
 	private static final long serialVersionUID = 1L;
+
+	/**
+	 * These enum elements are stored in the report server database as strings.
+	 * Therefore, they should never be changed or deleted.
+	 */
+	public enum ParamName {
+		/*
+		 * For unit tests:
+		 */
+		TEST_BOOLEAN(ParamType.BOOLEAN),
+		TEST_BYTEARRAY(ParamType.BYTEARRAY),
+		TEST_DATE(ParamType.DATE),
+		TEST_DATETIME(ParamType.DATETIME),
+		TEST_DOUBLE(ParamType.DOUBLE),
+		TEST_FLOAT(ParamType.FLOAT),
+		TEST_INTEGER(ParamType.INTEGER),
+		TEST_LONG(ParamType.LONG),
+		TEST_STRING(ParamType.STRING),
+		TEST_TEXT(ParamType.TEXT),
+		TEST_TIME(ParamType.TIME),
+		/* 
+		 * No [configuration] record is created for this parameter in the test
+		 * data created by .../test-data.sql. This allows it to be used for unit
+		 * tests related to configuration parameters that have not been set.
+		 */
+		TEST_NOTSET(ParamType.STRING);
+	
+		private ParamType paramType;
+	
+		private ParamName(ParamType paramType) {
+			this.paramType = paramType;
+		}
+	
+		public ParamType paramType() {
+			return paramType;
+		}
+	}
+
+	/**
+	 * These enum elements are stored in the report server database as strings.
+	 * Therefore, they should never be changed or deleted.
+	 */
+	public enum ParamType {
+		BOOLEAN,
+		BYTEARRAY,
+		DATE,
+		DATETIME,
+		DOUBLE,
+		FLOAT,
+		INTEGER,
+		LONG,
+		STRING,
+		TEXT,
+		TIME
+	}
 
 	@Id
 	@NotNull

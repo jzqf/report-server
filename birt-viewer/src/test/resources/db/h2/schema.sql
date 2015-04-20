@@ -1,13 +1,31 @@
 -- H2:
 
--- These commands are not necessary for an embedded database that is used for
--- testing because we create a new datbase on each run.
---DROP TABLE IF EXISTS reporting.report;
---DROP TABLE IF EXISTS reporting.report_category;
--- ...
---DROP SCHEMA IF EXISTS reporting;
+-- These commands are needed when using an embedded H2 database that is used for
+-- testing, even if a new database is created for each run. It seems that this
+-- script can be run (by Spring?) before individual test methods without first
+-- deleting the H2 database. Hence, this script must be able to execute for an
+-- EXISTING database that already has these objects created. This behaviour only
+-- started after I added Spring Boot to this application.
 
-CREATE SCHEMA reporting;
+CREATE SCHEMA IF NOT EXISTS reporting;
+
+DROP TABLE IF EXISTS reporting.configuration CASCADE;
+DROP TABLE IF EXISTS reporting.document_format CASCADE;
+DROP TABLE IF EXISTS reporting.job CASCADE;
+DROP TABLE IF EXISTS reporting.job_parameter_value CASCADE;
+DROP TABLE IF EXISTS reporting.parameter_type CASCADE;
+DROP TABLE IF EXISTS reporting.report CASCADE;
+DROP TABLE IF EXISTS reporting.report_category CASCADE;
+DROP TABLE IF EXISTS reporting.report_parameter CASCADE;
+DROP TABLE IF EXISTS reporting.report_version CASCADE;
+DROP TABLE IF EXISTS reporting.role CASCADE;
+DROP TABLE IF EXISTS reporting.role_parameter_value CASCADE;
+DROP TABLE IF EXISTS reporting.role_report CASCADE;
+DROP TABLE IF EXISTS reporting.role_role CASCADE;
+DROP TABLE IF EXISTS reporting.subscription CASCADE;
+DROP TABLE IF EXISTS reporting.subscription_parameter_value CASCADE;
+DROP TABLE IF EXISTS reporting.widget CASCADE;
+
 --------------------------------------------------------------------------------
 
 CREATE TABLE reporting.configuration (

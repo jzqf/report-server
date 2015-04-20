@@ -9,8 +9,8 @@ import com.qfree.obo.report.domain.Report;
 
 /**
  * Implementation class for "custom" repository query methods for 
- * {@link Report} persistence.<br>
- * <br>
+ * {@link Report} persistence.
+ * <p>
  * Only query methods that are declared in 
  * {@link ReportRepositoryCustom} should be declared here. These are
  * methods that <i>cannot</i> be created using Spring Data's domain specific 
@@ -33,7 +33,7 @@ public class ReportRepositoryImpl implements ReportRepositoryCustom {
 	 * Configuration entity class.
 	 */
 	public List<Report> findRecentlyCreated(int count) {
-		return (List<Report>) entityManager.createNamedQuery("Report.findByCreated", Report.class)
+		return entityManager.createNamedQuery("Report.findByCreated", Report.class)
 				.setMaxResults(count)
 				.getResultList();
 	}

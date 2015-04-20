@@ -28,14 +28,15 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.qfree.obo.report.ApplicationConfig;
 import com.qfree.obo.report.domain.Report;
 import com.qfree.obo.report.domain.ReportCategory;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes = PersistenceConfigTestEnv.class)
-public class ReportRepositoryTest {
+@ContextConfiguration(classes = ApplicationConfig.class)
+public class ReportRepositoryTests {
 
-	private static final Logger logger = LoggerFactory.getLogger(ReportRepositoryTest.class);
+	private static final Logger logger = LoggerFactory.getLogger(ReportRepositoryTests.class);
 
 	@Autowired
 	ReportRepository reportRepository;
