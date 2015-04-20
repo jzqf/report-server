@@ -3,6 +3,7 @@ package com.qfree.obo.report;
 //import javax.naming.Context;
 //import javax.naming.InitialContext;
 //import javax.naming.NamingException;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,8 +17,6 @@ import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.ImportResource;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
-
-//import com.borgsoftware.springmvc.spring.web.PropertyTest;
 
 /**
  * The main/root class for Java-based configuration for the root Spring
@@ -155,6 +154,47 @@ public class ApplicationConfig {
 	//	//        p.setLocations(resourceLocations);
 	//	//        return p;
 	//	//    }
+
+	/*
+	 * To get this to work, I may need to also register:
+	 * 
+	 *     filters
+	 *     listeners
+	 *     additional servlet mappings
+	 *     context parameters		e.g., specify "reports" directory, ...
+	 *     ...?
+	 * 
+	 * In fact, I may need to effectively specify here most of what appears in 
+	 * web.xml. See:
+	 * 
+	 * http://docs.spring.io/autorepo/docs/spring-boot/current/api/org/springframework/boot/context/embedded/ServletRegistrationBean.html
+	 * http://docs.spring.io/spring-boot/docs/current/api/org/springframework/boot/context/embedded/FilterRegistrationBean.html
+	 * http://docs.spring.io/spring-boot/docs/current/reference/html/boot-features-developing-web-applications.html#boot-features-embedded-container
+	 * http://www.leveluplunch.com/blog/2014/04/01/spring-boot-configure-servlet-mapping-filters/
+	 * http://stackoverflow.com/questions/20915528/how-can-i-register-a-secondary-servlet-with-spring-boot
+	 * http://stackoverflow.com/questions/19825946/how-to-add-a-filter-class-in-spring-boot
+	 * http://stackoverflow.com/questions/26639475/how-to-set-context-param-in-spring-boot
+	 * 
+	 * Should these beans only be declared from within the "main" method 
+	 * somehow (to avoid creating these beans unless I am running this 
+	 * application with an embedded Tomcat server via SpringApplication?
+	 */
+	//	@Bean
+	//	public ViewerServlet viewerServlet() {
+	//		return new ViewerServlet();
+	//	}
+	//
+	//	@Bean
+	//	public ServletRegistrationBean viewerServletRegistrationBean(ViewerServlet viewerServlet) {
+	//		//return new ServletRegistrationBean(viewerServlet, "/report-server/frameset");
+	//		ServletRegistrationBean registration = new ServletRegistrationBean(viewerServlet);
+	//		registration.addUrlMappings("/report-server/frameset/*", "/report-server/run/*");
+	//		return registration;
+	//	}
+	//	//	public ServletRegistrationBean servletRegistrationBean() {
+	//	//		return new ServletRegistrationBean(new org.eclipse.birt.report.servlet.ViewerServlet(),
+	//	//				"/report-server/frameset");
+	//	//	}
 
 	public static void main(String[] args) {
 		SpringApplication.run(ApplicationConfig.class, args);
