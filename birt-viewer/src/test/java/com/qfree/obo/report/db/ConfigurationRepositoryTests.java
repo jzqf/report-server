@@ -307,6 +307,40 @@ public class ConfigurationRepositoryTests {
 		assertThat(stringValue, is(TEST_STRING_DEFAULT_VALUE));
 	}
 
+	/*
+	 * Get role-specific string value for a parameter that has both a default 
+	 * (Role==null) Configuration, and a role-specific value. This should
+	 * fetch the role-specific value.
+	 */
+	@Test
+	@Transactional
+	public void stringValueGetRoleSpecific() {
+		UUID uuidOfRole_aabb = UUID.fromString("ee56f34d-dbb4-41c1-9d30-ce29cf973820");
+		Role role_aabb = roleRepository.findOne(uuidOfRole_aabb);
+		assertThat(role_aabb, is(notNullValue()));
+		/*
+		 * Role "aabb" has a role-specific value for the TEST_STRING parameter.
+		 */
+		Object stringValueObject = configurationRepository.findByParamName(ParamName.TEST_STRING, role_aabb)
+				.getStringValue();
+		assertThat(stringValueObject, is(instanceOf(String.class)));
+		assertThat((String) stringValueObject, is(TEST_STRING_ROLE_aabb_VALUE));
+	}
+
+	@Test
+	@Transactional
+	public void stringValueFetchNonexistentRoleSpecific() {
+		UUID uuidOfRole_bcbc = UUID.fromString("e918c8aa-c6d1-462c-9e91-f1db0fb9f346");
+		Role role_bcbc = roleRepository.findOne(uuidOfRole_bcbc);
+		assertThat(role_bcbc, is(notNullValue()));
+		/*
+		 * There is a default value for ParamName.TEST_STRING, but no
+		 * role-specific value for Role "bcbc".
+		 */
+		Object stringValueObject = configurationRepository.findByParamName(ParamName.TEST_STRING, role_bcbc);
+		assertThat(stringValueObject, is(nullValue()));
+	}
+
 	// ======================== Text parameter tests =========================
 
 	@Test
