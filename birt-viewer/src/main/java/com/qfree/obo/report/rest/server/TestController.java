@@ -5,6 +5,7 @@ import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.HeaderParam;
 import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
@@ -32,7 +33,7 @@ public class TestController {
 	}
 
 	@GET
-	@Produces("text/plain")
+	@Produces(MediaType.TEXT_PLAIN)
 	public String test(@HeaderParam("Accept") String acceptHeader) {
 		RestApiVersion apiVersion = RestUtils.extractAPIVersion(acceptHeader, RestApiVersion.v2);
 		switch (apiVersion) {
@@ -52,7 +53,7 @@ public class TestController {
 
 	@GET
 	@Path("/api_version")
-	@Produces("text/plain")
+	@Produces(MediaType.TEXT_PLAIN)
 	public String acceptHeaderApiVersionGet(@HeaderParam("Accept") String acceptHeader) {
 		//		logger.info("acceptHeader = {}", acceptHeader);
 		//		System.out.println("acceptHeaderApiVersionGet: acceptHeader = " + acceptHeader);
@@ -65,7 +66,7 @@ public class TestController {
 
 	@POST
 	@Path("/api_version")
-	@Produces("text/plain")
+	@Produces(MediaType.TEXT_PLAIN)
 	public String acceptHeaderApiVersionPost(@HeaderParam("Accept") String acceptHeader) {
 		//		logger.info("acceptHeader = {}", acceptHeader);
 		//		System.out.println("acceptHeaderApiVersionPost: acceptHeader = " + acceptHeader);
@@ -79,7 +80,7 @@ public class TestController {
 	@POST
 	@Path("/form")
 	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-	@Produces("text/plain")
+	@Produces(MediaType.TEXT_PLAIN)
 	public String formPostProduceText(
 			@HeaderParam("Accept") String acceptHeader,
 			@FormParam("param1") String param1,
@@ -88,25 +89,75 @@ public class TestController {
 		return "(" + param1 + ", " + param2 + "): " + apiVersion;
 	}
 
-	//TODO USE @GET TO RETURN A JSON object?????????????????
-
-	//TODO USE @POST TO RETURN A JSON object?????????????????
-
-	//TODO USE @PUT TO accept a JSON object, e.g., a new role?, insert innto DB and then RETURN A JSON object?????????????????
-
-	// BREAK THIS UP INTO A POST?  (DIRTIES CONSTEXT), PUT? (DIRTIES CONSTEXT) AND A GET (DOES NOT DIRTY CONTEXT), AND THEN TEST WITH TWO SEPARATE TEST METHODS
 	@GET
 	@Path("/string_param_default")
-	@Produces("text/plain")
+	@Produces(MediaType.TEXT_PLAIN)
 	public String getTestStringParamDefault(@HeaderParam("Accept") String acceptHeader) {
 		//		RestApiVersion apiVersion = RestUtils.extractAPIVersion(acceptHeader, RestApiVersion.v2);
-		//		configurationService.set(ParamName.TEST_STRING, "Default value for ParamName.TEST_STRING");
-		Object stringValueDefaultObject = configurationService.get(ParamName.TEST_STRING);
-		String stringParam = null;
-		if (stringValueDefaultObject instanceof String) {
-			stringParam = (String) stringValueDefaultObject;
-		}
-		return stringParam;
+		//		Object stringValueDefaultObject = configurationService.get(ParamName.TEST_STRING);
+		//		String stringParam = null;
+		//		if (stringValueDefaultObject instanceof String) {
+		//			stringParam = (String) stringValueDefaultObject;
+		//		}
+		//		return stringParam;
+		return configurationService.get(ParamName.TEST_STRING, null, String.class);
 	}
+
+	@GET
+	@Path("/string_param_default")
+	@Produces(MediaType.APPLICATION_JSON)
+	public String getTestStringParamDefaultAsJson(@HeaderParam("Accept") String acceptHeader) {
+		//		RestApiVersion apiVersion = RestUtils.extractAPIVersion(acceptHeader, RestApiVersion.v2);
+		String stringValue = configurationService.get(ParamName.TEST_STRING, null, String.class);
+
+
+		//XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+		//XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+		//XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+
+
+		return configurationService.get(ParamName.TEST_STRING, null, String.class);
+	}
+
+	@POST
+	@Path("/string_param_default")
+	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+	@Produces(MediaType.TEXT_PLAIN)
+	public String postTestStringParamDefault(
+			@HeaderParam("Accept") String acceptHeader,
+			@FormParam("paramValue") String newParamValue) {
+		//		RestApiVersion apiVersion = RestUtils.extractAPIVersion(acceptHeader, RestApiVersion.v2);
+		/*
+		 * Update parameter's default value.
+		 */
+		configurationService.set(ParamName.TEST_STRING, newParamValue);
+		/*
+		 * Return updated value.
+		 */
+		return configurationService.get(ParamName.TEST_STRING, null, String.class);
+	}
+
+	@PUT
+	@Path("/string_param_default")
+	@Consumes(MediaType.TEXT_PLAIN)
+	@Produces(MediaType.TEXT_PLAIN)
+	public String putTestStringParamDefault(
+			@HeaderParam("Accept") String acceptHeader,
+			String newParamValue) {
+		//		RestApiVersion apiVersion = RestUtils.extractAPIVersion(acceptHeader, RestApiVersion.v2);
+		/*
+		 * Update parameter's default value.
+		 */
+		configurationService.set(ParamName.TEST_STRING, newParamValue);
+		/*
+		 * Return updated value.
+		 */
+		return configurationService.get(ParamName.TEST_STRING, null, String.class);
+	}
+
+	//TODO USE @PUT TO RETURN A JSON object?????????????????
+
+	//TODO USE @PUT TO accept a JSON object, e.g., a new Configuration and then later a new Role?
+	//		Insert into DB and then RETURN A JSON object?????????????????
 
 }

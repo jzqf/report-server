@@ -34,6 +34,7 @@ import com.qfree.obo.report.domain.ReportCategory;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = ApplicationConfig.class)
+//@DirtiesContext(classMode = ClassMode.AFTER_CLASS)
 public class ReportRepositoryTests {
 
 	private static final Logger logger = LoggerFactory.getLogger(ReportRepositoryTests.class);

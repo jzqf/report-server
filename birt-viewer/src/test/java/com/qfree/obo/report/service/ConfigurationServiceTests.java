@@ -19,6 +19,8 @@ import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.annotation.DirtiesContext.ClassMode;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,6 +33,13 @@ import com.qfree.obo.report.domain.Role;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = ApplicationConfig.class)
+/*
+ * It is not clear that this test class dirties the Spring application context,
+ * but some of the subsequent tests fail in other JUnit test classes UNLESS this
+ * @DirtiesContext annotation is placed here. Therefore, it should be left here
+ * unless/until this behaviour is investigated thoroughly.
+ */
+@DirtiesContext(classMode = ClassMode.AFTER_CLASS)
 public class ConfigurationServiceTests {
 
 	private static final Logger logger = LoggerFactory.getLogger(ConfigurationServiceTests.class);
@@ -1200,6 +1209,24 @@ public class ConfigurationServiceTests {
 		Object stringValueObject = configurationService.get(ParamName.TEST_STRING);
 		assertThat(stringValueObject, is(instanceOf(String.class)));
 		assertThat((String) stringValueObject, is(TEST_STRING_DEFAULT_VALUE));
+	}
+
+	@Test
+	@Transactional
+	public void stringValueFetchDefaultFromConfigNullRole() {
+		Object stringValueObject = configurationService.get(ParamName.TEST_STRING, null);
+		assertThat(stringValueObject, is(instanceOf(String.class)));
+		assertThat((String) stringValueObject, is(TEST_STRING_DEFAULT_VALUE));
+	}
+
+	/*
+	 * Same test, but a typed value is returned, not an Object.
+	 */
+	@Test
+	@Transactional
+	public void stringValueFetchDefaultFromConfigNullRoleGeneric() {
+		String stringValue = configurationService.get(ParamName.TEST_STRING, null, String.class);
+		assertThat(stringValue, is(TEST_STRING_DEFAULT_VALUE));
 	}
 
 	/*

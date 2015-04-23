@@ -13,6 +13,7 @@ import javax.ws.rs.core.Response;
 
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
@@ -49,6 +50,9 @@ import com.qfree.obo.report.ApplicationConfig;
 public class TestControllerTests {
 
 	private static final Logger logger = LoggerFactory.getLogger(TestControllerTests.class);
+
+	//	@Autowired
+	//	private ConfigurationService configurationService;
 
 	@Value("${local.server.port}")
 	private int port;
@@ -268,7 +272,7 @@ public class TestControllerTests {
 	}
 
 	@Test
-	//	@DirtiesContext
+	//	@DirtiesContext	//	@Ignore
 	@Transactional(readOnly = true)
 	public void testGetTestStringParamDefault() {
 		String expected = "Meaning of life";
@@ -281,18 +285,84 @@ public class TestControllerTests {
 	}
 
 	@Test
-	//	@Ignore
+	@Ignore
 	@DirtiesContext
 	@Transactional
-	public void testGetPostTestStringParamDefault() {
+	public void testGetPostGetTestStringParamDefault() {
 		String expectedInitialValue = "Meaning of life";
 		String newValue = "New default value for ParamName.TEST_STRING";
-		Response response = webTarget
+		Response response;
+
+		/*
+		 * "GET" current default value
+		 */
+		response = webTarget
 				.path("test/string_param_default")
 				.request(MediaType.TEXT_PLAIN_TYPE)
 				.get();
 		assertThat(response.getStatus(), is(Response.Status.OK.getStatusCode()));
 		assertThat(response.readEntity(String.class), is(expectedInitialValue));
+
+		/*
+		 * "POST" new default value
+		 */
+		Form form = new Form();
+		form.param("paramValue", newValue);
+		response = webTarget.path("test/string_param_default")
+				.request()
+				.header("Accept", MediaType.TEXT_PLAIN + ";v=1")
+				.post(Entity.entity(form, MediaType.APPLICATION_FORM_URLENCODED_TYPE));
+		assertThat(response.getStatus(), is(Response.Status.OK.getStatusCode()));
+		assertThat(response.readEntity(String.class), is(newValue));
+
+		/*
+		 * "GET" updated default value
+		 */
+		response = webTarget
+				.path("test/string_param_default")
+				.request(MediaType.TEXT_PLAIN_TYPE)
+				.get();
+		assertThat(response.getStatus(), is(Response.Status.OK.getStatusCode()));
+		assertThat(response.readEntity(String.class), is(newValue));
+	}
+
+	@Test
+	@DirtiesContext
+	@Transactional
+	public void testGetPutGetTestStringParamDefault() {
+		String expectedInitialValue = "Meaning of life";
+		String newValue = "New default value for ParamName.TEST_STRING";
+		Response response;
+
+		/*
+		 * "GET" current default value
+		 */
+		response = webTarget
+				.path("test/string_param_default")
+				.request(MediaType.TEXT_PLAIN_TYPE)
+				.get();
+		assertThat(response.getStatus(), is(Response.Status.OK.getStatusCode()));
+		assertThat(response.readEntity(String.class), is(expectedInitialValue));
+
+		/*
+		 * "PUT" new default value
+		 */
+		response = webTarget.path("test/string_param_default")
+				.request()
+				.header("Accept", MediaType.TEXT_PLAIN + ";v=1")
+				.put(Entity.entity(newValue, MediaType.TEXT_PLAIN_TYPE));
+		assertThat(response.getStatus(), is(Response.Status.OK.getStatusCode()));
+		assertThat(response.readEntity(String.class), is(newValue));
+
+		/*
+		 * "GET" updated default value
+		 */
+		response = webTarget
+				.path("test/string_param_default")
+				.request(MediaType.TEXT_PLAIN_TYPE)
+				.get();
+		assertThat(response.getStatus(), is(Response.Status.OK.getStatusCode()));
+		assertThat(response.readEntity(String.class), is(newValue));
 	}
 
 

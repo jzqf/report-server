@@ -32,6 +32,30 @@ public class ConfigurationService {
 		return get(paramName, null);
 	}
 
+	/**
+	 * Generic version of {@code get} method that returns an object of the 
+	 * appropriate type that does need casting.
+	 * 
+	 * @param paramName
+	 * @param role
+	 * @param c
+	 * @return T paramValue
+	 */
+	@SuppressWarnings("unchecked")
+	@Transactional(readOnly = true)
+	public <T> T get(ParamName paramName, Role role, Class<T> c) {
+		Object object = get(paramName, role);
+		T t = null;
+		if (object != null) {
+			//		try {
+			t = (T) object;  // let calling code deal with possible exception
+			//		} catch (ClassCastException e) {
+			//			t = null;  // Just return null
+			//		}
+		}
+		return t;
+	}
+
 	@Transactional(readOnly = true)
 	public Object get(ParamName paramName, Role role) {
 		/*
