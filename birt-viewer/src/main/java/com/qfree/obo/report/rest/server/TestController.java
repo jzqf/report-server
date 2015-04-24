@@ -51,6 +51,15 @@ public class TestController {
 		return "/test endpoint: API version " + apiVersion.getVersion();
 	}
 
+	/**
+	 * ReST endpoint that can be used to confirm that the API version is being
+	 * specified correctly by a client.
+	 * 
+	 * The response entity is the version number specified in the request.
+	 *  
+	 * @param acceptHeader
+	 * @return
+	 */
 	@GET
 	@Path("/api_version")
 	@Produces(MediaType.TEXT_PLAIN)

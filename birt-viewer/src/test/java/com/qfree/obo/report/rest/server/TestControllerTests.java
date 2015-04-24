@@ -99,14 +99,21 @@ public class TestControllerTests {
 
 		response = webTarget.path("test/api_version")
 				.request()
-				.header("Accept", MediaType.TEXT_PLAIN + ";v=2")
+				.header("Accept", MediaType.TEXT_PLAIN + ";application&v=1")
 				.get();
 		assertThat(response.getStatus(), is(Response.Status.OK.getStatusCode()));
-		assertThat(response.readEntity(String.class), is("2"));
+		assertThat(response.readEntity(String.class), is("1"));
 
 		response = webTarget.path("test/api_version")
 				.request()
 				.header("Accept", MediaType.TEXT_PLAIN + ";v=5")
+				.get();
+		assertThat(response.getStatus(), is(Response.Status.OK.getStatusCode()));
+		assertThat(response.readEntity(String.class), is("5"));
+
+		response = webTarget.path("test/api_version")
+				.request()
+				.header("Accept", MediaType.TEXT_PLAIN + ";application&v=5")
 				.get();
 		assertThat(response.getStatus(), is(Response.Status.OK.getStatusCode()));
 		assertThat(response.readEntity(String.class), is("5"));
@@ -141,6 +148,13 @@ public class TestControllerTests {
 		assertThat(response.getStatus(), is(Response.Status.OK.getStatusCode()));
 		assertThat(response.readEntity(String.class), is(defaultVersion));
 
+		response = webTarget.path("test/api_version")
+				.request()
+				.header("Accept", MediaType.TEXT_PLAIN + ";application&v=99")
+				.get();
+		assertThat(response.getStatus(), is(Response.Status.OK.getStatusCode()));
+		assertThat(response.readEntity(String.class), is(defaultVersion));
+
 		/*
 		 * "vv=4" is not the correct syntax to specify the version. The default 
 		 * version will be used.
@@ -152,22 +166,12 @@ public class TestControllerTests {
 		assertThat(response.getStatus(), is(Response.Status.OK.getStatusCode()));
 		assertThat(response.readEntity(String.class), is(defaultVersion));
 
-		//		Response response = webTarget
-		//				.path("test/api_version")
-		//				.request(MediaType.TEXT_PLAIN_TYPE)
-		//				//	.request(MediaType.APPLICATION_JSON_TYPE);
-		//				//	.header("some-header", "some-value");
-		//				.get();
-		//		Invocation.Builder invocationBuilder = webTarget
-		//				.path("test")
-		//				.request(MediaType.TEXT_PLAIN_TYPE);
-		//				//	.request(MediaType.APPLICATION_JSON_TYPE);
-		//				//	.header("some-header", "some-value");
-		//
-		//		Response response = invocationBuilder
-		//					.header("some-header", "some-value");
-		//				.get();
-
+		response = webTarget.path("test/api_version")
+				.request()
+				.header("Accept", MediaType.TEXT_PLAIN + ";application&vv=4")
+				.get();
+		assertThat(response.getStatus(), is(Response.Status.OK.getStatusCode()));
+		assertThat(response.readEntity(String.class), is(defaultVersion));
 	}
 
 	@Test

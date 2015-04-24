@@ -49,7 +49,15 @@ public class RestUtils {
 	public static RestApiVersion extractAPIVersion(String httpAcceptHeader, RestApiVersion defaultVersion) {
 		RestApiVersion apiVersion = defaultVersion;
 
-		for (String token : httpAcceptHeader.split(";")) {
+		/*
+		 * Support Accept headers of the form:
+		 * 
+		 *     <media-type>;v=<version>
+		 *     <media-type>;morestuff&v=<version>
+		 * 
+		 * Therefore, the regex for the delimiter specifies ";" or "&".
+		 */
+		for (String token : httpAcceptHeader.split("[;&]")) {
 			String[] potentialKeyValuePair = token.split("=");
 			if (potentialKeyValuePair.length == 2) {
 				String key = potentialKeyValuePair[0].trim();
