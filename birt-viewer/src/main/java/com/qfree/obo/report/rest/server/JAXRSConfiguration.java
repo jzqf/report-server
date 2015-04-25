@@ -17,9 +17,10 @@ public class JAXRSConfiguration extends ResourceConfig {
 	public JAXRSConfiguration() {
 
 		/*
-		 * This doesn't seem to do anything, so it is not used.
+		 * This is for Java API for JSON Processing (JSON-P), so it doesn't do 
+		 * anything for JSON generated via MOXy.
 		 */
-		// property(JsonGenerator.PRETTY_PRINTING, true);
+		//		 property(JsonGenerator.PRETTY_PRINTING, true);
 
 		/*
 		 * This is not needed unless FEATURE_AUTO_DISCOVERY_DISABLE is disabled
@@ -44,6 +45,7 @@ public class JAXRSConfiguration extends ResourceConfig {
 		 * ReST controllers (to manage ReST resources):
 		 */
 		register(ConfigurationController.class);
+		register(ReportController.class);
 		register(TestController.class);
 		/*
 		 * TODO Decide whether to register *packages* here (not type-safe) or *classes* (type-safe and refactor-safe, but more tedious).

@@ -17,6 +17,8 @@ import com.qfree.obo.report.domain.Report;
  */
 public interface ReportRepository extends JpaRepository<Report, UUID>, ReportRepositoryCustom {
 
+	List<Report> findByActiveTrue();
+
 	List<Report> findByReportCategoryReportCategoryId(UUID reportCategoryId);
 
 }

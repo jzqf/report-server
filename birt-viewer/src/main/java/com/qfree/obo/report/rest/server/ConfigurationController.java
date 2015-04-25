@@ -1,6 +1,9 @@
 package com.qfree.obo.report.rest.server;
 
+import java.util.Date;
+
 import javax.ws.rs.GET;
+import javax.ws.rs.HeaderParam;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
@@ -10,6 +13,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.qfree.obo.report.domain.Configuration.ParamName;
 import com.qfree.obo.report.resource.ConfigurationResource;
 import com.qfree.obo.report.service.ConfigurationService;
 
@@ -28,8 +32,9 @@ public class ConfigurationController {
 
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
-	public ConfigurationResource getConfiguration() {
-		return new ConfigurationResource("Agamemnon", 32);
+	public ConfigurationResource getConfiguration(@HeaderParam("Accept") String acceptHeader) {
+		return new ConfigurationResource(
+				null, new Date(), null, ParamName.TEST_STRING, "Some bloody value");
 	}
 	//	@GET
 	//	@Produces(MediaType.TEXT_PLAIN)
