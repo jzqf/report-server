@@ -46,6 +46,7 @@ public class JAXRSConfiguration extends ResourceConfig {
 		 */
 		register(ConfigurationController.class);
 		register(ReportController.class);
+		register(ReportCategoryController.class);
 		register(TestController.class);
 		/*
 		 * TODO Decide whether to register *packages* here (not type-safe) or *classes* (type-safe and refactor-safe, but more tedious).

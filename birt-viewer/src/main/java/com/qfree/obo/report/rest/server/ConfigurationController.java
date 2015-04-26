@@ -14,11 +14,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.qfree.obo.report.domain.Configuration.ParamName;
+import com.qfree.obo.report.resource.AbstractResource;
 import com.qfree.obo.report.resource.ConfigurationResource;
 import com.qfree.obo.report.service.ConfigurationService;
 
 @Component
-@Path("/configuration")
+@Path(AbstractResource.CONFIGURATIONS_PATH)
 public class ConfigurationController {
 
 	private static final Logger logger = LoggerFactory.getLogger(ConfigurationController.class);

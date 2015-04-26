@@ -1,12 +1,14 @@
 package com.qfree.obo.report.resource;
 
+import com.qfree.obo.report.domain.Configuration;
 import com.qfree.obo.report.domain.Report;
 import com.qfree.obo.report.domain.ReportCategory;
 
 public enum ResourcePath {
 
-	REPORTS("/reports", Report.class),
-	REPORTCATEGORIES("/reportcategories", ReportCategory.class);
+	CONFIGURATIONS(AbstractResource.CONFIGURATIONS_PATH, Configuration.class),
+	REPORTS(AbstractResource.REPORTS_PATH, Report.class),
+	REPORTCATEGORIES(AbstractResource.REPORTCATEGORIES_PATH, ReportCategory.class);
 
     final String path;
 	final Class<?> entityClass;
