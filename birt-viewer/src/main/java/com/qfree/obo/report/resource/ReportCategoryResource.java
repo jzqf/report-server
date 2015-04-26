@@ -1,5 +1,6 @@
 package com.qfree.obo.report.resource;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
@@ -46,14 +47,19 @@ public class ReportCategoryResource extends AbstractResource {
 
 		super(ReportCategory.class, reportCategory.getReportCategoryId(), uriInfo, expand);
 
-		boolean expandHere = false;
 		//TODO Do not hardwire "reportcategory" here.
 		if (expand.contains("reportcategory")) {
-			expandHere = true;
-			expand.remove("reportcategory");
-		}
+			/*
+			 * Make a copy of the "expand" list from which "reportcategory" is
+			 * removed. This list should be used when creating new resources
+			 * here, instead of the original "expand" list. This is done to 
+			 * avoid the unlikely event of a long list of chained expansions
+			 * across relations.
+			 */
+			List<String> expandElementRemoved = new ArrayList<>(expand);
+			//TODO Do not hardwire "reportcategory" here.
+			expandElementRemoved.remove("reportcategory");
 
-		if (expandHere) {
 			this.reportCategoryId = reportCategory.getReportCategoryId();
 			this.abbreviation = reportCategory.getAbbreviation();
 			this.description = reportCategory.getDescription();
@@ -61,11 +67,71 @@ public class ReportCategoryResource extends AbstractResource {
 			this.active = reportCategory.isActive();
 			this.createdOn = reportCategory.getCreatedOn();
 		}
+
+	}
+
+	public UUID getReportCategoryId() {
+		return reportCategoryId;
+	}
+
+	public void setReportCategoryId(UUID reportCategoryId) {
+		this.reportCategoryId = reportCategoryId;
+	}
+
+	public String getAbbreviation() {
+		return abbreviation;
+	}
+
+	public void setAbbreviation(String abbreviation) {
+		this.abbreviation = abbreviation;
+	}
+
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
+	}
+
+	public Boolean getActive() {
+		return active;
+	}
+
+	public void setActive(Boolean active) {
+		this.active = active;
+	}
+
+	public Date getCreatedOn() {
+		return createdOn;
+	}
+
+	public void setCreatedOn(Date createdOn) {
+		this.createdOn = createdOn;
 	}
 
 	@Override
 	public String toString() {
-		return "ReportCategoryResource [href=" + href + "]";
+		StringBuilder builder = new StringBuilder();
+		builder.append("ReportCategoryResource [reportCategoryId=");
+		builder.append(reportCategoryId);
+		builder.append(", abbreviation=");
+		builder.append(abbreviation);
+		builder.append(", description=");
+		builder.append(description);
+		builder.append(", active=");
+		builder.append(active);
+		builder.append(", createdOn=");
+		builder.append(createdOn);
+		builder.append(", href=");
+		builder.append(href);
+		builder.append("]");
+		return builder.toString();
 	}
+
+	//	@Override
+	//	public String toString() {
+	//		return "ReportCategoryResource [href=" + href + "]";
+	//	}
 
 }

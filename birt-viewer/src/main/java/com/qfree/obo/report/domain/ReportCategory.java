@@ -76,7 +76,11 @@ public class ReportCategory implements Serializable {
 		this.description = description;
 		this.abbreviation = abbreviation;
 		this.active = active;
-		this.createdOn = createdOn;
+		if (createdOn != null) {
+			this.createdOn = createdOn;
+		} else {
+			this.createdOn = new Date();
+		}
 	}
 
 	public UUID getReportCategoryId() {

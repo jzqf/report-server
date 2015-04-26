@@ -1,5 +1,6 @@
 package com.qfree.obo.report.resource;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
@@ -50,14 +51,19 @@ public class ReportResource extends AbstractResource {
 
 		super(Report.class, report.getReportId(), uriInfo, expand);
 
-		boolean expandHere = false;
 		//TODO Do not hardwire "report" here.
 		if (expand.contains("report")) {
-			expandHere = true;
-			expand.remove("report");
-		}
+			/*
+			 * Make a copy of the "expand" list from which "report" is
+			 * removed. This list should be used when creating new resources
+			 * here, instead of the original "expand" list. This is done to 
+			 * avoid the unlikely event of a long list of chained expansions
+			 * across relations.
+			 */
+			List<String> expandElementRemoved = new ArrayList<>(expand);
+			//TODO Do not hardwire "report" here.
+			expandElementRemoved.remove("report");
 
-		if (expandHere) {
 			this.reportId = report.getReportId();
 			this.reportCategoryResource = new ReportCategoryResource(report.getReportCategory(), uriInfo, expand);
 			this.name = report.getName();

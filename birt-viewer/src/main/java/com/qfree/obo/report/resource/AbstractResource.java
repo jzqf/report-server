@@ -48,13 +48,13 @@ public abstract class AbstractResource {
 		this.href = createHref(uriInfo, entityClass, id, expand);
 	}
 
-	//	public String getHref() {
-	//		return href;
-	//	}
-	//
-	//	public void setHref(String href) {
-	//		this.href = href;
-	//	}
+	public String getHref() {
+		return href;
+	}
+
+	public void setHref(String href) {
+		this.href = href;
+	}
 
 	protected static String createHref(UriInfo uriInfo, Class<?> entityClass, Object id, List<String> expand) {
 		//		logger.info("entityClass.getName() = {}", entityClass.getName());
