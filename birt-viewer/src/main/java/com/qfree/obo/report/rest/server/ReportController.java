@@ -31,18 +31,16 @@ public class ReportController {
 
 	private static final Logger logger = LoggerFactory.getLogger(ReportController.class);
 
-	@Autowired
-	ReportRepository reportRepository;
+	private final ReportRepository reportRepository;
 
-	//	@Autowired
-	//	ReportCategoryRepository reportCategoryRepository;
+	//	private final ReportCategoryRepository reportCategoryRepository;
 
 	//	private final ReportService reportService;
-	//
-	//	@Autowired
-	//	public ReportController(ReportService reportService) {
-	//		this.reportService = reportService;
-	//	}
+
+	@Autowired
+	public ReportController(ReportRepository reportRepository) {
+		this.reportRepository = reportRepository;
+	}
 
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
