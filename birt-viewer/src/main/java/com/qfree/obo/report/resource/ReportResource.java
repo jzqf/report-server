@@ -60,38 +60,6 @@ public class ReportResource extends AbstractResource {
 		//		this(createHref(getFullyQualifiedContextPath(uriInfo), Report.class, report.getReportId()), report);
 	}
 
-	//	public ReportResource(String href, Report report) {
-	//		//		public ReportResource(Report report) {
-	//		this(
-	//				href,
-	//				report.getReportId(),
-	//				new ReportCategoryResource(report.getReportCategory()),
-	//				report.getName(),
-	//				report.getNumber(),
-	//				report.getReportVersions(),
-	//				report.getRoleReports(),
-	//				report.isActive(),
-	//				report.getCreatedOn());
-	//	}
-	//
-	//	public ReportResource(String href, UUID reportId, ReportCategoryResource reportCategoryResource, String name,
-	//			Integer number,
-	//			List<ReportVersion> reportVersions, List<RoleReport> roleReports, boolean active, Date createdOn) {
-	//
-	//		logger.info("href = {}", href);
-	//		this.href = href;
-	//
-	//		logger.info("reportId = {}", reportId);
-	//		this.reportId = reportId;
-	//		//		this.reportCategoryResource = reportCategoryResource;
-	//		this.name = name;
-	//		this.number = number;
-	//		//		this.reportVersions = reportVersions;
-	//		//		this.roleReports = roleReports;
-	//		this.active = active;
-	//		this.createdOn = createdOn;
-	//	}
-
 	@Override
 	public String toString() {
 		return "ReportResource [href=" + href + "]";

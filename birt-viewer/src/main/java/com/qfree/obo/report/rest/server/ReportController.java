@@ -49,12 +49,7 @@ public class ReportController {
 			@Context UriInfo uriInfo) {
 		RestApiVersion apiVersion = RestUtils.extractAPIVersion(acceptHeader, RestApiVersion.v1);
 
-		// These will be detached entities,right? Perhaps this is not what I want!!!
-		// IF THIS DOES NOT WORK, I WILL NEED TO DO EVERYTHING IN A @Transactional SERVICE METHOD!?
 		List<Report> reports = reportRepository.findByActiveTrue();
-
-		logger.info("reports.size() = {}", reports.size());
-
 		List<ReportResource> reportResources = new ArrayList<>();
 		for (Report report : reports) {
 			logger.info("report = {}", report);
@@ -71,22 +66,9 @@ public class ReportController {
 			@HeaderParam("Accept") String acceptHeader,
 			@Context UriInfo uriInfo) {
 		RestApiVersion apiVersion = RestUtils.extractAPIVersion(acceptHeader, RestApiVersion.v1);
-		logger.info("id = {}", id);
 
-		// These will be detached entities,right? Perhaps this is not what I want!!!
-		// IF THIS DOES NOT WORK, I WILL NEED TO DO EVERYTHING IN A @Transactional SERVICE METHOD!?
-		// OR CAN I ANNOTATE THIS METHOD WITH @	Transactional ?????????????????????????????????????
 		Report report = reportRepository.findOne(id);
-		logger.info("report = {}", report);
-
-		logger.info("About to call report.getReportCategory(). Will this trigger a lazy init exception? If not, perhaps after I try to access its attributes?");
 		ReportCategory reportCategory = report.getReportCategory();
-		logger.info("report.getReportCategory() ={}", reportCategory);
-		logger.info("About to call reportCategory.getReportCategoryId(). Will this trigger a lazy init exception?");
-		logger.info("reportCategory.getReportCategoryId() = {}", reportCategory.getReportCategoryId());
-		logger.info("About to call reportCategory.getReportCategoryId(). Will this trigger a lazy init exception?");
-		logger.info("reportCategory.getReportCategoryId() = {}", reportCategory.getDescription());
-
 		ReportResource reportResource = new ReportResource(uriInfo, report);
 		logger.info("reportResource = {}", reportResource);
 

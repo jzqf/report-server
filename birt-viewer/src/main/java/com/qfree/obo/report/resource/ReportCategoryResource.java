@@ -53,34 +53,6 @@ public class ReportCategoryResource extends AbstractResource {
 		this.createdOn = reportCategory.getCreatedOn();
 	}
 
-	//	public ReportCategoryResource(ReportCategory reportCategory) {
-	//		this(
-	//				reportCategory.getReportCategoryId(),
-	//				reportCategory.getAbbreviation(),
-	//				reportCategory.getDescription(),
-	//				reportCategory.getReports(),
-	//				reportCategory.isActive(),
-	//				reportCategory.getCreatedOn());
-	//	}
-	//
-	//	public ReportCategoryResource(
-	//			UUID reportCategoryId,
-	//			String abbreviation,
-	//			String description,
-	//			List<Report> reports,
-	//			boolean active,
-	//			Date createdOn) {
-	//
-	//		logger.info("reportCategoryId = {}", reportCategoryId);
-	//
-	//		this.reportCategoryId = reportCategoryId;
-	//		this.abbreviation = abbreviation;
-	//		this.description = description;
-	//		//		this.reports=reports;
-	//		this.active = active;
-	//		this.createdOn = createdOn;
-	//	}
-
 	@Override
 	public String toString() {
 		return "ReportCategoryResource [href=" + href + "]";
