@@ -2,7 +2,6 @@ package com.qfree.obo.report.rest.server;
 
 import java.net.URI;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -88,21 +87,21 @@ public class ReportCategoryController {
 		System.out.println("ReportCategoryController.create: resource = " + resource);
 
 
-		ReportCategoryResource bogusResourceForTesting = new ReportCategoryResource();
-		bogusResourceForTesting.setHref("http://BOGUS.COM!");
-		bogusResourceForTesting.setReportCategoryId(UUID.randomUUID());
-		bogusResourceForTesting.setAbbreviation("BOGUS");
-		bogusResourceForTesting.setDescription("***** Bogus description*****");
-		bogusResourceForTesting.setActive(true);
-		bogusResourceForTesting.setCreatedOn(new Date());
-		return created(bogusResourceForTesting);
+		//		ReportCategoryResource bogusResourceForTesting = new ReportCategoryResource();
+		//		bogusResourceForTesting.setHref("http://BOGUS.COM!");
+		//		bogusResourceForTesting.setReportCategoryId(UUID.randomUUID());
+		//		bogusResourceForTesting.setAbbreviation("BOGUS");
+		//		bogusResourceForTesting.setDescription("***** Bogus description*****");
+		//		bogusResourceForTesting.setActive(true);
+		//		bogusResourceForTesting.setCreatedOn(new Date());
+		//		return created(bogusResourceForTesting);
 
-		//		return created(resource);
+		return created(resource);
 	}
 
 	//IF USEFUL, PLACE IN "BaseController"?
-	protected Response created(ReportCategoryResource resource) {
-		//	protected Response created(AbstractResource resource) {
+	//	protected Response created(ReportCategoryResource resource) {
+	protected Response created(AbstractResource resource) {
 		URI uri = URI.create(resource.getHref());
 		/*
 		 * .created(uri):		sets the Location header for a "201 Created"
