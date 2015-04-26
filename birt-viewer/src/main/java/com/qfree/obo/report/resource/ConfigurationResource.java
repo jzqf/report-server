@@ -40,7 +40,7 @@ public class ConfigurationResource extends AbstractResource {
 
 	public ConfigurationResource(Configuration configuration, UriInfo uriInfo, List<String> expand) {
 
-		super(uriInfo, Configuration.class, configuration.getConfigurationId());
+		super(Configuration.class, configuration.getConfigurationId(), uriInfo, expand);
 
 		boolean expandHere = false;
 		//TODO Do not hardwire "configuration" here.

@@ -48,7 +48,7 @@ public class ReportResource extends AbstractResource {
 
 	public ReportResource(Report report, UriInfo uriInfo, List<String> expand) {
 
-		super(uriInfo, Report.class, report.getReportId());
+		super(Report.class, report.getReportId(), uriInfo, expand);
 
 		boolean expandHere = false;
 		//TODO Do not hardwire "report" here.

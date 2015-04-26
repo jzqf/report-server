@@ -44,7 +44,7 @@ public class ReportCategoryResource extends AbstractResource {
 
 	public ReportCategoryResource(ReportCategory reportCategory, UriInfo uriInfo, List<String> expand) {
 
-		super(uriInfo, ReportCategory.class, reportCategory.getReportCategoryId());
+		super(ReportCategory.class, reportCategory.getReportCategoryId(), uriInfo, expand);
 
 		boolean expandHere = false;
 		//TODO Do not hardwire "reportcategory" here.

@@ -2,6 +2,7 @@ package com.qfree.obo.report.resource;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.List;
 
 import javax.ws.rs.core.UriInfo;
 import javax.xml.bind.annotation.XmlElement;
@@ -41,10 +42,10 @@ public abstract class AbstractResource {
 		super();
 	}
 
-	public AbstractResource(UriInfo uriInfo, Class<?> entityClass, Object id) {
+	public AbstractResource(Class<?> entityClass, Object id, UriInfo uriInfo, List<String> expand) {
 		super();
 		//		this.href = createHref(getFullyQualifiedContextPath(uriInfo), entityClass, id);
-		this.href = createHref(uriInfo, entityClass, id);
+		this.href = createHref(uriInfo, entityClass, id, expand);
 	}
 
 	//	public String getHref() {
@@ -55,8 +56,15 @@ public abstract class AbstractResource {
 	//		this.href = href;
 	//	}
 
-	protected static String createHref(UriInfo uriInfo, Class<?> entityClass, Object id) {
+	protected static String createHref(UriInfo uriInfo, Class<?> entityClass, Object id, List<String> expand) {
 		//		logger.info("entityClass.getName() = {}", entityClass.getName());
+
+		//		logger.info("uriInfo.getRequestUri() = {}", uriInfo.getRequestUri());
+		//		logger.info("uriInfo.getQueryParameters() = {}", uriInfo.getQueryParameters());
+		//
+		//		MultivaluedMap<String, String> queryParameterMap = uriInfo.getQueryParameters();
+		//		String queryParameters
+
 		/*
 		 * The fully-qualified path is obtained from the UriInfo object that is
 		 * passed as a parameter to a JAX-RS controller method using:
@@ -70,8 +78,21 @@ public abstract class AbstractResource {
 		 */
 		String fqBasePath = uriInfo.getBaseUri().toString();
 		ResourcePath resourcePath = ResourcePath.forEntity(entityClass);
+
+		StringBuilder queryParameters = new StringBuilder();
+		if (expand.size() > 0) {
+			queryParameters.append("?");
+			for (int i = 0; i < expand.size(); i++) {
+				if (i == 0) {
+					queryParameters.append("expand=" + expand.get(0));
+				} else {
+					queryParameters.append("&expand=" + expand.get(0));
+				}
+			}
+		}
+
 		Path p1 = Paths.get(fqBasePath, resourcePath.getPath(), id.toString());
-		return p1.toString();
+		return p1.toString() + queryParameters.toString();
 	}
 
 	//	/**
