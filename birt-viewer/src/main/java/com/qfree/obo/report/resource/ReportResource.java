@@ -1,6 +1,7 @@
 package com.qfree.obo.report.resource;
 
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 
 import javax.ws.rs.core.UriInfo;
@@ -21,8 +22,8 @@ public class ReportResource extends AbstractResource {
 	private UUID reportId;
 
 	//TODO Expand or not based on query parameter!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-	//	@XmlElement
-	//	private ReportCategoryResource reportCategoryResource;
+	@XmlElement(name = "reportCategory")
+	private ReportCategoryResource reportCategoryResource;
 
 	@XmlElement
 	private String name;
@@ -37,7 +38,7 @@ public class ReportResource extends AbstractResource {
 	//	private List<RoleReport> roleReports;
 
 	@XmlElement
-	private boolean active;
+	private Boolean active;
 
 	@XmlElement
 	private Date createdOn;
@@ -45,19 +46,27 @@ public class ReportResource extends AbstractResource {
 	public ReportResource() {
 	}
 
-	public ReportResource(UriInfo uriInfo, Report report) {
+	public ReportResource(Report report, UriInfo uriInfo, List<String> expand) {
 
 		super(uriInfo, Report.class, report.getReportId());
 
-		this.reportId = report.getReportId();
-		//				this.reportCategoryResource = new ReportCategoryResource(uriInfo, report.getReportCategory());
-		this.name = report.getName();
-		this.number = report.getNumber();
-		//		this.reportVersions = report.getReportVersions();
-		//		this.roleReports = report.getRoleReports();
-		this.active = report.isActive();
-		this.createdOn = report.getCreatedOn();
-		//		this(createHref(getFullyQualifiedContextPath(uriInfo), Report.class, report.getReportId()), report);
+		boolean expandHere = false;
+		//TODO Do not hardwire "report" here.
+		if (expand.contains("report")) {
+			expandHere = true;
+			expand.remove("report");
+		}
+
+		if (expandHere) {
+			this.reportId = report.getReportId();
+			this.reportCategoryResource = new ReportCategoryResource(report.getReportCategory(), uriInfo, expand);
+			this.name = report.getName();
+			this.number = report.getNumber();
+			//		this.reportVersions = report.getReportVersions();
+			//		this.roleReports = report.getRoleReports();
+			this.active = report.isActive();
+			this.createdOn = report.getCreatedOn();
+		}
 	}
 
 	@Override

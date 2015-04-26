@@ -56,7 +56,7 @@ public abstract class AbstractResource {
 	//	}
 
 	protected static String createHref(UriInfo uriInfo, Class<?> entityClass, Object id) {
-		logger.info("entityClass.getName() = {}", entityClass.getName());
+		//		logger.info("entityClass.getName() = {}", entityClass.getName());
 		/*
 		 * The fully-qualified path is obtained from the UriInfo object that is
 		 * passed as a parameter to a JAX-RS controller method using:
@@ -69,21 +69,8 @@ public abstract class AbstractResource {
 		 *     http://localhost:8080/report-server/rest/
 		 */
 		String fqBasePath = uriInfo.getBaseUri().toString();
-		logger.info("fqBasePath 1 = {}", fqBasePath);
-		if (fqBasePath.endsWith("/")) {
-			fqBasePath = fqBasePath.substring(0, fqBasePath.length() - 1);
-			logger.info("fqBasePath 2 = {}", fqBasePath);
-		}
-		//		String fqBasePath = getFullyQualifiedContextPath(uriInfo);
-
-		//		StringBuilder sb = new StringBuilder(fqBasePath);
 		ResourcePath resourcePath = ResourcePath.forEntity(entityClass);
-		logger.info("resourcePath = {}", resourcePath);
-		//		sb.append(resourcePath.getPath()).append(PATH_SEPARATOR).append(id);
 		Path p1 = Paths.get(fqBasePath, resourcePath.getPath(), id.toString());
-		logger.info("p1.toString() = {}", p1.toString());
-		//		logger.info("sb.toString() = {}", sb.toString());
-		//		return sb.toString();
 		return p1.toString();
 	}
 

@@ -1,6 +1,7 @@
 package com.qfree.obo.report.resource;
 
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 
 import javax.ws.rs.core.UriInfo;
@@ -33,7 +34,7 @@ public class ReportCategoryResource extends AbstractResource {
 	//	private List<Report> reports;
 
 	@XmlElement
-	private boolean active;
+	private Boolean active;
 
 	@XmlElement
 	private Date createdOn;
@@ -41,16 +42,25 @@ public class ReportCategoryResource extends AbstractResource {
 	public ReportCategoryResource() {
 	}
 
-	public ReportCategoryResource(UriInfo uriInfo, ReportCategory reportCategory) {
+	public ReportCategoryResource(ReportCategory reportCategory, UriInfo uriInfo, List<String> expand) {
 
 		super(uriInfo, ReportCategory.class, reportCategory.getReportCategoryId());
 
-		this.reportCategoryId = reportCategory.getReportCategoryId();
-		this.abbreviation = reportCategory.getAbbreviation();
-		this.description = reportCategory.getDescription();
-		//		this.reports=reports;
-		this.active = reportCategory.isActive();
-		this.createdOn = reportCategory.getCreatedOn();
+		boolean expandHere = false;
+		//TODO Do not hardwire "reportcategory" here.
+		if (expand.contains("reportcategory")) {
+			expandHere = true;
+			expand.remove("reportcategory");
+		}
+
+		if (expandHere) {
+			this.reportCategoryId = reportCategory.getReportCategoryId();
+			this.abbreviation = reportCategory.getAbbreviation();
+			this.description = reportCategory.getDescription();
+			//		this.reports=reports;
+			this.active = reportCategory.isActive();
+			this.createdOn = reportCategory.getCreatedOn();
+		}
 	}
 
 	@Override

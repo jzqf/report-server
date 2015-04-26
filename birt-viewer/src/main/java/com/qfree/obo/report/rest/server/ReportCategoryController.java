@@ -9,6 +9,7 @@ import javax.ws.rs.HeaderParam;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.UriInfo;
@@ -41,15 +42,16 @@ public class ReportCategoryController {
 
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
-	public List<ReportCategoryResource> list(
-			@HeaderParam("Accept") String acceptHeader,
-			@Context UriInfo uriInfo) {
+	public List<ReportCategoryResource> getList(
+			@HeaderParam("Accept") final String acceptHeader,
+			@QueryParam("expand") final List<String> expand,
+			@Context final UriInfo uriInfo) {
 		RestApiVersion apiVersion = RestUtils.extractAPIVersion(acceptHeader, RestApiVersion.v1);
 
 		List<ReportCategory> reportCategories = reportCategoryRepository.findByActiveTrue();
 		List<ReportCategoryResource> reportCategoryResources = new ArrayList<>();
 		for (ReportCategory reportCategory : reportCategories) {
-			reportCategoryResources.add(new ReportCategoryResource(uriInfo, reportCategory));
+			reportCategoryResources.add(new ReportCategoryResource(reportCategory, uriInfo, expand));
 		}
 		return reportCategoryResources;
 	}
@@ -57,14 +59,20 @@ public class ReportCategoryController {
 	@Path("/{id}")
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
-	public ReportCategoryResource getOne(
-			@PathParam("id") UUID id,
-			@HeaderParam("Accept") String acceptHeader,
-			@Context UriInfo uriInfo) {
+	public ReportCategoryResource getById(
+			@PathParam("id") final UUID id,
+			@HeaderParam("Accept") final String acceptHeader,
+			@QueryParam("expand") final List<String> expand,
+			@Context final UriInfo uriInfo) {
 		RestApiVersion apiVersion = RestUtils.extractAPIVersion(acceptHeader, RestApiVersion.v1);
 
+		//TODO Do not hardwire "reportcategory" here.
+		if (!expand.contains("reportcategory")) {
+			expand.add("reportcategory");	// Always expand primary resource.
+		}
+
 		ReportCategory reportCategory = reportCategoryRepository.findOne(id);
-		ReportCategoryResource reportCategoryResource = new ReportCategoryResource(uriInfo, reportCategory);
+		ReportCategoryResource reportCategoryResource = new ReportCategoryResource(reportCategory, uriInfo, expand);
 		return reportCategoryResource;
 	}
 

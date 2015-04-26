@@ -9,6 +9,7 @@ import javax.ws.rs.HeaderParam;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.UriInfo;
@@ -44,15 +45,16 @@ public class ConfigurationController {
 
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
-	public List<ConfigurationResource> list(
-			@HeaderParam("Accept") String acceptHeader,
-			@Context UriInfo uriInfo) {
+	public List<ConfigurationResource> getList(
+			@HeaderParam("Accept") final String acceptHeader,
+			@QueryParam("expand") final List<String> expand,
+			@Context final UriInfo uriInfo) {
 		RestApiVersion apiVersion = RestUtils.extractAPIVersion(acceptHeader, RestApiVersion.v1);
 
 		List<Configuration> configurations = configurationRepository.findAll();
 		List<ConfigurationResource> configurationResources = new ArrayList<>();
 		for (Configuration configuration : configurations) {
-			configurationResources.add(new ConfigurationResource(uriInfo, configuration));
+			configurationResources.add(new ConfigurationResource(configuration, uriInfo, expand));
 		}
 		return configurationResources;
 	}
@@ -67,14 +69,20 @@ public class ConfigurationController {
 	@Path("/{id}")
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
-	public ConfigurationResource getOne(
-			@PathParam("id") UUID id,
-			@HeaderParam("Accept") String acceptHeader,
-			@Context UriInfo uriInfo) {
+	public ConfigurationResource getById(
+			@PathParam("id") final UUID id,
+			@HeaderParam("Accept") final String acceptHeader,
+			@QueryParam("expand") final List<String> expand,
+			@Context final UriInfo uriInfo) {
 		RestApiVersion apiVersion = RestUtils.extractAPIVersion(acceptHeader, RestApiVersion.v1);
 
+		//TODO Do not hardwire "configuration" here.
+		if (!expand.contains("configuration")) {
+			expand.add("configuration");	// Always expand primary resource.
+		}
+
 		Configuration configuration = configurationRepository.findOne(id);
-		ConfigurationResource configurationResource = new ConfigurationResource(uriInfo, configuration);
+		ConfigurationResource configurationResource = new ConfigurationResource(configuration, uriInfo, expand);
 		return configurationResource;
 	}
 

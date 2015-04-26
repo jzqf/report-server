@@ -9,6 +9,7 @@ import javax.ws.rs.HeaderParam;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.UriInfo;
@@ -44,16 +45,21 @@ public class ReportController {
 
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
-	public List<ReportResource> list(
-			@HeaderParam("Accept") String acceptHeader,
-			@Context UriInfo uriInfo) {
+	public List<ReportResource> getList(
+			@HeaderParam("Accept") final String acceptHeader,
+			@QueryParam("expand") final List<String> expand,
+			@Context final UriInfo uriInfo) {
 		RestApiVersion apiVersion = RestUtils.extractAPIVersion(acceptHeader, RestApiVersion.v1);
+
+		//		logger.info("expand.size() = {}", expand.size());
+		//		for (String e : expand) {
+		//			logger.info("  expand: = {}", e);
+		//		}
 
 		List<Report> reports = reportRepository.findByActiveTrue();
 		List<ReportResource> reportResources = new ArrayList<>();
 		for (Report report : reports) {
-			logger.info("report = {}", report);
-			reportResources.add(new ReportResource(uriInfo, report));
+			reportResources.add(new ReportResource(report, uriInfo, expand));
 		}
 		return reportResources;
 	}
@@ -61,16 +67,26 @@ public class ReportController {
 	@Path("/{id}")
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
-	public ReportResource getOne(
-			@PathParam("id") UUID id,
-			@HeaderParam("Accept") String acceptHeader,
-			@Context UriInfo uriInfo) {
+	public ReportResource getById(
+			@PathParam("id") final UUID id,
+			@HeaderParam("Accept") final String acceptHeader,
+			@QueryParam("expand") final List<String> expand,
+			@Context final UriInfo uriInfo) {
 		RestApiVersion apiVersion = RestUtils.extractAPIVersion(acceptHeader, RestApiVersion.v1);
+
+		//TODO Do not hardwire "report" here.
+		if (!expand.contains("report")) {
+			expand.add("report");	// Always expand primary resource.
+		}
+
+		//		logger.info("expand.size() = {}", expand.size());
+		//		for (String e : expand) {
+		//			logger.info("  expand: = {}", e);
+		//		}
 
 		Report report = reportRepository.findOne(id);
 		ReportCategory reportCategory = report.getReportCategory();
-		ReportResource reportResource = new ReportResource(uriInfo, report);
-		logger.info("reportResource = {}", reportResource);
+		ReportResource reportResource = new ReportResource(report, uriInfo, expand);
 
 		return reportResource;
 	}

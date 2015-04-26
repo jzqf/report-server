@@ -1,6 +1,7 @@
 package com.qfree.obo.report.resource;
 
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 
 import javax.ws.rs.core.UriInfo;
@@ -17,7 +18,6 @@ public class ConfigurationResource extends AbstractResource {
 	//	private String href;
 
 	@XmlElement
-	//(name = "someOverriddenName")
 	private UUID configurationId;
 
 	@XmlElement
@@ -38,24 +38,32 @@ public class ConfigurationResource extends AbstractResource {
 	public ConfigurationResource() {
 	}
 
-	public ConfigurationResource(UriInfo uriInfo, Configuration configuration) {
+	public ConfigurationResource(Configuration configuration, UriInfo uriInfo, List<String> expand) {
 
 		super(uriInfo, Configuration.class, configuration.getConfigurationId());
 
-		this.configurationId = configuration.getConfigurationId();
-		this.createdOn = configuration.getCreatedOn();
-		//		this.role = configuration.getRole();
-		this.paramName = configuration.getParamName();
-		/*
-		 * Set "value" from appropriate field based on this.paramName.paramType()????????????????????????????????????????????????????????
-		 * No, set "value from configuration.getStringValue(), but this will not work for data type "bytea", 
-		 * so I will need to check this.paramName.paramType() for this case??????????????????????????????????????????????????????????????
-		 * 
-		 * At the moment, I am not sure how to proceed. Just come back to this when I have fleshed out other
-		 * resources and controller. It might be more obvious then. :-)
-		 */
-		//		this.value = configuration.getStringValue();
+		boolean expandHere = false;
+		//TODO Do not hardwire "configuration" here.
+		if (expand.contains("configuration")) {
+			expandHere = true;
+			expand.remove("report");
+		}
 
+		if (expandHere) {
+			this.configurationId = configuration.getConfigurationId();
+			this.createdOn = configuration.getCreatedOn();
+			//		this.role = configuration.getRole();
+			this.paramName = configuration.getParamName();
+			/*
+			 * Set "value" from appropriate field based on this.paramName.paramType()????????????????????????????????????????????????????????
+			 * No, set "value from configuration.getStringValue(), but this will not work for data type "bytea", 
+			 * so I will need to check this.paramName.paramType() for this case??????????????????????????????????????????????????????????????
+			 * 
+			 * At the moment, I am not sure how to proceed. Just come back to this when I have fleshed out other
+			 * resources and controller. It might be more obvious then. :-)
+			 */
+			//		this.value = configuration.getStringValue();
+		}
 	}
 
 	@Override
