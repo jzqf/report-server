@@ -103,6 +103,8 @@ public class ReportCategoryController {
 	//	protected Response created(ReportCategoryResource resource) {
 	protected Response created(AbstractResource resource) {
 		URI uri = URI.create(resource.getHref());
+		logger.info("resource.getHref() = {}", resource.getHref());
+		logger.info("uri = {}", uri);
 		/*
 		 * .created(uri):		sets the Location header for a "201 Created"
 		 * 						response.
@@ -116,7 +118,8 @@ public class ReportCategoryController {
 		 * 						perform the conversion to JSON. In our case, it
 		 * 						is MOXy.
 		 */
-		System.out.println("ReportCategoryController.created: resource = " + resource);
+		//		logger.info("resource = {}", resource);
+		//		System.out.println("ReportCategoryController.created: resource = " + resource);
 		return Response.created(uri).entity(resource).build();
 	}
 
@@ -130,6 +133,8 @@ public class ReportCategoryController {
 			@Context final UriInfo uriInfo) {
 		RestApiVersion apiVersion = RestUtils.extractAPIVersion(acceptHeader, RestApiVersion.v1);
 
+		//		logger.info("id = {}", id);
+
 		//TODO Do not hardwire "reportcategory" here.
 		if (!expand.contains("reportcategory")) {
 			expand.add("reportcategory");	// Always expand primary resource.
@@ -137,6 +142,10 @@ public class ReportCategoryController {
 
 		ReportCategory reportCategory = reportCategoryRepository.findOne(id);
 		ReportCategoryResource reportCategoryResource = new ReportCategoryResource(reportCategory, uriInfo, expand);
+
+		//		logger.info("reportCategoryResource.getReportCategoryId() = {}", reportCategoryResource.getReportCategoryId());
+		//		logger.info("reportCategoryResource = {}", reportCategoryResource);
+
 		return reportCategoryResource;
 	}
 

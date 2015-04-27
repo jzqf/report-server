@@ -1,7 +1,5 @@
 package com.qfree.obo.report.resource;
 
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.List;
 
 import javax.ws.rs.core.UriInfo;
@@ -77,22 +75,34 @@ public abstract class AbstractResource {
 		 *     http://localhost:8080/report-server/rest/
 		 */
 		String fqBasePath = uriInfo.getBaseUri().toString();
+		logger.info("fqBasePath = {}", fqBasePath);
 		ResourcePath resourcePath = ResourcePath.forEntity(entityClass);
+		logger.info("resourcePath = {}", resourcePath);
 
-		StringBuilder queryParameters = new StringBuilder();
-		if (expand.size() > 0) {
-			queryParameters.append("?");
-			for (int i = 0; i < expand.size(); i++) {
-				if (i == 0) {
-					queryParameters.append("expand=" + expand.get(0));
-				} else {
-					queryParameters.append("&expand=" + expand.get(0));
-				}
-			}
-		}
+		//		StringBuilder queryParameters = new StringBuilder();
+		//		if (expand.size() > 0) {
+		//			queryParameters.append("?");
+		//			for (int i = 0; i < expand.size(); i++) {
+		//				if (i == 0) {
+		//					queryParameters.append("expand=" + expand.get(0));
+		//				} else {
+		//					queryParameters.append("&expand=" + expand.get(0));
+		//				}
+		//			}
+		//		}
 
-		Path p1 = Paths.get(fqBasePath, resourcePath.getPath(), id.toString());
-		return p1.toString() + queryParameters.toString();
+		//		UriBuilder b = uriInfo.getBaseUriBuilder().path(resourcePath.getPath()).queryParam("expand", expand.toArray());
+		//		String s = b.toString();
+		//		logger.info("b = {}", b);
+		//		
+		//		Path p1 = Paths.get(fqBasePath, resourcePath.getPath(), id.toString());
+		//		logger.info("p1 = {}", p1);
+		//		return p1.toString() + queryParameters.toString();
+		return uriInfo.getBaseUriBuilder()
+				.path(resourcePath.getPath())
+				.path(id.toString())
+				.queryParam("expand", expand.toArray())
+				.toString();
 	}
 
 	//	/**
