@@ -7,7 +7,6 @@ import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertThat;
 
-import java.net.URI;
 import java.util.Date;
 import java.util.List;
 
@@ -106,7 +105,7 @@ public class ReportCategoryControllerTests {
 		reportCategoryResource.setAbbreviation(NewAbbreviation);
 		reportCategoryResource.setDescription(NewDescription);
 		reportCategoryResource.setActive(true);
-		logger.info("reportCategoryResource = {}", reportCategoryResource);
+		//		logger.info("reportCategoryResource = {}", reportCategoryResource);
 
 		response = webTarget.path(AbstractResource.REPORTCATEGORIES_PATH)
 				.request()
@@ -114,14 +113,19 @@ public class ReportCategoryControllerTests {
 				.post(Entity.entity(reportCategoryResource, MediaType.APPLICATION_JSON_TYPE));
 		assertThat(response.getStatus(), is(Response.Status.CREATED.getStatusCode()));
 
-		//TODO Perform an assert based on the Location header!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+		/*
+		 * The HTTP "Location" header should have been set in the response. It
+		 * should contain the URI of the resource created. The resource at this
+		 * URI is loaded below for additional tests.
+		 */
 		MultivaluedMap<String, Object> headers = response.getHeaders();
-		logger.info("headers = {}", headers);
+		//		logger.info("headers = {}", headers);
+		List<Object> createdEntityLocations = headers.get("Location");
+		assertThat(createdEntityLocations, is(not(nullValue())));
+		assertThat(createdEntityLocations.size(), is(greaterThan(0)));
 
-		//TODO Perform asserts on instance variables I set above, but ignore the id??????????????????????????????????????????????
-		//TODO Document that the id is null (wrongly) and cannot be tested :-(
 		ReportCategoryResource responseEntity = response.readEntity(ReportCategoryResource.class);
-		logger.info("responseEntity = {}", responseEntity);
+		//		logger.info("responseEntity = {}", responseEntity);
 		assertThat(responseEntity.getAbbreviation(), is(NewAbbreviation));
 		assertThat(responseEntity.getDescription(), is(NewDescription));
 		assertThat(responseEntity.getActive(), is(true));
@@ -136,89 +140,23 @@ public class ReportCategoryControllerTests {
 		long millisecondsSinceCreated = (new Date()).getTime() - responseEntity.getCreatedOn().getTime();
 		assertThat(Math.abs(millisecondsSinceCreated), is(lessThan(1L * 60L * 1000L)));
 		assertThat(responseEntity.getHref(), is(not(nullValue())));
-		logger.info("responseEntity.getReportCategoryId() = {}", responseEntity.getReportCategoryId());
+		//		logger.info("responseEntity.getReportCategoryId() = {}", responseEntity.getReportCategoryId());
 		assertThat(responseEntity.getReportCategoryId(), is(not(nullValue())));
 
 		/*
 		 * Load the ReportCategoryResource that was created. Its URI should have
 		 * been returned in the HTTP "Location" header.
 		 */
-		List<Object> createdEntityLocations = headers.get("Location");
-		assertThat(createdEntityLocations, is(not(nullValue())));
-		assertThat(createdEntityLocations.size(), is(greaterThan(0)));
-		logger.info("createdEntityLocations.get(0).toString() = {}", createdEntityLocations.get(0).toString());
-		logger.info("port = {}", port);
-
-		WebTarget newWebTarget = client.target(createdEntityLocations.get(0).toString());
-		URI uri = newWebTarget.getUri();
-		String uriString = uri.toString();
-		logger.info("uriString = {}", uriString);
-		
-		//		response = webTarget
-		//				.path("reportcategories/7a482694-51d2-42d0-b0e2-19dd13bbbc64")
-		//				.queryParam("expand", "reportcategory")
-		//				.request(MediaType.APPLICATION_JSON_TYPE)
-		//				.get();
-		//		ReportCategoryResource resource = response.readEntity(ReportCategoryResource.class);
-		//		logger.info("resource (with query parmeter) = {}", resource);
-
 		String uriAsString;
-
-		//		uriAsString = "http://Hoser.jeff/blah/gaga";
-		//		logger.info("uriAsString = {}", uriAsString);
-		//		String[] parts;
-		//		parts = uriAsString.split("\\?");
-		//		logger.info("parts.length = {}", parts.length);
-
 		uriAsString = createdEntityLocations.get(0).toString();
-		logger.info("uriAsString =) {}", uriAsString);
-		String[]parts = uriAsString.split("\\?");
-		logger.info("parts.length = {}", parts.length);
-		for (String string : parts) {
-			logger.info("    part = {}", string);
-		}
-		//		response = client.target(parts[0])
-		//				//				.queryParam("expand", "reportcategory")
-		//				.request()
-		//				.header("Accept", MediaType.APPLICATION_JSON + ";v=" + defaultVersion)
-		//				//				.header("Accept", MediaType.TEXT_PLAIN + ";v="+defaultVersion)
-		//				.get();
+		//		logger.info("uriAsString =) {}", uriAsString);
 		response = client.target(uriAsString)
-				//				.queryParam("expand", "reportcategory")
 				.request()
 				.header("Accept", MediaType.APPLICATION_JSON + ";v=" + defaultVersion)
-				//				.header("Accept", MediaType.TEXT_PLAIN + ";v="+defaultVersion)
 				.get();
 		assertThat(response.getStatus(), is(Response.Status.OK.getStatusCode()));
 		ReportCategoryResource resource = response.readEntity(ReportCategoryResource.class);
-		//		String resource = response.readEntity(String.class);
-		logger.info("resource = {}", resource);
-
-		//		try {
-		//			URI uriFromLocationHeader = new URI(uriAsString);
-		//			//			logger.info("uriFromLocationHeader = {}", uriFromLocationHeader);
-		//			//			WebTarget wt = client.target(uriFromLocationHeader);
-		//			//			response = wt
-		//			//					.request()
-		//			//					.header("Accept", MediaType.APPLICATION_JSON + ";v=" + defaultVersion)
-		//			//					.get();
-		//		} catch (URISyntaxException e) {
-		//			// TODO Auto-generated catch block
-		//			e.printStackTrace();
-		//		}
-
-		//		String endpointWithoutQueryParams=null;
-
-		//		response = client.target(createdEntityLocations.get(0).toString())
-		//				.request()
-		//				.header("Accept", MediaType.APPLICATION_JSON + ";v=" + defaultVersion)
-		//				//				.header("Accept", MediaType.TEXT_PLAIN + ";v="+defaultVersion)
-		//				.get();
-		//		assertThat(response.getStatus(), is(Response.Status.OK.getStatusCode()));
-		//		String responseString = response.readEntity(String.class);
-		//		logger.info("responseString = {}", responseString);
-		//		System.out.println("ReportCategoryControllerTests.testCreateByPost: responseString = " + responseString);
-		//		assertThat(response.readEntity(String.class), is("1"));
+		//		logger.info("resource = {}", resource);
 
 		/*
 		 * Check that there is now a ReportCategory in the database 

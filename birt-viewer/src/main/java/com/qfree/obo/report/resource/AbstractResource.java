@@ -56,28 +56,11 @@ public abstract class AbstractResource {
 
 	protected static String createHref(UriInfo uriInfo, Class<?> entityClass, Object id, List<String> expand) {
 		//		logger.info("entityClass.getName() = {}", entityClass.getName());
-
 		//		logger.info("uriInfo.getRequestUri() = {}", uriInfo.getRequestUri());
 		//		logger.info("uriInfo.getQueryParameters() = {}", uriInfo.getQueryParameters());
-		//
-		//		MultivaluedMap<String, String> queryParameterMap = uriInfo.getQueryParameters();
-		//		String queryParameters
 
-		/*
-		 * The fully-qualified path is obtained from the UriInfo object that is
-		 * passed as a parameter to a JAX-RS controller method using:
-		 * 
-		 *     Context UriInfo uriInfo}
-		 * 
-		 * It includes the entire request URL except for path components that  
-		 * are specific to an endpoint. For example, this could be:
-		 * 
-		 *     http://localhost:8080/report-server/rest/
-		 */
-		String fqBasePath = uriInfo.getBaseUri().toString();
-		logger.info("fqBasePath = {}", fqBasePath);
 		ResourcePath resourcePath = ResourcePath.forEntity(entityClass);
-		logger.info("resourcePath = {}", resourcePath);
+		//		logger.info("resourcePath = {}", resourcePath);
 
 		//		StringBuilder queryParameters = new StringBuilder();
 		//		if (expand.size() > 0) {
@@ -91,13 +74,14 @@ public abstract class AbstractResource {
 		//			}
 		//		}
 
-		//		UriBuilder b = uriInfo.getBaseUriBuilder().path(resourcePath.getPath()).queryParam("expand", expand.toArray());
-		//		String s = b.toString();
-		//		logger.info("b = {}", b);
-		//		
-		//		Path p1 = Paths.get(fqBasePath, resourcePath.getPath(), id.toString());
-		//		logger.info("p1 = {}", p1);
-		//		return p1.toString() + queryParameters.toString();
+		/*
+		 * uriInfo.getBaseUriBuilder() returns a UriBuilder initialized with the
+		 * base URI of the application. This "base URI" includes the entire 
+		 * request URL except for path components that are specific to an 
+		 * endpoint. For example, this could be:
+		 * 
+		 *     http://localhost:8080/report-server/rest/
+		 */
 		return uriInfo.getBaseUriBuilder()
 				.path(resourcePath.getPath())
 				.path(id.toString())
