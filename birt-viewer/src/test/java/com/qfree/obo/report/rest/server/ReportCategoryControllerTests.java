@@ -2,10 +2,12 @@ package com.qfree.obo.report.rest.server;
 
 import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.lessThan;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertThat;
 
+import java.util.Date;
 import java.util.List;
 
 import javax.ws.rs.client.Client;
@@ -128,7 +130,7 @@ public class ReportCategoryControllerTests {
 		assertThat(responseEntity.getDescription(), is(NewDescription));
 		assertThat(responseEntity.getActive(), is(true));
 		/*
-		 * Assert that the "CreatedOn" datetime is within 1 minute of the
+		 * Assert that the "CreatedOn" datetime is within 5 minutes of the
 		 * current time in this process. Ideally,they should be much, much
 		 * closer, but this at least is a sanity check that the "CreatedOn"
 		 * datetime is actually getting set. We don't want this to fail unless
@@ -136,10 +138,15 @@ public class ReportCategoryControllerTests {
 		 * problems with continuous integration and automatic builds.
 		 */
 		//		logger.info(" new Date() = {}, responseEntity.getCreatedOn() = {}", new Date(), responseEntity.getCreatedOn());
-		//		long millisecondsSinceCreated = (new Date()).getTime() - responseEntity.getCreatedOn().getTime();
-		//		assertThat(Math.abs(millisecondsSinceCreated), is(lessThan(1L * 60L * 1000L)));
+		long millisecondsSinceCreated = (new Date()).getTime() - responseEntity.getCreatedOn().getTime();
+		assertThat(Math.abs(millisecondsSinceCreated), is(lessThan(5L * 60L * 1000L)));
+
 		assertThat(responseEntity.getHref(), is(not(nullValue())));
 		//		logger.info("responseEntity.getReportCategoryId() = {}", responseEntity.getReportCategoryId());
+		/*
+		 * We test that an id was generated, but we don't know what it will be,
+		 * so it does make sense to check that it is "correct".
+		 */
 		assertThat(responseEntity.getReportCategoryId(), is(not(nullValue())));
 
 		/*
