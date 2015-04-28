@@ -3,15 +3,14 @@ package com.qfree.obo.report.apps;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.TimeZone;
-
-import javax.xml.bind.DatatypeConverter;
 
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.LocalDateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.qfree.obo.report.util.DateUtils;
 
 public class MiscTest {
 
@@ -28,23 +27,41 @@ public class MiscTest {
 		LocalDateTime ldt;
 
 		System.out.println("");
-		//		dateString = "1958-05-06T13:00:00.000Z";
-		dateString = "1958-05-06T13:00:00.000+02:00";
-		System.out.println("dateString = " + dateString);
-
-		datetime = DateTime.parse(dateString).withZone(DateTimeZone.UTC);
+		datetime = new DateTime(DateTimeZone.UTC);
+		System.out.println("datetime(UTC) = " + datetime);
+		date = datetime.toDate();
+		System.out.println("date = " + date);
 		date = datetime.toLocalDateTime().toDate();
-		System.out.println("date (using Joda time) = " + date);
+		System.out.println("nowUtc = " + date);
 
-		calendar = DatatypeConverter.parseDateTime(dateString);
-		//		System.out.println("calendar.getTimeZone() = " + calendar.getTimeZone());
-		date = calendar.getTime();
+		System.out.println("");
+		datetime = new DateTime();
+		System.out.println("datetime() = " + datetime);
+		date = datetime.toDate();
 		System.out.println("date = " + date);
-		calendar.setTimeZone(TimeZone.getTimeZone("GMT"));
-		System.out.println("Set time zone to GMT");
-		//		System.out.println("calendar.getTimeZone() = " + calendar.getTimeZone());
-		date = calendar.getTime();
-		System.out.println("date = " + date);
+		date = datetime.toLocalDateTime().toDate();
+		System.out.println("nowUtc = " + date);
+
+		System.out.println("");
+		System.out.println("DateUtils.nowUtc() = " + DateUtils.nowUtc());
+
+		//		//		dateString = "1958-05-06T13:00:00.000Z";
+		//		dateString = "1958-05-06T13:00:00.000+02:00";
+		//		System.out.println("dateString = " + dateString);
+		//
+		//		datetime = DateTime.parse(dateString).withZone(DateTimeZone.UTC);
+		//		date = datetime.toLocalDateTime().toDate();
+		//		System.out.println("date (using Joda time) = " + date);
+		//
+		//		calendar = DatatypeConverter.parseDateTime(dateString);
+		//		//		System.out.println("calendar.getTimeZone() = " + calendar.getTimeZone());
+		//		date = calendar.getTime();
+		//		System.out.println("date = " + date);
+		//		calendar.setTimeZone(TimeZone.getTimeZone("GMT"));
+		//		System.out.println("Set time zone to GMT");
+		//		//		System.out.println("calendar.getTimeZone() = " + calendar.getTimeZone());
+		//		date = calendar.getTime();
+		//		System.out.println("date = " + date);
 
 		//		dateString = "1958-05-06T12:00:00.000Z";
 		//		calendar = DatatypeConverter.parseDateTime(dateString);
@@ -132,8 +149,5 @@ public class MiscTest {
 		//		} catch (IllegalArgumentException e) {
 		//			System.out.println("Caught IllegalArgumentException: " + e);
 		//		}
-
-		System.out.println("");
-		System.out.println("new Date() = " + new Date());
 	}
 }

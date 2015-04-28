@@ -17,6 +17,8 @@ import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;
 
+import com.qfree.obo.report.util.DateUtils;
+
 /**
  * The persistent class for the "parameter_type" database table.
  * 
@@ -73,18 +75,22 @@ public class ParameterType implements Serializable {
 	}
 
 	public ParameterType(String description, String abbreviation) {
-		this(description, abbreviation, true, new Date());
+		this(description, abbreviation, true, DateUtils.nowUtc());
 	}
 
 	public ParameterType(String description, String abbreviation, boolean active) {
-		this(description, abbreviation, active, new Date());
+		this(description, abbreviation, active, DateUtils.nowUtc());
 	}
 
 	public ParameterType(String description, String abbreviation, boolean active, Date createdOn) {
 		this.description = description;
 		this.abbreviation = abbreviation;
 		this.active = active;
-		this.createdOn = createdOn;
+		if (createdOn != null) {
+			this.createdOn = createdOn;
+		} else {
+			this.createdOn = DateUtils.nowUtc();
+		}
 	}
 
 	public UUID getParameterTypeId() {

@@ -59,13 +59,6 @@ public class ConfigurationController {
 		return configurationResources;
 	}
 
-	//	@GET
-	//	@Produces(MediaType.APPLICATION_JSON)
-	//	public ConfigurationResource getConfiguration(@HeaderParam("Accept") String acceptHeader) {
-	//		return new ConfigurationResource(
-	//				null, new Date(), null, ParamName.TEST_STRING, "Some bloody value");
-	//	}
-
 	@Path("/{id}")
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)

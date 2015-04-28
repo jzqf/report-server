@@ -86,16 +86,6 @@ public class ReportCategoryController {
 		ReportCategoryResource resource = new ReportCategoryResource(reportCategory, uriInfo, expand);
 		System.out.println("ReportCategoryController.create: resource = " + resource);
 
-
-		//		ReportCategoryResource bogusResourceForTesting = new ReportCategoryResource();
-		//		bogusResourceForTesting.setHref("http://BOGUS.COM!");
-		//		bogusResourceForTesting.setReportCategoryId(UUID.randomUUID());
-		//		bogusResourceForTesting.setAbbreviation("BOGUS");
-		//		bogusResourceForTesting.setDescription("***** Bogus description*****");
-		//		bogusResourceForTesting.setActive(true);
-		//		bogusResourceForTesting.setCreatedOn(new Date());
-		//		return created(bogusResourceForTesting);
-
 		return created(resource);
 	}
 

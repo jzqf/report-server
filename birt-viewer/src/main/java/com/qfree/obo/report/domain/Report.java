@@ -22,6 +22,8 @@ import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;
 
+import com.qfree.obo.report.util.DateUtils;
+
 /**
  * The persistent class for the "report" database table.
  * 
@@ -125,7 +127,7 @@ public class Report implements Serializable {
 	}
 
 	public Report(ReportCategory reportCategory, String name, Integer number, boolean active) {
-		this(reportCategory, name, number, active, new Date());
+		this(reportCategory, name, number, active, DateUtils.nowUtc());
 	}
 
 	public Report(ReportCategory reportCategory, String name, Integer number, boolean active, Date createdOn) {
@@ -133,7 +135,11 @@ public class Report implements Serializable {
 		this.name = name;
 		this.number = number;
 		this.active = active;
-		this.createdOn = createdOn;
+		if (createdOn != null) {
+			this.createdOn = createdOn;
+		} else {
+			this.createdOn = DateUtils.nowUtc();
+		}
 	}
 
 	//	public Report(UUID reportId, ReportCategory reportCategory, String name, Date createdOn) {

@@ -19,6 +19,8 @@ import javax.persistence.UniqueConstraint;
 
 import org.hibernate.annotations.TypeDef;
 
+import com.qfree.obo.report.util.DateUtils;
+
 /**
  * The persistent class for the "job_parameter_value" database table.
  * 
@@ -97,14 +99,18 @@ public class JobParameterValue implements Serializable {
 	}
 
 	public JobParameterValue(Job job, ReportParameter reportParameter, String stringValue) {
-		this(job, reportParameter, stringValue, new Date());
+		this(job, reportParameter, stringValue, DateUtils.nowUtc());
 	}
 
 	public JobParameterValue(Job job, ReportParameter reportParameter, String stringValue, Date createdOn) {
 		this.job = job;
 		this.reportParameter = reportParameter;
 		this.stringValue = stringValue;
-		this.createdOn = createdOn;
+		if (createdOn != null) {
+			this.createdOn = createdOn;
+		} else {
+			this.createdOn = DateUtils.nowUtc();
+		}
 	}
 
 	public Job getJob() {

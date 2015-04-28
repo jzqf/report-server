@@ -24,6 +24,8 @@ import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;
 
+import com.qfree.obo.report.util.DateUtils;
+
 /**
  * The persistent class for the "configuration" database table.
  * 
@@ -170,22 +172,26 @@ public class Configuration implements Serializable {
 	private Date createdOn;
 
 	public Configuration() {
-		this(null, null, null, new Date());
+		this(null, null, null, DateUtils.nowUtc());
 	}
 
 	public Configuration(ParamName paramName) {
-		this(paramName, null, paramName.paramType(), new Date());
+		this(paramName, null, paramName.paramType(), DateUtils.nowUtc());
 	}
 
 	public Configuration(ParamName paramName, Role role) {
-		this(paramName, role, paramName.paramType(), new Date());
+		this(paramName, role, paramName.paramType(), DateUtils.nowUtc());
 	}
 
 	public Configuration(ParamName paramName, Role role, ParamType paramType, Date createdOn) {
 		this.paramName = paramName;
 		this.role = role;
 		this.paramType = paramType;
-		this.createdOn = createdOn;
+		if (createdOn != null) {
+			this.createdOn = createdOn;
+		} else {
+			this.createdOn = DateUtils.nowUtc();
+		}
 	}
 
 	public UUID getConfigurationId() {

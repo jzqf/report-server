@@ -2,9 +2,40 @@ package com.qfree.obo.report.util;
 
 import java.util.Date;
 
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 import org.joda.time.LocalTime;
 
 public class DateUtils {
+
+	/**
+	 * Returns a Java Date corresponding to the current datetime such that if
+	 * it is stored in a PostgreSQL table column of type "timestamp without 
+	 * timezone", the value will represent the current instant in time in for
+	 * the GMT time zone.<p>
+	 * <p>
+	 * For example, if our current local time zone is GMT+2 (e.g., Trondheim),
+	 * then if the local time is:<p>
+	 * <p>
+	 * May 1, 2015 12:00:00 CEST,<p>
+	 * <p>
+	 * then the Java Date returned by this method will be:<p>
+	 * <p>
+	 * May 1, 2015 10:00:00 CEST<p>
+	 * <p>
+	 * Note that this is not the correct datetime, but when this value is stored
+	 * in a PostgreSQL "timestamp without timezone" column, the time zone will
+	 * be discarded and the value inserted will be<p>
+	 * <p>
+	 * 2015-05-01 10:00:00<p>
+	 * <p>
+	 * which is the correct date and time when expressed in GMT/UTC.
+	 * 
+	 * @return
+	 */
+	public static Date nowUtc() {
+		return new DateTime(DateTimeZone.UTC).toLocalDateTime().toDate();
+	}
 
 	/**
 	 * Returns true if the time portion of the two Date vales are equal.

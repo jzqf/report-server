@@ -21,6 +21,8 @@ import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;
 
+import com.qfree.obo.report.util.DateUtils;
+
 /**
  * The persistent class for the "role_parameter_value" database table.
  * 
@@ -97,14 +99,18 @@ public class RoleParameterValue implements Serializable {
 	}
 
 	public RoleParameterValue(Role role, ReportParameter reportParameter, String stringValue) {
-		this(role, reportParameter, stringValue, new Date());
+		this(role, reportParameter, stringValue, DateUtils.nowUtc());
 	}
 
 	public RoleParameterValue(Role role, ReportParameter reportParameter, String stringValue, Date createdOn) {
 		this.role = role;
 		this.reportParameter = reportParameter;
 		this.stringValue = stringValue;
-		this.createdOn = createdOn;
+		if (createdOn != null) {
+			this.createdOn = createdOn;
+		} else {
+			this.createdOn = DateUtils.nowUtc();
+		}
 	}
 
 	public Role getRole() {

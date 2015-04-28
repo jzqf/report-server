@@ -7,7 +7,6 @@ import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertThat;
 
-import java.util.Date;
 import java.util.List;
 
 import javax.ws.rs.client.Client;
@@ -35,6 +34,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.qfree.obo.report.ApplicationConfig;
 import com.qfree.obo.report.resource.AbstractResource;
 import com.qfree.obo.report.resource.ReportCategoryResource;
+import com.qfree.obo.report.util.DateUtils;
 
 /**
  * 
@@ -137,8 +137,8 @@ public class ReportCategoryControllerTests {
 		 * there is a significant difference; otherwise, this could cause 
 		 * problems with continuous integration and automatic builds.
 		 */
-		//		logger.info(" new Date() = {}, responseEntity.getCreatedOn() = {}", new Date(), responseEntity.getCreatedOn());
-		long millisecondsSinceCreated = (new Date()).getTime() - responseEntity.getCreatedOn().getTime();
+		//		logger.info(" DateUtils.nowUtc() = {}, responseEntity.getCreatedOn() = {}", DateUtils.nowUtc(), responseEntity.getCreatedOn());
+		long millisecondsSinceCreated = (DateUtils.nowUtc()).getTime() - responseEntity.getCreatedOn().getTime();
 		assertThat(Math.abs(millisecondsSinceCreated), is(lessThan(5L * 60L * 1000L)));
 
 		assertThat(responseEntity.getHref(), is(not(nullValue())));

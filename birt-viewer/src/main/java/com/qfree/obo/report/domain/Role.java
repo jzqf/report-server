@@ -21,6 +21,8 @@ import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;
 
+import com.qfree.obo.report.util.DateUtils;
+
 /**
  * The persistent class for the "role" database table.
  * 
@@ -109,14 +111,18 @@ public class Role implements Serializable {
 	}
 
 	public Role(String encodedPassword, String username, boolean loginRole) {
-		this(encodedPassword,  username,  loginRole, new Date());
+		this(encodedPassword, username, loginRole, DateUtils.nowUtc());
 	}
 
 	public Role(String encodedPassword, String username, boolean loginRole, Date createdOn) {
-		this.createdOn = createdOn;
 		this.loginRole = loginRole;
 		this.username = username;
 		this.encodedPassword = encodedPassword;
+		if (createdOn != null) {
+			this.createdOn = createdOn;
+		} else {
+			this.createdOn = DateUtils.nowUtc();
+		}
 	}
 
 	public UUID getRoleId() {

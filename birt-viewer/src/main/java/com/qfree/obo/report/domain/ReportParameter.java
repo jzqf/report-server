@@ -24,6 +24,8 @@ import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;
 
+import com.qfree.obo.report.util.DateUtils;
+
 /**
  * The persistent class for the "report_parameter" database table.
  * 
@@ -152,7 +154,8 @@ public class ReportParameter implements Serializable {
 
 	public ReportParameter(ReportVersion reportVersion, String name, String description, ParameterType parameterType,
 			Widget widget, Boolean required, Boolean multivalued, Integer orderIndex) {
-		this(reportVersion, name, description, parameterType, widget, required, multivalued, orderIndex, new Date());
+		this(reportVersion, name, description, parameterType, widget, required, multivalued, orderIndex, DateUtils
+				.nowUtc());
 	}
 
 	public ReportParameter(ReportVersion reportVersion, String name, String description, ParameterType parameterType,
@@ -166,7 +169,11 @@ public class ReportParameter implements Serializable {
 		this.required = required;
 		this.multivalued = multivalued;
 		this.orderIndex = orderIndex;
-		this.createdOn = createdOn;
+		if (createdOn != null) {
+			this.createdOn = createdOn;
+		} else {
+			this.createdOn = DateUtils.nowUtc();
+		}
 	}
 
 	public UUID getReportParameterId() {
