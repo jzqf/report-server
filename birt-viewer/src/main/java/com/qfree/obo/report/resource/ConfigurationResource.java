@@ -8,6 +8,7 @@ import java.util.UUID;
 import javax.ws.rs.core.UriInfo;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import com.qfree.obo.report.domain.Configuration;
 import com.qfree.obo.report.domain.Configuration.ParamName;
@@ -15,13 +16,12 @@ import com.qfree.obo.report.domain.Configuration.ParamName;
 @XmlRootElement
 public class ConfigurationResource extends AbstractResource {
 
-	//	@XmlElement
-	//	private String href;
-
 	@XmlElement
+	@XmlJavaTypeAdapter(UuidAdapter.class)
 	private UUID configurationId;
 
 	@XmlElement
+	@XmlJavaTypeAdapter(DateAdapter.class)
 	private Date createdOn;
 
 	//	@XmlElement

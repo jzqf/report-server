@@ -30,8 +30,19 @@ public class CreateCloseApplicationContext {
 				//	.property(JsonGenerator.PRETTY_PRINTING, true)
 				.build();
 
-		String port = "8081";	// 8081: My local Tomcat server
+		/*
+		 * 8081: My local Tomcat server
+		 */
+		String port = "8081";
 		WebTarget webTarget = client.target("http://localhost:" + port + "/report-server/rest");
+
+		/*
+		 * 8080: Embedded Tomcat server started with:
+		 * 
+		 *     $ mvn clean spring-boot:run
+		 */
+		//		String port = "8081";	// 8081: My local Tomcat server
+		//		WebTarget webTarget = client.target("http://localhost:" + port + "/rest");
 
 		Response response = webTarget
 				.path("reportcategories/7a482694-51d2-42d0-b0e2-19dd13bbbc64")

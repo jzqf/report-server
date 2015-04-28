@@ -16,12 +16,10 @@ import org.slf4j.LoggerFactory;
 import com.qfree.obo.report.domain.ReportCategory;
 
 @XmlRootElement
+//@XmlJavaTypeAdapter(value = UuidAdapter.class, type = UUID.class) <- doesn't work
 public class ReportCategoryResource extends AbstractResource {
 
 	private static final Logger logger = LoggerFactory.getLogger(ReportCategoryResource.class);
-
-	//	@XmlElement
-	//	private String href;
 
 	@XmlElement
 	@XmlJavaTypeAdapter(UuidAdapter.class)
@@ -40,6 +38,7 @@ public class ReportCategoryResource extends AbstractResource {
 	private Boolean active;
 
 	@XmlElement
+	@XmlJavaTypeAdapter(DateAdapter.class)
 	private Date createdOn;
 
 	public ReportCategoryResource() {
