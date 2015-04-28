@@ -56,7 +56,9 @@ public class DateAdapter extends XmlAdapter<String, Date> {
 	/**
 	 * This method is used to unmarshal Datetimes specified as strings in JSON
 	 * resources to Java Date's. The JSON objects are are submitted to this
-	 * application via HTTP POST or PUT. Examples:
+	 * application via HTTP POST or PUT. They can be expressed in any time zone,
+	 * as long as the ofset from GMT is explicitly specified, either via "Z" or
+	 * "±hh:mm". Examples:
 	 * 
 	 *  String from JSON object      Value stored in PostgreSQL timestamp column
 	 * 

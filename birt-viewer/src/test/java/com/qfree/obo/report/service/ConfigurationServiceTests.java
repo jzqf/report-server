@@ -13,7 +13,6 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.UUID;
 
-import org.joda.time.LocalTime;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
@@ -30,6 +29,7 @@ import com.qfree.obo.report.db.ConfigurationRepository;
 import com.qfree.obo.report.db.RoleRepository;
 import com.qfree.obo.report.domain.Configuration.ParamName;
 import com.qfree.obo.report.domain.Role;
+import com.qfree.obo.report.util.DateUtils;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = ApplicationConfig.class)
@@ -61,7 +61,6 @@ public class ConfigurationServiceTests {
 	private static final String TEST_TEXT_DEFAULT_VALUE = "Meaning of life - really";
 	// The year, month and day here are arbitrary and used only to construct a Date.
 	private static final Date TEST_TIME_DEFAULT_VALUE = new GregorianCalendar(2000, 0, 1, 16, 17, 18).getTime();
-	private static final LocalTime TEST_TIME_DEFAULT_VALUE_JODA = new LocalTime(TEST_TIME_DEFAULT_VALUE);
 	/*
 	 * Role-specific values for Role "aabb" in the test [configuration] records.
 	 */
@@ -77,7 +76,6 @@ public class ConfigurationServiceTests {
 	private static final String TEST_TEXT_ROLE_aabb_VALUE = "Yada yada yada yada";
 	// The year, month and day here are arbitrary and used only to construct a Date.
 	private static final Date TEST_TIME_ROLE_aabb_VALUE = new GregorianCalendar(2000, 0, 1, 0, 0, 1).getTime();
-	private static final LocalTime TEST_TIME_ROLE_aabb_VALUE_JODA = new LocalTime(TEST_TIME_ROLE_aabb_VALUE);
 
 	@Autowired
 	ConfigurationRepository configurationRepository;
@@ -1571,8 +1569,7 @@ public class ConfigurationServiceTests {
 		Date timeFromConfig = (Date) timeValueObject;
 		assertThat(timeFromConfig, is(not(nullValue())));
 
-		LocalTime defaultTime_Joda = new LocalTime(timeFromConfig);
-		assertThat(defaultTime_Joda, is(equalTo(TEST_TIME_ROLE_aabb_VALUE_JODA)));
+		assertThat(DateUtils.timePartsEqual(timeFromConfig, TEST_TIME_ROLE_aabb_VALUE), is(true));
 	}
 
 	/*
@@ -1603,15 +1600,8 @@ public class ConfigurationServiceTests {
 		 * by the database or the ORM:
 		 */
 		assertThat(timeFromConfig.toString(), is("16:17:18"));
-
 		assertThat(timeFromConfig, is(not(nullValue())));
-
-		/*
-		 * Convert Date object to Joda time LocalTime object to make it easy
-		 * to compare with TEST_TIME_DEFAULT_VALUE_JODA.
-		 */
-		LocalTime timeFromConfig_Joda = new LocalTime(timeFromConfig);
-		assertThat(timeFromConfig_Joda, is(equalTo(TEST_TIME_DEFAULT_VALUE_JODA)));
+		assertThat(DateUtils.timePartsEqual(timeFromConfig, TEST_TIME_DEFAULT_VALUE), is(true));
 
 		/*
 		 * Update default value.
@@ -1633,10 +1623,7 @@ public class ConfigurationServiceTests {
 		assertThat(timeValueObjectUpdated, is(instanceOf(Date.class)));
 		Date timeFromConfigUpdated = (Date) timeValueObjectUpdated;
 		assertThat(timeFromConfigUpdated, is(not(nullValue())));
-
-		LocalTime timeFromConfigUpdated_Joda = new LocalTime(timeFromConfigUpdated);
-		LocalTime newTimeValue_Joda = new LocalTime(newTimeValue);
-		assertThat(timeFromConfigUpdated_Joda, is(equalTo(newTimeValue_Joda)));
+		assertThat(DateUtils.timePartsEqual(timeFromConfigUpdated, newTimeValue), is(true));
 	}
 
 	/*
@@ -1660,13 +1647,7 @@ public class ConfigurationServiceTests {
 		assertThat(timeValueObject, is(instanceOf(Date.class)));
 		Date timeFromConfig = (Date) timeValueObject;
 		assertThat(timeFromConfig, is(not(nullValue())));
-
-		/*
-		 * Convert Date object to Joda time LocalTime object to make it easy
-		 * to compare with TEST_TIME_DEFAULT_VALUE_JODA.
-		 */
-		LocalTime timeFromConfig_Joda = new LocalTime(timeFromConfig);
-		assertThat(timeFromConfig_Joda, is(equalTo(TEST_TIME_DEFAULT_VALUE_JODA)));
+		assertThat(DateUtils.timePartsEqual(timeFromConfig, TEST_TIME_DEFAULT_VALUE), is(true));
 
 		/*
 		 * Set role-specific value, which should override the default value for
@@ -1688,10 +1669,7 @@ public class ConfigurationServiceTests {
 		assertThat(timeValueRoleSpecificObject, is(instanceOf(Date.class)));
 		Date timeFromRoleSpecific = (Date) timeValueRoleSpecificObject;
 		assertThat(timeFromRoleSpecific, is(not(nullValue())));
-
-		LocalTime timeFromRoleSpecific_Joda = new LocalTime(timeFromRoleSpecific);
-		LocalTime newTimeValue_Joda = new LocalTime(newTimeValue);
-		assertThat(timeFromRoleSpecific_Joda, is(equalTo(newTimeValue_Joda)));
+		assertThat(DateUtils.timePartsEqual(timeFromRoleSpecific, newTimeValue), is(true));
 
 		/*
 		 * Update the role-specific value. This should override the default 
@@ -1714,10 +1692,7 @@ public class ConfigurationServiceTests {
 		assertThat(timeValueRoleSpecificObject, is(instanceOf(Date.class)));
 		timeFromRoleSpecific = (Date) timeValueRoleSpecificObject;
 		assertThat(timeFromRoleSpecific, is(not(nullValue())));
-
-		timeFromRoleSpecific_Joda = new LocalTime(timeFromRoleSpecific);
-		newTimeValue_Joda = new LocalTime(newTimeValue);
-		assertThat(timeFromRoleSpecific_Joda, is(equalTo(newTimeValue_Joda)));
+		assertThat(DateUtils.timePartsEqual(timeFromRoleSpecific, newTimeValue), is(true));
 
 		/*
 		 * The default value for ParamName.TEST_TIME should still be the
@@ -1727,13 +1702,7 @@ public class ConfigurationServiceTests {
 		assertThat(timeValueDefaultObject, is(instanceOf(Date.class)));
 		timeFromConfig = (Date) timeValueDefaultObject;
 		assertThat(timeFromConfig, is(not(nullValue())));
-
-		/*
-		 * Convert Date object to Joda time LocalTime object to make it easy
-		 * to compare with TEST_TIME_DEFAULT_VALUE_JODA.
-		 */
-		timeFromConfig_Joda = new LocalTime(timeFromConfig);
-		assertThat(timeFromConfig_Joda, is(equalTo(TEST_TIME_DEFAULT_VALUE_JODA)));
+		assertThat(DateUtils.timePartsEqual(timeFromConfig, TEST_TIME_DEFAULT_VALUE), is(true));
 	}
 
 }

@@ -13,7 +13,6 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.UUID;
 
-import org.joda.time.LocalTime;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
@@ -27,6 +26,7 @@ import com.qfree.obo.report.ApplicationConfig;
 import com.qfree.obo.report.domain.Configuration;
 import com.qfree.obo.report.domain.Configuration.ParamName;
 import com.qfree.obo.report.domain.Role;
+import com.qfree.obo.report.util.DateUtils;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = ApplicationConfig.class)
@@ -52,7 +52,6 @@ public class ConfigurationRepositoryTests {
 	private static final String TEST_TEXT_DEFAULT_VALUE = "Meaning of life - really";
 	// The year, month and day here are arbitrary and used only to construct a Date.
 	private static final Date TEST_TIME_DEFAULT_VALUE = new GregorianCalendar(2000, 0, 1, 16, 17, 18).getTime();
-	private static final LocalTime TEST_TIME_DEFAULT_VALUE_JODA = new LocalTime(TEST_TIME_DEFAULT_VALUE);
 	/*
 	 * Role-specific values for Role "aabb" in the test [configuration] records.
 	 */
@@ -68,7 +67,6 @@ public class ConfigurationRepositoryTests {
 	private static final String TEST_TEXT_ROLE_aabb_VALUE = "Yada yada yada yada";
 	// The year, month and day here are arbitrary and used only to construct a Date.
 	private static final Date TEST_TIME_ROLE_aabb_VALUE = new GregorianCalendar(2000, 0, 1, 0, 0, 1).getTime();
-	private static final LocalTime TEST_TIME_ROLE_aabb_VALUE_JODA = new LocalTime(TEST_TIME_ROLE_aabb_VALUE);
 
 	@Autowired
 	ConfigurationRepository configurationRepository;
@@ -373,17 +371,8 @@ public class ConfigurationRepositoryTests {
 		Configuration defaultTimeValueConfiguration = configurationRepository
 				.findOne(uuidOfDefaultTimeValueConfiguration);
 		assertThat(defaultTimeValueConfiguration, is(not(nullValue())));
-		/*
-		 * Convert the time returned from the Configuration to Joda time so
-		 * that it can be compared to TEST_TIME_DEFAULT_VALUE_JODA. Joda time
-		 * is used here because Java 7 does not have convenient methods for 
-		 * dealing with times that are not associated with an instant in time) 
-		 * or with dates that do not have a time portion. I could have managed 
-		 * this with standard Java 7 methods, but it is easier to just use Joda 
-		 * time.
-		 */
-		LocalTime defaultTime_Joda = new LocalTime(defaultTimeValueConfiguration.getTimeValue());
-		assertThat(defaultTime_Joda, is(equalTo(TEST_TIME_DEFAULT_VALUE_JODA)));
+		assertThat(DateUtils.timePartsEqual(defaultTimeValueConfiguration.getTimeValue(), TEST_TIME_DEFAULT_VALUE),
+				is(true));
 	}
 
 }

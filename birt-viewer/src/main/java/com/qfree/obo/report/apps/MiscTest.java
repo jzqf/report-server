@@ -3,6 +3,9 @@ package com.qfree.obo.report.apps;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.TimeZone;
+
+import javax.xml.bind.DatatypeConverter;
 
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
@@ -27,32 +30,21 @@ public class MiscTest {
 		System.out.println("");
 		//		dateString = "1958-05-06T13:00:00.000Z";
 		dateString = "1958-05-06T13:00:00.000+02:00";
+		System.out.println("dateString = " + dateString);
 
 		datetime = DateTime.parse(dateString).withZone(DateTimeZone.UTC);
 		date = datetime.toLocalDateTime().toDate();
-		System.out.println("date = " + date);
+		System.out.println("date (using Joda time) = " + date);
 
-		//		datetime = DateTime.parse(dateString);
-		//		date = datetime.toDate();
-		//		System.out.println("\"" + dateString +
-		//				"\" --> Joda datetime: \"" + datetime + "\"" +
-		//				", Java Date: \"" + date + "\"");
-		//		ldt = datetime.toLocalDateTime();
-		//		System.out.println("ldt = " + ldt);
-		//		System.out.println("ldt.toDate() = " + ldt.toDate());
-		//
-		//		System.out.println("");
-		//		dateString = "1958-05-06T12:00:00.000+02:00";
-		//		datetime = DateTime.parse(dateString);
-		//		date = datetime.toDate();
-		//		System.out.println("\"" + dateString +
-		//				"\" --> Joda datetime: \"" + datetime + "\"" +
-		//				", Java Date: \"" + date + "\"");
-		//		datetime = datetime.withZone(DateTimeZone.UTC);
-		//		System.out.println("datetime.withZone(DateTimeZone.UTC) = " + datetime.withZone(DateTimeZone.UTC));
-		//		ldt = datetime.toLocalDateTime();
-		//		System.out.println("ldt = " + ldt);
-		//		System.out.println("ldt.toDate() = " + ldt.toDate());
+		calendar = DatatypeConverter.parseDateTime(dateString);
+		//		System.out.println("calendar.getTimeZone() = " + calendar.getTimeZone());
+		date = calendar.getTime();
+		System.out.println("date = " + date);
+		calendar.setTimeZone(TimeZone.getTimeZone("GMT"));
+		System.out.println("Set time zone to GMT");
+		//		System.out.println("calendar.getTimeZone() = " + calendar.getTimeZone());
+		date = calendar.getTime();
+		System.out.println("date = " + date);
 
 		//		dateString = "1958-05-06T12:00:00.000Z";
 		//		calendar = DatatypeConverter.parseDateTime(dateString);
