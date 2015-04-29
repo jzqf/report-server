@@ -43,18 +43,17 @@ public class ConfigurationResource extends AbstractResource {
 
 		super(Configuration.class, configuration.getConfigurationId(), uriInfo, expand);
 
-		//TODO Do not hardwire "configuration" here.
-		if (expand.contains("configuration")) {
+		String expandParam = ResourcePath.forEntity(Configuration.class).getExpandParam();
+		if (expand.contains(expandParam)) {
 			/*
-			 * Make a copy of the "expand" list from which "configuration" is
+			 * Make a copy of the "expand" list from which expandParam is
 			 * removed. This list should be used when creating new resources
 			 * here, instead of the original "expand" list. This is done to 
 			 * avoid the unlikely event of a long list of chained expansions
 			 * across relations.
 			 */
 			List<String> expandElementRemoved = new ArrayList<>(expand);
-			//TODO Do not hardwire "configuration" here.
-			expandElementRemoved.remove("configuration");
+			expandElementRemoved.remove(expandParam);
 
 			this.configurationId = configuration.getConfigurationId();
 			this.createdOn = configuration.getCreatedOn();

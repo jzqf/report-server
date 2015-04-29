@@ -6,15 +6,38 @@ import com.qfree.obo.report.domain.ReportCategory;
 
 public enum ResourcePath {
 
-	CONFIGURATIONS(AbstractResource.CONFIGURATIONS_PATH, Configuration.class),
-	REPORTS(AbstractResource.REPORTS_PATH, Report.class),
-	REPORTCATEGORIES(AbstractResource.REPORTCATEGORIES_PATH, ReportCategory.class);
+	CONFIGURATIONS(ResourcePath.CONFIGURATIONS_PATH, ResourcePath.CONFIGURATION_EXPAND_PARAM, Configuration.class),
+	REPORTS(ResourcePath.REPORTS_PATH, ResourcePath.REPORT_EXPAND_PARAM, Report.class),
+	REPORTCATEGORIES(ResourcePath.REPORTCATEGORIES_PATH, ResourcePath.REPORTCATEGORY_EXPAND_PARAM, ReportCategory.class);
 
-    final String path;
-	final Class<?> entityClass;
+	private static final String PATH_SEPARATOR = "/";
 
-	private ResourcePath(String path, Class<?> clazz) {
+	/*
+	 * These paths are used in @Path annotations (and elsewhere). Arguments to
+	 * annotations must be constant expressions. Therefore these paths must be
+	 * declared as constants. It does not seem possible to, e.g., declare them 
+	 * within the ResourcePath enum because that enum is not considered to be a 
+	 * constant expression.
+	 */
+	public static final String CONFIGURATIONS_PATH = ResourcePath.PATH_SEPARATOR + "configurations";
+	public static final String REPORTCATEGORIES_PATH = ResourcePath.PATH_SEPARATOR + "reportcategories";
+	public static final String REPORTS_PATH = ResourcePath.PATH_SEPARATOR + "reports";
+
+	/*
+	 * These are the values for each resource class that can be assigned to the
+	 * "expand" query parameter.
+	 */
+	private static final String CONFIGURATION_EXPAND_PARAM = "configuration";
+	private static final String REPORTCATEGORY_EXPAND_PARAM = "reportcategory";
+	private static final String REPORT_EXPAND_PARAM = "report";
+
+	private final String path;
+	private final String expandParam;
+	private final Class<?> entityClass;
+
+	private ResourcePath(String path, String expandParam, Class<?> clazz) {
 		this.path = path;
+		this.expandParam = expandParam;
 		this.entityClass = clazz;
     }
 
@@ -34,6 +57,10 @@ public enum ResourcePath {
     public String getPath() {
         return path;
     }
+
+	public String getExpandParam() {
+		return expandParam;
+	}
 
 	public Class<?> getEntityClass() {
 		return entityClass;

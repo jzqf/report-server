@@ -22,12 +22,12 @@ import org.springframework.stereotype.Component;
 import com.qfree.obo.report.db.ReportRepository;
 import com.qfree.obo.report.domain.Report;
 import com.qfree.obo.report.domain.ReportCategory;
-import com.qfree.obo.report.resource.AbstractResource;
 import com.qfree.obo.report.resource.ReportResource;
+import com.qfree.obo.report.resource.ResourcePath;
 import com.qfree.obo.report.rest.server.RestUtils.RestApiVersion;
 
 @Component
-@Path(AbstractResource.REPORTS_PATH)
+@Path(ResourcePath.REPORTS_PATH)
 public class ReportController {
 
 	private static final Logger logger = LoggerFactory.getLogger(ReportController.class);
@@ -74,9 +74,9 @@ public class ReportController {
 			@Context final UriInfo uriInfo) {
 		RestApiVersion apiVersion = RestUtils.extractAPIVersion(acceptHeader, RestApiVersion.v1);
 
-		//TODO Do not hardwire "report" here.
-		if (!expand.contains("report")) {
-			expand.add("report");	// Always expand primary resource.
+		String expandParam = ResourcePath.forEntity(Report.class).getExpandParam();
+		if (!expand.contains(expandParam)) {
+			expand.add(expandParam);	// Always expand primary resource.
 		}
 
 		//		logger.info("expand.size() = {}", expand.size());

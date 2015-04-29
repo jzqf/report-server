@@ -32,8 +32,8 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.qfree.obo.report.ApplicationConfig;
-import com.qfree.obo.report.resource.AbstractResource;
 import com.qfree.obo.report.resource.ReportCategoryResource;
+import com.qfree.obo.report.resource.ResourcePath;
 import com.qfree.obo.report.util.DateUtils;
 
 /**
@@ -107,7 +107,7 @@ public class ReportCategoryControllerTests {
 		reportCategoryResource.setActive(true);
 		//		logger.info("reportCategoryResource = {}", reportCategoryResource);
 
-		response = webTarget.path(AbstractResource.REPORTCATEGORIES_PATH)
+		response = webTarget.path(ResourcePath.REPORTCATEGORIES_PATH)
 				.request()
 				.header("Accept", MediaType.APPLICATION_JSON + ";v=" + defaultVersion)
 				.post(Entity.entity(reportCategoryResource, MediaType.APPLICATION_JSON_TYPE));
@@ -125,7 +125,7 @@ public class ReportCategoryControllerTests {
 		assertThat(createdEntityLocations.size(), is(greaterThan(0)));
 
 		ReportCategoryResource responseEntity = response.readEntity(ReportCategoryResource.class);
-		//		logger.info("responseEntity = {}", responseEntity);
+		assertThat(responseEntity, is(not(nullValue())));
 		assertThat(responseEntity.getAbbreviation(), is(NewAbbreviation));
 		assertThat(responseEntity.getDescription(), is(NewDescription));
 		assertThat(responseEntity.getActive(), is(true));

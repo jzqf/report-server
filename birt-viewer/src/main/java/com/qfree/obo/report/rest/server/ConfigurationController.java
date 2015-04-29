@@ -21,13 +21,13 @@ import org.springframework.stereotype.Component;
 
 import com.qfree.obo.report.db.ConfigurationRepository;
 import com.qfree.obo.report.domain.Configuration;
-import com.qfree.obo.report.resource.AbstractResource;
 import com.qfree.obo.report.resource.ConfigurationResource;
+import com.qfree.obo.report.resource.ResourcePath;
 import com.qfree.obo.report.rest.server.RestUtils.RestApiVersion;
 import com.qfree.obo.report.service.ConfigurationService;
 
 @Component
-@Path(AbstractResource.CONFIGURATIONS_PATH)
+@Path(ResourcePath.CONFIGURATIONS_PATH)
 public class ConfigurationController {
 
 	private static final Logger logger = LoggerFactory.getLogger(ConfigurationController.class);
@@ -69,9 +69,9 @@ public class ConfigurationController {
 			@Context final UriInfo uriInfo) {
 		RestApiVersion apiVersion = RestUtils.extractAPIVersion(acceptHeader, RestApiVersion.v1);
 
-		//TODO Do not hardwire "configuration" here.
-		if (!expand.contains("configuration")) {
-			expand.add("configuration");	// Always expand primary resource.
+		String expandParam = ResourcePath.forEntity(Configuration.class).getExpandParam();
+		if (!expand.contains(expandParam)) {
+			expand.add(expandParam);	// Always expand primary resource.
 		}
 
 		Configuration configuration = configurationRepository.findOne(id);

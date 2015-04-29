@@ -27,11 +27,12 @@ import com.qfree.obo.report.db.ReportCategoryRepository;
 import com.qfree.obo.report.domain.ReportCategory;
 import com.qfree.obo.report.resource.AbstractResource;
 import com.qfree.obo.report.resource.ReportCategoryResource;
+import com.qfree.obo.report.resource.ResourcePath;
 import com.qfree.obo.report.rest.server.RestUtils.RestApiVersion;
 import com.qfree.obo.report.service.ReportCategoryService;
 
 @Component
-@Path(AbstractResource.REPORTCATEGORIES_PATH)
+@Path(ResourcePath.REPORTCATEGORIES_PATH)
 public class ReportCategoryController {
 
 	private static final Logger logger = LoggerFactory.getLogger(ReportCategoryController.class);
@@ -81,8 +82,11 @@ public class ReportCategoryController {
 		System.out.println("ReportCategoryController.create: reportCategory = " + reportCategory);
 
 		List<String> expand = new ArrayList<>();
-		//TODO Do not hardwire "reportcategory" here.
-		expand.add("reportcategory");
+		/*
+		 * Ensure this resource will be "expanded", i.e., all of its attributes
+		 * will be filled out, not just its "href" attribute.
+		 */
+		expand.add(ResourcePath.forEntity(ReportCategory.class).getExpandParam());
 		ReportCategoryResource resource = new ReportCategoryResource(reportCategory, uriInfo, expand);
 		System.out.println("ReportCategoryController.create: resource = " + resource);
 
@@ -125,9 +129,9 @@ public class ReportCategoryController {
 
 		//		logger.info("id = {}", id);
 
-		//TODO Do not hardwire "reportcategory" here.
-		if (!expand.contains("reportcategory")) {
-			expand.add("reportcategory");	// Always expand primary resource.
+		String expandParam = ResourcePath.forEntity(ReportCategory.class).getExpandParam();
+		if (!expand.contains(expandParam)) {
+			expand.add(expandParam);	// Always expand primary resource.
 		}
 
 		ReportCategory reportCategory = reportCategoryRepository.findOne(id);

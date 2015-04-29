@@ -19,20 +19,6 @@ public abstract class AbstractResource {
 
 	private static final Logger logger = LoggerFactory.getLogger(AbstractResource.class);
 
-	private static final String PATH_SEPARATOR = "/";
-
-	/*
-	 * These paths are used in @Path annotations (and elsewhere). Arguments to
-	 * annotations must be constant expressions. Therefore these paths must be
-	 * declared as constants. It does not seem possible to, e.g., declare them 
-	 * within the ResourcePath enum because that enum is not considered to be a 
-	 * constant expression. As a result, each path that is defined here must
-	 * also be used in ResourcePath to create a new enum element.
-	 */
-	public static final String CONFIGURATIONS_PATH = PATH_SEPARATOR + "configurations";
-	public static final String REPORTS_PATH = PATH_SEPARATOR + "reports";
-	public static final String REPORTCATEGORIES_PATH = PATH_SEPARATOR + "reportcategories";
-
 	@XmlElement
 	protected String href;
 

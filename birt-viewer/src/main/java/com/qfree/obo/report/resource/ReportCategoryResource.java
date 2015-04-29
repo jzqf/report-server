@@ -48,18 +48,17 @@ public class ReportCategoryResource extends AbstractResource {
 
 		super(ReportCategory.class, reportCategory.getReportCategoryId(), uriInfo, expand);
 
-		//TODO Do not hardwire "reportcategory" here.
-		if (expand.contains("reportcategory")) {
+		String expandParam = ResourcePath.forEntity(ReportCategory.class).getExpandParam();
+		if (expand.contains(expandParam)) {
 			/*
-			 * Make a copy of the "expand" list from which "reportcategory" is
+			 * Make a copy of the "expand" list from which expandParam is
 			 * removed. This list should be used when creating new resources
 			 * here, instead of the original "expand" list. This is done to 
 			 * avoid the unlikely event of a long list of chained expansions
 			 * across relations.
 			 */
 			List<String> expandElementRemoved = new ArrayList<>(expand);
-			//TODO Do not hardwire "reportcategory" here.
-			expandElementRemoved.remove("reportcategory");
+			expandElementRemoved.remove(expandParam);
 
 			this.reportCategoryId = reportCategory.getReportCategoryId();
 			this.abbreviation = reportCategory.getAbbreviation();
