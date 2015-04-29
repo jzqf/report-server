@@ -11,7 +11,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 import com.qfree.obo.report.ApplicationConfig;
-import com.qfree.obo.report.resource.ReportCategoryResource;
+import com.qfree.obo.report.dto.ReportCategoryResource;
 
 public class CreateCloseApplicationContext {
 

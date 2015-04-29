@@ -1,4 +1,4 @@
-package com.qfree.obo.report.resource;
+package com.qfree.obo.report.dto;
 
 import java.util.List;
 
@@ -15,18 +15,18 @@ import org.slf4j.LoggerFactory;
  * level stops that element from being generated.
  */
 @XmlTransient
-public abstract class AbstractResource {
+public abstract class AbstractBaseResource {
 
-	private static final Logger logger = LoggerFactory.getLogger(AbstractResource.class);
+	private static final Logger logger = LoggerFactory.getLogger(AbstractBaseResource.class);
 
 	@XmlElement
 	protected String href;
 
-	public AbstractResource() {
+	public AbstractBaseResource() {
 		super();
 	}
 
-	public AbstractResource(Class<?> entityClass, Object id, UriInfo uriInfo, List<String> expand) {
+	public AbstractBaseResource(Class<?> entityClass, Object id, UriInfo uriInfo, List<String> expand) {
 		super();
 		//		this.href = createHref(getFullyQualifiedContextPath(uriInfo), entityClass, id);
 		this.href = createHref(uriInfo, entityClass, id, expand);

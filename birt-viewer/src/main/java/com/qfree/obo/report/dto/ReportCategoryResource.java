@@ -1,4 +1,4 @@
-package com.qfree.obo.report.resource;
+package com.qfree.obo.report.dto;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -17,7 +17,7 @@ import com.qfree.obo.report.domain.ReportCategory;
 
 @XmlRootElement
 //@XmlJavaTypeAdapter(value = UuidAdapter.class, type = UUID.class) <- doesn't work
-public class ReportCategoryResource extends AbstractResource {
+public class ReportCategoryResource extends AbstractBaseResource {
 
 	private static final Logger logger = LoggerFactory.getLogger(ReportCategoryResource.class);
 

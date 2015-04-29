@@ -32,8 +32,8 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.qfree.obo.report.ApplicationConfig;
-import com.qfree.obo.report.resource.ReportCategoryResource;
-import com.qfree.obo.report.resource.ResourcePath;
+import com.qfree.obo.report.dto.ReportCategoryResource;
+import com.qfree.obo.report.dto.ResourcePath;
 import com.qfree.obo.report.util.DateUtils;
 
 /**

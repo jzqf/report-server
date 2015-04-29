@@ -1,4 +1,4 @@
-package com.qfree.obo.report.resource;
+package com.qfree.obo.report.dto;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -16,7 +16,7 @@ import org.slf4j.LoggerFactory;
 import com.qfree.obo.report.domain.Report;
 
 @XmlRootElement
-public class ReportResource extends AbstractResource {
+public class ReportResource extends AbstractBaseResource {
 
 	private static final Logger logger = LoggerFactory.getLogger(ReportResource.class);
 

@@ -22,8 +22,8 @@ import org.springframework.stereotype.Component;
 import com.qfree.obo.report.db.ReportRepository;
 import com.qfree.obo.report.domain.Report;
 import com.qfree.obo.report.domain.ReportCategory;
-import com.qfree.obo.report.resource.ReportResource;
-import com.qfree.obo.report.resource.ResourcePath;
+import com.qfree.obo.report.dto.ReportResource;
+import com.qfree.obo.report.dto.ResourcePath;
 import com.qfree.obo.report.rest.server.RestUtils.RestApiVersion;
 
 @Component

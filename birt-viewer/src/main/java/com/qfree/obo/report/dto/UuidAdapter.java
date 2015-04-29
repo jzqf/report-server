@@ -1,4 +1,4 @@
-package com.qfree.obo.report.resource;
+package com.qfree.obo.report.dto;
 
 import java.util.UUID;
 

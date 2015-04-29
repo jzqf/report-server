@@ -1,4 +1,4 @@
-package com.qfree.obo.report.resource;
+package com.qfree.obo.report.dto;
 
 import com.qfree.obo.report.domain.Configuration;
 import com.qfree.obo.report.domain.Report;

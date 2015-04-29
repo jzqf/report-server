@@ -1,4 +1,4 @@
-package com.qfree.obo.report.resource;
+package com.qfree.obo.report.dto;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -14,7 +14,7 @@ import com.qfree.obo.report.domain.Configuration;
 import com.qfree.obo.report.domain.Configuration.ParamName;
 
 @XmlRootElement
-public class ConfigurationResource extends AbstractResource {
+public class ConfigurationResource extends AbstractBaseResource {
 
 	@XmlElement
 	@XmlJavaTypeAdapter(UuidAdapter.class)
