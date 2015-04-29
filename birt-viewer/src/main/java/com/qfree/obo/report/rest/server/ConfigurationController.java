@@ -28,7 +28,7 @@ import com.qfree.obo.report.service.ConfigurationService;
 
 @Component
 @Path(ResourcePath.CONFIGURATIONS_PATH)
-public class ConfigurationController {
+public class ConfigurationController extends AbstractBaseController {
 
 	private static final Logger logger = LoggerFactory.getLogger(ConfigurationController.class);
 

@@ -1,6 +1,5 @@
 package com.qfree.obo.report.rest.server;
 
-import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -25,7 +24,6 @@ import org.springframework.stereotype.Component;
 
 import com.qfree.obo.report.db.ReportCategoryRepository;
 import com.qfree.obo.report.domain.ReportCategory;
-import com.qfree.obo.report.dto.AbstractBaseResource;
 import com.qfree.obo.report.dto.ReportCategoryResource;
 import com.qfree.obo.report.dto.ResourcePath;
 import com.qfree.obo.report.rest.server.RestUtils.RestApiVersion;
@@ -33,7 +31,7 @@ import com.qfree.obo.report.service.ReportCategoryService;
 
 @Component
 @Path(ResourcePath.REPORTCATEGORIES_PATH)
-public class ReportCategoryController {
+public class ReportCategoryController extends AbstractBaseController {
 
 	private static final Logger logger = LoggerFactory.getLogger(ReportCategoryController.class);
 
@@ -91,30 +89,6 @@ public class ReportCategoryController {
 		System.out.println("ReportCategoryController.create: resource = " + resource);
 
 		return created(resource);
-	}
-
-	//IF USEFUL, PLACE IN "BaseController"?
-	//	protected Response created(ReportCategoryResource resource) {
-	protected Response created(AbstractBaseResource resource) {
-		URI uri = URI.create(resource.getHref());
-		logger.info("resource.getHref() = {}", resource.getHref());
-		logger.info("uri = {}", uri);
-		/*
-		 * .created(uri):		sets the Location header for a "201 Created"
-		 * 						response.
-		 * 
-		 * .entity(resource):	sets the response entity that will be returned 
-		 * 						in the response, i.e., "resource" is the payload.
-		 * 
-		 * .build():			builds the response instance from the current 
-		 * 						ResponseBuilder. Jersey will pass this off to 
-		 * 						the JAXB-based JSON binding provider, which will
-		 * 						perform the conversion to JSON. In our case, it
-		 * 						is MOXy.
-		 */
-		//		logger.info("resource = {}", resource);
-		//		System.out.println("ReportCategoryController.created: resource = " + resource);
-		return Response.created(uri).entity(resource).build();
 	}
 
 	@Path("/{id}")

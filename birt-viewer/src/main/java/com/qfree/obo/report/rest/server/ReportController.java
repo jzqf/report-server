@@ -28,7 +28,7 @@ import com.qfree.obo.report.rest.server.RestUtils.RestApiVersion;
 
 @Component
 @Path(ResourcePath.REPORTS_PATH)
-public class ReportController {
+public class ReportController extends AbstractBaseController {
 
 	private static final Logger logger = LoggerFactory.getLogger(ReportController.class);
 
