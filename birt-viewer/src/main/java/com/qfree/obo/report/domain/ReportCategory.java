@@ -128,7 +128,7 @@ public class ReportCategory implements Serializable {
 	@Override
 	public String toString() {
 		StringBuilder builder = new StringBuilder();
-		builder.append(", abbreviation=");
+		builder.append("ReportCategory [abbreviation=");
 		builder.append(abbreviation);
 		builder.append(", description=");
 		builder.append(description);
@@ -137,4 +137,5 @@ public class ReportCategory implements Serializable {
 		builder.append("]");
 		return builder.toString();
 	}
+
 }

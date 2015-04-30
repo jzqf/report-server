@@ -52,7 +52,7 @@ public class ConfigurationController extends AbstractBaseController {
 		RestApiVersion apiVersion = RestUtils.extractAPIVersion(acceptHeader, RestApiVersion.v1);
 
 		List<Configuration> configurations = configurationRepository.findAll();
-		List<ConfigurationResource> configurationResources = new ArrayList<>();
+		List<ConfigurationResource> configurationResources = new ArrayList<>(configurations.size());
 		for (Configuration configuration : configurations) {
 			configurationResources.add(new ConfigurationResource(configuration, uriInfo, expand));
 		}
@@ -69,11 +69,7 @@ public class ConfigurationController extends AbstractBaseController {
 			@Context final UriInfo uriInfo) {
 		RestApiVersion apiVersion = RestUtils.extractAPIVersion(acceptHeader, RestApiVersion.v1);
 
-		String expandParam = ResourcePath.forEntity(Configuration.class).getExpandParam();
-		if (!expand.contains(expandParam)) {
-			expand.add(expandParam);	// Always expand primary resource.
-		}
-
+		addToExpandList(expand, Configuration.class);	// Force primary resource to be "expanded"
 		Configuration configuration = configurationRepository.findOne(id);
 		ConfigurationResource configurationResource = new ConfigurationResource(configuration, uriInfo, expand);
 		return configurationResource;

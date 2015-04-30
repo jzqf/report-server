@@ -37,7 +37,7 @@ public class DateAdapter extends XmlAdapter<String, Date> {
 
 	@Override
 	public String marshal(Date date) throws Exception {
-		logger.info("date = {}", date);
+		logger.debug("date = {}", date);
 
 		if (date != null) {
 			try {
@@ -71,7 +71,7 @@ public class DateAdapter extends XmlAdapter<String, Date> {
 	 */
 	@Override
 	public Date unmarshal(String utcDateAsString) {
-		logger.info("dateAsString = {}", utcDateAsString);
+		logger.debug("dateAsString = {}", utcDateAsString);
 
 		if (utcDateAsString != null && !utcDateAsString.equals("")) {
 			try {

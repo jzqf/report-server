@@ -35,23 +35,23 @@ public enum ResourcePath {
 	private final String expandParam;
 	private final Class<?> entityClass;
 
-	private ResourcePath(String path, String expandParam, Class<?> clazz) {
+	private ResourcePath(String path, String expandParam, Class<?> entityClass) {
 		this.path = path;
 		this.expandParam = expandParam;
-		this.entityClass = clazz;
+		this.entityClass = entityClass;
     }
 
-	public static ResourcePath forEntity(Class<?> clazz) {
+	public static ResourcePath forEntity(Class<?> entityClass) {
 		for (ResourcePath resourcePath : ResourcePath.values()) {
 			/*
 			 * Cannot use equals because object may be proxied by Hibernate.
 			 * Cannot use instanceof because type not fixed at compile time?
 			 */
-			if (resourcePath.entityClass.isAssignableFrom(clazz)) {
+			if (resourcePath.entityClass.isAssignableFrom(entityClass)) {
 				return resourcePath;
             }
         }
-		throw new IllegalArgumentException("No ResourcePath for entity class '" + clazz.getName() + "'");
+		throw new IllegalArgumentException("No ResourcePath for entity class '" + entityClass.getName() + "'");
     }
 
     public String getPath() {

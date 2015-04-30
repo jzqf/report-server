@@ -57,7 +57,7 @@ public class ReportCategoryController extends AbstractBaseController {
 		RestApiVersion apiVersion = RestUtils.extractAPIVersion(acceptHeader, RestApiVersion.v1);
 
 		List<ReportCategory> reportCategories = reportCategoryRepository.findByActiveTrue();
-		List<ReportCategoryResource> reportCategoryResources = new ArrayList<>();
+		List<ReportCategoryResource> reportCategoryResources = new ArrayList<>(reportCategories.size());
 		for (ReportCategory reportCategory : reportCategories) {
 			reportCategoryResources.add(new ReportCategoryResource(reportCategory, uriInfo, expand));
 		}
@@ -73,21 +73,9 @@ public class ReportCategoryController extends AbstractBaseController {
 			@Context final UriInfo uriInfo) {
 		RestApiVersion apiVersion = RestUtils.extractAPIVersion(acceptHeader, RestApiVersion.v1);
 
-		logger.info("reportCategoryResource = {}", reportCategoryResource);
-		System.out.println("ReportCategoryController.create: reportCategoryResource = " + reportCategoryResource);
-
 		ReportCategory reportCategory = reportCategoryService.saveFromResource(reportCategoryResource);
-		System.out.println("ReportCategoryController.create: reportCategory = " + reportCategory);
-
-		List<String> expand = new ArrayList<>();
-		/*
-		 * Ensure this resource will be "expanded", i.e., all of its attributes
-		 * will be filled out, not just its "href" attribute.
-		 */
-		expand.add(ResourcePath.forEntity(ReportCategory.class).getExpandParam());
+		List<String> expand = newExpandList(ReportCategory.class);	// Force primary resource to be "expanded"
 		ReportCategoryResource resource = new ReportCategoryResource(reportCategory, uriInfo, expand);
-		System.out.println("ReportCategoryController.create: resource = " + resource);
-
 		return created(resource);
 	}
 
@@ -101,20 +89,9 @@ public class ReportCategoryController extends AbstractBaseController {
 			@Context final UriInfo uriInfo) {
 		RestApiVersion apiVersion = RestUtils.extractAPIVersion(acceptHeader, RestApiVersion.v1);
 
-		//		logger.info("id = {}", id);
-
-		String expandParam = ResourcePath.forEntity(ReportCategory.class).getExpandParam();
-		if (!expand.contains(expandParam)) {
-			expand.add(expandParam);	// Always expand primary resource.
-		}
-
+		addToExpandList(expand, ReportCategory.class);	// Force primary resource to be "expanded"
 		ReportCategory reportCategory = reportCategoryRepository.findOne(id);
 		ReportCategoryResource reportCategoryResource = new ReportCategoryResource(reportCategory, uriInfo, expand);
-
-		//		logger.info("reportCategoryResource.getReportCategoryId() = {}", reportCategoryResource.getReportCategoryId());
-		//		logger.info("reportCategoryResource = {}", reportCategoryResource);
-
 		return reportCategoryResource;
 	}
-
 }

@@ -25,9 +25,7 @@ public class ReportCategoryService {
 
 	@Transactional
 	public ReportCategory saveFromResource(ReportCategoryResource reportCategoryResource) {
-
-		System.out
-				.println("ReportCategoryService.saveFromResource: reportCategoryResource = " + reportCategoryResource);
+		logger.debug(");reportCategoryResource = {}", reportCategoryResource);
 
 		/*
 		 * Create ReportCategory entity instance from the supplied 
@@ -49,7 +47,7 @@ public class ReportCategoryService {
 		 * ReportCategory.
 		 */
 		reportCategory = reportCategoryRepository.save(reportCategory);
-		System.out.println("ReportCategoryService.saveFromResource: reportCategory = " + reportCategory);
+		logger.debug(");reportCategory (created) = {}", reportCategory);
 
 		return reportCategory;
 	}

@@ -21,7 +21,6 @@ import org.springframework.stereotype.Component;
 
 import com.qfree.obo.report.db.ReportRepository;
 import com.qfree.obo.report.domain.Report;
-import com.qfree.obo.report.domain.ReportCategory;
 import com.qfree.obo.report.dto.ReportResource;
 import com.qfree.obo.report.dto.ResourcePath;
 import com.qfree.obo.report.rest.server.RestUtils.RestApiVersion;
@@ -51,13 +50,8 @@ public class ReportController extends AbstractBaseController {
 			@Context final UriInfo uriInfo) {
 		RestApiVersion apiVersion = RestUtils.extractAPIVersion(acceptHeader, RestApiVersion.v1);
 
-		//		logger.info("expand.size() = {}", expand.size());
-		//		for (String e : expand) {
-		//			logger.info("  expand: = {}", e);
-		//		}
-
 		List<Report> reports = reportRepository.findByActiveTrue();
-		List<ReportResource> reportResources = new ArrayList<>();
+		List<ReportResource> reportResources = new ArrayList<>(reports.size());
 		for (Report report : reports) {
 			reportResources.add(new ReportResource(report, uriInfo, expand));
 		}
@@ -74,20 +68,9 @@ public class ReportController extends AbstractBaseController {
 			@Context final UriInfo uriInfo) {
 		RestApiVersion apiVersion = RestUtils.extractAPIVersion(acceptHeader, RestApiVersion.v1);
 
-		String expandParam = ResourcePath.forEntity(Report.class).getExpandParam();
-		if (!expand.contains(expandParam)) {
-			expand.add(expandParam);	// Always expand primary resource.
-		}
-
-		//		logger.info("expand.size() = {}", expand.size());
-		//		for (String e : expand) {
-		//			logger.info("  expand: = {}", e);
-		//		}
-
+		addToExpandList(expand, Report.class);	// Force primary resource to be "expanded"
 		Report report = reportRepository.findOne(id);
-		ReportCategory reportCategory = report.getReportCategory();
 		ReportResource reportResource = new ReportResource(report, uriInfo, expand);
-
 		return reportResource;
 	}
 
