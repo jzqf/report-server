@@ -24,7 +24,7 @@ public class ReportCategoryService {
 	}
 
 	@Transactional
-	public ReportCategory saveFromResource(ReportCategoryResource reportCategoryResource) {
+	public ReportCategory saveOrUpdateFromResource(ReportCategoryResource reportCategoryResource) {
 		logger.debug(");reportCategoryResource = {}", reportCategoryResource);
 
 		/*
@@ -32,6 +32,7 @@ public class ReportCategoryService {
 		 * ReportCategoryResource instance.
 		 */
 		ReportCategory reportCategory = new ReportCategory(
+				reportCategoryResource.getReportCategoryId(),
 				reportCategoryResource.getDescription(),
 				reportCategoryResource.getAbbreviation(),
 				reportCategoryResource.getActive(),

@@ -67,14 +67,27 @@ public class ReportCategory implements Serializable {
 	}
 
 	public ReportCategory(String description, String abbreviation) {
-		this(description, abbreviation, true, DateUtils.nowUtc());
+		this(null, description, abbreviation, true, DateUtils.nowUtc());
 	}
 
 	public ReportCategory(String description, String abbreviation, boolean active) {
-		this(description, abbreviation, active, DateUtils.nowUtc());
+		this(null, description, abbreviation, active, DateUtils.nowUtc());
 	}
 
 	public ReportCategory(String description, String abbreviation, boolean active, Date createdOn) {
+		this(null, description, abbreviation, active, createdOn);
+		//		this.description = description;
+		//		this.abbreviation = abbreviation;
+		//		this.active = active;
+		//		if (createdOn != null) {
+		//			this.createdOn = createdOn;
+		//		} else {
+		//			this.createdOn = DateUtils.nowUtc();
+		//		}
+	}
+
+	public ReportCategory(UUID reportCategoryId, String description, String abbreviation, boolean active, Date createdOn) {
+		this.reportCategoryId = reportCategoryId;
 		this.description = description;
 		this.abbreviation = abbreviation;
 		this.active = active;

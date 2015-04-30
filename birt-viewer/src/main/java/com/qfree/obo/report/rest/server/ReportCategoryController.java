@@ -8,6 +8,7 @@ import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.HeaderParam;
 import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -73,12 +74,21 @@ public class ReportCategoryController extends AbstractBaseController {
 			@Context final UriInfo uriInfo) {
 		RestApiVersion apiVersion = RestUtils.extractAPIVersion(acceptHeader, RestApiVersion.v1);
 
-		ReportCategory reportCategory = reportCategoryService.saveFromResource(reportCategoryResource);
+		ReportCategory reportCategory = reportCategoryService.saveOrUpdateFromResource(reportCategoryResource);
 		List<String> expand = newExpandList(ReportCategory.class);	// Force primary resource to be "expanded"
 		ReportCategoryResource resource = new ReportCategoryResource(reportCategory, uriInfo, expand);
 		return created(resource);
 	}
 
+	/*
+	 * This endpoint can be tested with:
+	 * 
+	 *   $ mvn clean spring-boot:run
+	 *   $ curl -iH "Content-Type: application/json" -X POST -d \
+	 *   '{"abbreviation":"RCABBREV","description":"ReportCategory description",\
+	 *   "active":true, "createdOn":"1958-05-06T12:00:00.000Z"}' \
+	 *   http://localhost:8080/rest/reportcategories
+	 */
 	@Path("/{id}")
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
@@ -94,4 +104,40 @@ public class ReportCategoryController extends AbstractBaseController {
 		ReportCategoryResource reportCategoryResource = new ReportCategoryResource(reportCategory, uriInfo, expand);
 		return reportCategoryResource;
 	}
+
+	/*
+	 * This endpoint can be tested with:
+	 * 
+	 *   $ mvn clean spring-boot:run
+	 *   $ curl -iH "Content-Type: application/json" -X PUT -d \
+	 *   '{"abbreviation":"QFREE-MOD","description":"Q-Free internal (modified)","active":false}' \
+	 *   http://localhost:8080/rest/reportcategories/bb2bc482-c19a-4c19-a087-e68ffc62b5a0
+	 */
+	@Path("/{id}")
+	@PUT
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response updateById(
+			ReportCategoryResource reportCategoryResource,
+			@PathParam("id") final UUID id,
+			@HeaderParam("Accept") final String acceptHeader,
+			@Context final UriInfo uriInfo) {
+		RestApiVersion apiVersion = RestUtils.extractAPIVersion(acceptHeader, RestApiVersion.v1);
+
+		/*
+		 * Retrieve ReportCategory entity to be updated.
+		 */
+		ReportCategory reportCategory = reportCategoryRepository.findOne(id);
+		/*
+		 * Ensure that the entity's "id" and "CreatedOn" is not changed.
+		 */
+		reportCategoryResource.setReportCategoryId(reportCategory.getReportCategoryId());
+		reportCategoryResource.setCreatedOn(reportCategory.getCreatedOn());
+		/*
+		 * Save updated entity.
+		 */
+		reportCategory = reportCategoryService.saveOrUpdateFromResource(reportCategoryResource);
+		return Response.status(Response.Status.OK).build();
+	}
+
 }
