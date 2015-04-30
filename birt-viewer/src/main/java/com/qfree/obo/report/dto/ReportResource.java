@@ -24,7 +24,6 @@ public class ReportResource extends AbstractBaseResource {
 	@XmlJavaTypeAdapter(UuidAdapter.class)
 	private UUID reportId;
 
-	//TODO Expand or not based on query parameter!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 	@XmlElement(name = "reportCategory")
 	private ReportCategoryResource reportCategoryResource;
 

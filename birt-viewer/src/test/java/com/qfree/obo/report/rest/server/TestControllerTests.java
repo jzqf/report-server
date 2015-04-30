@@ -4,7 +4,6 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
 import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.Form;
@@ -62,22 +61,12 @@ public class TestControllerTests {
 
 	@BeforeClass
 	public static void setUpBeforeClass() {
-		System.out.println("@BeforeClass: Setting up JAX-RS Client...");
-		client = ClientBuilder.newBuilder()
-				//	.register(JsonProcessingFeature.class)
-				//	.property(JsonGenerator.PRETTY_PRINTING, true)
-				.build();
+		client = ControllerTestUtils.setUpJaxRsClient();
 	}
 
 	@Before
 	public void setUp() {
-		/*
-		 * This WebTarget can be used below in each test to derive a target that
-		 * is specific to a particular resource associated with the test. This
-		 * cannot go in @BeforeClass method because that is a static method and
-		 * "port" is an instance variable.
-		 */
-		this.webTarget = client.target("http://localhost:" + port + "/rest");
+		this.webTarget = ControllerTestUtils.setUpWebTarget(client, port);
 	}
 
 	@Test
