@@ -49,6 +49,13 @@ public class ReportCategoryController extends AbstractBaseController {
 		this.reportCategoryService = reportCategoryService;
 	}
 
+	/*
+	 * This endpoint can be tested with:
+	 * 
+	 *   $ mvn clean spring-boot:run
+	 *   $ curl -i -H "Accept: application/json;v=1" -X GET \
+	 *   http://localhost:8081/report-server/rest/reportcategories
+	 */
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	public List<ReportCategoryResource> getList(
@@ -65,6 +72,15 @@ public class ReportCategoryController extends AbstractBaseController {
 		return reportCategoryResources;
 	}
 
+	/*
+	 * This endpoint can be tested with:
+	 * 
+	 *   $ mvn clean spring-boot:run
+	 *   $ curl -iH "Content-Type: application/json;v=1" -X POST -d \
+	 *   '{"abbreviation":"RCABBREV","description":"ReportCategory description",\
+	 *   "active":true, "createdOn":"1958-05-06T12:00:00.000Z"}' \
+	 *   http://localhost:8080/rest/reportcategories
+	 */
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
@@ -84,10 +100,8 @@ public class ReportCategoryController extends AbstractBaseController {
 	 * This endpoint can be tested with:
 	 * 
 	 *   $ mvn clean spring-boot:run
-	 *   $ curl -iH "Content-Type: application/json" -X POST -d \
-	 *   '{"abbreviation":"RCABBREV","description":"ReportCategory description",\
-	 *   "active":true, "createdOn":"1958-05-06T12:00:00.000Z"}' \
-	 *   http://localhost:8080/rest/reportcategories
+	 *   $ curl -i -H "Accept: application/json;v=1" -X GET \
+	 *   http://localhost:8081/report-server/rest/reportcategories/7a482694-51d2-42d0-b0e2-19dd13bbbc64
 	 */
 	@Path("/{id}")
 	@GET
@@ -109,7 +123,7 @@ public class ReportCategoryController extends AbstractBaseController {
 	 * This endpoint can be tested with:
 	 * 
 	 *   $ mvn clean spring-boot:run
-	 *   $ curl -iH "Content-Type: application/json" -X PUT -d \
+	 *   $ curl -iH "Content-Type: application/json;v=1" -X PUT -d \
 	 *   '{"abbreviation":"QFREE-MOD","description":"Q-Free internal (modified)","active":false}' \
 	 *   http://localhost:8080/rest/reportcategories/bb2bc482-c19a-4c19-a087-e68ffc62b5a0
 	 */
