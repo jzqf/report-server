@@ -116,32 +116,32 @@ public class ReportCategoryController extends AbstractBaseController {
 	@Path("/{id}")
 	@PUT
 	@Consumes(MediaType.APPLICATION_JSON)
-	//	@Produces(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
 	public Response updateById(
 			ReportCategoryResource reportCategoryResource,
 			@PathParam("id") final UUID id,
 			@HeaderParam("Accept") final String acceptHeader,
 			@Context final UriInfo uriInfo) {
 		RestApiVersion apiVersion = RestUtils.extractAPIVersion(acceptHeader, RestApiVersion.v1);
-		logger.info("apiVersion = {}", apiVersion);
-		logger.info("reportCategoryResource = {}", reportCategoryResource);
+		logger.debug("apiVersion = {}", apiVersion);
+		logger.debug("reportCategoryResource = {}", reportCategoryResource);
 
 		/*
 		 * Retrieve ReportCategory entity to be updated.
 		 */
 		ReportCategory reportCategory = reportCategoryRepository.findOne(id);
-		logger.info("reportCategory (to be updated) = {}", reportCategory);
+		logger.debug("reportCategory (to be updated) = {}", reportCategory);
 		/*
 		 * Ensure that the entity's "id" and "CreatedOn" are not changed.
 		 */
 		reportCategoryResource.setReportCategoryId(reportCategory.getReportCategoryId());
 		reportCategoryResource.setCreatedOn(reportCategory.getCreatedOn());
-		logger.info("reportCategoryResource (adjusted) = {}", reportCategoryResource);
+		logger.debug("reportCategoryResource (adjusted) = {}", reportCategoryResource);
 		/*
 		 * Save updated entity.
 		 */
 		reportCategory = reportCategoryService.saveOrUpdateFromResource(reportCategoryResource);
-		logger.info("reportCategory (after saveOrUpdateFromResource) = {}", reportCategory);
+		logger.debug("reportCategory (after saveOrUpdateFromResource) = {}", reportCategory);
 		return Response.status(Response.Status.OK).build();
 	}
 

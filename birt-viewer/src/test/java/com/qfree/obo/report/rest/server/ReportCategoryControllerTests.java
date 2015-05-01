@@ -174,7 +174,7 @@ public class ReportCategoryControllerTests {
 		 * These are the default versions for the endpoint 
 		 * AbstractResource.REPORTCATEGORIES_PATH/{id} using HTTP PUT and GET.
 		 */
-		String defaultVersionPut = "4";	//CHANGE THIS TO "1"!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+		String defaultVersionPut = "1";
 		String defaultVersionGet = "1";
 
 		/*
@@ -199,7 +199,6 @@ public class ReportCategoryControllerTests {
 		assertThat(reportCategory.getDescription(), is(currentDescription));
 		assertThat(reportCategory.isActive(), is(currentActive));
 		assertThat(DateUtils.entityTimestampToNormalDate(reportCategory.getCreatedOn()), is(currentCreatedOn));
-		//TODO IF THIS WORKS, USE "entityTimestampToNormalDate" ELSEWHERE IN TESTS?????????????????????????????????????????????????????????
 
 		ReportCategoryResource reportCategoryResource = new ReportCategoryResource();
 		reportCategoryResource.setAbbreviation(newAbbreviation);
@@ -213,9 +212,7 @@ public class ReportCategoryControllerTests {
 		logger.debug("path = {}", path);
 		Response response = webTarget.path(path)
 				.request()
-				//TODO FIXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
-				//.header("Accept", MediaType.APPLICATION_JSON + ";v=" + defaultVersionPut)
-				//				.header("Accept", "v=" + defaultVersion)
+				.header("Accept", MediaType.APPLICATION_JSON + ";v=" + defaultVersionPut)
 				.put(Entity.entity(reportCategoryResource, MediaType.APPLICATION_JSON_TYPE));
 		assertThat(response.getStatus(), is(Response.Status.OK.getStatusCode()));
 
