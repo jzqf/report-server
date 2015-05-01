@@ -25,19 +25,20 @@ public class ReportCategoryService {
 
 	@Transactional
 	public ReportCategory saveOrUpdateFromResource(ReportCategoryResource reportCategoryResource) {
-		logger.debug(");reportCategoryResource = {}", reportCategoryResource);
+		logger.info("reportCategoryResource = {}", reportCategoryResource);
 
 		/*
 		 * Create ReportCategory entity instance from the supplied 
 		 * ReportCategoryResource instance.
 		 */
+		//TODO FOR UPDTATES,SHOULD I LOADED THE EXISTING ENTITY FIRST? THEN I SHOULD PROBABLY WRITE A SEPARATE METHOD AND RENAME THIS ONE
 		ReportCategory reportCategory = new ReportCategory(
 				reportCategoryResource.getReportCategoryId(),
 				reportCategoryResource.getDescription(),
 				reportCategoryResource.getAbbreviation(),
 				reportCategoryResource.getActive(),
 				reportCategoryResource.getCreatedOn());
-
+		logger.info("reportCategory = {}", reportCategory);
 		/*
 		 * This "save" method will persist or merge the given entity using the
 		 * underlying JPA EntityManager. If the entity has not been persisted 
@@ -48,7 +49,7 @@ public class ReportCategoryService {
 		 * ReportCategory.
 		 */
 		reportCategory = reportCategoryRepository.save(reportCategory);
-		logger.debug(");reportCategory (created) = {}", reportCategory);
+		logger.info("reportCategory (created/updated) = {}", reportCategory);
 
 		return reportCategory;
 	}

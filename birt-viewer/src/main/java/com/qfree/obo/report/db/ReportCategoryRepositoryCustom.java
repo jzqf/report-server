@@ -12,6 +12,8 @@ import com.qfree.obo.report.domain.ReportCategory;
  */
 public interface ReportCategoryRepositoryCustom {
 
+	public ReportCategory refresh(ReportCategory reportCategory);
+
 	//	int eliteSweep();
 
 }

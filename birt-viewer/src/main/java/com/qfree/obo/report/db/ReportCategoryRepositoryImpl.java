@@ -21,7 +21,21 @@ public class ReportCategoryRepositoryImpl implements ReportCategoryRepositoryCus
 
 	@PersistenceContext
 	private EntityManager em;
-	
+
+	/**
+	 * Refresh the ReportCategory entity in case it was updated by another 
+	 * process/thread that the current EntityManager is unaware of. This is 
+	 * useful in at least during integration testing of ReST endpoints when we 
+	 * know an entity is updated by the endpoint. 
+	 * 
+	 * @param reportCategory
+	 * @return
+	 */
+	public ReportCategory refresh(ReportCategory reportCategory) {
+		em.refresh(reportCategory);
+		return reportCategory;
+	}
+
 	//	public int eliteSweep() {
 	//	  String update = 
 	//	      "UPDATE ReportCategory reportCategory " +

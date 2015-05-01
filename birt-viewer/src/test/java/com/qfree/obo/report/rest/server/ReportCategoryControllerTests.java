@@ -7,6 +7,8 @@ import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertThat;
 
+import java.nio.file.Paths;
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -23,6 +25,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.boot.test.WebIntegrationTest;
@@ -32,6 +35,8 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.qfree.obo.report.ApplicationConfig;
+import com.qfree.obo.report.db.ReportCategoryRepository;
+import com.qfree.obo.report.domain.ReportCategory;
 import com.qfree.obo.report.dto.ReportCategoryResource;
 import com.qfree.obo.report.dto.ResourcePath;
 import com.qfree.obo.report.util.DateUtils;
@@ -59,8 +64,8 @@ public class ReportCategoryControllerTests {
 
 	private static final Logger logger = LoggerFactory.getLogger(ReportCategoryControllerTests.class);
 
-	//	@Autowired
-	//	private ConfigurationService configurationService;
+	@Autowired
+	ReportCategoryRepository reportCategoryRepository;
 
 	@Value("${local.server.port}")
 	private int port;
@@ -95,9 +100,10 @@ public class ReportCategoryControllerTests {
 		reportCategoryResource.setAbbreviation(newAbbreviation);
 		reportCategoryResource.setDescription(newDescription);
 		reportCategoryResource.setActive(true);
-		//		logger.info("reportCategoryResource = {}", reportCategoryResource);
+		logger.debug("reportCategoryResource = {}", reportCategoryResource);
 
-		response = webTarget.path(ResourcePath.REPORTCATEGORIES_PATH)
+		//		response = webTarget.path(ResourcePath.REPORTCATEGORIES_PATH)
+		response = webTarget.path(ResourcePath.forEntity(ReportCategory.class).getPath())
 				.request()
 				.header("Accept", MediaType.APPLICATION_JSON + ";v=" + defaultVersion)
 				.post(Entity.entity(reportCategoryResource, MediaType.APPLICATION_JSON_TYPE));
@@ -109,7 +115,7 @@ public class ReportCategoryControllerTests {
 		 * URI is loaded below for additional tests.
 		 */
 		MultivaluedMap<String, Object> headers = response.getHeaders();
-		//		logger.info("headers = {}", headers);
+		logger.debug("headers = {}", headers);
 		List<Object> createdEntityLocations = headers.get("Location");
 		assertThat(createdEntityLocations, is(not(nullValue())));
 		assertThat(createdEntityLocations.size(), is(greaterThan(0)));
@@ -127,12 +133,12 @@ public class ReportCategoryControllerTests {
 		 * there is a significant difference; otherwise, this could cause 
 		 * problems with continuous integration and automatic builds.
 		 */
-		//		logger.info(" DateUtils.nowUtc() = {}, responseEntity.getCreatedOn() = {}", DateUtils.nowUtc(), responseEntity.getCreatedOn());
+		logger.debug(" DateUtils.nowUtc() = {}, responseEntity.getCreatedOn() = {}",
+				DateUtils.nowUtc(), responseEntity.getCreatedOn());
 		long millisecondsSinceCreated = (DateUtils.nowUtc()).getTime() - responseEntity.getCreatedOn().getTime();
 		assertThat(Math.abs(millisecondsSinceCreated), is(lessThan(5L * 60L * 1000L)));
 
 		assertThat(responseEntity.getHref(), is(not(nullValue())));
-		//		logger.info("responseEntity.getReportCategoryId() = {}", responseEntity.getReportCategoryId());
 		/*
 		 * We test that an id was generated, but we don't know what it will be,
 		 * so it does make sense to check that it is "correct".
@@ -145,14 +151,14 @@ public class ReportCategoryControllerTests {
 		 */
 		String uriAsString;
 		uriAsString = createdEntityLocations.get(0).toString();
-		//		logger.info("uriAsString =) {}", uriAsString);
+		logger.debug("uriAsString =) {}", uriAsString);
 		response = client.target(uriAsString)
 				.request()
 				.header("Accept", MediaType.APPLICATION_JSON + ";v=" + defaultVersion)
 				.get();
 		assertThat(response.getStatus(), is(Response.Status.OK.getStatusCode()));
 		ReportCategoryResource resource = response.readEntity(ReportCategoryResource.class);
-		//		logger.info("resource = {}", resource);
+		logger.debug("resource = {}", resource);
 
 		/*
 		 * Check that there is now a ReportCategory in the database 
@@ -164,90 +170,92 @@ public class ReportCategoryControllerTests {
 	@DirtiesContext
 	@Transactional
 	public void testUpdateByPut() {
-		/* This is the default version for the endpoint 
-		 * AbstractResource.REPORTCATEGORIES_PATH  using HTTP POST.
+		/* 
+		 * These are the default versions for the endpoint 
+		 * AbstractResource.REPORTCATEGORIES_PATH/{id} using HTTP PUT and GET.
 		 */
-		String defaultVersion = "1";
+		String defaultVersionPut = "4";	//CHANGE THIS TO "1"!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+		String defaultVersionGet = "1";
 
 		/*
-		 * Retails of ReportCategory to update.
+		 * Details of the ReportCategory to update.
 		 */
 		UUID uuidOfReportCategory = UUID.fromString("bb2bc482-c19a-4c19-a087-e68ffc62b5a0");
 		String currentAbbreviation = "QFREE";
 		String currentDescription = "Q-Free internal";
-		//		Date currentCreatedOn =
+		boolean currentActive = true;
+		Date currentCreatedOn = DateUtils.dateUtcFromIso8601String("2015-05-30T22:00:00.000Z");
 
-		String newAbbreviation = "NEWRCABBREV";
-		String newDescription = "New report category description";
-		Response response;
+		/*
+		 * New details that will be used to update the ReportCategory.
+		 */
+		String newAbbreviation = "QFREEMODIFIED";
+		String newDescription = "Q-Free internal (modified)";
+		boolean newActive = false;
+
+		ReportCategory reportCategory = reportCategoryRepository.findOne(uuidOfReportCategory);
+		assertThat(reportCategory, is(not(nullValue())));
+		assertThat(reportCategory.getAbbreviation(), is(currentAbbreviation));
+		assertThat(reportCategory.getDescription(), is(currentDescription));
+		assertThat(reportCategory.isActive(), is(currentActive));
+		assertThat(DateUtils.entityTimestampToNormalDate(reportCategory.getCreatedOn()), is(currentCreatedOn));
+		//TODO IF THIS WORKS, USE "entityTimestampToNormalDate" ELSEWHERE IN TESTS?????????????????????????????????????????????????????????
 
 		ReportCategoryResource reportCategoryResource = new ReportCategoryResource();
 		reportCategoryResource.setAbbreviation(newAbbreviation);
 		reportCategoryResource.setDescription(newDescription);
-		reportCategoryResource.setActive(true);
-		//		logger.info("reportCategoryResource = {}", reportCategoryResource);
+		reportCategoryResource.setActive(newActive);
+		logger.debug("reportCategoryResource = {}", reportCategoryResource);
 
-		response = webTarget.path(ResourcePath.REPORTCATEGORIES_PATH)
+		String path = Paths
+				.get(ResourcePath.forEntity(ReportCategory.class).getPath(), uuidOfReportCategory.toString())
+				.toString();
+		logger.debug("path = {}", path);
+		Response response = webTarget.path(path)
 				.request()
-				.header("Accept", MediaType.APPLICATION_JSON + ";v=" + defaultVersion)
-				.post(Entity.entity(reportCategoryResource, MediaType.APPLICATION_JSON_TYPE));
-		assertThat(response.getStatus(), is(Response.Status.CREATED.getStatusCode()));
+				//TODO FIXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+				//.header("Accept", MediaType.APPLICATION_JSON + ";v=" + defaultVersionPut)
+				//				.header("Accept", "v=" + defaultVersion)
+				.put(Entity.entity(reportCategoryResource, MediaType.APPLICATION_JSON_TYPE));
+		assertThat(response.getStatus(), is(Response.Status.OK.getStatusCode()));
 
 		/*
-		 * The HTTP "Location" header should have been set in the response. It
-		 * should contain the URI of the resource created. The resource at this
-		 * URI is loaded below for additional tests.
+		 * Retrieve the ReportCategoryResource that was updated via HTTP GET.
 		 */
-		MultivaluedMap<String, Object> headers = response.getHeaders();
-		//		logger.info("headers = {}", headers);
-		List<Object> createdEntityLocations = headers.get("Location");
-		assertThat(createdEntityLocations, is(not(nullValue())));
-		assertThat(createdEntityLocations.size(), is(greaterThan(0)));
-
-		ReportCategoryResource responseEntity = response.readEntity(ReportCategoryResource.class);
-		assertThat(responseEntity, is(not(nullValue())));
-		assertThat(responseEntity.getAbbreviation(), is(newAbbreviation));
-		assertThat(responseEntity.getDescription(), is(newDescription));
-		assertThat(responseEntity.getActive(), is(true));
-		/*
-		 * Assert that the "CreatedOn" datetime is within 5 minutes of the
-		 * current time in this process. Ideally,they should be much, much
-		 * closer, but this at least is a sanity check that the "CreatedOn"
-		 * datetime is actually getting set. We don't want this to fail unless
-		 * there is a significant difference; otherwise, this could cause 
-		 * problems with continuous integration and automatic builds.
-		 */
-		//		logger.info(" DateUtils.nowUtc() = {}, responseEntity.getCreatedOn() = {}", DateUtils.nowUtc(), responseEntity.getCreatedOn());
-		long millisecondsSinceCreated = (DateUtils.nowUtc()).getTime() - responseEntity.getCreatedOn().getTime();
-		assertThat(Math.abs(millisecondsSinceCreated), is(lessThan(5L * 60L * 1000L)));
-
-		assertThat(responseEntity.getHref(), is(not(nullValue())));
-		//		logger.info("responseEntity.getReportCategoryId() = {}", responseEntity.getReportCategoryId());
-		/*
-		 * We test that an id was generated, but we don't know what it will be,
-		 * so it does make sense to check that it is "correct".
-		 */
-		assertThat(responseEntity.getReportCategoryId(), is(not(nullValue())));
-
-		/*
-		 * Load the ReportCategoryResource that was created. Its URI should have
-		 * been returned in the HTTP "Location" header.
-		 */
-		String uriAsString;
-		uriAsString = createdEntityLocations.get(0).toString();
-		//		logger.info("uriAsString =) {}", uriAsString);
-		response = client.target(uriAsString)
+		response = webTarget.path(path)
 				.request()
-				.header("Accept", MediaType.APPLICATION_JSON + ";v=" + defaultVersion)
+				.header("Accept", MediaType.APPLICATION_JSON + ";v=" + defaultVersionGet)
 				.get();
 		assertThat(response.getStatus(), is(Response.Status.OK.getStatusCode()));
 		ReportCategoryResource resource = response.readEntity(ReportCategoryResource.class);
-		//		logger.info("resource = {}", resource);
+		logger.debug("resource (updated) = {}", resource);
+		assertThat(resource, is(not(nullValue())));
+		assertThat(resource.getAbbreviation(), is(newAbbreviation));
+		assertThat(resource.getDescription(), is(newDescription));
+		assertThat(resource.getActive(), is(newActive));
+		assertThat(DateUtils.entityTimestampToNormalDate(resource.getCreatedOn()), is(currentCreatedOn));
 
 		/*
-		 * Check that there is now a ReportCategory in the database 
-		 * corresponding to the ReportCategoryResource.
+		 * Check that the ReportCategory entity was updated properly. We cannot
+		 * simply use "reportCategoryRepository.findOne(uuidOfReportCategory)" 
+		 * to load the ReportCategory entity because it was updated in the 
+		 * Jersey server thread that received the PUT request from above. Hence,
+		 * the EntityManager that is managing this thread does not know about
+		 * the update and will simply return the old (un-updated) entity. 
+		 * Therefore, we need to tell the EntityManager to refresh its copy
+		 * before it returns it.
+		 * 
+		 * Will return old (un-updated) ReportCategory entity:
+		 * 
+		 * reportCategory = reportCategoryRepository.findOne(uuidOfReportCategory);
 		 */
+		reportCategory = reportCategoryRepository.refresh(reportCategory);
+		logger.debug("reportCategory (refeshed) = {}", reportCategory);
+		assertThat(reportCategory, is(not(nullValue())));
+		assertThat(reportCategory.getAbbreviation(), is(newAbbreviation));
+		assertThat(reportCategory.getDescription(), is(newDescription));
+		assertThat(reportCategory.isActive(), is(newActive));
+		assertThat(DateUtils.entityTimestampToNormalDate(reportCategory.getCreatedOn()), is(currentCreatedOn));
 	}
 
 }
