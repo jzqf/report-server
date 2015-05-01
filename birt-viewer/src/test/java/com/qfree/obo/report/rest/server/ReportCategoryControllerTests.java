@@ -124,7 +124,7 @@ public class ReportCategoryControllerTests {
 		assertThat(responseEntity, is(not(nullValue())));
 		assertThat(responseEntity.getAbbreviation(), is(newAbbreviation));
 		assertThat(responseEntity.getDescription(), is(newDescription));
-		assertThat(responseEntity.getActive(), is(true));
+		assertThat(responseEntity.isActive(), is(true));
 		/*
 		 * Assert that the "CreatedOn" datetime is within 5 minutes of the
 		 * current time in this process. Ideally,they should be much, much
@@ -232,7 +232,7 @@ public class ReportCategoryControllerTests {
 		assertThat(resource, is(not(nullValue())));
 		assertThat(resource.getAbbreviation(), is(newAbbreviation));
 		assertThat(resource.getDescription(), is(newDescription));
-		assertThat(resource.getActive(), is(newActive));
+		assertThat(resource.isActive(), is(newActive));
 		assertThat(DateUtils.entityTimestampToNormalDate(resource.getCreatedOn()), is(currentCreatedOn));
 
 		/*

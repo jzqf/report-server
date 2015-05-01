@@ -1,6 +1,5 @@
 package com.qfree.obo.report.service;
 
-import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
@@ -8,7 +7,6 @@ import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertThat;
 
-import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.UUID;
@@ -257,11 +255,7 @@ public class ConfigurationServiceTests {
 		 * by the database or the ORM:
 		 */
 		assertThat(dateFromConfig.toString(), is("1958-05-06"));
-
-		Calendar calendar = new GregorianCalendar();
-		calendar.setTime(dateFromConfig);
-		Date dateWithTimeZone = calendar.getTime();
-		assertThat(dateWithTimeZone, is(equalTo(TEST_DATE_DEFAULT_VALUE)));
+		assertThat(DateUtils.entityDateToNormalDate(dateFromConfig), is(TEST_DATE_DEFAULT_VALUE));
 	}
 
 	/*
@@ -287,10 +281,7 @@ public class ConfigurationServiceTests {
 
 		Date dateFromConfig = (Date) dateValueObject;
 		assertThat(dateFromConfig, is(not(nullValue())));
-		Calendar calendar = new GregorianCalendar();
-		calendar.setTime(dateFromConfig);
-		Date dateWithTimeZone = calendar.getTime();
-		assertThat(dateWithTimeZone, is(equalTo(TEST_DATE_ROLE_aabb_VALUE)));
+		assertThat(DateUtils.entityDateToNormalDate(dateFromConfig), is(TEST_DATE_ROLE_aabb_VALUE));
 	}
 
 	@Test
@@ -308,10 +299,7 @@ public class ConfigurationServiceTests {
 
 		Date dateFromConfig = (Date) dateValueObject;
 		assertThat(dateFromConfig, is(not(nullValue())));
-		Calendar calendar = new GregorianCalendar();
-		calendar.setTime(dateFromConfig);
-		Date dateWithTimeZone = calendar.getTime();
-		assertThat(dateWithTimeZone, is(equalTo(TEST_DATE_DEFAULT_VALUE)));
+		assertThat(DateUtils.entityDateToNormalDate(dateFromConfig), is(TEST_DATE_DEFAULT_VALUE));
 	}
 
 	/*
@@ -330,10 +318,7 @@ public class ConfigurationServiceTests {
 		assertThat(dateValueObject, is(instanceOf(Date.class)));
 		Date dateFromConfig = (Date) dateValueObject;
 		assertThat(dateFromConfig, is(not(nullValue())));
-		Calendar calendar = new GregorianCalendar();
-		calendar.setTime(dateFromConfig);
-		Date dateWithTimeZone = calendar.getTime();
-		assertThat(dateWithTimeZone, is(equalTo(TEST_DATE_DEFAULT_VALUE)));
+		assertThat(DateUtils.entityDateToNormalDate(dateFromConfig), is(TEST_DATE_DEFAULT_VALUE));
 		/*
 		 * Update default value.
 		 */
@@ -351,10 +336,7 @@ public class ConfigurationServiceTests {
 		assertThat(dateValueObjectUpdated, is(instanceOf(Date.class)));
 		Date dateFromConfigUpdated = (Date) dateValueObjectUpdated;
 		assertThat(dateFromConfigUpdated, is(not(nullValue())));
-		Calendar calendarUpdated = new GregorianCalendar();
-		calendarUpdated.setTime(dateFromConfigUpdated);
-		Date dateWithTimeZoneUpdated = calendarUpdated.getTime();
-		assertThat(dateWithTimeZoneUpdated, is(equalTo(newDateValue)));
+		assertThat(DateUtils.entityDateToNormalDate(dateFromConfigUpdated), is(newDateValue));
 	}
 
 	/*
@@ -378,10 +360,7 @@ public class ConfigurationServiceTests {
 		assertThat(dateValueObject, is(instanceOf(Date.class)));
 		Date dateFromConfig = (Date) dateValueObject;
 		assertThat(dateFromConfig, is(not(nullValue())));
-		Calendar calendar = new GregorianCalendar();
-		calendar.setTime(dateFromConfig);
-		Date dateWithTimeZone = calendar.getTime();
-		assertThat(dateWithTimeZone, is(equalTo(TEST_DATE_DEFAULT_VALUE)));
+		assertThat(DateUtils.entityDateToNormalDate(dateFromConfig), is(TEST_DATE_DEFAULT_VALUE));
 
 		/*
 		 * Set role-specific value, which should override the default value for
@@ -400,10 +379,7 @@ public class ConfigurationServiceTests {
 		assertThat(dateValueRoleSpecificObject, is(instanceOf(Date.class)));
 		Date dateFromRoleSpecific = (Date) dateValueRoleSpecificObject;
 		assertThat(dateFromRoleSpecific, is(not(nullValue())));
-		Calendar calendarUpdated = new GregorianCalendar();
-		calendarUpdated.setTime(dateFromRoleSpecific);
-		Date dateWithTimeZoneUpdated = calendarUpdated.getTime();
-		assertThat(dateWithTimeZoneUpdated, is(equalTo(newDateValue)));
+		assertThat(DateUtils.entityDateToNormalDate(dateFromRoleSpecific), is(newDateValue));
 
 		/*
 		 * Update the role-specific value. This should override the default 
@@ -423,10 +399,7 @@ public class ConfigurationServiceTests {
 		assertThat(dateValueRoleSpecificObject, is(instanceOf(Date.class)));
 		dateFromRoleSpecific = (Date) dateValueRoleSpecificObject;
 		assertThat(dateFromRoleSpecific, is(not(nullValue())));
-		calendarUpdated = new GregorianCalendar();
-		calendarUpdated.setTime(dateFromRoleSpecific);
-		dateWithTimeZoneUpdated = calendarUpdated.getTime();
-		assertThat(dateWithTimeZoneUpdated, is(equalTo(newDateValue)));
+		assertThat(DateUtils.entityDateToNormalDate(dateFromRoleSpecific), is(newDateValue));
 
 		/*
 		 * The default value for ParamName.TEST_DATE should still be the
@@ -436,10 +409,7 @@ public class ConfigurationServiceTests {
 		assertThat(dateValueDefaultObject, is(instanceOf(Date.class)));
 		dateFromConfig = (Date) dateValueDefaultObject;
 		assertThat(dateFromConfig, is(not(nullValue())));
-		calendar = new GregorianCalendar();
-		calendar.setTime(dateFromConfig);
-		dateWithTimeZone = calendar.getTime();
-		assertThat(dateWithTimeZone, is(equalTo(TEST_DATE_DEFAULT_VALUE)));
+		assertThat(DateUtils.entityDateToNormalDate(dateFromConfig), is(TEST_DATE_DEFAULT_VALUE));
 	}
 
 	// ====================== Datetime parameter tests =========================
@@ -467,10 +437,7 @@ public class ConfigurationServiceTests {
 
 		Date datetimeFromConfig = (Date) datetimeValueObject;
 		assertThat(datetimeFromConfig, is(not(nullValue())));
-		Calendar calendar = new GregorianCalendar();
-		calendar.setTime(datetimeFromConfig);
-		Date datetimeWithTimeZone = calendar.getTime();
-		assertThat(datetimeWithTimeZone, is(equalTo(TEST_DATETIME_ROLE_aabb_VALUE)));
+		assertThat(DateUtils.entityTimestampToNormalDate(datetimeFromConfig), is(TEST_DATETIME_ROLE_aabb_VALUE));
 	}
 
 	/*
@@ -489,10 +456,7 @@ public class ConfigurationServiceTests {
 		assertThat(datetimeValueObject, is(instanceOf(Date.class)));
 		Date datetimeFromConfig = (Date) datetimeValueObject;
 		assertThat(datetimeFromConfig, is(not(nullValue())));
-		Calendar calendar = new GregorianCalendar();
-		calendar.setTime(datetimeFromConfig);
-		Date datetimeWithTimeZone = calendar.getTime();
-		assertThat(datetimeWithTimeZone, is(equalTo(TEST_DATETIME_DEFAULT_VALUE)));
+		assertThat(DateUtils.entityTimestampToNormalDate(datetimeFromConfig), is(TEST_DATETIME_DEFAULT_VALUE));
 		/*
 		 * Update default value.
 		 */
@@ -510,10 +474,7 @@ public class ConfigurationServiceTests {
 		assertThat(datetimeValueObjectUpdated, is(instanceOf(Date.class)));
 		Date datetimeFromConfigUpdated = (Date) datetimeValueObjectUpdated;
 		assertThat(datetimeFromConfigUpdated, is(not(nullValue())));
-		Calendar calendarUpdated = new GregorianCalendar();
-		calendarUpdated.setTime(datetimeFromConfigUpdated);
-		Date datetimeWithTimeZoneUpdated = calendarUpdated.getTime();
-		assertThat(datetimeWithTimeZoneUpdated, is(equalTo(newDatetimeValue)));
+		assertThat(DateUtils.entityTimestampToNormalDate(datetimeFromConfigUpdated), is(newDatetimeValue));
 	}
 
 	/*
@@ -537,10 +498,7 @@ public class ConfigurationServiceTests {
 		assertThat(datetimeValueObject, is(instanceOf(Date.class)));
 		Date datetimeFromConfig = (Date) datetimeValueObject;
 		assertThat(datetimeFromConfig, is(not(nullValue())));
-		Calendar calendar = new GregorianCalendar();
-		calendar.setTime(datetimeFromConfig);
-		Date datetimeWithTimeZone = calendar.getTime();
-		assertThat(datetimeWithTimeZone, is(equalTo(TEST_DATETIME_DEFAULT_VALUE)));
+		assertThat(DateUtils.entityTimestampToNormalDate(datetimeFromConfig), is(TEST_DATETIME_DEFAULT_VALUE));
 
 		/*
 		 * Set role-specific value, which should override the default value for
@@ -559,10 +517,7 @@ public class ConfigurationServiceTests {
 		assertThat(datetimeValueRoleSpecificObject, is(instanceOf(Date.class)));
 		Date datetimeFromRoleSpecific = (Date) datetimeValueRoleSpecificObject;
 		assertThat(datetimeFromRoleSpecific, is(not(nullValue())));
-		Calendar calendarUpdated = new GregorianCalendar();
-		calendarUpdated.setTime(datetimeFromRoleSpecific);
-		Date datetimeWithTimeZoneUpdated = calendarUpdated.getTime();
-		assertThat(datetimeWithTimeZoneUpdated, is(equalTo(newDatetimeValue)));
+		assertThat(DateUtils.entityTimestampToNormalDate(datetimeFromRoleSpecific), is(newDatetimeValue));
 
 		/*
 		 * Update the role-specific value. This should override the default 
@@ -582,10 +537,7 @@ public class ConfigurationServiceTests {
 		assertThat(datetimeValueRoleSpecificObject, is(instanceOf(Date.class)));
 		datetimeFromRoleSpecific = (Date) datetimeValueRoleSpecificObject;
 		assertThat(datetimeFromRoleSpecific, is(not(nullValue())));
-		calendarUpdated = new GregorianCalendar();
-		calendarUpdated.setTime(datetimeFromRoleSpecific);
-		datetimeWithTimeZoneUpdated = calendarUpdated.getTime();
-		assertThat(datetimeWithTimeZoneUpdated, is(equalTo(newDatetimeValue)));
+		assertThat(DateUtils.entityTimestampToNormalDate(datetimeFromRoleSpecific), is(newDatetimeValue));
 
 		/*
 		 * The default value for ParamName.TEST_DATETIME should still be the
@@ -609,10 +561,7 @@ public class ConfigurationServiceTests {
 		assertThat(datetimeFromConfig.toString(), is("2008-11-29 01:00:00.0"));
 
 		assertThat(datetimeFromConfig, is(not(nullValue())));
-		calendar = new GregorianCalendar();
-		calendar.setTime(datetimeFromConfig);
-		datetimeWithTimeZone = calendar.getTime();
-		assertThat(datetimeWithTimeZone, is(equalTo(TEST_DATETIME_DEFAULT_VALUE)));
+		assertThat(DateUtils.entityTimestampToNormalDate(datetimeFromConfig), is(TEST_DATETIME_DEFAULT_VALUE));
 	}
 
 	// ======================== Double parameter tests ========================

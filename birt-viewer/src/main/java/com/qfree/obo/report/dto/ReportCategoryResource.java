@@ -94,7 +94,7 @@ public class ReportCategoryResource extends AbstractBaseResource {
 		this.description = description;
 	}
 
-	public Boolean getActive() {
+	public Boolean isActive() {
 		return active;
 	}
 

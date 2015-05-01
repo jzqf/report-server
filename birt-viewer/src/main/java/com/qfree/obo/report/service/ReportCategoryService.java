@@ -36,7 +36,7 @@ public class ReportCategoryService {
 				reportCategoryResource.getReportCategoryId(),
 				reportCategoryResource.getDescription(),
 				reportCategoryResource.getAbbreviation(),
-				reportCategoryResource.getActive(),
+				reportCategoryResource.isActive(),
 				reportCategoryResource.getCreatedOn());
 		logger.info("reportCategory = {}", reportCategory);
 		/*

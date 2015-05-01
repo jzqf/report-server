@@ -8,7 +8,6 @@ import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertThat;
 
-import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.UUID;
@@ -146,18 +145,8 @@ public class ConfigurationRepositoryTests {
 		Configuration defaultDateValueConfiguration = configurationRepository
 				.findOne(uuidOfDefaultDateValueConfiguration);
 		assertThat(defaultDateValueConfiguration, is(not(nullValue())));
-		/*
-		 * TEST_DATE_DEFAULT_VALUE has time zone information, but the 
-		 * datetime from the Configuration does not. In order to compare the 
-		 * datetime from the Configuration (for this unit test), we create a 
-		 * new date from the date retrieved from the Configuration and then
-		 * compared *that* Date WITH TEST_DATE_DEFAULT_VALUE.
-		 */
-		Date dateFromConfig = defaultDateValueConfiguration.getDateValue();
-		Calendar calendar = new GregorianCalendar();
-		calendar.setTime(dateFromConfig);
-		Date dateWithTimeZone = calendar.getTime();
-		assertThat(dateWithTimeZone, is(equalTo(TEST_DATE_DEFAULT_VALUE)));
+		assertThat(DateUtils.entityDateToNormalDate(defaultDateValueConfiguration.getDateValue()),
+				is(TEST_DATE_DEFAULT_VALUE));
 	}
 
 	@Test
@@ -167,10 +156,7 @@ public class ConfigurationRepositoryTests {
 		assertThat(configuration, is(not(nullValue())));
 		Date dateFromConfig = configuration.getDateValue();
 		assertThat(dateFromConfig, is(not(nullValue())));
-		Calendar calendar = new GregorianCalendar();
-		calendar.setTime(dateFromConfig);
-		Date dateWithTimeZone = calendar.getTime();
-		assertThat(dateWithTimeZone, is(equalTo(TEST_DATE_DEFAULT_VALUE)));
+		assertThat(DateUtils.entityDateToNormalDate(dateFromConfig), is(TEST_DATE_DEFAULT_VALUE));
 	}
 
 	// ====================== Datetime parameter tests =========================
@@ -182,18 +168,8 @@ public class ConfigurationRepositoryTests {
 		Configuration defaultDatetimeValueConfiguration = configurationRepository
 				.findOne(uuidOfDefaultDatetimeValueConfiguration);
 		assertThat(defaultDatetimeValueConfiguration, is(not(nullValue())));
-		/*
-		 * TEST_DATETIME_DEFAULT_VALUE has time zone information, but the 
-		 * datetime from the Configuration does not. In order to compare the 
-		 * datetime from the Configuration (for this unit test), we create a 
-		 * new date from the date retrieved from the Configuration and then
-		 * compared *that* Date WITH TEST_DATETIME_DEFAULT_VALUE.
-		 */
-		Date datetimeFromConfig = defaultDatetimeValueConfiguration.getDatetimeValue();
-		Calendar calendar = new GregorianCalendar();
-		calendar.setTime(datetimeFromConfig);
-		Date dateWithTimeZone = calendar.getTime();
-		assertThat(dateWithTimeZone, is(equalTo(TEST_DATETIME_DEFAULT_VALUE)));
+		assertThat(DateUtils.entityTimestampToNormalDate(defaultDatetimeValueConfiguration.getDatetimeValue()),
+				is(TEST_DATETIME_DEFAULT_VALUE));
 	}
 
 	// ======================== Double parameter tests ========================

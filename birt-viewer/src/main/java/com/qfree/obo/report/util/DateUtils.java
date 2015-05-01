@@ -69,27 +69,42 @@ public class DateUtils {
 
 	/**
 	 * Oddly, the string representation of an Entity Date field annotated with
-	 * @Temporal(TemporalType.TIMESTAMP) is quite different than the string 
-	 * representation of the Date "currentCreatedOn". Somehow, the underlying
-	 * Date objects are different, but the details are not clear. The string 
-	 * representation of such a Date returned from an entity has no time zone 
-	 * information at all, but a "normal" Java does. Examples of each are
-	 *  
-	 * dateFromEntity.toString()  -> "2015-05-30 22:00:00.0"
-	 * normalDate.toString()      -> "Sat May 30 22:00:00 CEST 2015"
-	 * 
+	 * {@literal @}Temporal(TemporalType.TIMESTAMP) is quite different than the 
+	 * string representation of a "normal" Java Date instance. Somehow, the 
+	 * underlying Date objects are different, but the details are not clear. Th
+	 * STRING REPRESENTATION of such a Date returned from an entity has no time 
+	 * zone information at all, but a "normal" Java does. Examples of each are
+	 * <pre><code>timestampFromEntity.toString()  -> "2015-05-30 22:00:00.0"
+	 *normalDate.toString()      -> "Sat May 30 22:00:00 CEST 2015"</code></pre>
 	 * In order to compare objects of these "types" (technically, they are the
 	 * same Java type) and assert that they are "equal" in a test, the Date
 	 * returned from the entity should be converted to a more "normal" Java Date
 	 * using this method.
 	 * 
+	 * @param entityTimestamp
+	 * @return
+	 */
+	public static Date entityTimestampToNormalDate(Date entityTimestamp) {
+		Calendar calendar = new GregorianCalendar();
+		calendar.setTime(entityTimestamp);
+		return calendar.getTime();
+	}
+
+	/**
+	 * This performs the same function as method 
+	 * {@link #entityTimestampToNormalDate}, but for entity class attributes
+	 * annotated with {@literal @}Temporal(TemporalType.Date)}. This method just
+	 * delegates to {@link #entityTimestampToNormalDate} but it is useful to 
+	 * have different methods as markers for the different TemporalType's, in
+	 * case attributes annoated with {@literal @}Temporal(TemporalType.Date)} 
+	 * requires a different  treatment than objects annotated with 
+	 * {@literal @}Temporal(TemporalType.Timestamp)} in the furture.
+	 * 
 	 * @param entityDate
 	 * @return
 	 */
-	public static Date entityTimestampToNormalDate(Date entityDate) {
-		Calendar calendar = new GregorianCalendar();
-		calendar.setTime(entityDate);
-		return calendar.getTime();
+	public static Date entityDateToNormalDate(Date entityDate) {
+		return entityTimestampToNormalDate(entityDate);
 	}
 
 	/**
