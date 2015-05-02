@@ -67,7 +67,7 @@ public class ReportCategoryController extends AbstractBaseController {
 		List<ReportCategory> reportCategories = reportCategoryRepository.findByActiveTrue();
 		List<ReportCategoryResource> reportCategoryResources = new ArrayList<>(reportCategories.size());
 		for (ReportCategory reportCategory : reportCategories) {
-			reportCategoryResources.add(new ReportCategoryResource(reportCategory, uriInfo, expand));
+			reportCategoryResources.add(new ReportCategoryResource(reportCategory, uriInfo, expand, apiVersion));
 		}
 		return reportCategoryResources;
 	}
@@ -92,7 +92,7 @@ public class ReportCategoryController extends AbstractBaseController {
 
 		ReportCategory reportCategory = reportCategoryService.saveOrUpdateFromResource(reportCategoryResource);
 		List<String> expand = newExpandList(ReportCategory.class);	// Force primary resource to be "expanded"
-		ReportCategoryResource resource = new ReportCategoryResource(reportCategory, uriInfo, expand);
+		ReportCategoryResource resource = new ReportCategoryResource(reportCategory, uriInfo, expand, apiVersion);
 		return created(resource);
 	}
 
@@ -115,7 +115,8 @@ public class ReportCategoryController extends AbstractBaseController {
 
 		addToExpandList(expand, ReportCategory.class);	// Force primary resource to be "expanded"
 		ReportCategory reportCategory = reportCategoryRepository.findOne(id);
-		ReportCategoryResource reportCategoryResource = new ReportCategoryResource(reportCategory, uriInfo, expand);
+		ReportCategoryResource reportCategoryResource =
+				new ReportCategoryResource(reportCategory, uriInfo, expand, apiVersion);
 		return reportCategoryResource;
 	}
 

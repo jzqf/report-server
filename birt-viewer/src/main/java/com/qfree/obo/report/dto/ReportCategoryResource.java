@@ -14,6 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.qfree.obo.report.domain.ReportCategory;
+import com.qfree.obo.report.rest.server.RestUtils.RestApiVersion;
 
 @XmlRootElement
 //@XmlJavaTypeAdapter(value = UuidAdapter.class, type = UUID.class) <- doesn't work
@@ -44,9 +45,10 @@ public class ReportCategoryResource extends AbstractBaseResource {
 	public ReportCategoryResource() {
 	}
 
-	public ReportCategoryResource(ReportCategory reportCategory, UriInfo uriInfo, List<String> expand) {
+	public ReportCategoryResource(ReportCategory reportCategory, UriInfo uriInfo, List<String> expand,
+			RestApiVersion apiVersion) {
 
-		super(ReportCategory.class, reportCategory.getReportCategoryId(), uriInfo, expand);
+		super(ReportCategory.class, reportCategory.getReportCategoryId(), uriInfo, expand, apiVersion);
 
 		String expandParam = ResourcePath.forEntity(ReportCategory.class).getExpandParam();
 		if (expand.contains(expandParam)) {

@@ -54,7 +54,7 @@ public class ConfigurationController extends AbstractBaseController {
 		List<Configuration> configurations = configurationRepository.findAll();
 		List<ConfigurationResource> configurationResources = new ArrayList<>(configurations.size());
 		for (Configuration configuration : configurations) {
-			configurationResources.add(new ConfigurationResource(configuration, uriInfo, expand));
+			configurationResources.add(new ConfigurationResource(configuration, uriInfo, expand, apiVersion));
 		}
 		return configurationResources;
 	}
@@ -71,7 +71,8 @@ public class ConfigurationController extends AbstractBaseController {
 
 		addToExpandList(expand, Configuration.class);	// Force primary resource to be "expanded"
 		Configuration configuration = configurationRepository.findOne(id);
-		ConfigurationResource configurationResource = new ConfigurationResource(configuration, uriInfo, expand);
+		ConfigurationResource configurationResource =
+				new ConfigurationResource(configuration, uriInfo, expand, apiVersion);
 		return configurationResource;
 	}
 

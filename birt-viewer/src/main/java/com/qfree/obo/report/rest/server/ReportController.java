@@ -53,7 +53,7 @@ public class ReportController extends AbstractBaseController {
 		List<Report> reports = reportRepository.findByActiveTrue();
 		List<ReportResource> reportResources = new ArrayList<>(reports.size());
 		for (Report report : reports) {
-			reportResources.add(new ReportResource(report, uriInfo, expand));
+			reportResources.add(new ReportResource(report, uriInfo, expand, apiVersion));
 		}
 		return reportResources;
 	}
@@ -70,7 +70,7 @@ public class ReportController extends AbstractBaseController {
 
 		addToExpandList(expand, Report.class);	// Force primary resource to be "expanded"
 		Report report = reportRepository.findOne(id);
-		ReportResource reportResource = new ReportResource(report, uriInfo, expand);
+		ReportResource reportResource = new ReportResource(report, uriInfo, expand, apiVersion);
 		return reportResource;
 	}
 

@@ -9,6 +9,8 @@ import javax.xml.bind.annotation.XmlTransient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.qfree.obo.report.rest.server.RestUtils.RestApiVersion;
+
 /*
  * An "xsi:type" JSON attribute normally appears whenever an instance of a 
  * subclass is marshalled. This @XmlTransient annotation applied at the class 
@@ -22,14 +24,19 @@ public abstract class AbstractBaseResource {
 	@XmlElement
 	protected String href;
 
+	@XmlElement
+	protected String mediaType;
+
 	public AbstractBaseResource() {
 		super();
 	}
 
-	public AbstractBaseResource(Class<?> entityClass, Object id, UriInfo uriInfo, List<String> expand) {
+	public AbstractBaseResource(Class<?> entityClass, Object id, UriInfo uriInfo, List<String> expand,
+			RestApiVersion apiVersion) {
 		super();
 		//		this.href = createHref(getFullyQualifiedContextPath(uriInfo), entityClass, id);
 		this.href = createHref(uriInfo, entityClass, id, expand);
+		this.mediaType = createMediaType(apiVersion);
 	}
 
 	public String getHref() {
@@ -38,6 +45,14 @@ public abstract class AbstractBaseResource {
 
 	public void setHref(String href) {
 		this.href = href;
+	}
+
+	public String getMediaType() {
+		return mediaType;
+	}
+
+	public void setMediaType(String mediaType) {
+		this.mediaType = mediaType;
 	}
 
 	protected static String createHref(UriInfo uriInfo, Class<?> entityClass, Object id, List<String> expand) {
@@ -73,6 +88,10 @@ public abstract class AbstractBaseResource {
 				.path(id.toString())
 				.queryParam("expand", expand.toArray())
 				.toString();
+	}
+
+	private String createMediaType(RestApiVersion apiVersion) {
+		return "application/json; v=" + apiVersion.getVersion();
 	}
 
 	//	/**

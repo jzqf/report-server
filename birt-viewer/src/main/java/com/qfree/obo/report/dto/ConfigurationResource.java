@@ -12,6 +12,7 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import com.qfree.obo.report.domain.Configuration;
 import com.qfree.obo.report.domain.Configuration.ParamName;
+import com.qfree.obo.report.rest.server.RestUtils.RestApiVersion;
 
 @XmlRootElement
 public class ConfigurationResource extends AbstractBaseResource {
@@ -39,9 +40,10 @@ public class ConfigurationResource extends AbstractBaseResource {
 	public ConfigurationResource() {
 	}
 
-	public ConfigurationResource(Configuration configuration, UriInfo uriInfo, List<String> expand) {
+	public ConfigurationResource(Configuration configuration, UriInfo uriInfo, List<String> expand,
+			RestApiVersion apiVersion) {
 
-		super(Configuration.class, configuration.getConfigurationId(), uriInfo, expand);
+		super(Configuration.class, configuration.getConfigurationId(), uriInfo, expand, apiVersion);
 
 		String expandParam = ResourcePath.forEntity(Configuration.class).getExpandParam();
 		if (expand.contains(expandParam)) {

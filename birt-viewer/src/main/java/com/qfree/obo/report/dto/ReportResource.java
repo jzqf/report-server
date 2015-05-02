@@ -14,6 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.qfree.obo.report.domain.Report;
+import com.qfree.obo.report.rest.server.RestUtils.RestApiVersion;
 
 @XmlRootElement
 public class ReportResource extends AbstractBaseResource {
@@ -49,9 +50,9 @@ public class ReportResource extends AbstractBaseResource {
 	public ReportResource() {
 	}
 
-	public ReportResource(Report report, UriInfo uriInfo, List<String> expand) {
+	public ReportResource(Report report, UriInfo uriInfo, List<String> expand, RestApiVersion apiVersion) {
 
-		super(Report.class, report.getReportId(), uriInfo, expand);
+		super(Report.class, report.getReportId(), uriInfo, expand, apiVersion);
 
 		String expandParam = ResourcePath.forEntity(Report.class).getExpandParam();
 		if (expand.contains(expandParam)) {
@@ -66,7 +67,8 @@ public class ReportResource extends AbstractBaseResource {
 			expandElementRemoved.remove(expandParam);
 
 			this.reportId = report.getReportId();
-			this.reportCategoryResource = new ReportCategoryResource(report.getReportCategory(), uriInfo, expand);
+			this.reportCategoryResource = new ReportCategoryResource(report.getReportCategory(), uriInfo, expand,
+					apiVersion);
 			this.name = report.getName();
 			this.number = report.getNumber();
 			//		this.reportVersions = report.getReportVersions();
