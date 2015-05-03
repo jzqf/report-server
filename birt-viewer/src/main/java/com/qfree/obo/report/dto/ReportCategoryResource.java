@@ -49,7 +49,7 @@ public class ReportCategoryResource extends AbstractBaseResource {
 			RestApiVersion apiVersion) {
 
 		super(ReportCategory.class, reportCategory.getReportCategoryId(), uriInfo, expand, apiVersion);
-		logger.info("After super(ReportCategory.class, ...  this = {}", this);
+		logger.debug("After super(ReportCategory.class, ...  this = {}", this);
 
 		String expandParam = ResourcePath.forEntity(ReportCategory.class).getExpandParam();
 		if (expand.contains(expandParam)) {
@@ -70,7 +70,7 @@ public class ReportCategoryResource extends AbstractBaseResource {
 			this.active = reportCategory.isActive();
 			this.createdOn = reportCategory.getCreatedOn();
 		}
-		logger.info("this = {}", this);
+		logger.debug("this = {}", this);
 	}
 
 	public UUID getReportCategoryId() {

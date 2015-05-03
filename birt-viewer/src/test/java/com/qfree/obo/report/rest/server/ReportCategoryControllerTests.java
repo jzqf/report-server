@@ -174,6 +174,9 @@ public class ReportCategoryControllerTests {
 		 * Check that there is now a ReportCategory in the database 
 		 * corresponding to the ReportCategoryResource.
 		 */
+		assertThat(resource.getReportCategoryId(), is(not(nullValue())));
+		ReportCategory newReportCategory = reportCategoryRepository.findOne(resource.getReportCategoryId());
+		assertThat(newReportCategory, is(not(nullValue())));
 	}
 
 	@Test

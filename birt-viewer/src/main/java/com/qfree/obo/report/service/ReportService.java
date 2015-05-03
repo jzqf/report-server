@@ -34,7 +34,7 @@ public class ReportService {
 
 	@Transactional
 	public Report saveOrUpdateFromResource(ReportResource reportResource) {
-		logger.info("reportResource = {}", reportResource);
+		logger.debug("reportResource = {}", reportResource);
 
 		/*
 		 * Extract ReportCategoryResource from reportResource. We will assume
@@ -42,10 +42,10 @@ public class ReportService {
 		 * the id of the ReportCategory that
 		 */
 		ReportCategoryResource reportCategoryResource = reportResource.getReportCategoryResource();
-		logger.info("reportCategoryResource = {}", reportCategoryResource);
+		logger.debug("reportCategoryResource = {}", reportCategoryResource);
 		
 		UUID reportCategoryId = reportCategoryResource.getReportCategoryId();
-		logger.info("reportCategoryId = {}", reportCategoryId);
+		logger.debug("reportCategoryId = {}", reportCategoryId);
 		ReportCategory reportCategory=null;
 		if(reportCategoryId!=null){
 			reportCategory = reportCategoryRepository.findOne(reportCategoryId);
@@ -65,7 +65,7 @@ public class ReportService {
 				reportResource.getNumber(),
 				reportResource.isActive(),
 				reportResource.getCreatedOn());
-		logger.info("report = {}", report);
+		logger.debug("report = {}", report);
 		/*
 		 * This "save" method will persist or merge the given entity using the
 		 * underlying JPA EntityManager. If the entity has not been persisted 
@@ -76,7 +76,7 @@ public class ReportService {
 		 * Report.
 		 */
 		report = reportRepository.save(report);
-		logger.info("report (created/updated) = {}", report);
+		logger.debug("report (created/updated) = {}", report);
 
 		return report;
 	}

@@ -67,10 +67,10 @@ public class ReportResource extends AbstractBaseResource {
 			expandElementRemoved.remove(expandParam);
 
 			this.reportId = report.getReportId();
-			logger.info("report.getReportCategory() = {}", report.getReportCategory());
+			logger.debug("report.getReportCategory() = {}", report.getReportCategory());
 			this.reportCategoryResource = new ReportCategoryResource(report.getReportCategory(), uriInfo, expand,
 					apiVersion);
-			logger.info("this.reportCategoryResource = {}", this.reportCategoryResource);
+			logger.debug("this.reportCategoryResource = {}", this.reportCategoryResource);
 			this.name = report.getName();
 			this.number = report.getNumber();
 			//		this.reportVersions = report.getReportVersions();

@@ -86,23 +86,13 @@ public class ReportController extends AbstractBaseController {
 			@QueryParam("expand") final List<String> expand,
 			@Context final UriInfo uriInfo) {
 		RestApiVersion apiVersion = RestUtils.extractAPIVersion(acceptHeader, RestApiVersion.v1);
-		logger.info("reportResource = {}", reportResource);
-		logger.info("expand = {}", expand);
+		logger.debug("reportResource = {}", reportResource);
 
 		Report report = reportService.saveOrUpdateFromResource(reportResource);
-		logger.info("report = {}", report);
-		//		List<String> expand = newExpandList(Report.class);	// Force primary resource to be "expanded"
-		//TODO ADD ONLY IF NECESSARY:
-		//		expand = newExpandList(Report.class);	// Force primary resource to be "expanded", if not already requested
+		logger.debug("report = {}", report);
 		addToExpandList(expand, Report.class);  // Force primary resource to be "expanded", if not already requested
-
-		//TODO ELMINATE_THIS_WITH_BETTER_IMPLEMENTATION XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
-		//		logger.info("ADDING reportcategory TO expand LIST !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-		//		expand.add("reportcategory");
-		logger.info("expand = {}", expand);
-
 		ReportResource resource = new ReportResource(report, uriInfo, expand, apiVersion);
-		logger.info("resource = {}", resource);  // The nested ReportCategoryResource object has null attributes!
+		logger.debug("resource = {}", resource);
 		return created(resource);
 	}
 
@@ -122,7 +112,7 @@ public class ReportController extends AbstractBaseController {
 			@QueryParam("expand") final List<String> expand,
 			@Context final UriInfo uriInfo) {
 		RestApiVersion apiVersion = RestUtils.extractAPIVersion(acceptHeader, RestApiVersion.v1);
-		logger.info("expand = {}", expand);
+		logger.debug("expand = {}", expand);
 
 		addToExpandList(expand, Report.class);	// Force primary resource to be "expanded"
 		Report report = reportRepository.findOne(id);

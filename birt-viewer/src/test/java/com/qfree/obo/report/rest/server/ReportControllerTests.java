@@ -112,11 +112,6 @@ public class ReportControllerTests {
 		UUID uuidOfQfreeInternalReportCategory = UUID.fromString("bb2bc482-c19a-4c19-a087-e68ffc62b5a0");
 		ReportCategoryResource newReportCategoryResource = new ReportCategoryResource();
 		newReportCategoryResource.setReportCategoryId(uuidOfQfreeInternalReportCategory);
-		//TODO DELETE THE FOLLOWING LINES: XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
-		//		ReportCategory reportCategory = reportCategoryRepository.findOne(uuidOfQfreeInternalReportCategory);
-		//		assertThat(reportCategory, is(not(nullValue())));
-		//		String reportCategoryDescription = reportCategory.getDescription();
-		//		newReportCategoryResource.setDescription(reportCategoryDescription);
 
 		ReportResource reportResource = new ReportResource();
 		reportResource.setReportCategoryResource(newReportCategoryResource);
@@ -126,8 +121,7 @@ public class ReportControllerTests {
 		//	private List<RoleReport> roleReports;
 		reportResource.setActive(newActive);
 		reportResource.setCreatedOn(newCreatedOn);
-
-		logger.info("reportResource = {}", reportResource);
+		logger.debug("reportResource = {}", reportResource);
 
 		Response response;
 
@@ -159,7 +153,7 @@ public class ReportControllerTests {
 		assertThat(createdEntityLocations.size(), is(greaterThan(0)));
 
 		ReportResource responseEntity = response.readEntity(ReportResource.class);
-		logger.info("responseEntity = {}", responseEntity);
+		logger.debug("responseEntity = {}", responseEntity);
 		assertThat(responseEntity, is(not(nullValue())));
 		assertThat(responseEntity.getReportCategoryResource().getReportCategoryId(),
 				is(uuidOfQfreeInternalReportCategory));
@@ -200,14 +194,14 @@ public class ReportControllerTests {
 		 */
 		String uriAsString;
 		uriAsString = createdEntityLocations.get(0).toString();
-		logger.info("uriAsString = {}", uriAsString);
+		logger.debug("uriAsString = {}", uriAsString);
 		response = client.target(uriAsString)
 				.request()
 				.header("Accept", MediaType.APPLICATION_JSON + ";v=" + defaultVersionGet)
 				.get();
 		assertThat(response.getStatus(), is(Response.Status.OK.getStatusCode()));
 		ReportResource resource = response.readEntity(ReportResource.class);
-		logger.info("resource = {}", resource);
+		logger.debug("resource = {}", resource);
 		assertThat(resource, is(not(nullValue())));
 		assertThat(resource.getReportCategoryResource().getReportCategoryId(),
 				is(uuidOfQfreeInternalReportCategory));
@@ -224,6 +218,9 @@ public class ReportControllerTests {
 		 * Check that there is now a Report in the database 
 		 * corresponding to the ReportResource.
 		 */
+		assertThat(resource.getReportId(), is(not(nullValue())));
+		Report newReport = reportRepository.findOne(resource.getReportId());
+		assertThat(newReport, is(not(nullValue())));
 	}
 
 	//	@Test
