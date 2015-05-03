@@ -67,8 +67,10 @@ public class ReportResource extends AbstractBaseResource {
 			expandElementRemoved.remove(expandParam);
 
 			this.reportId = report.getReportId();
+			logger.info("report.getReportCategory() = {}", report.getReportCategory());
 			this.reportCategoryResource = new ReportCategoryResource(report.getReportCategory(), uriInfo, expand,
 					apiVersion);
+			logger.info("this.reportCategoryResource = {}", this.reportCategoryResource);
 			this.name = report.getName();
 			this.number = report.getNumber();
 			//		this.reportVersions = report.getReportVersions();
@@ -78,9 +80,71 @@ public class ReportResource extends AbstractBaseResource {
 		}
 	}
 
+	public UUID getReportId() {
+		return reportId;
+	}
+
+	public void setReportId(UUID reportId) {
+		this.reportId = reportId;
+	}
+
+	public ReportCategoryResource getReportCategoryResource() {
+		return reportCategoryResource;
+	}
+
+	public void setReportCategoryResource(ReportCategoryResource reportCategoryResource) {
+		this.reportCategoryResource = reportCategoryResource;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public Integer getNumber() {
+		return number;
+	}
+
+	public void setNumber(Integer number) {
+		this.number = number;
+	}
+
+	public Boolean isActive() {
+		return active;
+	}
+
+	public void setActive(Boolean active) {
+		this.active = active;
+	}
+
+	public Date getCreatedOn() {
+		return createdOn;
+	}
+
+	public void setCreatedOn(Date createdOn) {
+		this.createdOn = createdOn;
+	}
+
 	@Override
 	public String toString() {
-		return "ReportResource [href=" + href + "]";
+		StringBuilder builder = new StringBuilder();
+		builder.append("ReportResource [reportId=");
+		builder.append(reportId);
+		builder.append(", reportCategoryResource=");
+		builder.append(reportCategoryResource);
+		builder.append(", name=");
+		builder.append(name);
+		builder.append(", number=");
+		builder.append(number);
+		builder.append(", active=");
+		builder.append(active);
+		builder.append(", createdOn=");
+		builder.append(createdOn);
+		builder.append("]");
+		return builder.toString();
 	}
 
 }

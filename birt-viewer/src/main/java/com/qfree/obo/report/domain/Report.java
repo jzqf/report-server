@@ -131,6 +131,21 @@ public class Report implements Serializable {
 	}
 
 	public Report(ReportCategory reportCategory, String name, Integer number, boolean active, Date createdOn) {
+		this(null, reportCategory, name, number, active, createdOn);
+		//		this.reportCategory = reportCategory;
+		//		this.name = name;
+		//		this.number = number;
+		//		this.active = active;
+		//		if (createdOn != null) {
+		//			this.createdOn = createdOn;
+		//		} else {
+		//			this.createdOn = DateUtils.nowUtc();
+		//		}
+	}
+
+	public Report(UUID reportId, ReportCategory reportCategory, String name, Integer number, boolean active,
+			Date createdOn) {
+		this.reportId = reportId;
 		this.reportCategory = reportCategory;
 		this.name = name;
 		this.number = number;

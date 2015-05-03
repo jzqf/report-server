@@ -94,7 +94,6 @@ public class ReportCategoryControllerTests {
 
 		String newAbbreviation = "NEWRCABBREV";
 		String newDescription = "New report category description";
-		Response response;
 
 		ReportCategoryResource reportCategoryResource = new ReportCategoryResource();
 		reportCategoryResource.setAbbreviation(newAbbreviation);
@@ -102,6 +101,7 @@ public class ReportCategoryControllerTests {
 		reportCategoryResource.setActive(true);
 		logger.debug("reportCategoryResource = {}", reportCategoryResource);
 
+		Response response;
 		//		response = webTarget.path(ResourcePath.REPORTCATEGORIES_PATH)
 		response = webTarget.path(ResourcePath.forEntity(ReportCategory.class).getPath())
 				.request()
@@ -125,6 +125,13 @@ public class ReportCategoryControllerTests {
 		assertThat(responseEntity.getAbbreviation(), is(newAbbreviation));
 		assertThat(responseEntity.getDescription(), is(newDescription));
 		assertThat(responseEntity.isActive(), is(true));
+		assertThat(responseEntity.getHref(), is(not(nullValue())));
+		assertThat(responseEntity.getMediaType(), is(not(nullValue())));
+		/*
+		 * We test that an id was generated, but we don't know what it will be,
+		 * so it does make sense to check that it is "correct".
+		 */
+		assertThat(responseEntity.getReportCategoryId(), is(not(nullValue())));
 		/*
 		 * Assert that the "CreatedOn" datetime is within 5 minutes of the
 		 * current time in this process. Ideally,they should be much, much
@@ -138,20 +145,14 @@ public class ReportCategoryControllerTests {
 		long millisecondsSinceCreated = (DateUtils.nowUtc()).getTime() - responseEntity.getCreatedOn().getTime();
 		assertThat(Math.abs(millisecondsSinceCreated), is(lessThan(5L * 60L * 1000L)));
 
-		assertThat(responseEntity.getHref(), is(not(nullValue())));
 		/*
-		 * We test that an id was generated, but we don't know what it will be,
-		 * so it does make sense to check that it is "correct".
-		 */
-		assertThat(responseEntity.getReportCategoryId(), is(not(nullValue())));
-
-		/*
-		 * Load the ReportCategoryResource that was created. Its URI should have
-		 * been returned in the HTTP "Location" header.
+		 * Retrieve the ReportCategoryResource associated with the 
+		 * ReportCategory that was just created. Its URI should have been 
+		 * returned in the HTTP "Location" header.
 		 */
 		String uriAsString;
 		uriAsString = createdEntityLocations.get(0).toString();
-		logger.debug("uriAsString =) {}", uriAsString);
+		logger.debug("uriAsString = {}", uriAsString);
 		response = client.target(uriAsString)
 				.request()
 				.header("Accept", MediaType.APPLICATION_JSON + ";v=" + defaultVersion)
@@ -159,6 +160,15 @@ public class ReportCategoryControllerTests {
 		assertThat(response.getStatus(), is(Response.Status.OK.getStatusCode()));
 		ReportCategoryResource resource = response.readEntity(ReportCategoryResource.class);
 		logger.debug("resource = {}", resource);
+		assertThat(resource, is(not(nullValue())));
+		assertThat(resource.getAbbreviation(), is(newAbbreviation));
+		assertThat(resource.getDescription(), is(newDescription));
+		assertThat(resource.isActive(), is(true));
+		assertThat(resource.getHref(), is(not(nullValue())));
+		assertThat(resource.getMediaType(), is(not(nullValue())));
+		assertThat(responseEntity.getReportCategoryId(), is(responseEntity.getReportCategoryId()));
+		millisecondsSinceCreated = (DateUtils.nowUtc()).getTime() - resource.getCreatedOn().getTime();
+		assertThat(Math.abs(millisecondsSinceCreated), is(lessThan(5L * 60L * 1000L)));
 
 		/*
 		 * Check that there is now a ReportCategory in the database 
