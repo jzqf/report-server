@@ -70,7 +70,7 @@
 	</appender>
 
 	<!-- Application Loggers -->
-	<logger name="com.qfree.obo.report.rest.server.ReportControllerTests"><level value="DEBUG" /></logger>
+	<!-- <logger name="com.qfree.obo.report.rest.server.ReportControllerTests"><level value="DEBUG" /></logger> -->
 	<logger name="com.qfree.obo.report.rest.server.ReportController"><level value="DEBUG" /></logger>
 	
 	<!-- 3rdparty Loggers -->
@@ -81,6 +81,7 @@
 	<!-- <logger name="org.springframework.context"><level value="INFO" /></logger> -->
 	<!-- <logger name="org.springframework.web"><level value="INFO" /></logger> -->
 
+	<!-- Everything else, not explicitly configured above. -->
 	<root level="INFO">
 		<!-- <appender-ref ref="STDOUT"/> -->
 		<appender-ref ref="FILE"/>

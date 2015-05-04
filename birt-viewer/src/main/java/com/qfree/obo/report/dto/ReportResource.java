@@ -68,7 +68,8 @@ public class ReportResource extends AbstractBaseResource {
 
 			this.reportId = report.getReportId();
 			logger.debug("report.getReportCategory() = {}", report.getReportCategory());
-			this.reportCategoryResource = new ReportCategoryResource(report.getReportCategory(), uriInfo, expand,
+			this.reportCategoryResource = new ReportCategoryResource(report.getReportCategory(), uriInfo,
+					expandElementRemoved,
 					apiVersion);
 			logger.debug("this.reportCategoryResource = {}", this.reportCategoryResource);
 			this.name = report.getName();
@@ -143,6 +144,8 @@ public class ReportResource extends AbstractBaseResource {
 		builder.append(active);
 		builder.append(", createdOn=");
 		builder.append(createdOn);
+		builder.append(", href=");
+		builder.append(href);
 		builder.append("]");
 		return builder.toString();
 	}
