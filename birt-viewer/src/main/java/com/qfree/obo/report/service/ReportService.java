@@ -37,20 +37,35 @@ public class ReportService {
 		logger.debug("reportResource = {}", reportResource);
 
 		/*
-		 * Extract ReportCategoryResource from reportResource. We will assume
-		 * here that the reportCategoryId attribute of the object is set to
-		 * the id of the ReportCategory that
+		 * IMPORTANT:
+		 * 
+		 * Retrieve the ReportCategoryResource from reportResource. We assume
+		 * here that the reportCategoryId attribute of this object is set to
+		 * the id of the ReportCategory that will we associated with the
+		 * Report entity that is be saved/created below. It is not necessary for
+		 * any on the other ReportCategoryResource attributes to have non-null
+		 * values.
+		 * 
+		 * If reportCategoryId is not provided here, we throw a custom 
+		 * exception. 
 		 */
 		ReportCategoryResource reportCategoryResource = reportResource.getReportCategoryResource();
 		logger.debug("reportCategoryResource = {}", reportCategoryResource);
-		
+
 		UUID reportCategoryId = reportCategoryResource.getReportCategoryId();
 		logger.debug("reportCategoryId = {}", reportCategoryId);
-		ReportCategory reportCategory=null;
-		if(reportCategoryId!=null){
+		ReportCategory reportCategory = null;
+		if (reportCategoryId != null) {
 			reportCategory = reportCategoryRepository.findOne(reportCategoryId);
+			if (reportCategory == null) {
+				//TODO Create custom exception for this case? Write custom exception mapper
+				// because this will generate a "500 Internal Server Error" with an ugly exception trace.
+				throw new ReportingException("No ReportCategory found for reportCategoryId = "
+						+ reportCategoryId.toString());
+			}
 		} else {
-			//TODO Create custom exception for this case? Write custom exception mapper.
+			//TODO Create custom exception for this case? Write custom exception mapper
+			// because this will generate a "500 Internal Server Error" with an ugly exception trace.
 			throw new ReportingException("reportCategoryId is null");
 		}
 

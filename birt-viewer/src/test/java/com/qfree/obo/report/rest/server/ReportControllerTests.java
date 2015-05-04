@@ -93,8 +93,8 @@ public class ReportControllerTests {
 	@DirtiesContext
 	@Transactional
 	public void testCreateByPost() {
-		/* This is the default version for the endpoint 
-		 * AbstractResource.REPORTS_PATH  using HTTP POST.
+		/* These the default versions for the endpoint 
+		 * AbstractResource.REPORTS_PATH using HTTP POST and GET, respectively.
 		 */
 		String defaultVersionPost = "1";
 		String defaultVersionGet = "1";
@@ -107,9 +107,11 @@ public class ReportControllerTests {
 		Boolean newActive = true;
 		Date newCreatedOn = null;	// this will be filled in when the Report is created
 		/*
-		 * This ReportCategoryResource instance has only its "id" field defined.
-		 * That is the only field that needs to be defined when creating a new
-		 * Report from a ReportResouce.
+		 * IMPORTANT:
+		 * 
+		 * This ReportCategoryResource instance needs only its "id" field 
+		 * to be defined. That is the only ReportCategoryResource field that 
+		 * needs to be defined when creating a new Report from a ReportResouce.
 		 */
 		UUID uuidOfQfreeInternalReportCategory = UUID.fromString("bb2bc482-c19a-4c19-a087-e68ffc62b5a0");
 		ReportCategoryResource newReportCategoryResource = new ReportCategoryResource();
@@ -128,16 +130,20 @@ public class ReportControllerTests {
 		Response response;
 
 		/*
-		 * It is important here to specify that "reportcategory" be expanded;
+		 * IMPORTANT:
+		 * 
+		 * It is necessary here to specify that "reportcategory" be expanded;
 		 * otherwise, 
 		 * responseEntity.getReportCategoryResource().getReportCategoryId() will
-		 * be null and the assert for it below will fail, even though the POST
-		 * will still correctly create the new Report object.
+		 * be null, since the JSON object returned by the server will not have
+		 * included an attribute/value pair for it. As a result, the assert for 
+		 * it below will fail, even though the POST will still correctly create 
+		 * the new Report object. 
 		 */
-		//		response = webTarget.path(ResourcePath.REPORTCATEGORIES_PATH)
 		response = webTarget
+				// .path(ResourcePath.REPORTS_PATH)
 				.path(ResourcePath.forEntity(Report.class).getPath())
-				.queryParam("expand", "report", "reportcategory")
+				.queryParam("expand", "report", "reportcategory")  // see comments above why this is necessary
 				.request()
 				.header("Accept", MediaType.APPLICATION_JSON + ";v=" + defaultVersionPost)
 				.post(Entity.entity(reportResource, MediaType.APPLICATION_JSON_TYPE));
@@ -229,23 +235,40 @@ public class ReportControllerTests {
 	@DirtiesContext
 	@Transactional
 	public void testUpdateByPut() {
-		/* 
-		 * These are the default versions for the endpoint 
-		 * AbstractResource.REPORTCATEGORIES_PATH/{id} using HTTP PUT and GET.
+		/* These the default versions for the endpoint 
+		 * AbstractResource.REPORTS_PATH using HTTP PUT and GET, respectively.
 		 */
 		String defaultVersionPut = "1";
 		String defaultVersionGet = "1";
 
 		/*
-		 * Details of the Report to update (from test-data.sql).
+		 * This is the Report to be updated.
 		 */
 		UUID uuidOfReport = UUID.fromString("702d5daa-e23d-4f00-b32b-67b44c06d8f6");
+		Report report = reportRepository.findOne(uuidOfReport);
+		assertThat(report, is(not(nullValue())));
+
+		/*
+		 * Details of the Report to update (from test-data.sql).
+		 * 
+		 * currentReportCategory should correspond to the ReportCategory
+		 * "Q-Free internal"
+		 */
+		// ReportCategory currentReportCategory = report.getReportCategory();
+		// UUID currentReportCategoryUuid = report.getReportCategory().getReportCategoryId();
 		UUID currentReportCategoryUuid = UUID.fromString("bb2bc482-c19a-4c19-a087-e68ffc62b5a0");  // "Q-Free internal"
 		ReportCategory currentReportCategory = reportCategoryRepository.findOne(currentReportCategoryUuid);
 		String currentName = "Report name #04";
 		Integer currentNumber = 400;
 		boolean currentActive = true;
 		Date currentCreatedOn = DateUtils.dateUtcFromIso8601String("2014-03-25T12:15:00.000Z");
+
+		assertThat(currentReportCategory, is(not(nullValue())));
+		assertThat(report.getReportCategory(), is(currentReportCategory));
+		assertThat(report.getName(), is(currentName));
+		assertThat(report.getNumber(), is(currentNumber));
+		assertThat(report.isActive(), is(currentActive));
+		assertThat(DateUtils.entityTimestampToNormalDate(report.getCreatedOn()), is(currentCreatedOn));
 
 		/*
 		 * New details that will be used to update the Report.
@@ -256,21 +279,15 @@ public class ReportControllerTests {
 		Integer newNumber = 999;
 		boolean newActive = false;
 
-		Report report = reportRepository.findOne(uuidOfReport);
-		assertThat(report, is(not(nullValue())));
-		assertThat(report.getReportCategory(), is(currentReportCategory));
-		assertThat(report.getName(), is(currentName));
-		assertThat(report.getNumber(), is(currentNumber));
-		assertThat(report.isActive(), is(currentActive));
-		assertThat(DateUtils.entityTimestampToNormalDate(report.getCreatedOn()), is(currentCreatedOn));
-
 		/*
 		 * Construct ReportCategoryResource for the new ReportCategory to assign
-		 * to the Report.All that is needed is that the reportCategoryId 
-		 * attribute of the object is set to the id of the new ReportCategory.
-		 * !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-		 * TODO Document this!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-		 * !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+		 * to the Report.
+		 * 
+		 * IMPORTANT:
+		 * 
+		 * This ReportCategoryResource instance needs only its "id" field 
+		 * to be defined. That is the only ReportCategoryResource field that 
+		 * needs to be defined when updating a Report from a ReportResouce.
 		 */
 		ReportCategoryResource newReportCategoryResource = new ReportCategoryResource();
 		newReportCategoryResource.setReportCategoryId(newReportCategoryUuid);
@@ -309,18 +326,22 @@ public class ReportControllerTests {
 		assertThat(response.getStatus(), is(Response.Status.OK.getStatusCode()));
 
 		/*
-		 * Retrieve the ReportResource that was updated via HTTP GET. This 
-		 * request also needs "expand" query parameters for "report" and 
-		 * "reportcategory"; otherwise, 
+		 * Retrieve the ReportResource that was updated via HTTP PUT. 
+		 * 
+		 * IMPORTANT:
+		 * 
+		 * This request needs "expand" query parameter "reportcategory" for the 
+		 * same reason as it is needed above for the "POST" request; otherwise, 
 		 * resource.getReportCategoryResource().getReportCategoryId() will be 
-		 * null.
+		 * null, since the JSON object returned by the server will not have
+		 * included an attribute/value pair for it. As a result, the assert for 
+		 * it below will fail, even though the POST will still correctly create 
+		 * the new Report object. Note that this is necessary for this 
+		 * integration test to execute successfully; the Report will be updated
+		 * successfully above by the "PUT" request regardless.
 		 */
 		response = webTarget.path(path)
-				//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-				//TODO DOCUMENT THIS!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-				//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-				//				.queryParam("expand", "report", "reportcategory")
-				.queryParam("expand", "report", "reportcategory")
+				.queryParam("expand", "report", "reportcategory")  // see comments above why this is necessary
 				.request()
 				.header("Accept", MediaType.APPLICATION_JSON + ";v=" + defaultVersionGet)
 				.get();
