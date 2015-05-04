@@ -8,6 +8,7 @@ import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.HeaderParam;
 import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -116,8 +117,59 @@ public class ReportController extends AbstractBaseController {
 
 		addToExpandList(expand, Report.class);	// Force primary resource to be "expanded"
 		Report report = reportRepository.findOne(id);
+		logger.debug("report = {}", report);
 		ReportResource reportResource = new ReportResource(report, uriInfo, expand, apiVersion);
+		logger.debug("reportResource = {}", reportResource);
 		return reportResource;
+	}
+
+	/*
+	 * This endpoint can be tested with:
+	 * 
+	 *   $ mvn clean spring-boot:run
+	 *   $ curl -iH "Content-Type: application/json;v=1" -X PUT -d \
+	 *   '{"reportCategory":{"reportCategoryId":"72d7cb27-1770-4cc7-b301-44d39ccf1e76"},'\
+	 *   '"name":"Report #04 (modified by PUT)","number":1400,"active":false}' \
+	 *   http://localhost:8080/rest/reports/702d5daa-e23d-4f00-b32b-67b44c06d8f6
+	 *   
+	 * This updates the report with UUID 702d5daa-e23d-4f00-b32b-67b44c06d8f6
+	 * with the following changes:
+	 * 
+	 * report category:	"Q-Free internal"	->	"Traffic"
+	 * name:			"Report name #04"	-> "Report name #04 (modified by PUT)"
+	 * number:			400					-> 1400
+	 * active:			true				-> false
+	 */
+	@Path("/{id}")
+	@PUT
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response updateById(
+			ReportResource reportResource,
+			@PathParam("id") final UUID id,
+			@HeaderParam("Accept") final String acceptHeader,
+			@Context final UriInfo uriInfo) {
+		RestApiVersion apiVersion = RestUtils.extractAPIVersion(acceptHeader, RestApiVersion.v1);
+		logger.debug("apiVersion = {}", apiVersion);
+		logger.debug("reportResource = {}", reportResource);
+
+		/*
+		 * Retrieve Report entity to be updated.
+		 */
+		Report report = reportRepository.findOne(id);
+		logger.debug("report (to be updated) = {}", report);
+		/*
+		 * Ensure that the entity's "id" and "CreatedOn" are not changed.
+		 */
+		reportResource.setReportId(report.getReportId());
+		reportResource.setCreatedOn(report.getCreatedOn());
+		logger.debug("reportResource (adjusted) = {}", reportResource);
+		/*
+		 * Save updated entity.
+		 */
+		report = reportService.saveOrUpdateFromResource(reportResource);
+		logger.debug("report (after saveOrUpdateFromResource) = {}", report);
+		return Response.status(Response.Status.OK).build();
 	}
 
 }

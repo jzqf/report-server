@@ -24,6 +24,20 @@ public class ReportRepositoryImpl implements ReportRepositoryCustom {
 	@PersistenceContext
 	private EntityManager entityManager;
 
+	/**
+	 * Refresh the Report entity in case it was updated by another 
+	 * process/thread that the current EntityManager is unaware of. This is 
+	 * useful in at least during integration testing of ReST endpoints when we 
+	 * know an entity is updated by the endpoint. 
+	 * 
+	 * @param report
+	 * @return
+	 */
+	public Report refresh(Report report) {
+		entityManager.refresh(report);
+		return report;
+	}
+
 	public List<Report> findRecentlyCreated() {
 		return findRecentlyCreated(10);
 	}

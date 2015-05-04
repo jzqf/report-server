@@ -237,6 +237,8 @@ public class Report implements Serializable {
 		builder.append(reportCategory);
 		builder.append(", name=");
 		builder.append(name);
+		builder.append(", number=");
+		builder.append(number);
 		builder.append("]");
 		return builder.toString();
 	}

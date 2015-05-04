@@ -14,6 +14,8 @@ import com.qfree.obo.report.domain.Report;
  */
 public interface ReportRepositoryCustom {
 
+	public Report refresh(Report report);
+
 	List<Report> findRecentlyCreated();
 
 	List<Report> findRecentlyCreated(int count);

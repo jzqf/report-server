@@ -191,7 +191,7 @@ public class ReportCategoryControllerTests {
 		String defaultVersionGet = "1";
 
 		/*
-		 * Details of the ReportCategory to update.
+		 * Details of the ReportCategory to update (from test-data.sql).
 		 */
 		UUID uuidOfReportCategory = UUID.fromString("bb2bc482-c19a-4c19-a087-e68ffc62b5a0");
 		String currentAbbreviation = "QFREE";

@@ -7,6 +7,7 @@ import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertThat;
 
+import java.nio.file.Paths;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
@@ -37,6 +38,7 @@ import com.qfree.obo.report.ApplicationConfig;
 import com.qfree.obo.report.db.ReportCategoryRepository;
 import com.qfree.obo.report.db.ReportRepository;
 import com.qfree.obo.report.domain.Report;
+import com.qfree.obo.report.domain.ReportCategory;
 import com.qfree.obo.report.dto.ReportCategoryResource;
 import com.qfree.obo.report.dto.ReportResource;
 import com.qfree.obo.report.dto.ResourcePath;
@@ -223,93 +225,137 @@ public class ReportControllerTests {
 		assertThat(newReport, is(not(nullValue())));
 	}
 
-	//	@Test
-	//	@DirtiesContext
-	//	@Transactional
-	//	public void testUpdateByPut() {
-	//		/* 
-	//		 * These are the default versions for the endpoint 
-	//		 * AbstractResource.REPORTCATEGORIES_PATH/{id} using HTTP PUT and GET.
-	//		 */
-	//		String defaultVersionPut = "1";
-	//		String defaultVersionGet = "1";
-	//
-	//		/*
-	//		 * Details of the Report to update.
-	//		 */
-	//		UUID uuidOfReport = UUID.fromString("bb2bc482-c19a-4c19-a087-e68ffc62b5a0");
-	//		String currentAbbreviation = "QFREE";
-	//		String currentDescription = "Q-Free internal";
-	//		boolean currentActive = true;
-	//		Date currentCreatedOn = DateUtils.dateUtcFromIso8601String("2015-05-30T22:00:00.000Z");
-	//
-	//		/*
-	//		 * New details that will be used to update the Report.
-	//		 */
-	//		String newAbbreviation = "QFREEMODIFIED";
-	//		String newDescription = "Q-Free internal (modified)";
-	//		boolean newActive = false;
-	//
-	//		Report report = reportRepository.findOne(uuidOfReport);
-	//		assertThat(report, is(not(nullValue())));
-	//		assertThat(report.getAbbreviation(), is(currentAbbreviation));
-	//		assertThat(report.getDescription(), is(currentDescription));
-	//		assertThat(report.isActive(), is(currentActive));
-	//		assertThat(DateUtils.entityTimestampToNormalDate(report.getCreatedOn()), is(currentCreatedOn));
-	//
-	//		ReportResource reportResource = new ReportResource();
-	//		reportResource.setAbbreviation(newAbbreviation);
-	//		reportResource.setDescription(newDescription);
-	//		reportResource.setActive(newActive);
-	//		logger.debug("reportResource = {}", reportResource);
-	//
-	//		String path = Paths
-	//				.get(ResourcePath.forEntity(Report.class).getPath(), uuidOfReport.toString())
-	//				.toString();
-	//		logger.debug("path = {}", path);
-	//		Response response = webTarget.path(path)
-	//				.request()
-	//				.header("Accept", MediaType.APPLICATION_JSON + ";v=" + defaultVersionPut)
-	//				.put(Entity.entity(reportResource, MediaType.APPLICATION_JSON_TYPE));
-	//		assertThat(response.getStatus(), is(Response.Status.OK.getStatusCode()));
-	//
-	//		/*
-	//		 * Retrieve the ReportResource that was updated via HTTP GET.
-	//		 */
-	//		response = webTarget.path(path)
-	//				.request()
-	//				.header("Accept", MediaType.APPLICATION_JSON + ";v=" + defaultVersionGet)
-	//				.get();
-	//		assertThat(response.getStatus(), is(Response.Status.OK.getStatusCode()));
-	//		ReportResource resource = response.readEntity(ReportResource.class);
-	//		logger.debug("resource (updated) = {}", resource);
-	//		assertThat(resource, is(not(nullValue())));
-	//		assertThat(resource.getAbbreviation(), is(newAbbreviation));
-	//		assertThat(resource.getDescription(), is(newDescription));
-	//		assertThat(resource.isActive(), is(newActive));
-	//		assertThat(DateUtils.entityTimestampToNormalDate(resource.getCreatedOn()), is(currentCreatedOn));
-	//
-	//		/*
-	//		 * Check that the Report entity was updated properly. We cannot
-	//		 * simply use "reportRepository.findOne(uuidOfReport)" 
-	//		 * to load the Report entity because it was updated in the 
-	//		 * Jersey server thread that received the PUT request from above. Hence,
-	//		 * the EntityManager that is managing this thread does not know about
-	//		 * the update and will simply return the old (un-updated) entity. 
-	//		 * Therefore, we need to tell the EntityManager to refresh its copy
-	//		 * before it returns it.
-	//		 * 
-	//		 * Will return old (un-updated) Report entity:
-	//		 * 
-	//		 * report = reportRepository.findOne(uuidOfReport);
-	//		 */
-	//		report = reportRepository.refresh(report);
-	//		logger.debug("report (refeshed) = {}", report);
-	//		assertThat(report, is(not(nullValue())));
-	//		assertThat(report.getAbbreviation(), is(newAbbreviation));
-	//		assertThat(report.getDescription(), is(newDescription));
-	//		assertThat(report.isActive(), is(newActive));
-	//		assertThat(DateUtils.entityTimestampToNormalDate(report.getCreatedOn()), is(currentCreatedOn));
-	//	}
+	@Test
+	@DirtiesContext
+	@Transactional
+	public void testUpdateByPut() {
+		/* 
+		 * These are the default versions for the endpoint 
+		 * AbstractResource.REPORTCATEGORIES_PATH/{id} using HTTP PUT and GET.
+		 */
+		String defaultVersionPut = "1";
+		String defaultVersionGet = "1";
+
+		/*
+		 * Details of the Report to update (from test-data.sql).
+		 */
+		UUID uuidOfReport = UUID.fromString("702d5daa-e23d-4f00-b32b-67b44c06d8f6");
+		UUID currentReportCategoryUuid = UUID.fromString("bb2bc482-c19a-4c19-a087-e68ffc62b5a0");  // "Q-Free internal"
+		ReportCategory currentReportCategory = reportCategoryRepository.findOne(currentReportCategoryUuid);
+		String currentName = "Report name #04";
+		Integer currentNumber = 400;
+		boolean currentActive = true;
+		Date currentCreatedOn = DateUtils.dateUtcFromIso8601String("2014-03-25T12:15:00.000Z");
+
+		/*
+		 * New details that will be used to update the Report.
+		 */
+		UUID newReportCategoryUuid = UUID.fromString("72d7cb27-1770-4cc7-b301-44d39ccf1e76");  // "Traffic"
+		ReportCategory newReportCategory = reportCategoryRepository.findOne(newReportCategoryUuid);
+		String newName = "Report name #04 (modfifed by PUT)";
+		Integer newNumber = 999;
+		boolean newActive = false;
+
+		Report report = reportRepository.findOne(uuidOfReport);
+		assertThat(report, is(not(nullValue())));
+		assertThat(report.getReportCategory(), is(currentReportCategory));
+		assertThat(report.getName(), is(currentName));
+		assertThat(report.getNumber(), is(currentNumber));
+		assertThat(report.isActive(), is(currentActive));
+		assertThat(DateUtils.entityTimestampToNormalDate(report.getCreatedOn()), is(currentCreatedOn));
+
+		/*
+		 * Construct ReportCategoryResource for the new ReportCategory to assign
+		 * to the Report.All that is needed is that the reportCategoryId 
+		 * attribute of the object is set to the id of the new ReportCategory.
+		 * !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+		 * TODO Document this!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+		 * !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+		 */
+		ReportCategoryResource newReportCategoryResource = new ReportCategoryResource();
+		newReportCategoryResource.setReportCategoryId(newReportCategoryUuid);
+
+		ReportResource reportResource = new ReportResource();
+		reportResource.setReportCategoryResource(newReportCategoryResource);
+		reportResource.setName(newName);
+		reportResource.setNumber(newNumber);
+		reportResource.setActive(newActive);
+		logger.debug("reportResource = {}", reportResource);
+
+		/*
+		 * It is important here to specify that "reportcategory" be expanded;
+		 * otherwise, 
+		 * resource.getReportCategoryResource().getReportCategoryId() will
+		 * be null and the assert for it below will fail, even though the POST
+		 * will still correctly create the new Report object.
+		 */
+		String path = Paths
+				.get(ResourcePath.forEntity(Report.class).getPath(), uuidOfReport.toString())
+				.toString();
+		logger.debug("path = {}", path);
+		Response response = webTarget.path(path)
+				/*
+				 * These "expand" query parameters will be necessary if this
+				 * request ever returns a ReportResource entity in the response
+				 * for the same reason as it is necessary in the GET request 
+				 * below - see the comments there for an explanation. It won't
+				 * hurt to uncomment this line here now, but it is not 
+				 * currently necessary to do this.
+				 */
+				// .queryParam("expand", "report", "reportcategory")
+				.request()
+				.header("Accept", MediaType.APPLICATION_JSON + ";v=" + defaultVersionPut)
+				.put(Entity.entity(reportResource, MediaType.APPLICATION_JSON_TYPE));
+		assertThat(response.getStatus(), is(Response.Status.OK.getStatusCode()));
+
+		/*
+		 * Retrieve the ReportResource that was updated via HTTP GET. This 
+		 * request also needs "expand" query parameters for "report" and 
+		 * "reportcategory"; otherwise, 
+		 * resource.getReportCategoryResource().getReportCategoryId() will be 
+		 * null.
+		 */
+		response = webTarget.path(path)
+				//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+				//TODO DOCUMENT THIS!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+				//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+				//				.queryParam("expand", "report", "reportcategory")
+				.queryParam("expand", "report", "reportcategory")
+				.request()
+				.header("Accept", MediaType.APPLICATION_JSON + ";v=" + defaultVersionGet)
+				.get();
+		assertThat(response.getStatus(), is(Response.Status.OK.getStatusCode()));
+		ReportResource resource = response.readEntity(ReportResource.class);
+		logger.debug("resource (updated) = {}", resource);
+		assertThat(resource, is(not(nullValue())));
+		assertThat(resource.getReportCategoryResource().getReportCategoryId(), is(newReportCategoryUuid));
+		assertThat(resource.getName(), is(newName));
+		assertThat(resource.getNumber(), is(newNumber));
+		assertThat(resource.isActive(), is(newActive));
+		assertThat(DateUtils.entityTimestampToNormalDate(resource.getCreatedOn()), is(currentCreatedOn));
+
+		/*
+		 * Check that the Report entity was updated properly. We cannot
+		 * simply use "reportRepository.findOne(uuidOfReport)" 
+		 * to load the Report entity because it was updated in the 
+		 * Jersey server thread that received the PUT request from above. Hence,
+		 * the EntityManager that is managing this thread does not know about
+		 * the update and will simply return the old (un-updated) entity. 
+		 * Therefore, we need to tell the EntityManager to refresh its copy
+		 * before it returns it.
+		 * 
+		 * Will return old (un-updated) Report entity:
+		 * 
+		 * report = reportRepository.findOne(uuidOfReport);
+		 */
+		report = reportRepository.refresh(report);
+		logger.debug("report (refeshed) = {}", report);
+		assertThat(report, is(not(nullValue())));
+		assertThat(report.getReportCategory(), is(newReportCategory));
+		assertThat(report.getName(), is(newName));
+		assertThat(report.getNumber(), is(newNumber));
+		assertThat(report.isActive(), is(newActive));
+		assertThat(DateUtils.entityTimestampToNormalDate(report.getCreatedOn()), is(currentCreatedOn));
+	}
 
 }
