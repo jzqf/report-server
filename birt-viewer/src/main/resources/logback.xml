@@ -71,8 +71,10 @@
 
 	<!-- Application Loggers -->
 	<!-- <logger name="com.qfree.obo.report.rest.server.ReportControllerTests"><level value="DEBUG" /></logger> -->
-	<logger name="com.qfree.obo.report.rest.server.ReportController"><level value="DEBUG" /></logger>
-	
+	<!-- <logger name="com.qfree.obo.report.rest.server.ReportController"><level value="DEBUG" /></logger> -->
+	<logger name="com.qfree.obo.report.rest.server.RoleController"><level value="DEBUG" /></logger>
+	<logger name="com.qfree.obo.report.service.RoleService"><level value="DEBUG" /></logger>
+		
 	<!-- 3rdparty Loggers -->
 	<logger name="org.hibernate"><level value="INFO" /></logger>
 	<logger name="org.springframework"><level value="INFO" /></logger>

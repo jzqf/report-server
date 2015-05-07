@@ -14,6 +14,6 @@ import com.qfree.obo.report.domain.Role;
  * 
  * @author Jeffrey Zelt
  */
-public interface RoleRepository extends JpaRepository<Role, UUID> {
+public interface RoleRepository extends JpaRepository<Role, UUID>, RoleRepositoryCustom {
 	  
 }

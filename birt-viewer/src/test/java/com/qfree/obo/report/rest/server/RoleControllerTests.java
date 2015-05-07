@@ -35,10 +35,10 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.qfree.obo.report.ApplicationConfig;
-import com.qfree.obo.report.db.ReportCategoryRepository;
-import com.qfree.obo.report.domain.ReportCategory;
-import com.qfree.obo.report.dto.ReportCategoryResource;
+import com.qfree.obo.report.db.RoleRepository;
+import com.qfree.obo.report.domain.Role;
 import com.qfree.obo.report.dto.ResourcePath;
+import com.qfree.obo.report.dto.RoleResource;
 import com.qfree.obo.report.util.DateUtils;
 
 /**
@@ -60,12 +60,12 @@ import com.qfree.obo.report.util.DateUtils;
  * test.
  */
 @DirtiesContext(classMode = ClassMode.AFTER_CLASS)
-public class ReportCategoryControllerTests {
+public class RoleControllerTests {
 
-	private static final Logger logger = LoggerFactory.getLogger(ReportCategoryControllerTests.class);
+	private static final Logger logger = LoggerFactory.getLogger(RoleControllerTests.class);
 
 	@Autowired
-	ReportCategoryRepository reportCategoryRepository;
+	RoleRepository roleRepository;
 
 	@Value("${local.server.port}")
 	private int port;
@@ -88,26 +88,29 @@ public class ReportCategoryControllerTests {
 	@Transactional
 	public void testCreateByPost() {
 		/* This is the default version for the endpoint 
-		 * AbstractResource.REPORTCATEGORIES_PATH using HTTP POST.
+		 * AbstractResource.ROLES_PATH using HTTP POST.
 		 */
 		String defaultVersionPost = "1";
 		String defaultVersionGet = "1";
 
-		String newAbbreviation = "NEWRCABBREV";
-		String newDescription = "New report category description";
+		String newUsername = "new-user-from-post";
+		String newFullName = "Full Name of new-user-from-post";
+		String newEncodedPassword = "8sV4cDCNyH9DLlkS1N5vjjInIbo=";  // Base64(SHA-1("newpassword"))
+		Boolean newLoginRole = true;
 
-		ReportCategoryResource reportCategoryResource = new ReportCategoryResource();
-		reportCategoryResource.setAbbreviation(newAbbreviation);
-		reportCategoryResource.setDescription(newDescription);
-		reportCategoryResource.setActive(true);
-		logger.debug("reportCategoryResource = {}", reportCategoryResource);
+		RoleResource roleResource = new RoleResource();
+		roleResource.setUsername(newUsername);
+		roleResource.setFullName(newFullName);
+		roleResource.setEncodedPassword(newEncodedPassword);
+		roleResource.setLoginRole(newLoginRole);
+		logger.debug("roleResource = {}", roleResource);
 
 		Response response;
-		//		response = webTarget.path(ResourcePath.REPORTCATEGORIES_PATH)
-		response = webTarget.path(ResourcePath.forEntity(ReportCategory.class).getPath())
+		//		response = webTarget.path(ResourcePath.ROLES_PATH)
+		response = webTarget.path(ResourcePath.forEntity(Role.class).getPath())
 				.request()
 				.header("Accept", MediaType.APPLICATION_JSON + ";v=" + defaultVersionPost)
-				.post(Entity.entity(reportCategoryResource, MediaType.APPLICATION_JSON_TYPE));
+				.post(Entity.entity(roleResource, MediaType.APPLICATION_JSON_TYPE));
 		assertThat(response.getStatus(), is(Response.Status.CREATED.getStatusCode()));
 
 		/*
@@ -121,18 +124,19 @@ public class ReportCategoryControllerTests {
 		assertThat(createdEntityLocations, is(not(nullValue())));
 		assertThat(createdEntityLocations.size(), is(greaterThan(0)));
 
-		ReportCategoryResource responseEntity = response.readEntity(ReportCategoryResource.class);
+		RoleResource responseEntity = response.readEntity(RoleResource.class);
 		assertThat(responseEntity, is(not(nullValue())));
-		assertThat(responseEntity.getAbbreviation(), is(newAbbreviation));
-		assertThat(responseEntity.getDescription(), is(newDescription));
-		assertThat(responseEntity.isActive(), is(true));
+		assertThat(responseEntity.getUsername(), is(newUsername));
+		assertThat(responseEntity.getFullName(), is(newFullName));
+		assertThat(responseEntity.getEncodedPassword(), is(newEncodedPassword));
+		assertThat(responseEntity.isLoginRole(), is(newLoginRole));
 		assertThat(responseEntity.getHref(), is(not(nullValue())));
 		assertThat(responseEntity.getMediaType(), is(not(nullValue())));
 		/*
 		 * We test that an id was generated, but we don't know what it will be,
 		 * so it does make sense to check that it is "correct".
 		 */
-		assertThat(responseEntity.getReportCategoryId(), is(not(nullValue())));
+		assertThat(responseEntity.getRoleId(), is(not(nullValue())));
 		/*
 		 * Assert that the "CreatedOn" datetime is within 5 minutes of the
 		 * current time in this process. Ideally,they should be much, much
@@ -147,8 +151,8 @@ public class ReportCategoryControllerTests {
 		assertThat(Math.abs(millisecondsSinceCreated), is(lessThan(5L * 60L * 1000L)));
 
 		/*
-		 * Retrieve the ReportCategoryResource associated with the 
-		 * ReportCategory that was just created. Its URI should have been 
+		 * Retrieve the RoleResource associated with the 
+		 * Role that was just created. Its URI should have been 
 		 * returned in the HTTP "Location" header.
 		 */
 		String uriAsString;
@@ -159,25 +163,26 @@ public class ReportCategoryControllerTests {
 				.header("Accept", MediaType.APPLICATION_JSON + ";v=" + defaultVersionGet)
 				.get();
 		assertThat(response.getStatus(), is(Response.Status.OK.getStatusCode()));
-		ReportCategoryResource resource = response.readEntity(ReportCategoryResource.class);
+		RoleResource resource = response.readEntity(RoleResource.class);
 		logger.debug("resource = {}", resource);
 		assertThat(resource, is(not(nullValue())));
-		assertThat(resource.getAbbreviation(), is(newAbbreviation));
-		assertThat(resource.getDescription(), is(newDescription));
-		assertThat(resource.isActive(), is(true));
+		assertThat(resource.getUsername(), is(newUsername));
+		assertThat(resource.getFullName(), is(newFullName));
+		assertThat(resource.getEncodedPassword(), is(newEncodedPassword));
+		assertThat(resource.isLoginRole(), is(newLoginRole));
 		assertThat(resource.getHref(), is(not(nullValue())));
 		assertThat(resource.getMediaType(), is(not(nullValue())));
-		assertThat(responseEntity.getReportCategoryId(), is(responseEntity.getReportCategoryId()));
+		assertThat(responseEntity.getRoleId(), is(responseEntity.getRoleId()));
 		millisecondsSinceCreated = (DateUtils.nowUtc()).getTime() - resource.getCreatedOn().getTime();
 		assertThat(Math.abs(millisecondsSinceCreated), is(lessThan(5L * 60L * 1000L)));
 
 		/*
-		 * Check that there is now a ReportCategory in the database 
-		 * corresponding to the ReportCategoryResource.
+		 * Check that there is now a Role in the database 
+		 * corresponding to the RoleResource.
 		 */
-		assertThat(resource.getReportCategoryId(), is(not(nullValue())));
-		ReportCategory newReportCategory = reportCategoryRepository.findOne(resource.getReportCategoryId());
-		assertThat(newReportCategory, is(not(nullValue())));
+		assertThat(resource.getRoleId(), is(not(nullValue())));
+		Role newRole = roleRepository.findOne(resource.getRoleId());
+		assertThat(newRole, is(not(nullValue())));
 	}
 
 	@Test
@@ -186,87 +191,93 @@ public class ReportCategoryControllerTests {
 	public void testUpdateByPut() {
 		/* 
 		 * These are the default versions for the endpoint 
-		 * AbstractResource.REPORTCATEGORIES_PATH/{id} using HTTP PUT and GET.
+		 * AbstractResource.ROLES_PATH/{id} using HTTP PUT and GET.
 		 */
 		String defaultVersionPut = "1";
 		String defaultVersionGet = "1";
 
 		/*
-		 * Details of the ReportCategory to update (from test-data.sql).
+		 * Details of the Role to update (from test-data.sql).
 		 */
-		UUID uuidOfReportCategory = UUID.fromString("bb2bc482-c19a-4c19-a087-e68ffc62b5a0");
-		String currentAbbreviation = "QFREE";
-		String currentDescription = "Q-Free internal";
-		boolean currentActive = true;
-		Date currentCreatedOn = DateUtils.dateUtcFromIso8601String("2015-05-30T22:00:00.000Z");
+		UUID uuidOfRole = UUID.fromString("6c328253-5fa6-4b11-8052-ef38197931b0");
+		String currentUsername = "aaaa";
+		String currentFullName = "";
+		String currentEncodedPassword = "";
+		Boolean currentLoginRole = false;
+		Date currentCreatedOn = DateUtils.dateUtcFromIso8601String("2015-04-13T08:00:00.000Z");
 
 		/*
-		 * New details that will be used to update the ReportCategory.
+		 * New details that will be used to update the Role.
 		 */
-		String newAbbreviation = "QFREEMODIFIED";
-		String newDescription = "Q-Free internal (modified)";
-		boolean newActive = false;
+		String newUsername="aaaa (modified by PUT)";
+		String newFullName="Full Name set by PUY";
+		String newEncodedPassword = "8sV4cDCNyH9DLlkS1N5vjjInIbo=";  // Base64(SHA-1("newpassword"))
+		Boolean newLoginRole=true;
 
-		ReportCategory reportCategory = reportCategoryRepository.findOne(uuidOfReportCategory);
-		assertThat(reportCategory, is(not(nullValue())));
-		assertThat(reportCategory.getAbbreviation(), is(currentAbbreviation));
-		assertThat(reportCategory.getDescription(), is(currentDescription));
-		assertThat(reportCategory.isActive(), is(currentActive));
-		assertThat(DateUtils.entityTimestampToNormalDate(reportCategory.getCreatedOn()), is(currentCreatedOn));
+		Role role = roleRepository.findOne(uuidOfRole);
+		assertThat(role, is(not(nullValue())));
+		assertThat(role.getUsername(), is(currentUsername));
+		assertThat(role.getFullName(), is(currentFullName));
+		assertThat(role.getEncodedPassword(), is(currentEncodedPassword));
+		assertThat(role.isLoginRole(), is(currentLoginRole));
+		assertThat(DateUtils.entityTimestampToNormalDate(role.getCreatedOn()), is(currentCreatedOn));
 
-		ReportCategoryResource reportCategoryResource = new ReportCategoryResource();
-		reportCategoryResource.setAbbreviation(newAbbreviation);
-		reportCategoryResource.setDescription(newDescription);
-		reportCategoryResource.setActive(newActive);
-		logger.debug("reportCategoryResource = {}", reportCategoryResource);
+		RoleResource roleResource = new RoleResource();
+		roleResource.setUsername(newUsername);
+		roleResource.setFullName(newFullName);
+		roleResource.setEncodedPassword(newEncodedPassword);
+		roleResource.setLoginRole(newLoginRole);
+		logger.debug("roleResource = {}", roleResource);
 
 		String path = Paths
-				.get(ResourcePath.forEntity(ReportCategory.class).getPath(), uuidOfReportCategory.toString())
+				.get(ResourcePath.forEntity(Role.class).getPath(), uuidOfRole.toString())
 				.toString();
 		logger.debug("path = {}", path);
 		Response response = webTarget.path(path)
 				.request()
 				.header("Accept", MediaType.APPLICATION_JSON + ";v=" + defaultVersionPut)
-				.put(Entity.entity(reportCategoryResource, MediaType.APPLICATION_JSON_TYPE));
+				.put(Entity.entity(roleResource, MediaType.APPLICATION_JSON_TYPE));
 		assertThat(response.getStatus(), is(Response.Status.OK.getStatusCode()));
 
 		/*
-		 * Retrieve the ReportCategoryResource that was updated via HTTP GET.
+		 * Retrieve the RoleResource that was updated via HTTP GET.
 		 */
 		response = webTarget.path(path)
 				.request()
 				.header("Accept", MediaType.APPLICATION_JSON + ";v=" + defaultVersionGet)
 				.get();
 		assertThat(response.getStatus(), is(Response.Status.OK.getStatusCode()));
-		ReportCategoryResource resource = response.readEntity(ReportCategoryResource.class);
+		RoleResource resource = response.readEntity(RoleResource.class);
 		logger.debug("resource (updated) = {}", resource);
 		assertThat(resource, is(not(nullValue())));
-		assertThat(resource.getAbbreviation(), is(newAbbreviation));
-		assertThat(resource.getDescription(), is(newDescription));
-		assertThat(resource.isActive(), is(newActive));
+		assertThat(resource.getUsername(), is(newUsername));
+		assertThat(resource.getFullName(), is(newFullName));
+		assertThat(resource.getEncodedPassword(), is(newEncodedPassword));
+		assertThat(resource.isLoginRole(), is(newLoginRole));
 		assertThat(DateUtils.entityTimestampToNormalDate(resource.getCreatedOn()), is(currentCreatedOn));
 
 		/*
-		 * Check that the ReportCategory entity was updated properly. We cannot
-		 * simply use "reportCategoryRepository.findOne(uuidOfReportCategory)" 
-		 * to load the ReportCategory entity because it was updated in the 
+		 * Check that the Role entity was updated properly. We cannot
+		 * simply use "roleRepository.findOne(uuidOfRole)" 
+		 * to load the Role entity because it was updated in the 
 		 * Jersey server thread that received the PUT request from above. Hence,
 		 * the EntityManager that is managing this thread does not know about
 		 * the update and will simply return the old (un-updated) entity. 
 		 * Therefore, we need to tell the EntityManager to refresh its copy
 		 * before it returns it.
 		 * 
-		 * Will return old (un-updated) ReportCategory entity:
+		 * Will return old (un-updated) Role entity:
 		 * 
-		 * reportCategory = reportCategoryRepository.findOne(uuidOfReportCategory);
+		 * role = roleRepository.findOne(uuidOfRole);
 		 */
-		reportCategory = reportCategoryRepository.refresh(reportCategory);
-		logger.debug("reportCategory (refeshed) = {}", reportCategory);
-		assertThat(reportCategory, is(not(nullValue())));
-		assertThat(reportCategory.getAbbreviation(), is(newAbbreviation));
-		assertThat(reportCategory.getDescription(), is(newDescription));
-		assertThat(reportCategory.isActive(), is(newActive));
-		assertThat(DateUtils.entityTimestampToNormalDate(reportCategory.getCreatedOn()), is(currentCreatedOn));
+		role = roleRepository.refresh(role);
+		logger.debug("role (refeshed) = {}", role);
+		assertThat(role, is(not(nullValue())));
+		assertThat(role.getUsername(), is(newUsername));
+		assertThat(role.getFullName(), is(newFullName));
+		assertThat(role.getEncodedPassword(), is(newEncodedPassword));
+		assertThat(role.isLoginRole(), is(newLoginRole));
+		assertThat(DateUtils.entityTimestampToNormalDate(role.getCreatedOn()), is(currentCreatedOn));
 	}
 
 }

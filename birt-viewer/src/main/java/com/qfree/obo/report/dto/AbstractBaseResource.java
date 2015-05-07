@@ -91,7 +91,7 @@ public abstract class AbstractBaseResource {
 	}
 
 	private String createMediaType(RestApiVersion apiVersion) {
-		return "application/json; v=" + apiVersion.getVersion();
+		return "application/json;v=" + apiVersion.getVersion();
 	}
 
 	//	/**

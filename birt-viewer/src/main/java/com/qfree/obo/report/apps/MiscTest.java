@@ -23,5 +23,10 @@ public class MiscTest {
 		password = "The quick brown fox jumps over the lazy dog";
 		System.out.println("password = " + password + ", encoded = " + EncodeUtils.encryptPassword(password));
 
+		password = "newpassword";
+		System.out.println("password = " + password + ", encoded = " + EncodeUtils.encryptPassword(password));
+		password = "newpassword2";
+		System.out.println("password = " + password + ", encoded = " + EncodeUtils.encryptPassword(password));
+
 	}
 }

@@ -3,12 +3,14 @@ package com.qfree.obo.report.dto;
 import com.qfree.obo.report.domain.Configuration;
 import com.qfree.obo.report.domain.Report;
 import com.qfree.obo.report.domain.ReportCategory;
+import com.qfree.obo.report.domain.Role;
 
 public enum ResourcePath {
 
 	CONFIGURATIONS(ResourcePath.CONFIGURATIONS_PATH, ResourcePath.CONFIGURATION_EXPAND_PARAM, Configuration.class),
 	REPORTS(ResourcePath.REPORTS_PATH, ResourcePath.REPORT_EXPAND_PARAM, Report.class),
-	REPORTCATEGORIES(ResourcePath.REPORTCATEGORIES_PATH, ResourcePath.REPORTCATEGORY_EXPAND_PARAM, ReportCategory.class);
+	REPORTCATEGORIES(ResourcePath.REPORTCATEGORIES_PATH, ResourcePath.REPORTCATEGORY_EXPAND_PARAM, ReportCategory.class),
+	ROLES(ResourcePath.ROLES_PATH, ResourcePath.ROLE_EXPAND_PARAM, Role.class);
 
 	private static final String PATH_SEPARATOR = "/";
 
@@ -22,6 +24,7 @@ public enum ResourcePath {
 	public static final String CONFIGURATIONS_PATH = ResourcePath.PATH_SEPARATOR + "configurations";
 	public static final String REPORTCATEGORIES_PATH = ResourcePath.PATH_SEPARATOR + "reportcategories";
 	public static final String REPORTS_PATH = ResourcePath.PATH_SEPARATOR + "reports";
+	public static final String ROLES_PATH = ResourcePath.PATH_SEPARATOR + "roles";
 
 	/*
 	 * These are the values for each resource class that can be assigned to the
@@ -30,6 +33,7 @@ public enum ResourcePath {
 	private static final String CONFIGURATION_EXPAND_PARAM = "configuration";
 	private static final String REPORTCATEGORY_EXPAND_PARAM = "reportcategory";
 	private static final String REPORT_EXPAND_PARAM = "report";
+	private static final String ROLE_EXPAND_PARAM = "role";
 
 	private final String path;
 	private final String expandParam;
