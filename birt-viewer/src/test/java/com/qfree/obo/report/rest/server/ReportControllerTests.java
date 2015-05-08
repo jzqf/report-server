@@ -132,7 +132,7 @@ public class ReportControllerTests {
 		/*
 		 * IMPORTANT:
 		 * 
-		 * It is necessary here to specify that "reportcategory" be expanded;
+		 * It is necessary here to specify that "reportCategory" be expanded;
 		 * otherwise, 
 		 * responseEntity.getReportCategoryResource().getReportCategoryId() will
 		 * be null, since the JSON object returned by the server will not have
@@ -143,7 +143,7 @@ public class ReportControllerTests {
 		response = webTarget
 				// .path(ResourcePath.REPORTS_PATH)
 				.path(ResourcePath.forEntity(Report.class).getPath())
-				.queryParam("expand", "report", "reportcategory")  // see comments above why this is necessary
+				.queryParam("expand", "report", "reportCategory")  // see comments above why this is necessary
 				.request()
 				.header("Accept", MediaType.APPLICATION_JSON + ";v=" + defaultVersionPost)
 				.post(Entity.entity(reportResource, MediaType.APPLICATION_JSON_TYPE));
@@ -194,7 +194,7 @@ public class ReportControllerTests {
 		 * header.
 		 * 
 		 * uriAsString will include the query parameters:
-		 * "?expand=report&expand=reportcategory" because these are the query
+		 * "?expand=report&expand=reportCategory" because these are the query
 		 * parameters specified for the POST above. Hence, the 
 		 * ReportCategoryResource resource.getReportCategoryResource() will be
 		 * expanded and contain all of its attributes, in particular its "id", 
@@ -300,7 +300,7 @@ public class ReportControllerTests {
 		logger.debug("reportResource = {}", reportResource);
 
 		/*
-		 * It is important here to specify that "reportcategory" be expanded;
+		 * It is important here to specify that "reportCategory" be expanded;
 		 * otherwise, 
 		 * resource.getReportCategoryResource().getReportCategoryId() will
 		 * be null and the assert for it below will fail, even though the POST
@@ -319,7 +319,7 @@ public class ReportControllerTests {
 				 * hurt to uncomment this line here now, but it is not 
 				 * currently necessary to do this.
 				 */
-				// .queryParam("expand", "report", "reportcategory")
+				// .queryParam("expand", "report", "reportCategory")
 				.request()
 				.header("Accept", MediaType.APPLICATION_JSON + ";v=" + defaultVersionPut)
 				.put(Entity.entity(reportResource, MediaType.APPLICATION_JSON_TYPE));
@@ -330,7 +330,7 @@ public class ReportControllerTests {
 		 * 
 		 * IMPORTANT:
 		 * 
-		 * This request needs "expand" query parameter "reportcategory" for the 
+		 * This request needs "expand" query parameter "reportCategory" for the 
 		 * same reason as it is needed above for the "POST" request; otherwise, 
 		 * resource.getReportCategoryResource().getReportCategoryId() will be 
 		 * null, since the JSON object returned by the server will not have
@@ -341,7 +341,7 @@ public class ReportControllerTests {
 		 * successfully above by the "PUT" request regardless.
 		 */
 		response = webTarget.path(path)
-				.queryParam("expand", "report", "reportcategory")  // see comments above why this is necessary
+				.queryParam("expand", "report", "reportCategory")  // see comments above why this is necessary
 				.request()
 				.header("Accept", MediaType.APPLICATION_JSON + ";v=" + defaultVersionGet)
 				.get();

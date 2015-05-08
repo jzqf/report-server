@@ -39,8 +39,6 @@ public class RoleController extends AbstractBaseController {
 	private final RoleRepository roleRepository;
 	private final RoleService roleService;
 
-	//	private final RoleService roleService;
-
 	@Autowired
 	public RoleController(
 			RoleRepository roleRepository,
@@ -64,10 +62,10 @@ public class RoleController extends AbstractBaseController {
 			@Context final UriInfo uriInfo) {
 		RestApiVersion apiVersion = RestUtils.extractAPIVersion(acceptHeader, RestApiVersion.v1);
 
-		// List<Role> reportCategories = roleRepository.findByActiveTrue();
-		List<Role> reportCategories = roleRepository.findAll();
-		List<RoleResource> roleResources = new ArrayList<>(reportCategories.size());
-		for (Role role : reportCategories) {
+		// List<Role> roles = roleRepository.findByActiveTrue();
+		List<Role> roles = roleRepository.findAll();
+		List<RoleResource> roleResources = new ArrayList<>(roles.size());
+		for (Role role : roles) {
 			roleResources.add(new RoleResource(role, uriInfo, expand, apiVersion));
 		}
 		return roleResources;

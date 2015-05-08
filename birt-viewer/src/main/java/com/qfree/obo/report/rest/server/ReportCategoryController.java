@@ -54,7 +54,7 @@ public class ReportCategoryController extends AbstractBaseController {
 	 * 
 	 *   $ mvn clean spring-boot:run
 	 *   $ curl -i -H "Accept: application/json;v=1" -X GET \
-	 *   http://localhost:8081/report-server/rest/reportcategories
+	 *   http://localhost:8081/report-server/rest/reportCategories
 	 */
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
@@ -79,7 +79,7 @@ public class ReportCategoryController extends AbstractBaseController {
 	 *   $ curl -iH "Content-Type: application/json;v=1" -X POST -d \
 	 *   '{"abbreviation":"RCABBREV","description":"ReportCategory description",\
 	 *   "active":true, "createdOn":"1958-05-06T12:00:00.000Z"}' \
-	 *   http://localhost:8080/rest/reportcategories
+	 *   http://localhost:8080/rest/reportCategories
 	 */
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
@@ -101,7 +101,7 @@ public class ReportCategoryController extends AbstractBaseController {
 	 * 
 	 *   $ mvn clean spring-boot:run
 	 *   $ curl -i -H "Accept: application/json;v=1" -X GET \
-	 *   http://localhost:8081/report-server/rest/reportcategories/7a482694-51d2-42d0-b0e2-19dd13bbbc64
+	 *   http://localhost:8081/report-server/rest/reportCategories/7a482694-51d2-42d0-b0e2-19dd13bbbc64
 	 */
 	@Path("/{id}")
 	@GET
@@ -126,7 +126,7 @@ public class ReportCategoryController extends AbstractBaseController {
 	 *   $ mvn clean spring-boot:run
 	 *   $ curl -iH "Content-Type: application/json;v=1" -X PUT -d \
 	 *   '{"abbreviation":"QFREE-MOD","description":"Q-Free internal (modified)","active":false}' \
-	 *   http://localhost:8080/rest/reportcategories/bb2bc482-c19a-4c19-a087-e68ffc62b5a0
+	 *   http://localhost:8080/rest/reportCategories/bb2bc482-c19a-4c19-a087-e68ffc62b5a0
 	 */
 	@Path("/{id}")
 	@PUT

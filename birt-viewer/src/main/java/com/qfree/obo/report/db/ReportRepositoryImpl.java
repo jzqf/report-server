@@ -44,7 +44,7 @@ public class ReportRepositoryImpl implements ReportRepositoryCustom {
 
 	/*
 	 * This version uses a static, named query that is defined in the 
-	 * Configuration entity class.
+	 * Report entity class.
 	 */
 	public List<Report> findRecentlyCreated(int count) {
 		return entityManager.createNamedQuery("Report.findByCreated", Report.class)

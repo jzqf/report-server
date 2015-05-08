@@ -13,6 +13,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
@@ -33,6 +34,7 @@ import com.qfree.obo.report.util.DateUtils;
 @Entity
 @Table(name = "report", schema = "reporting")
 @TypeDef(name = "uuid-custom", defaultForType = UUID.class, typeClass = UuidCustomType.class)
+@NamedQuery(name = "Report.findByCreated", query = "select r from Report r order by r.createdOn desc")
 public class Report implements Serializable {
 
 	private static final long serialVersionUID = 1L;

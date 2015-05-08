@@ -238,12 +238,19 @@ public class Role implements Serializable {
 	@Override
 	public String toString() {
 		StringBuilder builder = new StringBuilder();
-		builder.append("Role [loginRole=");
+		builder.append("Role [roleId=");
+		builder.append(roleId);
+		builder.append(", loginRole=");
 		builder.append(loginRole);
 		builder.append(", username=");
 		builder.append(username);
+		builder.append(", fullName=");
+		builder.append(fullName);
+		builder.append(", encodedPassword=");
+		builder.append(encodedPassword);
+		builder.append(", createdOn=");
+		builder.append(createdOn);
 		builder.append("]");
 		return builder.toString();
 	}
-
 }

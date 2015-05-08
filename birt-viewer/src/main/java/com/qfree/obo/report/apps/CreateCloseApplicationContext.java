@@ -38,7 +38,7 @@ public class CreateCloseApplicationContext {
 //		//		WebTarget webTarget = client.target("http://localhost:" + port + "/rest");
 //
 //		Response response = webTarget
-//				.path("reportcategories/7a482694-51d2-42d0-b0e2-19dd13bbbc64")
+//				.path("reportCategories/7a482694-51d2-42d0-b0e2-19dd13bbbc64")
 //				.request(MediaType.APPLICATION_JSON_TYPE)
 //				//				.request(MediaType.TEXT_PLAIN_TYPE)
 //				.get();

@@ -22,7 +22,7 @@ public enum ResourcePath {
 	 * constant expression.
 	 */
 	public static final String CONFIGURATIONS_PATH = ResourcePath.PATH_SEPARATOR + "configurations";
-	public static final String REPORTCATEGORIES_PATH = ResourcePath.PATH_SEPARATOR + "reportcategories";
+	public static final String REPORTCATEGORIES_PATH = ResourcePath.PATH_SEPARATOR + "reportCategories";
 	public static final String REPORTS_PATH = ResourcePath.PATH_SEPARATOR + "reports";
 	public static final String ROLES_PATH = ResourcePath.PATH_SEPARATOR + "roles";
 
@@ -31,7 +31,7 @@ public enum ResourcePath {
 	 * "expand" query parameter.
 	 */
 	private static final String CONFIGURATION_EXPAND_PARAM = "configuration";
-	private static final String REPORTCATEGORY_EXPAND_PARAM = "reportcategory";
+	private static final String REPORTCATEGORY_EXPAND_PARAM = "reportCategory";
 	private static final String REPORT_EXPAND_PARAM = "report";
 	private static final String ROLE_EXPAND_PARAM = "role";
 
