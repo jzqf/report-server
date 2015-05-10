@@ -18,6 +18,7 @@ import org.springframework.stereotype.Component;
 
 import com.qfree.obo.report.db.RoleRepository;
 import com.qfree.obo.report.domain.Role;
+import com.qfree.obo.report.dto.RestErrorResource.RestError;
 import com.qfree.obo.report.dto.RoleResource;
 import com.qfree.obo.report.exceptions.ReportingException;
 import com.qfree.obo.report.rest.server.RestUtils.RestApiVersion;
@@ -99,11 +100,22 @@ public class LoginAttemptController extends AbstractBaseController {
 					RoleResource resource = new RoleResource(role, uriInfo, expand, apiVersion);
 					return resource;
 				} else {
+					// 403 "Forbidden" ???????????????????????????????????????????????????????????????????????????????????????????????
 					throw new ReportingException("Wrong password! Try again.");
 				}
 			} else {
-				throw new ReportingException("No role with the login privilege exits for username = \""
-						+ roleResource.getUsername() + "\"");
+				//throw new ReportingException("No role with the login privilege exists for username = \""
+				//		+ roleResource.getUsername() + "\"", Response.Status.NOT_FOUND.getStatusCode());
+				//				throw new ReportingException(Response.Status.NOT_FOUND);
+				//				throw new ReportingException(
+				//						Response.status(Response.Status.NOT_FOUND)
+				//						.entity("No role with the login privilege exists for username = \"" +
+				//								roleResource.getUsername() + "\"")
+				//						.type(MediaType.TEXT_PLAIN).build());
+
+				String message = "No Role located for username = " + roleResource.getUsername();
+				throw new ReportingException(
+						RestError.NOT_FOUND_RESOUCE, message, Role.class, "username", roleResource.getUsername());
 			}
 
 		} else {

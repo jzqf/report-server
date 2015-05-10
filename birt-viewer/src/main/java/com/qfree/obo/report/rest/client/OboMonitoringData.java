@@ -22,7 +22,7 @@ import org.glassfish.jersey.client.ClientConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.qfree.obo.report.exceptions.ReportingException;
+import com.qfree.obo.report.exceptions.RestDataSourceException;
 
 /*
  * Retrieves OBO monitoring data using a ReSTful API. This class implements
@@ -141,7 +141,7 @@ public class OboMonitoringData {
 							 */
 							parsedJsonObject = parseOboFlowManagerJson(oboFlowManagerJsonObject);
 						} else {
-							ReportingException e = new ReportingException("Untreated ReST path: " + restPath);
+							RestDataSourceException e = new RestDataSourceException("Untreated ReST path: " + restPath);
 							logger.error("Exception thrown:", e);
 							throw e;
 						}
