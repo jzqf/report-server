@@ -1,7 +1,15 @@
 package com.qfree.obo.report.exceptions;
 
+import static com.qfree.obo.report.util.LoggingUtils.toSplunkString;
+
+import java.io.PrintWriter;
+import java.io.StringWriter;
+
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.qfree.obo.report.dto.RestErrorResource;
 import com.qfree.obo.report.dto.RestErrorResource.RestError;
@@ -10,12 +18,16 @@ public class RestApiException extends WebApplicationException {
 
 	private static final long serialVersionUID = 1L;
 
+	private static final Logger logger = LoggerFactory.getLogger(RestApiException.class);
+
 	public RestApiException(
 			RestError restError,
 			Class<?> referenceClass) {
 		super(Response.status(restError.getResponseStatus())
 				.entity(new RestErrorResource(restError, referenceClass))
 				.build());
+		logger.error(toSplunkString("restError", restError, "referenceClass", referenceClass));
+		logger.error("stackTrace={}", stackTraceToString(this));
 	}
 
 	public RestApiException(
@@ -25,6 +37,11 @@ public class RestApiException extends WebApplicationException {
 		super(Response.status(restError.getResponseStatus())
 				.entity(new RestErrorResource(restError, errorMessage, referenceClass))
 				.build());
+		logger.error(toSplunkString(
+				"restError", restError,
+				"errorMessage", errorMessage,
+				"referenceClass", referenceClass));
+		logger.error("stackTrace={}", stackTraceToString(this));
 	}
 
 	public RestApiException(
@@ -34,6 +51,11 @@ public class RestApiException extends WebApplicationException {
 		super(Response.status(restError.getResponseStatus())
 				.entity(new RestErrorResource(restError, referenceClass, attributeName))
 				.build());
+		logger.error(toSplunkString(
+				"restError", restError,
+				"referenceClass", referenceClass,
+				"attributeName", attributeName));
+		logger.error("stackTrace={}", stackTraceToString(this));
 	}
 
 	public RestApiException(
@@ -44,6 +66,12 @@ public class RestApiException extends WebApplicationException {
 		super(Response.status(restError.getResponseStatus())
 				.entity(new RestErrorResource(restError, referenceClass, attributeName, attributeValue))
 				.build());
+		logger.error(toSplunkString(
+				"restError", restError,
+				"referenceClass", referenceClass,
+				"attributeName", attributeName,
+				"attributeValue", attributeValue));
+		logger.error("stackTrace={}", stackTraceToString(this));
 	}
 
 	public RestApiException(
@@ -55,6 +83,13 @@ public class RestApiException extends WebApplicationException {
 		super(Response.status(restError.getResponseStatus())
 				.entity(new RestErrorResource(restError, errorMessage, referenceClass, attributeName, attributeValue))
 				.build());
+		logger.error(toSplunkString(
+				"restError", restError,
+				"errorMessage", errorMessage,
+				"referenceClass", referenceClass,
+				"attributeName", attributeName,
+				"attributeValue", attributeValue));
+		logger.error("stackTrace={}", stackTraceToString(this));
 	}
 
 	/**
@@ -85,6 +120,7 @@ public class RestApiException extends WebApplicationException {
 	 */
 	public RestApiException(final Response response) {
 		super(response);
+		// logger.error("stackTraceToString(this) = {}", stackTraceToString(this));
 	}
 
 	/**
@@ -259,6 +295,13 @@ public class RestApiException extends WebApplicationException {
 	public RestApiException(final String message, final Throwable cause, final Response.Status responseStatus)
 			throws IllegalArgumentException {
 		super(message, cause, responseStatus);
+	}
+
+	private String stackTraceToString(Throwable e) {
+		StringWriter sw = new StringWriter();
+		PrintWriter pw = new PrintWriter(sw);
+		e.printStackTrace(pw);
+		return sw.toString();
 	}
 
 }
