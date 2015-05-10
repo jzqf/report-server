@@ -14,7 +14,8 @@ import com.qfree.obo.report.domain.Report;
 import com.qfree.obo.report.domain.ReportCategory;
 import com.qfree.obo.report.dto.ReportCategoryResource;
 import com.qfree.obo.report.dto.ReportResource;
-import com.qfree.obo.report.exceptions.ReportingException;
+import com.qfree.obo.report.dto.RestErrorResource.RestError;
+import com.qfree.obo.report.exceptions.RestApiException;
 
 @Component
 @Transactional
@@ -58,15 +59,13 @@ public class ReportService {
 		if (reportCategoryId != null) {
 			reportCategory = reportCategoryRepository.findOne(reportCategoryId);
 			if (reportCategory == null) {
-				//TODO Create custom exception for this case? Write custom exception mapper
-				// because this will generate a "500 Internal Server Error" with an ugly exception trace.
-				throw new ReportingException("No ReportCategory found for reportCategoryId = "
-						+ reportCategoryId.toString());
+				String message = String.format("No ReportCategory for reportCategoryId '%s'",
+						reportCategoryId.toString());
+				throw new RestApiException(RestError.NOT_FOUND_RESOUCE, message,
+						ReportCategory.class, "reportCategoryId", reportCategoryId.toString());
 			}
 		} else {
-			//TODO Create custom exception for this case? Write custom exception mapper
-			// because this will generate a "500 Internal Server Error" with an ugly exception trace.
-			throw new ReportingException("reportCategoryId is null");
+			throw new RestApiException(RestError.FORBIDDEN_REPORT_CATEGORY_NULL, Report.class, "reportCategoryId");
 		}
 
 		/*

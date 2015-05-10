@@ -20,7 +20,7 @@ import com.qfree.obo.report.db.RoleRepository;
 import com.qfree.obo.report.domain.Role;
 import com.qfree.obo.report.dto.RestErrorResource.RestError;
 import com.qfree.obo.report.dto.RoleResource;
-import com.qfree.obo.report.exceptions.ReportingException;
+import com.qfree.obo.report.exceptions.RestApiException;
 import com.qfree.obo.report.rest.server.RestUtils.RestApiVersion;
 import com.qfree.obo.report.service.RoleService;
 
@@ -89,37 +89,35 @@ public class LoginAttemptController extends AbstractBaseController {
 		 */
 		if (roleResource.getUsername() != null && !roleResource.getUsername().isEmpty() &&
 				roleResource.getEncodedPassword() != null && !roleResource.getEncodedPassword().isEmpty()) {
-
 			logger.debug("roleResource.getUsername() = {}, roleResource.getEncodedPassword() = {}",
 					roleResource.getUsername(), roleResource.getEncodedPassword());
 			Role role = roleRepository.findByUsername(roleResource.getUsername());
-			if (role != null && role.isLoginRole()) {
-				logger.debug("role = {}", role);
-				if (role.getEncodedPassword().equals(roleResource.getEncodedPassword())) {
-					List<String> expand = newExpandList(Role.class);	// Force primary resource to be "expanded"
-					RoleResource resource = new RoleResource(role, uriInfo, expand, apiVersion);
-					return resource;
+			if (role != null) {
+				if (role.isLoginRole()) {
+					logger.debug("role = {}", role);
+					if (role.getEncodedPassword().equals(roleResource.getEncodedPassword())) {
+
+						List<String> expand = newExpandList(Role.class);  // Force primary resource to be "expanded"
+						RoleResource resource = new RoleResource(role, uriInfo, expand, apiVersion);
+						return resource;
+
+					} else {
+						throw new RestApiException(RestError.FORBIDDEN_BAD_ROLE_PASSWORD,
+								Role.class, "encodedPassword", roleResource.getEncodedPassword());
+					}
 				} else {
-					// 403 "Forbidden" ???????????????????????????????????????????????????????????????????????????????????????????????
-					throw new ReportingException("Wrong password! Try again.");
+					String message = String.format("Role for username '%s' does not have 'login' privilege",
+							roleResource.getUsername());
+					throw new RestApiException(RestError.FORBIDDEN_NOT_LOGIN_ROLE, message,
+							Role.class, "loginRole", new Boolean(role.isLoginRole()).toString());
 				}
 			} else {
-				//throw new ReportingException("No role with the login privilege exists for username = \""
-				//		+ roleResource.getUsername() + "\"", Response.Status.NOT_FOUND.getStatusCode());
-				//				throw new ReportingException(Response.Status.NOT_FOUND);
-				//				throw new ReportingException(
-				//						Response.status(Response.Status.NOT_FOUND)
-				//						.entity("No role with the login privilege exists for username = \"" +
-				//								roleResource.getUsername() + "\"")
-				//						.type(MediaType.TEXT_PLAIN).build());
-
-				String message = "No Role located for username = " + roleResource.getUsername();
-				throw new ReportingException(
-						RestError.NOT_FOUND_RESOUCE, message, Role.class, "username", roleResource.getUsername());
+				String message = String.format("No Role for username '%s'", roleResource.getUsername());
+				throw new RestApiException(RestError.NOT_FOUND_RESOUCE, message,
+						Role.class, "username", roleResource.getUsername());
 			}
-
 		} else {
-			throw new ReportingException("Both a username and encoded password must be submitted");
+			throw new RestApiException(RestError.NOT_FOUND_ROLE_TO_AUTHENTICATE, Role.class);
 		}
 	}
 

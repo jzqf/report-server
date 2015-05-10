@@ -149,12 +149,17 @@ public class RestErrorResource {
 		 * @see <a href="http://tools.ietf.org/html/rfc2616#section-10.4.4">HTTP/1.1</a>
 		 */
 		FORBIDDEN(Response.Status.FORBIDDEN, null, null, null),
+		FORBIDDEN_NOT_LOGIN_ROLE(Response.Status.FORBIDDEN, "403.1", "Role does not have 'login' privilege", null),
+		FORBIDDEN_BAD_ROLE_PASSWORD(Response.Status.FORBIDDEN, "403.2", "Wrong password for role", null),
+		FORBIDDEN_REPORT_CATEGORY_NULL(Response.Status.FORBIDDEN, "403.3",
+				"reportCategoryId is null for a report being saved", null),
 		/**
 		 * {@code 404 Not Found}.
 		 * @see <a href="http://tools.ietf.org/html/rfc2616#section-10.4.5">HTTP/1.1</a>
 		 */
 		NOT_FOUND(Response.Status.NOT_FOUND, null, null, null),
 		NOT_FOUND_RESOUCE(Response.Status.NOT_FOUND, "404.1", "A resource could not be located", null),
+		NOT_FOUND_ROLE_TO_AUTHENTICATE(Response.Status.NOT_FOUND, "404.2", "Both a username and encoded password must be submitted", null),
 		/**
 		 * {@code 405 Method Not Allowed}.
 		 * @see <a href="http://tools.ietf.org/html/rfc2616#section-10.4.6">HTTP/1.1</a>
@@ -377,6 +382,66 @@ public class RestErrorResource {
 	private Throwable throwable;
 
 	public RestErrorResource() {
+	}
+
+	public RestErrorResource(
+			RestError restError,
+			Class<?> resourceClass) {
+		this(
+				restError.getResponseStatus(),
+				restError.getErrorCode(),
+				restError.getErrorMessage(),
+				resourceClass.getSimpleName(),
+				null,
+				null,
+				restError.getMoreInfoUrl(),
+				null);
+	}
+
+	public RestErrorResource(
+			RestError restError,
+			String errorMessage,
+			Class<?> resourceClass) {
+		this(
+				restError.getResponseStatus(),
+				restError.getErrorCode(),
+				errorMessage,
+				resourceClass.getSimpleName(),
+				null,
+				null,
+				restError.getMoreInfoUrl(),
+				null);
+	}
+
+	public RestErrorResource(
+			RestError restError,
+			Class<?> resourceClass,
+			String attributeName) {
+		this(
+				restError.getResponseStatus(),
+				restError.getErrorCode(),
+				restError.getErrorMessage(),
+				resourceClass.getSimpleName(),
+				attributeName,
+				null,
+				restError.getMoreInfoUrl(),
+				null);
+	}
+
+	public RestErrorResource(
+			RestError restError,
+			Class<?> resourceClass,
+			String attributeName,
+			String attributeValue) {
+		this(
+				restError.getResponseStatus(),
+				restError.getErrorCode(),
+				restError.getErrorMessage(),
+				resourceClass.getSimpleName(),
+				attributeName,
+				attributeValue,
+				restError.getMoreInfoUrl(),
+				null);
 	}
 
 	public RestErrorResource(

@@ -6,25 +6,61 @@ import javax.ws.rs.core.Response;
 import com.qfree.obo.report.dto.RestErrorResource;
 import com.qfree.obo.report.dto.RestErrorResource.RestError;
 
-public class ReportingException extends WebApplicationException {
+public class RestApiException extends WebApplicationException {
 
 	private static final long serialVersionUID = 1L;
 
-	public ReportingException(
+	public RestApiException(
+			RestError restError,
+			Class<?> referenceClass) {
+		super(Response.status(restError.getResponseStatus())
+				.entity(new RestErrorResource(restError, referenceClass))
+				.build());
+	}
+
+	public RestApiException(
 			RestError restError,
 			String errorMessage,
-			Class<?> notFoundClass,
+			Class<?> referenceClass) {
+		super(Response.status(restError.getResponseStatus())
+				.entity(new RestErrorResource(restError, errorMessage, referenceClass))
+				.build());
+	}
+
+	public RestApiException(
+			RestError restError,
+			Class<?> referenceClass,
+			String attributeName) {
+		super(Response.status(restError.getResponseStatus())
+				.entity(new RestErrorResource(restError, referenceClass, attributeName))
+				.build());
+	}
+
+	public RestApiException(
+			RestError restError,
+			Class<?> referenceClass,
 			String attributeName,
 			String attributeValue) {
 		super(Response.status(restError.getResponseStatus())
-				.entity(new RestErrorResource(restError, errorMessage, notFoundClass, attributeName, attributeValue))
+				.entity(new RestErrorResource(restError, referenceClass, attributeName, attributeValue))
+				.build());
+	}
+
+	public RestApiException(
+			RestError restError,
+			String errorMessage,
+			Class<?> referenceClass,
+			String attributeName,
+			String attributeValue) {
+		super(Response.status(restError.getResponseStatus())
+				.entity(new RestErrorResource(restError, errorMessage, referenceClass, attributeName, attributeValue))
 				.build());
 	}
 
 	/**
 	 * Create an HTTP 500 (Internal Server Error) exception.
 	 */
-	public ReportingException() {
+	public RestApiException() {
 		super();
 	}
 
@@ -34,7 +70,7 @@ public class ReportingException extends WebApplicationException {
 	 * 
 	 * @param message
 	 */
-	public ReportingException(String message) {
+	public RestApiException(String message) {
 		super(message);
 	}
 
@@ -47,7 +83,7 @@ public class ReportingException extends WebApplicationException {
 	 *                 of null will be replaced with an internal server error 
 	 *                 response (status code 500).
 	 */
-	public ReportingException(final Response response) {
+	public RestApiException(final Response response) {
 		super(response);
 	}
 
@@ -61,7 +97,7 @@ public class ReportingException extends WebApplicationException {
 	 *                 of null will be replaced with an internal server error 
 	 *                 response (status code 500).
 	 */
-	public ReportingException(final String message, final Response response) {
+	public RestApiException(final String message, final Response response) {
 		super(message, response);
 	}
 
@@ -73,7 +109,7 @@ public class ReportingException extends WebApplicationException {
 	 * @param intStatus the HTTP status code that will be returned to the 
 	 *                  client.
 	 */
-	public ReportingException(final int intStatus) {
+	public RestApiException(final int intStatus) {
 		super(intStatus);
 	}
 
@@ -86,7 +122,7 @@ public class ReportingException extends WebApplicationException {
 	 * @param intStatus  the HTTP status code that will be returned to the 
 	 *                   client.
 	 */
-	public ReportingException(String message, final int intStatus) {
+	public RestApiException(String message, final int intStatus) {
 		super(message, intStatus);
 	}
 
@@ -99,7 +135,7 @@ public class ReportingException extends WebApplicationException {
 	 *                       the client.
 	 * @throws IllegalArgumentException if responseStatus is {@code null}.
 	 */
-	public ReportingException(final Response.Status responseStatus) {
+	public RestApiException(final Response.Status responseStatus) {
 		super(responseStatus);
 	}
 
@@ -112,7 +148,7 @@ public class ReportingException extends WebApplicationException {
 	 *                       the client.
 	 * @throws IllegalArgumentException if status is {@code null}.
 	 */
-	public ReportingException(final String message, final Response.Status responseStatus) {
+	public RestApiException(final String message, final Response.Status responseStatus) {
 		super(message, responseStatus);
 	}
 
@@ -123,7 +159,7 @@ public class ReportingException extends WebApplicationException {
 	 *
 	 * @param cause the underlying cause of the exception.
 	 */
-	public ReportingException(final Throwable cause) {
+	public RestApiException(final Throwable cause) {
 		super(cause);
 	}
 
@@ -135,7 +171,7 @@ public class ReportingException extends WebApplicationException {
 	 *                by the {@link #getMessage()} method).
 	 * @param cause   the underlying cause of the exception.
 	 */
-	public ReportingException(final String message, final Throwable cause) {
+	public RestApiException(final String message, final Throwable cause) {
 		super(message, cause);
 	}
 
@@ -149,7 +185,7 @@ public class ReportingException extends WebApplicationException {
 	 *                 response (status code 500).
 	 * @param cause    the underlying cause of the exception.
 	 */
-	public ReportingException(final Throwable cause, final Response response) {
+	public RestApiException(final Throwable cause, final Response response) {
 		super(cause, response);
 	}
 
@@ -164,7 +200,7 @@ public class ReportingException extends WebApplicationException {
 	 *                 response (status code 500).
 	 * @param cause    the underlying cause of the exception.
 	 */
-	public ReportingException(final String message, final Throwable cause, final Response response) {
+	public RestApiException(final String message, final Throwable cause, final Response response) {
 		super(message, cause, response);
 	}
 
@@ -177,7 +213,7 @@ public class ReportingException extends WebApplicationException {
 	 *                  client.
 	 * @param cause     the underlying cause of the exception.
 	 */
-	public ReportingException(final Throwable cause, final int intStatus) {
+	public RestApiException(final Throwable cause, final int intStatus) {
 		super(cause, intStatus);
 	}
 
@@ -191,7 +227,7 @@ public class ReportingException extends WebApplicationException {
 	 *                  client.
 	 * @param cause     the underlying cause of the exception.
 	 */
-	public ReportingException(final String message, final Throwable cause, final int intStatus) {
+	public RestApiException(final String message, final Throwable cause, final int intStatus) {
 		super(message, cause, intStatus);
 	}
 
@@ -205,7 +241,7 @@ public class ReportingException extends WebApplicationException {
 	 * @param cause          the underlying cause of the exception.
 	 * @throws IllegalArgumentException if status is {@code null}.
 	 */
-	public ReportingException(final Throwable cause, final Response.Status responseStatus)
+	public RestApiException(final Throwable cause, final Response.Status responseStatus)
 			throws IllegalArgumentException {
 		super(cause, responseStatus);
 	}
@@ -220,7 +256,7 @@ public class ReportingException extends WebApplicationException {
 	 * @param cause          the underlying cause of the exception.
 	 * @since 2.0
 	 */
-	public ReportingException(final String message, final Throwable cause, final Response.Status responseStatus)
+	public RestApiException(final String message, final Throwable cause, final Response.Status responseStatus)
 			throws IllegalArgumentException {
 		super(message, cause, responseStatus);
 	}
