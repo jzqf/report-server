@@ -38,6 +38,8 @@ import com.qfree.obo.report.ApplicationConfig;
 import com.qfree.obo.report.db.RoleRepository;
 import com.qfree.obo.report.domain.Role;
 import com.qfree.obo.report.dto.ResourcePath;
+import com.qfree.obo.report.dto.RestErrorResource;
+import com.qfree.obo.report.dto.RestErrorResource.RestError;
 import com.qfree.obo.report.dto.RoleResource;
 import com.qfree.obo.report.util.DateUtils;
 
@@ -81,6 +83,93 @@ public class RoleControllerTests {
 	@Before
 	public void setUp() {
 		this.webTarget = ControllerTestUtils.setUpWebTarget(client, port);
+	}
+
+	@Test
+	//	@DirtiesContext
+	@Transactional
+	public void testGetById() {
+		/* 
+		 * This is the default version for the endpoint 
+		 * AbstractResource.ROLES_PATH/{id} using HTTP GET.
+		 */
+		String defaultVersionGet = "1";
+
+		/*
+		 * Details of the Role to fetch (from test-data.sql).
+		 */
+		UUID uuidOfRole = UUID.fromString("6c328253-5fa6-4b11-8052-ef38197931b0");
+		String currentUsername = "aaaa";
+		String currentFullName = "";
+		String currentEncodedPassword = "";
+		Boolean currentLoginRole = false;
+		Date currentCreatedOn = DateUtils.dateUtcFromIso8601String("2015-04-13T08:00:00.000Z");
+
+		Role role = roleRepository.findOne(uuidOfRole);
+		assertThat(role, is(not(nullValue())));
+		assertThat(role.getUsername(), is(currentUsername));
+		assertThat(role.getFullName(), is(currentFullName));
+		assertThat(role.getEncodedPassword(), is(currentEncodedPassword));
+		assertThat(role.isLoginRole(), is(currentLoginRole));
+		assertThat(DateUtils.entityTimestampToNormalDate(role.getCreatedOn()), is(currentCreatedOn));
+
+		Response response;
+		String path;
+
+		path = Paths
+				.get(ResourcePath.forEntity(Role.class).getPath(), uuidOfRole.toString())
+				.toString();
+		logger.debug("path = {}", path);
+
+		/*
+		 * Retrieve the RoleResource via HTTP GET.
+		 */
+		response = webTarget.path(path)
+				.request()
+				.header("Accept", MediaType.APPLICATION_JSON + ";v=" + defaultVersionGet)
+				.get();
+		assertThat(response.getStatus(), is(Response.Status.OK.getStatusCode()));
+		RoleResource roleResource = response.readEntity(RoleResource.class);
+		logger.debug("roleResource = {}", roleResource);
+		assertThat(roleResource, is(not(nullValue())));
+		assertThat(roleResource.getRoleId(), is(uuidOfRole));
+		assertThat(roleResource.getUsername(), is(currentUsername));
+		assertThat(roleResource.getFullName(), is(currentFullName));
+		assertThat(roleResource.getEncodedPassword(), is(currentEncodedPassword));
+		assertThat(roleResource.isLoginRole(), is(currentLoginRole));
+		assertThat(DateUtils.entityTimestampToNormalDate(roleResource.getCreatedOn()), is(currentCreatedOn));
+
+		/*
+		 * Attempt to fetch a RoleResource using an id that does not exist. This
+		 * should throw a "404" exception.
+		 */
+		UUID uuidOfNonExistentRole = UUID.fromString("6c328253-0000-0000-0000-ef38197931b0");
+
+		path = Paths
+				.get(ResourcePath.forEntity(Role.class).getPath(), uuidOfNonExistentRole.toString())
+				.toString();
+		logger.debug("path (uuidOfNonExistentRole) = {}", path);
+
+		/*
+		 * Attempt to retrieve the nonexistent RoleResource via HTTP GET.
+		 */
+		response = webTarget.path(path)
+				.request()
+				.header("Accept", MediaType.APPLICATION_JSON + ";v=" + defaultVersionGet)
+				.get();
+		assertThat(response.getStatus(), is(Response.Status.NOT_FOUND.getStatusCode()));
+		/*
+		 * If an error occurs, then a RestErrorResource is returned as the 
+		 * entity, not a RoleResource.
+		 */
+		RestErrorResource restErrorResource = response.readEntity(RestErrorResource.class);
+		logger.debug("restErrorResource = {}", restErrorResource);
+		assertThat(restErrorResource, is(not(nullValue())));
+		assertThat(restErrorResource.getHttpStatus(), is(404));
+		assertThat(restErrorResource.getHttpStatus(),
+				is(RestError.NOT_FOUND_RESOUCE.getResponseStatus().getStatusCode()));
+		assertThat(restErrorResource.getErrorCode(), is(RestError.NOT_FOUND_RESOUCE.getErrorCode()));
+
 	}
 
 	@Test

@@ -47,30 +47,30 @@ public class RestApiException extends WebApplicationException {
 	public RestApiException(
 			RestError restError,
 			Class<?> referenceClass,
-			String attributeName) {
+			String attrName) {
 		super(Response.status(restError.getResponseStatus())
-				.entity(new RestErrorResource(restError, referenceClass, attributeName))
+				.entity(new RestErrorResource(restError, referenceClass, attrName))
 				.build());
 		logger.error(toSplunkString(
 				"restError", restError,
 				"referenceClass", referenceClass,
-				"attributeName", attributeName));
+				"attrName", attrName));
 		logger.error("stackTrace={}", stackTraceToString(this));
 	}
 
 	public RestApiException(
 			RestError restError,
 			Class<?> referenceClass,
-			String attributeName,
-			String attributeValue) {
+			String attrName,
+			String attrValue) {
 		super(Response.status(restError.getResponseStatus())
-				.entity(new RestErrorResource(restError, referenceClass, attributeName, attributeValue))
+				.entity(new RestErrorResource(restError, referenceClass, attrName, attrValue))
 				.build());
 		logger.error(toSplunkString(
 				"restError", restError,
 				"referenceClass", referenceClass,
-				"attributeName", attributeName,
-				"attributeValue", attributeValue));
+				"attrName", attrName,
+				"attrValue", attrValue));
 		logger.error("stackTrace={}", stackTraceToString(this));
 	}
 
@@ -78,17 +78,17 @@ public class RestApiException extends WebApplicationException {
 			RestError restError,
 			String errorMessage,
 			Class<?> referenceClass,
-			String attributeName,
-			String attributeValue) {
+			String attrName,
+			String attrValue) {
 		super(Response.status(restError.getResponseStatus())
-				.entity(new RestErrorResource(restError, errorMessage, referenceClass, attributeName, attributeValue))
+				.entity(new RestErrorResource(restError, errorMessage, referenceClass, attrName, attrValue))
 				.build());
 		logger.error(toSplunkString(
 				"restError", restError,
 				"errorMessage", errorMessage,
 				"referenceClass", referenceClass,
-				"attributeName", attributeName,
-				"attributeValue", attributeValue));
+				"attrName", attrName,
+				"attrValue", attrValue));
 		logger.error("stackTrace={}", stackTraceToString(this));
 	}
 

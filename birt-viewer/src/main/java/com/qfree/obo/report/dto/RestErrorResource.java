@@ -1,11 +1,14 @@
 package com.qfree.obo.report.dto;
 
 import javax.ws.rs.core.Response;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
 @XmlRootElement
+@XmlAccessorType(XmlAccessType.FIELD)
 public class RestErrorResource {
 
 	//	private static final String STATUS_PROP_NAME = "status";
@@ -370,16 +373,16 @@ public class RestErrorResource {
 	private String errorCode;
 	@XmlElement
 	private String errorMessage;
-	@XmlElement
-	private String resourceName;
-	@XmlElement
-	private String attributeName;
-	@XmlElement
-	private String attributeValue;
+	@XmlTransient
+	private String resourceName;	// @XmlTransient means this will not be serialized to JSON
+	@XmlTransient
+	private String attrName;		// @XmlTransient means this will not be serialized to JSON
+	@XmlTransient
+	private String attrValue;		// @XmlTransient means this will not be serialized to JSON
 	@XmlElement
 	private String moreInfoUrl;
 	@XmlTransient
-	private Throwable throwable;
+	private Throwable throwable;	// @XmlTransient means this will not be serialized to JSON
 
 	public RestErrorResource() {
 	}
@@ -416,13 +419,13 @@ public class RestErrorResource {
 	public RestErrorResource(
 			RestError restError,
 			Class<?> resourceClass,
-			String attributeName) {
+			String attrName) {
 		this(
 				restError.getResponseStatus(),
 				restError.getErrorCode(),
 				restError.getErrorMessage(),
 				resourceClass.getSimpleName(),
-				attributeName,
+				attrName,
 				null,
 				restError.getMoreInfoUrl(),
 				null);
@@ -431,15 +434,15 @@ public class RestErrorResource {
 	public RestErrorResource(
 			RestError restError,
 			Class<?> resourceClass,
-			String attributeName,
-			String attributeValue) {
+			String attrName,
+			String attrValue) {
 		this(
 				restError.getResponseStatus(),
 				restError.getErrorCode(),
 				restError.getErrorMessage(),
 				resourceClass.getSimpleName(),
-				attributeName,
-				attributeValue,
+				attrName,
+				attrValue,
 				restError.getMoreInfoUrl(),
 				null);
 	}
@@ -448,15 +451,15 @@ public class RestErrorResource {
 			RestError restError,
 			String errorMessage,
 			Class<?> resourceClass,
-			String attributeName,
-			String attributeValue) {
+			String attrName,
+			String attrValue) {
 		this(
 				restError.getResponseStatus(),
 				restError.getErrorCode(),
 				errorMessage,
 				resourceClass.getSimpleName(),
-				attributeName,
-				attributeValue,
+				attrName,
+				attrValue,
 				restError.getMoreInfoUrl(),
 				null);
 	}
@@ -466,8 +469,8 @@ public class RestErrorResource {
 			String errorCode,
 			String errorMessage,
 			String resourceName,
-			String attributeName,
-			String attributeValue,
+			String attrName,
+			String attrValue,
 			String moreInfoUrl,
 			Throwable throwable) {
 		if (responseStatus == null) {
@@ -481,9 +484,73 @@ public class RestErrorResource {
 			this.errorMessage = responseStatus.getReasonPhrase();
 		}
 		this.resourceName = resourceName;
-		this.attributeName = attributeName;
-		this.attributeValue = attributeValue;
+		this.attrName = attrName;
+		this.attrValue = attrValue;
 		this.moreInfoUrl = moreInfoUrl;
+		this.throwable = throwable;
+	}
+
+	public int getHttpStatus() {
+		return httpStatus;
+	}
+
+	public void setHttpStatus(int httpStatus) {
+		this.httpStatus = httpStatus;
+	}
+
+	public String getErrorCode() {
+		return errorCode;
+	}
+
+	public void setErrorCode(String errorCode) {
+		this.errorCode = errorCode;
+	}
+
+	public String getErrorMessage() {
+		return errorMessage;
+	}
+
+	public void setErrorMessage(String errorMessage) {
+		this.errorMessage = errorMessage;
+	}
+
+	public String getResourceName() {
+		return resourceName;
+	}
+
+	public void setResourceName(String resourceName) {
+		this.resourceName = resourceName;
+	}
+
+	public String getAttrName() {
+		return attrName;
+	}
+
+	public void setAttrName(String attrName) {
+		this.attrName = attrName;
+	}
+
+	public String getAttrValue() {
+		return attrValue;
+	}
+
+	public void setAttrValue(String attrValue) {
+		this.attrValue = attrValue;
+	}
+
+	public String getMoreInfoUrl() {
+		return moreInfoUrl;
+	}
+
+	public void setMoreInfoUrl(String moreInfoUrl) {
+		this.moreInfoUrl = moreInfoUrl;
+	}
+
+	public Throwable getThrowable() {
+		return throwable;
+	}
+
+	public void setThrowable(Throwable throwable) {
 		this.throwable = throwable;
 	}
 
