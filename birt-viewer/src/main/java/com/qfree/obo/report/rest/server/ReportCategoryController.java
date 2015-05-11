@@ -115,6 +115,7 @@ public class ReportCategoryController extends AbstractBaseController {
 
 		addToExpandList(expand, ReportCategory.class);	// Force primary resource to be "expanded"
 		ReportCategory reportCategory = reportCategoryRepository.findOne(id);
+		RestUtils.ifNullThen404(reportCategory, ReportCategory.class, "reportCategoryId", id.toString());
 		ReportCategoryResource reportCategoryResource =
 				new ReportCategoryResource(reportCategory, uriInfo, expand, apiVersion);
 		return reportCategoryResource;
@@ -145,6 +146,7 @@ public class ReportCategoryController extends AbstractBaseController {
 		 * Retrieve ReportCategory entity to be updated.
 		 */
 		ReportCategory reportCategory = reportCategoryRepository.findOne(id);
+		RestUtils.ifNullThen404(reportCategory, ReportCategory.class, "reportCategoryId", id.toString());
 		logger.debug("reportCategory (to be updated) = {}", reportCategory);
 		/*
 		 * Ensure that the entity's "id" and "CreatedOn" are not changed.

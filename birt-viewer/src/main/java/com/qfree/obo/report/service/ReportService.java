@@ -16,6 +16,7 @@ import com.qfree.obo.report.dto.ReportCategoryResource;
 import com.qfree.obo.report.dto.ReportResource;
 import com.qfree.obo.report.dto.RestErrorResource.RestError;
 import com.qfree.obo.report.exceptions.RestApiException;
+import com.qfree.obo.report.rest.server.RestUtils;
 
 @Component
 @Transactional
@@ -58,12 +59,8 @@ public class ReportService {
 		ReportCategory reportCategory = null;
 		if (reportCategoryId != null) {
 			reportCategory = reportCategoryRepository.findOne(reportCategoryId);
-			if (reportCategory == null) {
-				String message = String.format("No ReportCategory for reportCategoryId '%s'",
-						reportCategoryId.toString());
-				throw new RestApiException(RestError.NOT_FOUND_RESOUCE, message,
-						ReportCategory.class, "reportCategoryId", reportCategoryId.toString());
-			}
+			RestUtils.ifNullThen404(reportCategory, ReportCategory.class, "reportCategoryId",
+					reportCategoryId.toString());
 		} else {
 			throw new RestApiException(RestError.FORBIDDEN_REPORT_CATEGORY_NULL, Report.class, "reportCategoryId");
 		}

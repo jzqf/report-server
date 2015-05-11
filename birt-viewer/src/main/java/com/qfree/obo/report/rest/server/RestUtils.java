@@ -1,5 +1,8 @@
 package com.qfree.obo.report.rest.server;
 
+import com.qfree.obo.report.dto.RestErrorResource.RestError;
+import com.qfree.obo.report.exceptions.RestApiException;
+
 public class RestUtils {
 
 	/**
@@ -76,4 +79,12 @@ public class RestUtils {
 		}
 		return apiVersion;
 	}
+
+	public static void ifNullThen404(Object object, Class<?> objectClass, String attrName, String attrValue) {
+		if (object == null) {
+			String message = String.format("No %s for %s '%s'", objectClass.getSimpleName(), attrName, attrValue);
+			throw new RestApiException(RestError.NOT_FOUND_RESOUCE, message, objectClass, attrName, attrValue);
+		}
+	}
+
 }

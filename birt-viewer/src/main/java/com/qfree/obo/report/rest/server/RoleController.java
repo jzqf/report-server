@@ -113,8 +113,8 @@ public class RoleController extends AbstractBaseController {
 
 		addToExpandList(expand, Role.class);	// Force primary resource to be "expanded"
 		Role role = roleRepository.findOne(id);
-		RoleResource roleResource =
-				new RoleResource(role, uriInfo, expand, apiVersion);
+		RestUtils.ifNullThen404(role, Role.class, "roleId", id.toString());
+		RoleResource roleResource = new RoleResource(role, uriInfo, expand, apiVersion);
 		return roleResource;
 	}
 
@@ -143,6 +143,7 @@ public class RoleController extends AbstractBaseController {
 		 * Retrieve Role entity to be updated.
 		 */
 		Role role = roleRepository.findOne(id);
+		RestUtils.ifNullThen404(role, Role.class, "roleId", id.toString());
 		logger.debug("role (to be updated) = {}", role);
 		/*
 		 * Ensure that the entity's "id" and "CreatedOn" are not changed.

@@ -71,6 +71,7 @@ public class ConfigurationController extends AbstractBaseController {
 
 		addToExpandList(expand, Configuration.class);	// Force primary resource to be "expanded"
 		Configuration configuration = configurationRepository.findOne(id);
+		RestUtils.ifNullThen404(configuration, Configuration.class, "configurationId", id.toString());
 		ConfigurationResource configurationResource =
 				new ConfigurationResource(configuration, uriInfo, expand, apiVersion);
 		return configurationResource;

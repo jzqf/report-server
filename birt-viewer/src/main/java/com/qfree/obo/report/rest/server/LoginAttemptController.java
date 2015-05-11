@@ -92,29 +92,24 @@ public class LoginAttemptController extends AbstractBaseController {
 			logger.debug("roleResource.getUsername() = {}, roleResource.getEncodedPassword() = {}",
 					roleResource.getUsername(), roleResource.getEncodedPassword());
 			Role role = roleRepository.findByUsername(roleResource.getUsername());
-			if (role != null) {
-				if (role.isLoginRole()) {
-					logger.debug("role = {}", role);
-					if (role.getEncodedPassword().equals(roleResource.getEncodedPassword())) {
+			RestUtils.ifNullThen404(role, Role.class, "username", roleResource.getUsername());
+			if (role.isLoginRole()) {
+				logger.debug("role = {}", role);
+				if (role.getEncodedPassword().equals(roleResource.getEncodedPassword())) {
 
-						List<String> expand = newExpandList(Role.class);  // Force primary resource to be "expanded"
-						RoleResource resource = new RoleResource(role, uriInfo, expand, apiVersion);
-						return resource;
+					List<String> expand = newExpandList(Role.class);  // Force primary resource to be "expanded"
+					RoleResource resource = new RoleResource(role, uriInfo, expand, apiVersion);
+					return resource;
 
-					} else {
-						throw new RestApiException(RestError.FORBIDDEN_BAD_ROLE_PASSWORD,
-								Role.class, "encodedPassword", roleResource.getEncodedPassword());
-					}
 				} else {
-					String message = String.format("Role for username '%s' does not have 'login' privilege",
-							roleResource.getUsername());
-					throw new RestApiException(RestError.FORBIDDEN_NOT_LOGIN_ROLE, message,
-							Role.class, "loginRole", new Boolean(role.isLoginRole()).toString());
+					throw new RestApiException(RestError.FORBIDDEN_BAD_ROLE_PASSWORD,
+							Role.class, "encodedPassword", roleResource.getEncodedPassword());
 				}
 			} else {
-				String message = String.format("No Role for username '%s'", roleResource.getUsername());
-				throw new RestApiException(RestError.NOT_FOUND_RESOUCE, message,
-						Role.class, "username", roleResource.getUsername());
+				String message = String.format("Role for username '%s' does not have 'login' privilege",
+						roleResource.getUsername());
+				throw new RestApiException(RestError.FORBIDDEN_NOT_LOGIN_ROLE, message,
+						Role.class, "loginRole", new Boolean(role.isLoginRole()).toString());
 			}
 		} else {
 			throw new RestApiException(RestError.NOT_FOUND_ROLE_TO_AUTHENTICATE, Role.class);
@@ -140,6 +135,7 @@ public class LoginAttemptController extends AbstractBaseController {
 	//
 	//		addToExpandList(expand, Role.class);	// Force primary resource to be "expanded"
 	//		Role role = roleRepository.findOne(id);
+	//		RestUtils.ifNullThen404(role, Role.class, "roleId", id.toString());
 	//		RoleResource roleResource =
 	//				new RoleResource(role, uriInfo, expand, apiVersion);
 	//		return roleResource;
@@ -170,6 +166,7 @@ public class LoginAttemptController extends AbstractBaseController {
 	//		 * Retrieve Role entity to be updated.
 	//		 */
 	//		Role role = roleRepository.findOne(id);
+	//		RestUtils.ifNullThen404(role, Role.class, "roleId", id.toString());
 	//		logger.debug("role (to be updated) = {}", role);
 	//		/*
 	//		 * Ensure that the entity's "id" and "CreatedOn" are not changed.

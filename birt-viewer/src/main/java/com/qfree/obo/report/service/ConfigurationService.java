@@ -81,6 +81,13 @@ public class ConfigurationService {
 			 */
 			configuration = configurationRepository.findByParamName(paramName);
 		}
+		/*
+		 * No, do not execute RestUtils.ifNullThen404. If configuration==null 
+		 * here, this method should return null since that is its expected 
+		 * behavior. This case is logged below so that we can monitor if/when
+		 * it occurs.
+		 */
+		//RestUtils.ifNullThen404(configuration, Configuration.class, "paramName", paramName.toString());
 
 		if (configuration != null) {
 			/*
@@ -124,13 +131,11 @@ public class ConfigurationService {
 				break;
 			default:
 				logger.error("Untreated case. paramType = {}", configuration.getParamType());
-				//TODO Throw a custom (or even a standard) exception here?
 				break;
 			}
 
 		} else {
 			logger.error("A Configuration entity does not exist for paramName = {}", paramName);
-			//TODO Throw a custom (or even a standard) exception here?
 		}
 
 		return object;
