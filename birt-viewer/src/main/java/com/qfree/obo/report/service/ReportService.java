@@ -65,17 +65,7 @@ public class ReportService {
 			throw new RestApiException(RestError.FORBIDDEN_REPORT_CATEGORY_NULL, Report.class, "reportCategoryId");
 		}
 
-		/*
-		 * Create Report entity instance from the supplied ReportResource 
-		 * instance.
-		 */
-		Report report = new Report(
-				reportResource.getReportId(),
-				reportCategory,
-				reportResource.getName(),
-				reportResource.getNumber(),
-				reportResource.isActive(),
-				reportResource.getCreatedOn());
+		Report report = new Report(reportResource, reportCategory);
 		logger.debug("report = {}", report);
 		/*
 		 * This "save" method will persist or merge the given entity using the

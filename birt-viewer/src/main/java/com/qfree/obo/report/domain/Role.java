@@ -21,6 +21,7 @@ import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;
 
+import com.qfree.obo.report.dto.RoleResource;
 import com.qfree.obo.report.util.DateUtils;
 
 /**
@@ -116,14 +117,16 @@ public class Role implements Serializable {
 
 	public Role(String encodedPassword, String username, String fullName, boolean loginRole, Date createdOn) {
 		this(null, encodedPassword, username, fullName, loginRole, createdOn);
-		//		this.loginRole = loginRole;
-		//		this.username = username;
-		//		this.encodedPassword = encodedPassword;
-		//		if (createdOn != null) {
-		//			this.createdOn = createdOn;
-		//		} else {
-		//			this.createdOn = DateUtils.nowUtc();
-		//		}
+	}
+
+	public Role(RoleResource roleResource) {
+		this(
+				roleResource.getRoleId(),
+				roleResource.getEncodedPassword(),
+				roleResource.getUsername(),
+				roleResource.getFullName(),
+				roleResource.isLoginRole(),
+				roleResource.getCreatedOn());
 	}
 
 	public Role(UUID roleId, String encodedPassword, String username, String fullName, boolean loginRole, Date createdOn) {

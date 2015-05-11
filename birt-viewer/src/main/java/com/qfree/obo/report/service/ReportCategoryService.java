@@ -27,16 +27,7 @@ public class ReportCategoryService {
 	public ReportCategory saveOrUpdateFromResource(ReportCategoryResource reportCategoryResource) {
 		logger.debug("reportCategoryResource = {}", reportCategoryResource);
 
-		/*
-		 * Create ReportCategory entity instance from the supplied 
-		 * ReportCategoryResource instance.
-		 */
-		ReportCategory reportCategory = new ReportCategory(
-				reportCategoryResource.getReportCategoryId(),
-				reportCategoryResource.getDescription(),
-				reportCategoryResource.getAbbreviation(),
-				reportCategoryResource.isActive(),
-				reportCategoryResource.getCreatedOn());
+		ReportCategory reportCategory = new ReportCategory(reportCategoryResource);
 		logger.debug("reportCategory = {}", reportCategory);
 		/*
 		 * This "save" method will persist or merge the given entity using the

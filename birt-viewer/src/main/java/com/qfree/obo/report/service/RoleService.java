@@ -27,17 +27,7 @@ public class RoleService {
 	public Role saveOrUpdateFromResource(RoleResource roleResource) {
 		logger.debug("roleResource = {}", roleResource);
 
-		/*
-		 * Create Role entity instance from the supplied RoleResource instance.
-		 */
-		Role role = new Role(
-				roleResource.getRoleId(),
-				roleResource.getEncodedPassword(),
-				roleResource.getUsername(),
-				roleResource.getFullName(),
-				roleResource.isLoginRole(),
-				roleResource.getCreatedOn());
-
+		Role role = new Role(roleResource);
 		logger.debug("role = {}", role);
 		/*
 		 * This "save" method will persist or merge the given entity using the

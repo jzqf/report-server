@@ -19,6 +19,7 @@ import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;
 
+import com.qfree.obo.report.dto.ReportCategoryResource;
 import com.qfree.obo.report.util.DateUtils;
 
 /**
@@ -76,14 +77,15 @@ public class ReportCategory implements Serializable {
 
 	public ReportCategory(String description, String abbreviation, boolean active, Date createdOn) {
 		this(null, description, abbreviation, active, createdOn);
-		//		this.description = description;
-		//		this.abbreviation = abbreviation;
-		//		this.active = active;
-		//		if (createdOn != null) {
-		//			this.createdOn = createdOn;
-		//		} else {
-		//			this.createdOn = DateUtils.nowUtc();
-		//		}
+	}
+
+	public ReportCategory(ReportCategoryResource reportCategoryResource) {
+		this(
+				reportCategoryResource.getReportCategoryId(),
+				reportCategoryResource.getDescription(),
+				reportCategoryResource.getAbbreviation(),
+				reportCategoryResource.isActive(),
+				reportCategoryResource.getCreatedOn());
 	}
 
 	public ReportCategory(UUID reportCategoryId, String description, String abbreviation, boolean active, Date createdOn) {
