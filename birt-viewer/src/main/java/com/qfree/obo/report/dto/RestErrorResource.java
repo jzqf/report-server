@@ -394,6 +394,21 @@ public class RestErrorResource {
 
 	public RestErrorResource(
 			RestError restError,
+			String errorMessage,
+			Throwable throwable) {
+		this(
+				restError.getResponseStatus(),
+				restError.getErrorCode(),
+				errorMessage,
+				null,
+				null,
+				null,
+				restError.getMoreInfoUrl(),
+				throwable);
+	}
+
+	public RestErrorResource(
+			RestError restError,
 			Class<?> resourceClass) {
 		this(
 				restError.getResponseStatus(),

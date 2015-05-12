@@ -11,6 +11,8 @@ import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.server.spring.scope.RequestContextFilter;
 import org.springframework.stereotype.Component;
 
+import com.qfree.obo.report.exceptions.GenericExceptionMapper;
+
 @Component
 @ApplicationPath("/rest")
 public class JAXRSConfiguration extends ResourceConfig {
@@ -40,6 +42,11 @@ public class JAXRSConfiguration extends ResourceConfig {
 		 * request attributes.
 		 */
 		register(RequestContextFilter.class);
+
+		/*
+		 * This exception mapper handles *all* exceptions.
+		 */
+		register(GenericExceptionMapper.class);
 
 		/*
 		 * ReST controllers (to manage ReST resources):

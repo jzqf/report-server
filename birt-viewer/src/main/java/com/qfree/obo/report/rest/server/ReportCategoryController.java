@@ -54,7 +54,7 @@ public class ReportCategoryController extends AbstractBaseController {
 	 * 
 	 *   $ mvn clean spring-boot:run
 	 *   $ curl -i -H "Accept: application/json;v=1" -X GET \
-	 *   http://localhost:8081/report-server/rest/reportCategories
+	 *   http://localhost:8080/rest/reportCategories
 	 */
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
@@ -80,6 +80,15 @@ public class ReportCategoryController extends AbstractBaseController {
 	 *   '{"abbreviation":"RCABBREV","description":"ReportCategory description",\
 	 *   "active":true, "createdOn":"1958-05-06T12:00:00.000Z"}' \
 	 *   http://localhost:8080/rest/reportCategories
+	 * 
+	 * This endpoint will throw a "403 Forbidden" error because an id for the 
+	 * ReportCategory to create is given:
+	 * 
+	 *	curl -iH "Content-Type: application/json;v=1" -X POST -d \
+	 *	'{"reportCategoryId":"71b3e8ae-bba8-45b7-a85f-12546bcc95b2",'\
+	 *	'"abbreviation":"RCABBREV","description":"ReportCategory description",'\
+	 *	'"active":true, "createdOn":"1958-05-06T12:00:00.000Z"}' \
+	 *	http://localhost:8080/rest/reportCategories
 	 */
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)

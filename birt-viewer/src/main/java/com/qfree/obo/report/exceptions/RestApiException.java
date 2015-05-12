@@ -27,7 +27,7 @@ public class RestApiException extends WebApplicationException {
 				.entity(new RestErrorResource(restError, referenceClass))
 				.build());
 		logger.error(toSplunkString("restError", restError, "referenceClass", referenceClass));
-		logger.error("stackTrace={}", stackTraceToString(this));
+		logger.error("stackTrace for '{}' exception:\n{}", restError, stackTraceToString(this));
 	}
 
 	public RestApiException(
@@ -41,7 +41,7 @@ public class RestApiException extends WebApplicationException {
 				"restError", restError,
 				"errorMessage", errorMessage,
 				"referenceClass", referenceClass));
-		logger.error("stackTrace={}", stackTraceToString(this));
+		logger.error("stackTrace for '{}' exception:\n{}", restError, stackTraceToString(this));
 	}
 
 	public RestApiException(
@@ -55,7 +55,7 @@ public class RestApiException extends WebApplicationException {
 				"restError", restError,
 				"referenceClass", referenceClass,
 				"attrName", attrName));
-		logger.error("stackTrace={}", stackTraceToString(this));
+		logger.error("stackTrace for '{}' exception:\n{}", restError, stackTraceToString(this));
 	}
 
 	public RestApiException(
@@ -71,7 +71,7 @@ public class RestApiException extends WebApplicationException {
 				"referenceClass", referenceClass,
 				"attrName", attrName,
 				"attrValue", attrValue));
-		logger.error("stackTrace={}", stackTraceToString(this));
+		logger.error("stackTrace for '{}' exception:\n{}", restError, stackTraceToString(this));
 	}
 
 	public RestApiException(
@@ -89,7 +89,7 @@ public class RestApiException extends WebApplicationException {
 				"referenceClass", referenceClass,
 				"attrName", attrName,
 				"attrValue", attrValue));
-		logger.error("stackTrace={}", stackTraceToString(this));
+		logger.error("stackTrace for '{}' exception:\n{}", restError, stackTraceToString(this));
 	}
 
 	/**
