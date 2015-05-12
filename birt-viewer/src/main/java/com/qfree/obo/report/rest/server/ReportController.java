@@ -89,7 +89,7 @@ public class ReportController extends AbstractBaseController {
 		RestApiVersion apiVersion = RestUtils.extractAPIVersion(acceptHeader, RestApiVersion.v1);
 		logger.debug("reportResource = {}", reportResource);
 
-		Report report = reportService.saveOrUpdateFromResource(reportResource);
+		Report report = reportService.saveNewFromResource(reportResource);
 		logger.debug("report = {}", report);
 		addToExpandList(expand, Report.class);  // Force primary resource to be "expanded", if not already requested
 		ReportResource resource = new ReportResource(report, uriInfo, expand, apiVersion);
@@ -170,7 +170,7 @@ public class ReportController extends AbstractBaseController {
 		/*
 		 * Save updated entity.
 		 */
-		report = reportService.saveOrUpdateFromResource(reportResource);
+		report = reportService.saveExistingFromResource(reportResource);
 		logger.debug("report (after saveOrUpdateFromResource) = {}", report);
 		return Response.status(Response.Status.OK).build();
 	}

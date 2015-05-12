@@ -156,6 +156,11 @@ public class RestErrorResource {
 		FORBIDDEN_BAD_ROLE_PASSWORD(Response.Status.FORBIDDEN, "403.2", "Wrong password for role", null),
 		FORBIDDEN_REPORT_CATEGORY_NULL(Response.Status.FORBIDDEN, "403.3",
 				"reportCategoryId is null for a report being saved", null),
+		FORBIDDEN_NEW_RESOUCE_ID_NOTNULL(Response.Status.FORBIDDEN, "403.4",
+				"When creating a new entity from an instance of a ReST resource, "
+						+ "the id from the resource instance must be null because "
+						+ "it will be generated for the new entity by the Entity Manager",
+				null),
 		/**
 		 * {@code 404 Not Found}.
 		 * @see <a href="http://tools.ietf.org/html/rfc2616#section-10.4.5">HTTP/1.1</a>

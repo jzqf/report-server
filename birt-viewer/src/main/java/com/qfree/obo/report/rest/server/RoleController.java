@@ -88,7 +88,7 @@ public class RoleController extends AbstractBaseController {
 			@Context final UriInfo uriInfo) {
 		RestApiVersion apiVersion = RestUtils.extractAPIVersion(acceptHeader, RestApiVersion.v1);
 
-		Role role = roleService.saveOrUpdateFromResource(roleResource);
+		Role role = roleService.saveNewFromResource(roleResource);
 		List<String> expand = newExpandList(Role.class);	// Force primary resource to be "expanded"
 		RoleResource resource = new RoleResource(role, uriInfo, expand, apiVersion);
 		return created(resource);
@@ -154,7 +154,7 @@ public class RoleController extends AbstractBaseController {
 		/*
 		 * Save updated entity.
 		 */
-		role = roleService.saveOrUpdateFromResource(roleResource);
+		role = roleService.saveExistingFromResource(roleResource);
 		logger.debug("role (after saveOrUpdateFromResource) = {}", role);
 		return Response.status(Response.Status.OK).build();
 	}

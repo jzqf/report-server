@@ -35,6 +35,18 @@ public class ReportService {
 	}
 
 	@Transactional
+	public Report saveNewFromResource(ReportResource reportResource) {
+		RestUtils.ifNewResourceIdNotNullThen403(reportResource.getReportId(), Report.class,
+				"reportId", reportResource.getReportId());
+		return saveOrUpdateFromResource(reportResource);
+	}
+
+	@Transactional
+	public Report saveExistingFromResource(ReportResource reportResource) {
+		return saveOrUpdateFromResource(reportResource);
+	}
+
+	@Transactional
 	public Report saveOrUpdateFromResource(ReportResource reportResource) {
 		logger.debug("reportResource = {}", reportResource);
 

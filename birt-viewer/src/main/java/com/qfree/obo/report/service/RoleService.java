@@ -9,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.qfree.obo.report.db.RoleRepository;
 import com.qfree.obo.report.domain.Role;
 import com.qfree.obo.report.dto.RoleResource;
+import com.qfree.obo.report.rest.server.RestUtils;
 
 @Component
 @Transactional
@@ -21,6 +22,18 @@ public class RoleService {
 	@Autowired
 	public RoleService(RoleRepository roleRepository) {
 		this.roleRepository = roleRepository;
+	}
+
+	@Transactional
+	public Role saveNewFromResource(RoleResource roleResource) {
+		RestUtils.ifNewResourceIdNotNullThen403(roleResource.getRoleId(), Role.class,
+				"roleId", roleResource.getRoleId());
+		return saveOrUpdateFromResource(roleResource);
+	}
+
+	@Transactional
+	public Role saveExistingFromResource(RoleResource roleResource) {
+		return saveOrUpdateFromResource(roleResource);
 	}
 
 	@Transactional

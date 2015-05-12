@@ -87,4 +87,21 @@ public class RestUtils {
 		}
 	}
 
+	public static void ifNewResourceIdNotNullThen403(Object id, Class<?> classToCreate, String attrName,
+			Object attrValueObject) {
+		if (id != null) {
+
+			String attrValueString = "";
+			if (attrValueObject != null) {
+				attrValueString = attrValueObject.toString();
+			}
+
+			String message = String.format("%s = '%s'. The id must be null when creating a new %s. "
+					+ RestError.FORBIDDEN_NEW_RESOUCE_ID_NOTNULL.getErrorMessage(), attrName, attrValueString,
+					classToCreate.getSimpleName());
+			throw new RestApiException(RestError.FORBIDDEN_NEW_RESOUCE_ID_NOTNULL, message, classToCreate, attrName,
+					null);
+		}
+	}
+
 }

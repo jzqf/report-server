@@ -90,7 +90,7 @@ public class ReportCategoryController extends AbstractBaseController {
 			@Context final UriInfo uriInfo) {
 		RestApiVersion apiVersion = RestUtils.extractAPIVersion(acceptHeader, RestApiVersion.v1);
 
-		ReportCategory reportCategory = reportCategoryService.saveOrUpdateFromResource(reportCategoryResource);
+		ReportCategory reportCategory = reportCategoryService.saveNewFromResource(reportCategoryResource);
 		List<String> expand = newExpandList(ReportCategory.class);	// Force primary resource to be "expanded"
 		ReportCategoryResource resource = new ReportCategoryResource(reportCategory, uriInfo, expand, apiVersion);
 		return created(resource);
@@ -157,7 +157,7 @@ public class ReportCategoryController extends AbstractBaseController {
 		/*
 		 * Save updated entity.
 		 */
-		reportCategory = reportCategoryService.saveOrUpdateFromResource(reportCategoryResource);
+		reportCategory = reportCategoryService.saveExistingFromResource(reportCategoryResource);
 		logger.debug("reportCategory (after saveOrUpdateFromResource) = {}", reportCategory);
 		return Response.status(Response.Status.OK).build();
 	}
