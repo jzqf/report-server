@@ -344,17 +344,32 @@ public class ReportControllerTests {
 		assertThat(reportCategoryResource, is(not(nullValue())));
 		assertThat(reportCategoryResource.getReportCategoryId(), is(uuidOfReportCategory));
 		assertThat(reportResource.getReportVersions(), is(not(nullValue())));
+
 		/*
 		 * Assert that the id of each ReportVersionResource object returned in
 		 * the ReportResource reportResource object agree with the id's that we
 		 * know they should.
 		 */
-		List<UUID> reportVersionResourceUuids=new ArrayList<>(reportResource.getReportVersions().size());
-		for (ReportVersionResource reportVersionResource : reportResource.getReportVersions()) {
+		/*
+		 *  This is for the case where reportResource.getReportVersions() is a 
+		 *  List<ReportVersionResource> object:
+		 */
+		//List<UUID> reportVersionResourceUuids=new ArrayList<>(reportResource.getReportVersions().size());
+		//for (ReportVersionResource reportVersionResource : reportResource.getReportVersions()) {
+		//	reportVersionResourceUuids.add(reportVersionResource.getReportVersionId());
+		//}
+		/*
+		 *  This is for the case where reportResource.getReportVersions() is a 
+		 *  ReportVersionCollectionResource object:
+		 */
+		assertThat(reportResource.getReportVersions().getItems(), is(not(nullValue())));
+		List<UUID> reportVersionResourceUuids = new ArrayList<>(reportResource.getReportVersions().getItems().size());
+		for (ReportVersionResource reportVersionResource : reportResource.getReportVersions().getItems()) {
 			reportVersionResourceUuids.add(reportVersionResource.getReportVersionId());
 		}
 		assertThat(reportVersionResourceUuids, hasSize(2));
-		assertThat(reportVersionResourceUuids, IsCollectionContaining.hasItems(reportVersionUuid_1, reportVersionUuid_2));
+		assertThat(reportVersionResourceUuids,
+				IsCollectionContaining.hasItems(reportVersionUuid_1, reportVersionUuid_2));
 
 		/*
 		 * Attempt to fetch a ReportResource using an id that does not exist. This

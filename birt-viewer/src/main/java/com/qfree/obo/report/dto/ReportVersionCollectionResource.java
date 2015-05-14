@@ -12,21 +12,21 @@ import org.slf4j.LoggerFactory;
 import com.qfree.obo.report.rest.server.RestUtils.RestApiVersion;
 
 @XmlRootElement
-public class RoleCollectionResource extends AbstractCollectionResource<RoleResource> {
-	//public class RoleCollectionResource extends AbstractBaseResource {
+public class ReportVersionCollectionResource extends AbstractCollectionResource<ReportVersionResource> {
+	//public class ReportVersionCollectionResource extends AbstractBaseResource {
 
-	private static final Logger logger = LoggerFactory.getLogger(RoleCollectionResource.class);
+	private static final Logger logger = LoggerFactory.getLogger(ReportVersionCollectionResource.class);
 
 	@XmlElement
-	private List<RoleResource> items;
+	private List<ReportVersionResource> items;
 
-	public RoleCollectionResource() {
+	public ReportVersionCollectionResource() {
 	}
 
-	public RoleCollectionResource(List<RoleResource> items, Class<?> entityClass,
+	public ReportVersionCollectionResource(List<ReportVersionResource> items, Class<?> entityClass,
 			UriInfo uriInfo, List<String> expand, RestApiVersion apiVersion) {
 
-		super(items, entityClass, uriInfo, expand, apiVersion);  // if class extends AbstractCollectionResource<RoleResource>
+		super(items, entityClass, uriInfo, expand, apiVersion);  // if class extends AbstractCollectionResource<ReportVersionResource>
 		//super(entityClass, null, uriInfo, expand, apiVersion);  // if class extends AbstractBaseResource
 
 		String expandParam = ResourcePath.forEntity(entityClass).getExpandParam();
@@ -35,11 +35,11 @@ public class RoleCollectionResource extends AbstractCollectionResource<RoleResou
 		}
 	}
 
-	public List<RoleResource> getItems() {
+	public List<ReportVersionResource> getItems() {
 		return items;
 	}
 
-	public void setItems(List<RoleResource> items) {
+	public void setItems(List<ReportVersionResource> items) {
 		this.items = items;
 	}
 

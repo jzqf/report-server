@@ -71,6 +71,7 @@ public class RoleController extends AbstractBaseController {
 		for (Role role : roles) {
 			roleResources.add(new RoleResource(role, uriInfo, expand, apiVersion));
 		}
+		//		return roleResources;
 		return new RoleCollectionResource(roleResources, Role.class, uriInfo, expand, apiVersion);
 	}
 

@@ -36,7 +36,8 @@ public class ReportResource extends AbstractBaseResource {
 	private Integer number;
 
 	@XmlElement(name = "reportVersions")
-	private List<ReportVersionResource> reportVersions;
+	//	private List<ReportVersionResource> reportVersions;
+	private ReportVersionCollectionResource reportVersions;
 
 	//	@XmlElement
 	//	private List<RoleReport> roleReports;
@@ -83,7 +84,9 @@ public class ReportResource extends AbstractBaseResource {
 					reportVersionResources.add(
 							new ReportVersionResource(reportVersion, uriInfo, expandElementRemoved, apiVersion));
 				}
-				this.reportVersions = reportVersionResources;
+				//this.reportVersions = reportVersionResources;
+				this.reportVersions = new ReportVersionCollectionResource(reportVersionResources, ReportVersion.class,
+						uriInfo, expand, apiVersion);
 			}
 
 			//		this.roleReports = report.getRoleReports();
@@ -106,11 +109,19 @@ public class ReportResource extends AbstractBaseResource {
 		this.reportCategoryResource = reportCategoryResource;
 	}
 
-	public List<ReportVersionResource> getReportVersions() {
+	//	public List<ReportVersionResource> getReportVersions() {
+	//		return reportVersions;
+	//	}
+	//
+	//	public void setReportVersions(List<ReportVersionResource> reportVersions) {
+	//		this.reportVersions = reportVersions;
+	//	}
+
+	public ReportVersionCollectionResource getReportVersions() {
 		return reportVersions;
 	}
 
-	public void setReportVersions(List<ReportVersionResource> reportVersions) {
+	public void setReportVersions(ReportVersionCollectionResource reportVersions) {
 		this.reportVersions = reportVersions;
 	}
 
