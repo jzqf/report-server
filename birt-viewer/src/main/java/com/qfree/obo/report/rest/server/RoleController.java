@@ -26,6 +26,7 @@ import org.springframework.stereotype.Component;
 import com.qfree.obo.report.db.RoleRepository;
 import com.qfree.obo.report.domain.Role;
 import com.qfree.obo.report.dto.ResourcePath;
+import com.qfree.obo.report.dto.RoleCollectionResource;
 import com.qfree.obo.report.dto.RoleResource;
 import com.qfree.obo.report.rest.server.RestUtils.RestApiVersion;
 import com.qfree.obo.report.service.RoleService;
@@ -56,7 +57,9 @@ public class RoleController extends AbstractBaseController {
 	 */
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
-	public List<RoleResource> getList(
+	//	public List<RoleResource> getList(
+	//	public CollectionResource<RoleResource> getList(
+	public RoleCollectionResource getList(
 			@HeaderParam("Accept") final String acceptHeader,
 			@QueryParam("expand") final List<String> expand,
 			@Context final UriInfo uriInfo) {
@@ -68,7 +71,7 @@ public class RoleController extends AbstractBaseController {
 		for (Role role : roles) {
 			roleResources.add(new RoleResource(role, uriInfo, expand, apiVersion));
 		}
-		return roleResources;
+		return new RoleCollectionResource(roleResources, Role.class, uriInfo, expand, apiVersion);
 	}
 
 	/*

@@ -83,11 +83,24 @@ public abstract class AbstractBaseResource {
 		 * 
 		 *     http://localhost:8080/report-server/rest/
 		 */
-		return uriInfo.getBaseUriBuilder()
-				.path(resourcePath.getPath())
-				.path(id.toString())
-				.queryParam("expand", expand.toArray())
-				.toString();
+		if (id != null) {
+			/*
+			 * Instance resources:
+			 */
+			return uriInfo.getBaseUriBuilder()
+					.path(resourcePath.getPath())
+					.path(id.toString())
+					.queryParam("expand", expand.toArray())
+					.toString();
+		} else {
+			/*
+			 * Collection resources:
+			 */
+			return uriInfo.getBaseUriBuilder()
+					.path(resourcePath.getPath())
+					.queryParam("expand", expand.toArray())
+					.toString();
+		}
 	}
 
 	private String createMediaType(RestApiVersion apiVersion) {
