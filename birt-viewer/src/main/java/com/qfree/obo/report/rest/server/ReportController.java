@@ -22,6 +22,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.qfree.obo.report.db.ReportRepository;
 import com.qfree.obo.report.domain.Report;
@@ -103,10 +104,14 @@ public class ReportController extends AbstractBaseController {
 	 *   $ mvn clean spring-boot:run
 	 *   $ curl -i -H "Accept: application/json;v=1" -X GET \
 	 *   http://localhost:8081/report-server/rest/reports/c7f1d394-9814-4ede-bb01-2700187d79ca
+	 * 
+	 * @Transactional is used to avoid org.hibernate.LazyInitializationException
+	 * being thrown when evaluating report.getReportVersions().
 	 */
 	@Path("/{id}")
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
+	@Transactional
 	public ReportResource getById(
 			@PathParam("id") final UUID id,
 			@HeaderParam("Accept") final String acceptHeader,

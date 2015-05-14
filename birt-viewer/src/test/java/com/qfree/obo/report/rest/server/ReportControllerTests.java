@@ -1,6 +1,7 @@
 package com.qfree.obo.report.rest.server;
 
 import static org.hamcrest.Matchers.greaterThan;
+import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.lessThan;
 import static org.hamcrest.Matchers.not;
@@ -8,6 +9,7 @@ import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertThat;
 
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
@@ -19,6 +21,8 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 
+import org.hamcrest.collection.IsCollectionWithSize;
+import org.hamcrest.core.IsCollectionContaining;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -37,11 +41,16 @@ import org.springframework.transaction.annotation.Transactional;
 import com.qfree.obo.report.ApplicationConfig;
 import com.qfree.obo.report.db.ReportCategoryRepository;
 import com.qfree.obo.report.db.ReportRepository;
+import com.qfree.obo.report.db.ReportVersionRepository;
 import com.qfree.obo.report.domain.Report;
 import com.qfree.obo.report.domain.ReportCategory;
+import com.qfree.obo.report.domain.ReportVersion;
 import com.qfree.obo.report.dto.ReportCategoryResource;
 import com.qfree.obo.report.dto.ReportResource;
+import com.qfree.obo.report.dto.ReportVersionResource;
 import com.qfree.obo.report.dto.ResourcePath;
+import com.qfree.obo.report.dto.RestErrorResource;
+import com.qfree.obo.report.dto.RestErrorResource.RestError;
 import com.qfree.obo.report.util.DateUtils;
 
 /**
@@ -72,6 +81,9 @@ public class ReportControllerTests {
 
 	@Autowired
 	ReportCategoryRepository reportCategoryRepository;
+
+	@Autowired
+	ReportVersionRepository reportVersionRepository;
 
 	@Value("${local.server.port}")
 	private int port;
@@ -229,6 +241,150 @@ public class ReportControllerTests {
 		assertThat(resource.getReportId(), is(not(nullValue())));
 		Report newReport = reportRepository.findOne(resource.getReportId());
 		assertThat(newReport, is(not(nullValue())));
+	}
+
+	@Test
+	//	@DirtiesContext
+	@Transactional
+	public void testGetById() {
+		/* 
+		 * This is the default version for the endpoint 
+		 * AbstractResource.REPORTS_PATH/{id} using HTTP GET.
+		 */
+		String defaultVersionGet = "1";
+
+		/*
+		 * Details of the Report to fetch (from test-data.sql).
+		 */
+		UUID uuidOfReport = UUID.fromString("702d5daa-e23d-4f00-b32b-67b44c06d8f6");
+		UUID uuidOfReportCategory = UUID.fromString("bb2bc482-c19a-4c19-a087-e68ffc62b5a0");
+		UUID reportVersionUuid_1 = UUID.fromString("293abf69-1516-4e9b-84ae-241d25c13e8d");
+		UUID reportVersionUuid_2 = UUID.fromString("80b14b11-45c7-4a05-99ed-972050f2338f");
+		String name = "Report name #04";
+		Integer number = 400;
+		Boolean active = true;
+		Date createdOn = DateUtils.dateUtcFromIso8601String("2014-03-25T12:15:00.000Z");
+
+		/*
+		 * Retrieve ReportCategory that should be linked to the Report.
+		 */
+		ReportCategory reportCategory = reportCategoryRepository.findOne(uuidOfReportCategory);
+		assertThat(reportCategory, is(not(nullValue())));
+
+		/*
+		 * Retrieve the ReportVersion's that should be linked to the Report.
+		 */
+		ReportVersion reportVersion_1 = reportVersionRepository.findOne(reportVersionUuid_1);
+		ReportVersion reportVersion_2 = reportVersionRepository.findOne(reportVersionUuid_2);
+		assertThat(reportVersion_1, is(not(nullValue())));
+		assertThat(reportVersion_2, is(not(nullValue())));
+		//List<ReportVersion> expectedReportVersions = new ArrayList<>();
+		//expectedReportVersions.add(reportVersion_1);
+		//expectedReportVersions.add(reportVersion_2);
+
+		/*
+		 * Retrieve the Report that will also be retrieved below by the HTTP
+		 * GET ReST request.
+		 */
+		Report report = reportRepository.findOne(uuidOfReport);
+		assertThat(report, is(not(nullValue())));
+		assertThat(report.getReportCategory(), is(reportCategory));
+		assertThat(report.getName(), is(name));
+		assertThat(report.getNumber(), is(number));
+		assertThat(report.isActive(), is(active));
+		assertThat(DateUtils.entityTimestampToNormalDate(report.getCreatedOn()), is(createdOn));
+		assertThat(report.getReportVersions(), is(not(nullValue())));
+		assertThat(report.getReportVersions(), IsCollectionWithSize.hasSize(2));
+		assertThat(report.getReportVersions(), hasSize(2));
+		assertThat(report.getReportVersions(), IsCollectionContaining.hasItems(reportVersion_1, reportVersion_2));
+
+		/*
+		 * Create ReportCategoryResource from reportCategory so we can test that
+		 * the ReportResource retrieved by the fetch contains this 
+		 * ReportCategoryResource.
+		 */
+
+		Response response;
+		String path;
+
+		path = Paths.get(ResourcePath.forEntity(Report.class).getPath(), uuidOfReport.toString())
+				.toString();
+
+		/*
+		 * Retrieve the ReportResource via HTTP GET.
+		 * 
+		 * IMPORTANT:
+		 * 
+		 * This request needs "expand" query parameter "reportCategory" for the 
+		 * same reason as it is needed above for the "POST" request; otherwise, 
+		 * reportResource.getReportCategoryResource().getReportCategoryId() will
+		 * be null, since the JSON object returned by the server will not have
+		 * included an attribute/value pair for it. As a result, the assert for 
+		 * it below will fail, even though this GET will still correctly 
+		 * retrieve the Report object. So this is necessary only for this 
+		 * integration test to execute successfully.
+		 * 
+		 * For the same reason, the "reportVersion" "expand" query parameter is
+		 * specified so that the attributes of the ReportVersionResource objects
+		 * are filled in (so we can use the in asserts).
+		 */
+		response = webTarget.path(path)
+				.queryParam("expand", "report", "reportCategory", "reportVersion")  // see comments above why this is necessary
+				.request()
+				.header("Accept", MediaType.APPLICATION_JSON + ";v=" + defaultVersionGet)
+				.get();
+		assertThat(response.getStatus(), is(Response.Status.OK.getStatusCode()));
+		ReportResource reportResource = response.readEntity(ReportResource.class);
+		assertThat(reportResource, is(not(nullValue())));
+		assertThat(reportResource.getName(), is(name));
+		assertThat(reportResource.getNumber(), is(number));
+		assertThat(reportResource.isActive(), is(active));
+		assertThat(DateUtils.entityTimestampToNormalDate(reportResource.getCreatedOn()), is(createdOn));
+		ReportCategoryResource reportCategoryResource = reportResource.getReportCategoryResource();
+		assertThat(reportCategoryResource, is(not(nullValue())));
+		assertThat(reportCategoryResource.getReportCategoryId(), is(uuidOfReportCategory));
+		assertThat(reportResource.getReportVersions(), is(not(nullValue())));
+		/*
+		 * Assert that the id of each ReportVersionResource object returned in
+		 * the ReportResource reportResource object agree with the id's that we
+		 * know they should.
+		 */
+		List<UUID> reportVersionResourceUuids=new ArrayList<>(reportResource.getReportVersions().size());
+		for (ReportVersionResource reportVersionResource : reportResource.getReportVersions()) {
+			reportVersionResourceUuids.add(reportVersionResource.getReportVersionId());
+		}
+		assertThat(reportVersionResourceUuids, hasSize(2));
+		assertThat(reportVersionResourceUuids, IsCollectionContaining.hasItems(reportVersionUuid_1, reportVersionUuid_2));
+
+		/*
+		 * Attempt to fetch a ReportResource using an id that does not exist. This
+		 * should throw a "404" exception.
+		 */
+		UUID uuidOfNonExistentReport = UUID.fromString("6c328253-0000-0000-0000-ef38197931b0");
+
+		path = Paths.get(ResourcePath.forEntity(Report.class).getPath(), uuidOfNonExistentReport.toString())
+				.toString();
+
+		/*
+		 * Attempt to retrieve the nonexistent ReportResource via HTTP GET.
+		 */
+		response = webTarget.path(path)
+				.request()
+				.header("Accept", MediaType.APPLICATION_JSON + ";v=" + defaultVersionGet)
+				.get();
+		assertThat(response.getStatus(), is(Response.Status.NOT_FOUND.getStatusCode()));
+		/*
+		 * If an error occurs, then a RestErrorResource is returned as the 
+		 * entity, not a ReportResource.
+		 */
+		RestErrorResource restErrorResource = response.readEntity(RestErrorResource.class);
+		logger.debug("restErrorResource = {}", restErrorResource);
+		assertThat(restErrorResource, is(not(nullValue())));
+		assertThat(restErrorResource.getHttpStatus(), is(404));
+		assertThat(restErrorResource.getHttpStatus(),
+				is(RestError.NOT_FOUND_RESOUCE.getResponseStatus().getStatusCode()));
+		assertThat(restErrorResource.getErrorCode(), is(RestError.NOT_FOUND_RESOUCE.getErrorCode()));
+
 	}
 
 	@Test

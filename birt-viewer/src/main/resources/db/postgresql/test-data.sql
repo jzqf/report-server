@@ -57,8 +57,13 @@ insert into reporting.report_version (report_version_id, report_id, rptdesign, v
 insert into reporting.report_version (report_version_id, report_id, rptdesign, version_name, version_code, active, created_on) VALUES ('fb8a4896-609b-438a-81b0-c70587f8f637', 'c7f1d394-9814-4ede-bb01-2700187d79ca', (SELECT rptdesign FROM tmp_rptdesign), '0.5', 1, true, '2015-05-06T15:10:00');
 -- 'Report name #03' version 1:
 insert into reporting.report_version (report_version_id, report_id, rptdesign, version_name, version_code, active, created_on) VALUES ('2f88d7ff-8b74-457a-bce6-89d3e74d0bb9', 'fe718314-5b39-40e7-aed2-279354c04a9d', (SELECT rptdesign FROM tmp_rptdesign), '0.5', 1, true, '2015-05-06T15:10:00');
--- 'Report name #04' version 1:
+
+-- 'Report name #04':
+-- version 1:
 insert into reporting.report_version (report_version_id, report_id, rptdesign, version_name, version_code, active, created_on) VALUES ('293abf69-1516-4e9b-84ae-241d25c13e8d', '702d5daa-e23d-4f00-b32b-67b44c06d8f6', (SELECT rptdesign FROM tmp_rptdesign), '0.5', 1, true, '2015-05-06T15:10:00');
+-- version 2:
+insert into reporting.report_version (report_version_id, report_id, rptdesign, version_name, version_code, active, created_on) VALUES ('80b14b11-45c7-4a05-99ed-972050f2338f', '702d5daa-e23d-4f00-b32b-67b44c06d8f6', (SELECT rptdesign FROM tmp_rptdesign), '0.6', 2, true, '2015-05-06T16:59:00');
+
 -- 'Report name #05' version 1:
 insert into reporting.report_version (report_version_id, report_id, rptdesign, version_name, version_code, active, created_on) VALUES ('8dd9bb5a-1565-4d38-8a8b-857803088626', 'f1f06b15-c0b6-488d-9eed-74e867a47d5a', (SELECT rptdesign FROM tmp_rptdesign), '0.5', 1, true, '2015-05-06T15:10:00');
 -- 'Report name #06' version 1:

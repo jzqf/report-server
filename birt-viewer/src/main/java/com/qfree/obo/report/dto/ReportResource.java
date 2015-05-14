@@ -14,6 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.qfree.obo.report.domain.Report;
+import com.qfree.obo.report.domain.ReportVersion;
 import com.qfree.obo.report.rest.server.RestUtils.RestApiVersion;
 
 @XmlRootElement
@@ -34,8 +35,8 @@ public class ReportResource extends AbstractBaseResource {
 	@XmlElement
 	private Integer number;
 
-	//	@XmlElement
-	//	private List<ReportVersion> reportVersions;
+	@XmlElement(name = "reportVersions")
+	private List<ReportVersionResource> reportVersions;
 
 	//	@XmlElement
 	//	private List<RoleReport> roleReports;
@@ -67,17 +68,25 @@ public class ReportResource extends AbstractBaseResource {
 			expandElementRemoved.remove(expandParam);
 
 			this.reportId = report.getReportId();
-			logger.debug("report.getReportCategory() = {}", report.getReportCategory());
 			this.reportCategoryResource = new ReportCategoryResource(report.getReportCategory(), uriInfo,
-					expandElementRemoved,
-					apiVersion);
-			logger.debug("this.reportCategoryResource = {}", this.reportCategoryResource);
+					expandElementRemoved, apiVersion);
 			this.name = report.getName();
 			this.number = report.getNumber();
-			//		this.reportVersions = report.getReportVersions();
-			//		this.roleReports = report.getRoleReports();
 			this.active = report.isActive();
 			this.createdOn = report.getCreatedOn();
+
+			if (report.getReportVersions() != null) {
+
+				List<ReportVersion> reportVersions = report.getReportVersions();
+				List<ReportVersionResource> reportVersionResources = new ArrayList<>(reportVersions.size());
+				for (ReportVersion reportVersion : reportVersions) {
+					reportVersionResources.add(
+							new ReportVersionResource(reportVersion, uriInfo, expandElementRemoved, apiVersion));
+				}
+				this.reportVersions = reportVersionResources;
+			}
+
+			//		this.roleReports = report.getRoleReports();
 		}
 	}
 
@@ -95,6 +104,14 @@ public class ReportResource extends AbstractBaseResource {
 
 	public void setReportCategoryResource(ReportCategoryResource reportCategoryResource) {
 		this.reportCategoryResource = reportCategoryResource;
+	}
+
+	public List<ReportVersionResource> getReportVersions() {
+		return reportVersions;
+	}
+
+	public void setReportVersions(List<ReportVersionResource> reportVersions) {
+		this.reportVersions = reportVersions;
 	}
 
 	public String getName() {
@@ -140,12 +157,16 @@ public class ReportResource extends AbstractBaseResource {
 		builder.append(name);
 		builder.append(", number=");
 		builder.append(number);
+		builder.append(", reportVersions=");
+		builder.append(reportVersions);
 		builder.append(", active=");
 		builder.append(active);
 		builder.append(", createdOn=");
 		builder.append(createdOn);
 		builder.append(", href=");
 		builder.append(href);
+		builder.append(", mediaType=");
+		builder.append(mediaType);
 		builder.append("]");
 		return builder.toString();
 	}

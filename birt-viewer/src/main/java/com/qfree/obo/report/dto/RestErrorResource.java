@@ -151,7 +151,7 @@ public class RestErrorResource {
 		 * {@code 403 Forbidden}.
 		 * @see <a href="http://tools.ietf.org/html/rfc2616#section-10.4.4">HTTP/1.1</a>
 		 */
-		FORBIDDEN(Response.Status.FORBIDDEN, null, null, null),
+		FORBIDDEN(Response.Status.FORBIDDEN, "403.0", null, null),
 		FORBIDDEN_NOT_LOGIN_ROLE(Response.Status.FORBIDDEN, "403.1", "Role does not have 'login' privilege", null),
 		FORBIDDEN_BAD_ROLE_PASSWORD(Response.Status.FORBIDDEN, "403.2", "Wrong password for role", null),
 		FORBIDDEN_REPORT_CATEGORY_NULL(Response.Status.FORBIDDEN, "403.3",
@@ -165,7 +165,7 @@ public class RestErrorResource {
 		 * {@code 404 Not Found}.
 		 * @see <a href="http://tools.ietf.org/html/rfc2616#section-10.4.5">HTTP/1.1</a>
 		 */
-		NOT_FOUND(Response.Status.NOT_FOUND, null, null, null),
+		NOT_FOUND(Response.Status.NOT_FOUND, "404.0", null, null),
 		NOT_FOUND_RESOUCE(Response.Status.NOT_FOUND, "404.1", "A resource could not be located", null),
 		NOT_FOUND_ROLE_TO_AUTHENTICATE(Response.Status.NOT_FOUND, "404.2", "Both a username and encoded password must be submitted", null),
 		/**
@@ -275,7 +275,7 @@ public class RestErrorResource {
 		 * {@code 500 Internal Server Error}.
 		 * @see <a href="http://tools.ietf.org/html/rfc2616#section-10.5.1">HTTP/1.1</a>
 		 */
-		INTERNAL_SERVER_ERROR(Response.Status.INTERNAL_SERVER_ERROR, null, null, null),
+		INTERNAL_SERVER_ERROR(Response.Status.INTERNAL_SERVER_ERROR, "500.0", null, null),
 		/**
 		 * {@code 501 Not Implemented}.
 		 * @see <a href="http://tools.ietf.org/html/rfc2616#section-10.5.2">HTTP/1.1</a>

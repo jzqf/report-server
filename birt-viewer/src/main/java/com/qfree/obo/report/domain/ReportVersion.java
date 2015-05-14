@@ -223,14 +223,23 @@ public class ReportVersion implements Serializable {
 	@Override
 	public String toString() {
 		StringBuilder builder = new StringBuilder();
-		builder.append("ReportParameter [report=");
+		builder.append("ReportVersion [reportVersionId=");
+		builder.append(reportVersionId);
+		builder.append(", report=");
 		builder.append(report);
+		builder.append(", rptdesign=");
+		builder.append("<" + ((rptdesign != null) ? rptdesign.length() : 0) + " bytes>");
 		builder.append(", versionName=");
 		builder.append(versionName);
 		builder.append(", versionCode=");
 		builder.append(versionCode);
+		builder.append(", active=");
+		builder.append(active);
+		builder.append(", createdOn=");
+		builder.append(createdOn);
 		builder.append("]");
 		return builder.toString();
 	}
+
 
 }
