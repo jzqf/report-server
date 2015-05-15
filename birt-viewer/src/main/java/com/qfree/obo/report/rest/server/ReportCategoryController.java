@@ -25,6 +25,7 @@ import org.springframework.stereotype.Component;
 
 import com.qfree.obo.report.db.ReportCategoryRepository;
 import com.qfree.obo.report.domain.ReportCategory;
+import com.qfree.obo.report.dto.ReportCategoryCollectionResource;
 import com.qfree.obo.report.dto.ReportCategoryResource;
 import com.qfree.obo.report.dto.ResourcePath;
 import com.qfree.obo.report.rest.server.RestUtils.RestApiVersion;
@@ -58,7 +59,8 @@ public class ReportCategoryController extends AbstractBaseController {
 	 */
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
-	public List<ReportCategoryResource> getList(
+	//	public List<ReportCategoryResource> getList(
+	public ReportCategoryCollectionResource getList(
 			@HeaderParam("Accept") final String acceptHeader,
 			@QueryParam("expand") final List<String> expand,
 			@Context final UriInfo uriInfo) {
@@ -69,7 +71,9 @@ public class ReportCategoryController extends AbstractBaseController {
 		for (ReportCategory reportCategory : reportCategories) {
 			reportCategoryResources.add(new ReportCategoryResource(reportCategory, uriInfo, expand, apiVersion));
 		}
-		return reportCategoryResources;
+		//		return reportCategoryResources;
+		return new ReportCategoryCollectionResource(reportCategoryResources, ReportCategory.class, uriInfo, expand,
+				apiVersion);
 	}
 
 	/*

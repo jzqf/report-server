@@ -21,6 +21,7 @@ import org.springframework.stereotype.Component;
 
 import com.qfree.obo.report.db.ConfigurationRepository;
 import com.qfree.obo.report.domain.Configuration;
+import com.qfree.obo.report.dto.ConfigurationCollectionResource;
 import com.qfree.obo.report.dto.ConfigurationResource;
 import com.qfree.obo.report.dto.ResourcePath;
 import com.qfree.obo.report.rest.server.RestUtils.RestApiVersion;
@@ -45,7 +46,8 @@ public class ConfigurationController extends AbstractBaseController {
 
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
-	public List<ConfigurationResource> getList(
+	//	public List<ConfigurationResource> getList(
+	public ConfigurationCollectionResource getList(
 			@HeaderParam("Accept") final String acceptHeader,
 			@QueryParam("expand") final List<String> expand,
 			@Context final UriInfo uriInfo) {
@@ -56,7 +58,9 @@ public class ConfigurationController extends AbstractBaseController {
 		for (Configuration configuration : configurations) {
 			configurationResources.add(new ConfigurationResource(configuration, uriInfo, expand, apiVersion));
 		}
-		return configurationResources;
+		//		return configurationResources;
+		return new ConfigurationCollectionResource(configurationResources, Configuration.class, uriInfo, expand,
+				apiVersion);
 	}
 
 	@Path("/{id}")

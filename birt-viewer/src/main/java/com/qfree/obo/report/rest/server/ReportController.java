@@ -26,6 +26,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.qfree.obo.report.db.ReportRepository;
 import com.qfree.obo.report.domain.Report;
+import com.qfree.obo.report.dto.ReportCollectionResource;
 import com.qfree.obo.report.dto.ReportResource;
 import com.qfree.obo.report.dto.ResourcePath;
 import com.qfree.obo.report.rest.server.RestUtils.RestApiVersion;
@@ -56,7 +57,8 @@ public class ReportController extends AbstractBaseController {
 	 */
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
-	public List<ReportResource> getList(
+	//	public List<ReportResource> getList(
+	public ReportCollectionResource getList(
 			@HeaderParam("Accept") final String acceptHeader,
 			@QueryParam("expand") final List<String> expand,
 			@Context final UriInfo uriInfo) {
@@ -67,7 +69,8 @@ public class ReportController extends AbstractBaseController {
 		for (Report report : reports) {
 			reportResources.add(new ReportResource(report, uriInfo, expand, apiVersion));
 		}
-		return reportResources;
+		//		return reportResources;
+		return new ReportCollectionResource(reportResources, Report.class, uriInfo, expand, apiVersion);
 	}
 
 	/*
