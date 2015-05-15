@@ -16,7 +16,9 @@ import com.qfree.obo.report.domain.ReportCategory;
  * @author Jeffrey Zelt
  */
 public interface ReportCategoryRepository extends JpaRepository<ReportCategory, UUID>, ReportCategoryRepositoryCustom {
-	  
+
+	List<ReportCategory> findByActiveTrue();
+
 	ReportCategory findByAbbreviation(String abbreviation);
 
 	ReportCategory findByDescription(String description);

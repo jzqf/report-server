@@ -19,6 +19,9 @@ import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;
 
+import com.qfree.obo.report.dto.ReportCategoryResource;
+import com.qfree.obo.report.util.DateUtils;
+
 /**
  * The persistent class for the "report_category" database table.
  * 
@@ -65,18 +68,36 @@ public class ReportCategory implements Serializable {
 	}
 
 	public ReportCategory(String description, String abbreviation) {
-		this(description, abbreviation, true, new Date());
+		this(null, description, abbreviation, true, DateUtils.nowUtc());
 	}
 
 	public ReportCategory(String description, String abbreviation, boolean active) {
-		this(description, abbreviation, active, new Date());
+		this(null, description, abbreviation, active, DateUtils.nowUtc());
 	}
 
 	public ReportCategory(String description, String abbreviation, boolean active, Date createdOn) {
+		this(null, description, abbreviation, active, createdOn);
+	}
+
+	public ReportCategory(ReportCategoryResource reportCategoryResource) {
+		this(
+				reportCategoryResource.getReportCategoryId(),
+				reportCategoryResource.getDescription(),
+				reportCategoryResource.getAbbreviation(),
+				reportCategoryResource.isActive(),
+				reportCategoryResource.getCreatedOn());
+	}
+
+	public ReportCategory(UUID reportCategoryId, String description, String abbreviation, boolean active, Date createdOn) {
+		this.reportCategoryId = reportCategoryId;
 		this.description = description;
 		this.abbreviation = abbreviation;
 		this.active = active;
-		this.createdOn = createdOn;
+		if (createdOn != null) {
+			this.createdOn = createdOn;
+		} else {
+			this.createdOn = DateUtils.nowUtc();
+		}
 	}
 
 	public UUID getReportCategoryId() {
@@ -122,13 +143,18 @@ public class ReportCategory implements Serializable {
 	@Override
 	public String toString() {
 		StringBuilder builder = new StringBuilder();
+		builder.append("ReportCategory [reportCategoryId=");
+		builder.append(reportCategoryId);
 		builder.append(", abbreviation=");
 		builder.append(abbreviation);
 		builder.append(", description=");
 		builder.append(description);
 		builder.append(", active=");
 		builder.append(active);
+		builder.append(", createdOn=");
+		builder.append(createdOn);
 		builder.append("]");
 		return builder.toString();
 	}
+
 }

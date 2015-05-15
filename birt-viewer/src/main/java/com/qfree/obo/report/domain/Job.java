@@ -18,6 +18,8 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+import com.qfree.obo.report.util.DateUtils;
+
 /**
  * The persistent class for the "job" database table.
  * 
@@ -152,12 +154,12 @@ public class Job implements Serializable {
 	}
 
 	public Job(ReportVersion report_version, Role role, DocumentFormat documentFormat) {
-		this(report_version, role, documentFormat, null, null, null, null, new Date());
+		this(report_version, role, documentFormat, null, null, null, null, DateUtils.nowUtc());
 	}
 
 	public Job(ReportVersion report_version, Role role, DocumentFormat documentFormat,
 			String url, String fileName, String document, Boolean encoded) {
-		this(report_version, role, documentFormat, url, fileName, document, encoded, new Date());
+		this(report_version, role, documentFormat, url, fileName, document, encoded, DateUtils.nowUtc());
 	}
 
 	public Job(ReportVersion report_version, Role role, DocumentFormat documentFormat,
@@ -169,7 +171,11 @@ public class Job implements Serializable {
 		this.fileName = fileName;
 		this.document = document;
 		this.encoded = encoded;
-		this.createdOn = createdOn;
+		if (createdOn != null) {
+			this.createdOn = createdOn;
+		} else {
+			this.createdOn = DateUtils.nowUtc();
+		}
 	}
 
 	public Long getJobId() {

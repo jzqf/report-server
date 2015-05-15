@@ -13,7 +13,6 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -23,6 +22,8 @@ import javax.validation.constraints.NotNull;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;
+
+import com.qfree.obo.report.util.DateUtils;
 
 /**
  * The persistent class for the "configuration" database table.
@@ -36,7 +37,6 @@ import org.hibernate.annotations.TypeDef;
 				@UniqueConstraint(columnNames = { "param_name", "role_id" },
 						name = "uc_configuration_paramname_role") })
 @TypeDef(name = "uuid-custom", defaultForType = UUID.class, typeClass = UuidCustomType.class)
-@NamedQuery(name = "Report.findByCreated", query = "select r from Report r order by r.createdOn desc")
 public class Configuration implements Serializable {
 
 	private static final long serialVersionUID = 1L;
@@ -170,22 +170,26 @@ public class Configuration implements Serializable {
 	private Date createdOn;
 
 	public Configuration() {
-		this(null, null, null, new Date());
+		this(null, null, null, DateUtils.nowUtc());
 	}
 
 	public Configuration(ParamName paramName) {
-		this(paramName, null, paramName.paramType(), new Date());
+		this(paramName, null, paramName.paramType(), DateUtils.nowUtc());
 	}
 
 	public Configuration(ParamName paramName, Role role) {
-		this(paramName, role, paramName.paramType(), new Date());
+		this(paramName, role, paramName.paramType(), DateUtils.nowUtc());
 	}
 
 	public Configuration(ParamName paramName, Role role, ParamType paramType, Date createdOn) {
 		this.paramName = paramName;
 		this.role = role;
 		this.paramType = paramType;
-		this.createdOn = createdOn;
+		if (createdOn != null) {
+			this.createdOn = createdOn;
+		} else {
+			this.createdOn = DateUtils.nowUtc();
+		}
 	}
 
 	public UUID getConfigurationId() {

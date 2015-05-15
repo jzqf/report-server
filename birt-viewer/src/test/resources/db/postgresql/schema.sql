@@ -1,11 +1,14 @@
 -- PostgreSQL:
 
+DROP TABLE IF EXISTS configuration;
 DROP TABLE IF EXISTS job;
+DROP TABLE IF EXISTS job_parameter;
 DROP TABLE IF EXISTS role_report;
 DROP TABLE IF EXISTS role_parameter_value;
 DROP TABLE IF EXISTS report;
 DROP TABLE IF EXISTS report_category;
 DROP TABLE IF EXISTS report_parameter;
+DROP TABLE IF EXISTS report_version;
 DROP TABLE IF EXISTS role;
 DROP TABLE IF EXISTS role_role;
 DROP TABLE IF EXISTS subscription_parameter_value;

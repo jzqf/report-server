@@ -19,6 +19,8 @@ import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;
 
+import com.qfree.obo.report.util.DateUtils;
+
 /**
  * The persistent class for the "document_format" database table.
  * 
@@ -123,12 +125,12 @@ public class DocumentFormat implements Serializable {
 	}
 
 	public DocumentFormat(String name, String fileExtension, String mediaType, String birtFormat, boolean binary) {
-		this(name, fileExtension, mediaType, birtFormat, binary, true, new Date());
+		this(name, fileExtension, mediaType, birtFormat, binary, true, DateUtils.nowUtc());
 	}
 
 	public DocumentFormat(String name, String fileExtension, String mediaType, String birtFormat, boolean binary,
 			boolean active) {
-		this(name, fileExtension, mediaType, birtFormat, binary, active, new Date());
+		this(name, fileExtension, mediaType, birtFormat, binary, active, DateUtils.nowUtc());
 	}
 
 	public DocumentFormat(String name, String fileExtension, String mediaType, String birtFormat, boolean binary,
@@ -139,7 +141,11 @@ public class DocumentFormat implements Serializable {
 		this.birtFormat = birtFormat;
 		this.binaryData = binary;
 		this.active = active;
-		this.createdOn = createdOn;
+		if (createdOn != null) {
+			this.createdOn = createdOn;
+		} else {
+			this.createdOn = DateUtils.nowUtc();
+		}
 	}
 
 	public UUID getDocumentFormatId() {

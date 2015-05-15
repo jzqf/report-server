@@ -32,6 +32,30 @@ public class ConfigurationService {
 		return get(paramName, null);
 	}
 
+	/**
+	 * Generic version of {@code get} method that returns an object of the 
+	 * appropriate type that does need casting.
+	 * 
+	 * @param paramName
+	 * @param role
+	 * @param c
+	 * @return T paramValue
+	 */
+	@SuppressWarnings("unchecked")
+	@Transactional(readOnly = true)
+	public <T> T get(ParamName paramName, Role role, Class<T> c) {
+		Object object = get(paramName, role);
+		T t = null;
+		if (object != null) {
+			//		try {
+			t = (T) object;  // let calling code deal with possible exception
+			//		} catch (ClassCastException e) {
+			//			t = null;  // Just return null
+			//		}
+		}
+		return t;
+	}
+
 	@Transactional(readOnly = true)
 	public Object get(ParamName paramName, Role role) {
 		/*
@@ -57,6 +81,13 @@ public class ConfigurationService {
 			 */
 			configuration = configurationRepository.findByParamName(paramName);
 		}
+		/*
+		 * No, do not execute RestUtils.ifNullThen404. If configuration==null 
+		 * here, this method should return null since that is its expected 
+		 * behavior. This case is logged below so that we can monitor if/when
+		 * it occurs.
+		 */
+		//RestUtils.ifNullThen404(configuration, Configuration.class, "paramName", paramName.toString());
 
 		if (configuration != null) {
 			/*
@@ -100,13 +131,11 @@ public class ConfigurationService {
 				break;
 			default:
 				logger.error("Untreated case. paramType = {}", configuration.getParamType());
-				//TODO Throw a custom (or even a standard) exception here?
 				break;
 			}
 
 		} else {
 			logger.error("A Configuration entity does not exist for paramName = {}", paramName);
-			//TODO Throw a custom (or even a standard) exception here?
 		}
 
 		return object;

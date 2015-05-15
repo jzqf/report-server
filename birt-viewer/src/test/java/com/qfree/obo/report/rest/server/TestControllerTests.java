@@ -4,13 +4,15 @@ import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
 import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.Form;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
@@ -36,7 +38,7 @@ import com.qfree.obo.report.ApplicationConfig;
 /*
  * These integration tests can modify the test database via the ReST call via
  * the HTTP connection to the embedded server that receives the request. They
- * may "dirty" trhe application context in other ways as well. This causes
+ * may "dirty" the application context in other ways as well. This causes
  * other unit/integration tests in other test classes to fail when using an H2
  * embedded database. The @DirtiesContext annotation here tells Spring to reset 
  * the application context after all tests in the class. In addition, 
@@ -48,6 +50,9 @@ public class TestControllerTests {
 
 	private static final Logger logger = LoggerFactory.getLogger(TestControllerTests.class);
 
+	//	@Autowired
+	//	private ConfigurationService configurationService;
+
 	@Value("${local.server.port}")
 	private int port;
 
@@ -56,51 +61,306 @@ public class TestControllerTests {
 
 	@BeforeClass
 	public static void setUpBeforeClass() {
-		System.out.println("@BeforeClass: Setting up JAX-RS Client...");
-		client = ClientBuilder.newBuilder()
-				//	.register(JsonProcessingFeature.class)
-				//	.property(JsonGenerator.PRETTY_PRINTING, true)
-				.build();
+		client = ControllerTestUtils.setUpJaxRsClient();
 	}
 
 	@Before
 	public void setUp() {
-		/*
-		 * This WebTarget can be used below in each test to derive a target that
-		 * is specific to a particular resource associated with the test. This
-		 * cannot go in @BeforeClass method because that is a static method and
-		 * "port" is an instance variable.
-		 */
-		this.webTarget = client.target("http://localhost:" + port + "/rest");
+		this.webTarget = ControllerTestUtils.setUpWebTarget(client, port);
 	}
 
 	@Test
-	//	@Ignore
 	//	@DirtiesContext
-	@Transactional
-	public void testGetTest() {
-		Response response = webTarget
-				.path("test")
-				.request(MediaType.TEXT_PLAIN_TYPE)
-				//	.request(MediaType.APPLICATION_JSON_TYPE);
-				//	.header("some-header", "some-value");
+	@Transactional(readOnly = true)
+	public void testApiVersionGet() {
+		/* This is the default version for the endpoint "test/api_version" 
+		 * using HTTP GET.
+		 */
+		String defaultVersion = "2";
+		Response response;
+
+		response = webTarget.path("test/api_version")
+				.request()
+				.header("Accept", MediaType.TEXT_PLAIN + ";v=1")
 				.get();
 		assertThat(response.getStatus(), is(Response.Status.OK.getStatusCode()));
-		assertThat(response.readEntity(String.class), is("/test"));
+		assertThat(response.readEntity(String.class), is("1"));
+
+		response = webTarget.path("test/api_version")
+				.request()
+				.header("Accept", MediaType.TEXT_PLAIN + ";application&v=1")
+				.get();
+		assertThat(response.getStatus(), is(Response.Status.OK.getStatusCode()));
+		assertThat(response.readEntity(String.class), is("1"));
+
+		response = webTarget.path("test/api_version")
+				.request()
+				.header("Accept", MediaType.TEXT_PLAIN + ";v=5")
+				.get();
+		assertThat(response.getStatus(), is(Response.Status.OK.getStatusCode()));
+		assertThat(response.readEntity(String.class), is("5"));
+
+		response = webTarget.path("test/api_version")
+				.request()
+				.header("Accept", MediaType.TEXT_PLAIN + ";application&v=5")
+				.get();
+		assertThat(response.getStatus(), is(Response.Status.OK.getStatusCode()));
+		assertThat(response.readEntity(String.class), is("5"));
+
+		/*
+		 * The version specifier "v" is case-insensitive.
+		 */
+		response = webTarget.path("test/api_version")
+				.request()
+				.header("Accept", MediaType.TEXT_PLAIN + ";V=5")
+				.get();
+		assertThat(response.getStatus(), is(Response.Status.OK.getStatusCode()));
+		assertThat(response.readEntity(String.class), is("5"));
+
+		/*
+		 * If no version is specified, the default should be returned.
+		 */
+		response = webTarget.path("test/api_version")
+				.request()
+				.header("Accept", MediaType.TEXT_PLAIN)
+				.get();
+		assertThat(response.getStatus(), is(Response.Status.OK.getStatusCode()));
+		assertThat(response.readEntity(String.class), is(defaultVersion));
+
+		/*
+		 * Version 99 does not exist. The default version will be used.
+		 */
+		response = webTarget.path("test/api_version")
+				.request()
+				.header("Accept", MediaType.TEXT_PLAIN + ";v=99")
+				.get();
+		assertThat(response.getStatus(), is(Response.Status.OK.getStatusCode()));
+		assertThat(response.readEntity(String.class), is(defaultVersion));
+
+		response = webTarget.path("test/api_version")
+				.request()
+				.header("Accept", MediaType.TEXT_PLAIN + ";application&v=99")
+				.get();
+		assertThat(response.getStatus(), is(Response.Status.OK.getStatusCode()));
+		assertThat(response.readEntity(String.class), is(defaultVersion));
+
+		/*
+		 * "vv=4" is not the correct syntax to specify the version. The default 
+		 * version will be used.
+		 */
+		response = webTarget.path("test/api_version")
+				.request()
+				.header("Accept", MediaType.TEXT_PLAIN + ";vv=4")
+				.get();
+		assertThat(response.getStatus(), is(Response.Status.OK.getStatusCode()));
+		assertThat(response.readEntity(String.class), is(defaultVersion));
+
+		response = webTarget.path("test/api_version")
+				.request()
+				.header("Accept", MediaType.TEXT_PLAIN + ";application&vv=4")
+				.get();
+		assertThat(response.getStatus(), is(Response.Status.OK.getStatusCode()));
+		assertThat(response.readEntity(String.class), is(defaultVersion));
 	}
 
 	@Test
-	//	@Ignore
-	@DirtiesContext
-	@Transactional
+	//	@DirtiesContext
+	@Transactional(readOnly = true)
+	public void testApiVersionPost() {
+		/* This is the default version for the endpoint "test/api_version" 
+		 * using HTTP POST.
+		 */
+		String defaultVersion = "3";
+		Response response;
+		Form form = new Form();
+
+		response = webTarget.path("test/api_version")
+				.request()
+				.header("Accept", MediaType.TEXT_PLAIN + ";v=1")
+				.post(Entity.entity(form, MediaType.APPLICATION_FORM_URLENCODED_TYPE));
+		assertThat(response.getStatus(), is(Response.Status.OK.getStatusCode()));
+		assertThat(response.readEntity(String.class), is("1"));
+
+		response = webTarget.path("test/api_version")
+				.request()
+				.header("Accept", MediaType.TEXT_PLAIN + ";v=2")
+				.post(Entity.entity(form, MediaType.APPLICATION_FORM_URLENCODED_TYPE));
+		assertThat(response.getStatus(), is(Response.Status.OK.getStatusCode()));
+		assertThat(response.readEntity(String.class), is("2"));
+
+		response = webTarget.path("test/api_version")
+				.request()
+				.header("Accept", MediaType.TEXT_PLAIN + ";v=5")
+				.post(Entity.entity(form, MediaType.APPLICATION_FORM_URLENCODED_TYPE));
+		assertThat(response.getStatus(), is(Response.Status.OK.getStatusCode()));
+		assertThat(response.readEntity(String.class), is("5"));
+
+		/*
+		 * The version specifier "v" is case-insensitive.
+		 */
+		response = webTarget.path("test/api_version")
+				.request()
+				.header("Accept", MediaType.TEXT_PLAIN + ";V=5")
+				.post(Entity.entity(form, MediaType.APPLICATION_FORM_URLENCODED_TYPE));
+		assertThat(response.getStatus(), is(Response.Status.OK.getStatusCode()));
+		assertThat(response.readEntity(String.class), is("5"));
+
+		/*
+		 * If no version is specified, the default should be returned.
+		 */
+		response = webTarget.path("test/api_version")
+				.request()
+				.header("Accept", MediaType.TEXT_PLAIN)
+				.post(Entity.entity(form, MediaType.APPLICATION_FORM_URLENCODED_TYPE));
+		assertThat(response.getStatus(), is(Response.Status.OK.getStatusCode()));
+		assertThat(response.readEntity(String.class), is(defaultVersion));
+
+		/*
+		 * Version 99 does not exist. The default version will be used.
+		 */
+		response = webTarget.path("test/api_version")
+				.request()
+				.header("Accept", MediaType.TEXT_PLAIN + ";v=99")
+				.post(Entity.entity(form, MediaType.APPLICATION_FORM_URLENCODED_TYPE));
+		assertThat(response.getStatus(), is(Response.Status.OK.getStatusCode()));
+		assertThat(response.readEntity(String.class), is(defaultVersion));
+
+		/*
+		 * "vv=4" is not the correct syntax to specify the version. The default 
+		 * version will be used.
+		 */
+		response = webTarget.path("test/api_version")
+				.request()
+				.header("Accept", MediaType.TEXT_PLAIN + ";vv=4")
+				.post(Entity.entity(form, MediaType.APPLICATION_FORM_URLENCODED_TYPE));
+		assertThat(response.getStatus(), is(Response.Status.OK.getStatusCode()));
+		assertThat(response.readEntity(String.class), is(defaultVersion));
+	}
+
+	@Test
+	//	@DirtiesContext
+	@Transactional(readOnly = true)
+	public void testFormPostProduceText() {
+		Form form = new Form();
+		String param1 = "param1 value";
+		String param2 = "param2 value";
+		form.param("param1", param1);
+		form.param("param2", param2);
+
+		Response response;
+
+		response = webTarget.path("test/form")
+				.request()
+				.header("Accept", MediaType.TEXT_PLAIN + ";v=1")
+				.post(Entity.entity(form, MediaType.APPLICATION_FORM_URLENCODED_TYPE));
+		assertThat(response.getStatus(), is(Response.Status.OK.getStatusCode()));
+		assertThat(response.readEntity(String.class), is("(" + param1 + ", " + param2 + "): v1"));
+
+		response = webTarget.path("test/form")
+				.request()
+				.header("Accept", MediaType.TEXT_PLAIN + ";v=99")  // default version is "v2"
+				.post(Entity.entity(form, MediaType.APPLICATION_FORM_URLENCODED_TYPE));
+		assertThat(response.getStatus(), is(Response.Status.OK.getStatusCode()));
+		assertThat(response.readEntity(String.class), is("(" + param1 + ", " + param2 + "): v2"));
+	}
+
+	@Test
+	//	@DirtiesContext	//	@Ignore
+	@Transactional(readOnly = true)
 	public void testGetTestStringParamDefault() {
+		String expected = "Meaning of life";
 		Response response = webTarget
 				.path("test/string_param_default")
 				.request(MediaType.TEXT_PLAIN_TYPE)
 				.get();
 		assertThat(response.getStatus(), is(Response.Status.OK.getStatusCode()));
-		assertThat(response.readEntity(String.class), is("Default value for ParamName.TEST_STRING"));
+		assertThat(response.readEntity(String.class), is(expected));
 	}
+
+	@Test
+	@Ignore
+	@DirtiesContext
+	@Transactional
+	public void testGetPostGetTestStringParamDefault() {
+		String expectedInitialValue = "Meaning of life";
+		String newValue = "New default value for ParamName.TEST_STRING";
+		Response response;
+
+		/*
+		 * "GET" current default value
+		 */
+		response = webTarget
+				.path("test/string_param_default")
+				.request(MediaType.TEXT_PLAIN_TYPE)
+				.get();
+		assertThat(response.getStatus(), is(Response.Status.OK.getStatusCode()));
+		assertThat(response.readEntity(String.class), is(expectedInitialValue));
+
+		/*
+		 * "POST" new default value
+		 */
+		Form form = new Form();
+		form.param("paramValue", newValue);
+		response = webTarget.path("test/string_param_default")
+				.request()
+				.header("Accept", MediaType.TEXT_PLAIN + ";v=1")
+				.post(Entity.entity(form, MediaType.APPLICATION_FORM_URLENCODED_TYPE));
+		assertThat(response.getStatus(), is(Response.Status.OK.getStatusCode()));
+		assertThat(response.readEntity(String.class), is(newValue));
+
+		/*
+		 * "GET" updated default value
+		 */
+		response = webTarget
+				.path("test/string_param_default")
+				.request(MediaType.TEXT_PLAIN_TYPE)
+				.get();
+		assertThat(response.getStatus(), is(Response.Status.OK.getStatusCode()));
+		assertThat(response.readEntity(String.class), is(newValue));
+	}
+
+	@Test
+	@DirtiesContext
+	@Transactional
+	public void testGetPutGetTestStringParamDefault() {
+		String expectedInitialValue = "Meaning of life";
+		String newValue = "New default value for ParamName.TEST_STRING";
+		Response response;
+
+		/*
+		 * "GET" current default value
+		 */
+		response = webTarget
+				.path("test/string_param_default")
+				.request(MediaType.TEXT_PLAIN_TYPE)
+				.get();
+		assertThat(response.getStatus(), is(Response.Status.OK.getStatusCode()));
+		assertThat(response.readEntity(String.class), is(expectedInitialValue));
+
+		/*
+		 * "PUT" new default value
+		 */
+		response = webTarget.path("test/string_param_default")
+				.request()
+				.header("Accept", MediaType.TEXT_PLAIN + ";v=1")
+				.put(Entity.entity(newValue, MediaType.TEXT_PLAIN_TYPE));
+		assertThat(response.getStatus(), is(Response.Status.OK.getStatusCode()));
+		assertThat(response.readEntity(String.class), is(newValue));
+
+		/*
+		 * "GET" updated default value
+		 */
+		response = webTarget
+				.path("test/string_param_default")
+				.request(MediaType.TEXT_PLAIN_TYPE)
+				.get();
+		assertThat(response.getStatus(), is(Response.Status.OK.getStatusCode()));
+		assertThat(response.readEntity(String.class), is(newValue));
+	}
+
+
+	//TODO Test also setting Integer/Long values, Boolean values, date, time datetime, ...
+
 
 	//	/**
 	//	 * Used to specify the format expected for the return type of the add call.

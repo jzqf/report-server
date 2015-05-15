@@ -21,6 +21,9 @@ import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;
 
+import com.qfree.obo.report.dto.RoleResource;
+import com.qfree.obo.report.util.DateUtils;
+
 /**
  * The persistent class for the "role" database table.
  * 
@@ -108,15 +111,35 @@ public class Role implements Serializable {
 	private Role() {
 	}
 
-	public Role(String encodedPassword, String username, boolean loginRole) {
-		this(encodedPassword,  username,  loginRole, new Date());
+	public Role(String encodedPassword, String username, String fullName, boolean loginRole) {
+		this(encodedPassword, username, fullName, loginRole, DateUtils.nowUtc());
 	}
 
-	public Role(String encodedPassword, String username, boolean loginRole, Date createdOn) {
-		this.createdOn = createdOn;
+	public Role(String encodedPassword, String username, String fullName, boolean loginRole, Date createdOn) {
+		this(null, encodedPassword, username, fullName, loginRole, createdOn);
+	}
+
+	public Role(RoleResource roleResource) {
+		this(
+				roleResource.getRoleId(),
+				roleResource.getEncodedPassword(),
+				roleResource.getUsername(),
+				roleResource.getFullName(),
+				roleResource.isLoginRole(),
+				roleResource.getCreatedOn());
+	}
+
+	public Role(UUID roleId, String encodedPassword, String username, String fullName, boolean loginRole, Date createdOn) {
+		this.roleId = roleId;
 		this.loginRole = loginRole;
 		this.username = username;
+		this.fullName = fullName;
 		this.encodedPassword = encodedPassword;
+		if (createdOn != null) {
+			this.createdOn = createdOn;
+		} else {
+			this.createdOn = DateUtils.nowUtc();
+		}
 	}
 
 	public UUID getRoleId() {
@@ -218,12 +241,19 @@ public class Role implements Serializable {
 	@Override
 	public String toString() {
 		StringBuilder builder = new StringBuilder();
-		builder.append("Role [loginRole=");
+		builder.append("Role [roleId=");
+		builder.append(roleId);
+		builder.append(", loginRole=");
 		builder.append(loginRole);
 		builder.append(", username=");
 		builder.append(username);
+		builder.append(", fullName=");
+		builder.append(fullName);
+		builder.append(", encodedPassword=");
+		builder.append(encodedPassword);
+		builder.append(", createdOn=");
+		builder.append(createdOn);
 		builder.append("]");
 		return builder.toString();
 	}
-
 }

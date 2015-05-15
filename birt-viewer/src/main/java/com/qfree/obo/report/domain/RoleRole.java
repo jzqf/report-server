@@ -20,6 +20,8 @@ import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;
 
+import com.qfree.obo.report.util.DateUtils;
+
 /**
  * The persistent class for the "role_role" database table.
  * 
@@ -76,13 +78,17 @@ public class RoleRole implements Serializable {
 	}
 
 	public RoleRole(Role parentRole, Role childRole) {
-		this(parentRole, childRole, new Date());
+		this(parentRole, childRole, DateUtils.nowUtc());
 	}
 
 	public RoleRole(Role parentRole, Role childRole, Date createdOn) {
 		this.parentRole = parentRole;
 		this.childRole = childRole;
-		this.createdOn = createdOn;
+		if (createdOn != null) {
+			this.createdOn = createdOn;
+		} else {
+			this.createdOn = DateUtils.nowUtc();
+		}
 	}
 
 	public UUID getRoleRoleId() {

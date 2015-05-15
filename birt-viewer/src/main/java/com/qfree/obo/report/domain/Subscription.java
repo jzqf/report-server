@@ -22,6 +22,8 @@ import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;
 
+import com.qfree.obo.report.util.DateUtils;
+
 /**
  * The persistent class for the "subscription" database table.
  * 
@@ -137,7 +139,7 @@ public class Subscription implements Serializable {
 	public Subscription(Role role, ReportVersion reportVersion, DocumentFormat documentFormat, String cronSchedule,
 			Date runOnceAt,
 			String email, String description) {
-		this(role, reportVersion, documentFormat, cronSchedule, runOnceAt, email, description, new Date());
+		this(role, reportVersion, documentFormat, cronSchedule, runOnceAt, email, description, DateUtils.nowUtc());
 	}
 
 	public Subscription(Role role, ReportVersion reportVersion, DocumentFormat documentFormat, String cronSchedule,
@@ -150,7 +152,11 @@ public class Subscription implements Serializable {
 		this.runOnceAt = runOnceAt;
 		this.email = email;
 		this.description = description;
-		this.createdOn = createdOn;
+		if (createdOn != null) {
+			this.createdOn = createdOn;
+		} else {
+			this.createdOn = DateUtils.nowUtc();
+		}
 	}
 
 	public UUID getSubscriptionId() {

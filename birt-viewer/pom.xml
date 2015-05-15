@@ -147,6 +147,15 @@
 			<version>${jersey.version}</version>
 		</dependency> -->
 		
+		<!-- MOXy: JSON provider for JAX-RS. This library provides POJO- and
+		     JAXB-based binding support. This featue is auto-discovered by
+		     Jersey as long as this jar is on the classpath.  -->
+		<dependency>
+			<groupId>org.glassfish.jersey.media</groupId>
+			<artifactId>jersey-media-moxy</artifactId>
+			<version>${jersey.version}</version>
+		</dependency>
+		
 		<!-- Java API for JSON Processing (javax.json.JsonArray, ...) -->
 		<dependency>
 			<groupId>org.glassfish</groupId>

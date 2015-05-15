@@ -19,6 +19,8 @@ import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;
 
+import com.qfree.obo.report.util.DateUtils;
+
 /**
  * The persistent class for the "widget" database table.
  * 
@@ -71,11 +73,11 @@ public class Widget implements Serializable {
 	}
 
 	public Widget(String description, String name, boolean multipleSelect) {
-		this(description, name, multipleSelect, true, new Date());
+		this(description, name, multipleSelect, true, DateUtils.nowUtc());
 	}
 
 	public Widget(String description, String name, boolean multipleSelect, boolean active) {
-		this(description, name, multipleSelect, active, new Date());
+		this(description, name, multipleSelect, active, DateUtils.nowUtc());
 	}
 
 	public Widget(String description, String name, boolean multipleSelect, boolean active, Date createdOn) {
@@ -83,7 +85,11 @@ public class Widget implements Serializable {
 		this.name = name;
 		this.multipleSelect = multipleSelect;
 		this.active = active;
-		this.createdOn = createdOn;
+		if (createdOn != null) {
+			this.createdOn = createdOn;
+		} else {
+			this.createdOn = DateUtils.nowUtc();
+		}
 	}
 
 	public UUID getWidgetId() {

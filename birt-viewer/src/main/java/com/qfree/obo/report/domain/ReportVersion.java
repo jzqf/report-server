@@ -24,6 +24,8 @@ import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;
 
+import com.qfree.obo.report.util.DateUtils;
+
 /**
  * The persistent class for the "report_version" database table.
  * 
@@ -129,7 +131,7 @@ public class ReportVersion implements Serializable {
 	}
 
 	public ReportVersion(Report report, String rptdesign, String versionName, Integer versionCode, boolean active) {
-		this(report, rptdesign, versionName, versionCode, active, new Date());
+		this(report, rptdesign, versionName, versionCode, active, DateUtils.nowUtc());
 	}
 
 	public ReportVersion(Report report, String rptdesign, String versionName, Integer versionCode, boolean active,
@@ -139,7 +141,11 @@ public class ReportVersion implements Serializable {
 		this.versionName = versionName;
 		this.versionCode = versionCode;
 		this.active = active;
-		this.createdOn = createdOn;
+		if (createdOn != null) {
+			this.createdOn = createdOn;
+		} else {
+			this.createdOn = DateUtils.nowUtc();
+		}
 	}
 
 	public UUID getReportVersionId() {
@@ -217,14 +223,23 @@ public class ReportVersion implements Serializable {
 	@Override
 	public String toString() {
 		StringBuilder builder = new StringBuilder();
-		builder.append("ReportParameter [report=");
+		builder.append("ReportVersion [reportVersionId=");
+		builder.append(reportVersionId);
+		builder.append(", report=");
 		builder.append(report);
+		builder.append(", rptdesign=");
+		builder.append("<" + ((rptdesign != null) ? rptdesign.length() : 0) + " bytes>");
 		builder.append(", versionName=");
 		builder.append(versionName);
 		builder.append(", versionCode=");
 		builder.append(versionCode);
+		builder.append(", active=");
+		builder.append(active);
+		builder.append(", createdOn=");
+		builder.append(createdOn);
 		builder.append("]");
 		return builder.toString();
 	}
+
 
 }

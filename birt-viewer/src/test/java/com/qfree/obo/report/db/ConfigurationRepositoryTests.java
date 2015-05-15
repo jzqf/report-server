@@ -8,12 +8,10 @@ import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertThat;
 
-import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.UUID;
 
-import org.joda.time.LocalTime;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
@@ -27,9 +25,11 @@ import com.qfree.obo.report.ApplicationConfig;
 import com.qfree.obo.report.domain.Configuration;
 import com.qfree.obo.report.domain.Configuration.ParamName;
 import com.qfree.obo.report.domain.Role;
+import com.qfree.obo.report.util.DateUtils;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = ApplicationConfig.class)
+//@DirtiesContext(classMode = ClassMode.AFTER_CLASS)
 public class ConfigurationRepositoryTests {
 
 	private static final Logger logger = LoggerFactory.getLogger(ConfigurationRepositoryTests.class);
@@ -51,7 +51,6 @@ public class ConfigurationRepositoryTests {
 	private static final String TEST_TEXT_DEFAULT_VALUE = "Meaning of life - really";
 	// The year, month and day here are arbitrary and used only to construct a Date.
 	private static final Date TEST_TIME_DEFAULT_VALUE = new GregorianCalendar(2000, 0, 1, 16, 17, 18).getTime();
-	private static final LocalTime TEST_TIME_DEFAULT_VALUE_JODA = new LocalTime(TEST_TIME_DEFAULT_VALUE);
 	/*
 	 * Role-specific values for Role "aabb" in the test [configuration] records.
 	 */
@@ -67,7 +66,6 @@ public class ConfigurationRepositoryTests {
 	private static final String TEST_TEXT_ROLE_aabb_VALUE = "Yada yada yada yada";
 	// The year, month and day here are arbitrary and used only to construct a Date.
 	private static final Date TEST_TIME_ROLE_aabb_VALUE = new GregorianCalendar(2000, 0, 1, 0, 0, 1).getTime();
-	private static final LocalTime TEST_TIME_ROLE_aabb_VALUE_JODA = new LocalTime(TEST_TIME_ROLE_aabb_VALUE);
 
 	@Autowired
 	ConfigurationRepository configurationRepository;
@@ -147,18 +145,8 @@ public class ConfigurationRepositoryTests {
 		Configuration defaultDateValueConfiguration = configurationRepository
 				.findOne(uuidOfDefaultDateValueConfiguration);
 		assertThat(defaultDateValueConfiguration, is(not(nullValue())));
-		/*
-		 * TEST_DATE_DEFAULT_VALUE has time zone information, but the 
-		 * datetime from the Configuration does not. In order to compare the 
-		 * datetime from the Configuration (for this unit test), we create a 
-		 * new date from the date retrieved from the Configuration and then
-		 * compared *that* Date WITH TEST_DATE_DEFAULT_VALUE.
-		 */
-		Date dateFromConfig = defaultDateValueConfiguration.getDateValue();
-		Calendar calendar = new GregorianCalendar();
-		calendar.setTime(dateFromConfig);
-		Date dateWithTimeZone = calendar.getTime();
-		assertThat(dateWithTimeZone, is(equalTo(TEST_DATE_DEFAULT_VALUE)));
+		assertThat(DateUtils.entityDateToNormalDate(defaultDateValueConfiguration.getDateValue()),
+				is(TEST_DATE_DEFAULT_VALUE));
 	}
 
 	@Test
@@ -168,10 +156,7 @@ public class ConfigurationRepositoryTests {
 		assertThat(configuration, is(not(nullValue())));
 		Date dateFromConfig = configuration.getDateValue();
 		assertThat(dateFromConfig, is(not(nullValue())));
-		Calendar calendar = new GregorianCalendar();
-		calendar.setTime(dateFromConfig);
-		Date dateWithTimeZone = calendar.getTime();
-		assertThat(dateWithTimeZone, is(equalTo(TEST_DATE_DEFAULT_VALUE)));
+		assertThat(DateUtils.entityDateToNormalDate(dateFromConfig), is(TEST_DATE_DEFAULT_VALUE));
 	}
 
 	// ====================== Datetime parameter tests =========================
@@ -183,18 +168,8 @@ public class ConfigurationRepositoryTests {
 		Configuration defaultDatetimeValueConfiguration = configurationRepository
 				.findOne(uuidOfDefaultDatetimeValueConfiguration);
 		assertThat(defaultDatetimeValueConfiguration, is(not(nullValue())));
-		/*
-		 * TEST_DATETIME_DEFAULT_VALUE has time zone information, but the 
-		 * datetime from the Configuration does not. In order to compare the 
-		 * datetime from the Configuration (for this unit test), we create a 
-		 * new date from the date retrieved from the Configuration and then
-		 * compared *that* Date WITH TEST_DATETIME_DEFAULT_VALUE.
-		 */
-		Date datetimeFromConfig = defaultDatetimeValueConfiguration.getDatetimeValue();
-		Calendar calendar = new GregorianCalendar();
-		calendar.setTime(datetimeFromConfig);
-		Date dateWithTimeZone = calendar.getTime();
-		assertThat(dateWithTimeZone, is(equalTo(TEST_DATETIME_DEFAULT_VALUE)));
+		assertThat(DateUtils.entityTimestampToNormalDate(defaultDatetimeValueConfiguration.getDatetimeValue()),
+				is(TEST_DATETIME_DEFAULT_VALUE));
 	}
 
 	// ======================== Double parameter tests ========================
@@ -307,6 +282,40 @@ public class ConfigurationRepositoryTests {
 		assertThat(stringValue, is(TEST_STRING_DEFAULT_VALUE));
 	}
 
+	/*
+	 * Get role-specific string value for a parameter that has both a default 
+	 * (Role==null) Configuration, and a role-specific value. This should
+	 * fetch the role-specific value.
+	 */
+	@Test
+	@Transactional
+	public void stringValueGetRoleSpecific() {
+		UUID uuidOfRole_aabb = UUID.fromString("ee56f34d-dbb4-41c1-9d30-ce29cf973820");
+		Role role_aabb = roleRepository.findOne(uuidOfRole_aabb);
+		assertThat(role_aabb, is(notNullValue()));
+		/*
+		 * Role "aabb" has a role-specific value for the TEST_STRING parameter.
+		 */
+		Object stringValueObject = configurationRepository.findByParamName(ParamName.TEST_STRING, role_aabb)
+				.getStringValue();
+		assertThat(stringValueObject, is(instanceOf(String.class)));
+		assertThat((String) stringValueObject, is(TEST_STRING_ROLE_aabb_VALUE));
+	}
+
+	@Test
+	@Transactional
+	public void stringValueFetchNonexistentRoleSpecific() {
+		UUID uuidOfRole_bcbc = UUID.fromString("e918c8aa-c6d1-462c-9e91-f1db0fb9f346");
+		Role role_bcbc = roleRepository.findOne(uuidOfRole_bcbc);
+		assertThat(role_bcbc, is(notNullValue()));
+		/*
+		 * There is a default value for ParamName.TEST_STRING, but no
+		 * role-specific value for Role "bcbc".
+		 */
+		Object stringValueObject = configurationRepository.findByParamName(ParamName.TEST_STRING, role_bcbc);
+		assertThat(stringValueObject, is(nullValue()));
+	}
+
 	// ======================== Text parameter tests =========================
 
 	@Test
@@ -338,17 +347,8 @@ public class ConfigurationRepositoryTests {
 		Configuration defaultTimeValueConfiguration = configurationRepository
 				.findOne(uuidOfDefaultTimeValueConfiguration);
 		assertThat(defaultTimeValueConfiguration, is(not(nullValue())));
-		/*
-		 * Convert the time returned from the Configuration to Joda time so
-		 * that it can be compared to TEST_TIME_DEFAULT_VALUE_JODA. Joda time
-		 * is used here because Java 7 does not have convenient methods for 
-		 * dealing with times that are not associated with an instant in time) 
-		 * or with dates that do not have a time portion. I could have managed 
-		 * this with standard Java 7 methods, but it is easier to just use Joda 
-		 * time.
-		 */
-		LocalTime defaultTime_Joda = new LocalTime(defaultTimeValueConfiguration.getTimeValue());
-		assertThat(defaultTime_Joda, is(equalTo(TEST_TIME_DEFAULT_VALUE_JODA)));
+		assertThat(DateUtils.timePartsEqual(defaultTimeValueConfiguration.getTimeValue(), TEST_TIME_DEFAULT_VALUE),
+				is(true));
 	}
 
 }

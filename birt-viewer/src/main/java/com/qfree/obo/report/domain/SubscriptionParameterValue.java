@@ -20,6 +20,8 @@ import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;
 
+import com.qfree.obo.report.util.DateUtils;
+
 /**
  * The persistent class for the "subscription_parameter_value" database table.
  * 
@@ -118,7 +120,7 @@ public class SubscriptionParameterValue implements Serializable {
 	}
 
 	public SubscriptionParameterValue(Subscription subscription, ReportParameter reportParameter, String stringValue) {
-		this(subscription, reportParameter, stringValue, new Date());
+		this(subscription, reportParameter, stringValue, DateUtils.nowUtc());
 	}
 
 	public SubscriptionParameterValue(Subscription subscription, ReportParameter reportParameter, String stringValue,
@@ -126,7 +128,11 @@ public class SubscriptionParameterValue implements Serializable {
 		this.subscription = subscription;
 		this.reportParameter = reportParameter;
 		this.stringValue = stringValue;
-		this.createdOn = createdOn;
+		if (createdOn != null) {
+			this.createdOn = createdOn;
+		} else {
+			this.createdOn = DateUtils.nowUtc();
+		}
 	}
 
 	public Subscription getSubscription() {

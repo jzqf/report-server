@@ -28,6 +28,7 @@ import com.qfree.obo.report.domain.Role;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = ApplicationConfig.class)
+//@DirtiesContext(classMode = ClassMode.AFTER_CLASS)
 public class JobRepositoryTests {
 
 	private static final Logger logger = LoggerFactory.getLogger(JobRepositoryTests.class);

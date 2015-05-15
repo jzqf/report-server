@@ -3,6 +3,8 @@ package com.qfree.obo.report.db;
 import java.util.UUID;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import com.qfree.obo.report.domain.Role;
 
@@ -14,6 +16,10 @@ import com.qfree.obo.report.domain.Role;
  * 
  * @author Jeffrey Zelt
  */
-public interface RoleRepository extends JpaRepository<Role, UUID> {
+public interface RoleRepository extends JpaRepository<Role, UUID>, RoleRepositoryCustom {
 	  
+	//	@NamedQuery(name = "Role.findByUsername", query = "select r from Role r where r.username = ?1")
+	@Query("select r from Role r where r.username = :username")
+	public Role findByUsername(@Param("username") String username);
+
 }

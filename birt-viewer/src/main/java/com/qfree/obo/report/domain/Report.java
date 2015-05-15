@@ -13,6 +13,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
@@ -21,6 +22,9 @@ import javax.persistence.TemporalType;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;
+
+import com.qfree.obo.report.dto.ReportResource;
+import com.qfree.obo.report.util.DateUtils;
 
 /**
  * The persistent class for the "report" database table.
@@ -31,6 +35,7 @@ import org.hibernate.annotations.TypeDef;
 @Entity
 @Table(name = "report", schema = "reporting")
 @TypeDef(name = "uuid-custom", defaultForType = UUID.class, typeClass = UuidCustomType.class)
+@NamedQuery(name = "Report.findByCreated", query = "select r from Report r order by r.createdOn desc")
 public class Report implements Serializable {
 
 	private static final long serialVersionUID = 1L;
@@ -125,23 +130,36 @@ public class Report implements Serializable {
 	}
 
 	public Report(ReportCategory reportCategory, String name, Integer number, boolean active) {
-		this(reportCategory, name, number, active, new Date());
+		this(reportCategory, name, number, active, DateUtils.nowUtc());
 	}
 
 	public Report(ReportCategory reportCategory, String name, Integer number, boolean active, Date createdOn) {
+		this(null, reportCategory, name, number, active, createdOn);
+	}
+
+	public Report(ReportResource reportResource, ReportCategory reportCategory) {
+		this(
+				reportResource.getReportId(),
+				reportCategory,
+				reportResource.getName(),
+				reportResource.getNumber(),
+				reportResource.isActive(),
+				reportResource.getCreatedOn());
+	}
+
+	public Report(UUID reportId, ReportCategory reportCategory, String name, Integer number, boolean active,
+			Date createdOn) {
+		this.reportId = reportId;
 		this.reportCategory = reportCategory;
 		this.name = name;
 		this.number = number;
 		this.active = active;
-		this.createdOn = createdOn;
+		if (createdOn != null) {
+			this.createdOn = createdOn;
+		} else {
+			this.createdOn = DateUtils.nowUtc();
+		}
 	}
-
-	//	public Report(UUID reportId, ReportCategory reportCategory, String name, Date createdOn) {
-	//		this.reportId = reportId;
-	//		this.reportCategory = reportCategory;
-	//		this.name = name;
-	//		this.createdOn = createdOn;
-	//	}
 
 	public UUID getReportId() {
 		return this.reportId;
@@ -216,6 +234,8 @@ public class Report implements Serializable {
 		builder.append(reportCategory);
 		builder.append(", name=");
 		builder.append(name);
+		builder.append(", number=");
+		builder.append(number);
 		builder.append("]");
 		return builder.toString();
 	}
