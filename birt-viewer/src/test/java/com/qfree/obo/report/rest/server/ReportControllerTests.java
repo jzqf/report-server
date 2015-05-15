@@ -155,7 +155,9 @@ public class ReportControllerTests {
 		response = webTarget
 				// .path(ResourcePath.REPORTS_PATH)
 				.path(ResourcePath.forEntity(Report.class).getPath())
-				.queryParam("expand", "report", "reportCategory")  // see comments above why this is necessary
+				// See comments above why these query parameters are necessary here:
+				.queryParam("expand", ResourcePath.REPORT_EXPAND_PARAM,
+						ResourcePath.REPORTCATEGORY_EXPAND_PARAM)
 				.request()
 				.header("Accept", MediaType.APPLICATION_JSON + ";v=" + defaultVersionPost)
 				.post(Entity.entity(reportResource, MediaType.APPLICATION_JSON_TYPE));
@@ -329,7 +331,10 @@ public class ReportControllerTests {
 		 * are filled in (so we can use the in asserts).
 		 */
 		response = webTarget.path(path)
-				.queryParam("expand", "report", "reportCategory", "reportVersion")  // see comments above why this is necessary
+				// See comments above why these query parameters are necessary here:
+				.queryParam("expand", ResourcePath.REPORT_EXPAND_PARAM,
+						ResourcePath.REPORTCATEGORY_EXPAND_PARAM,
+						ResourcePath.REPORTVERSIONS_EXPAND_PARAM)
 				.request()
 				.header("Accept", MediaType.APPLICATION_JSON + ";v=" + defaultVersionGet)
 				.get();
@@ -512,7 +517,9 @@ public class ReportControllerTests {
 		 * successfully above by the "PUT" request regardless.
 		 */
 		response = webTarget.path(path)
-				.queryParam("expand", "report", "reportCategory")  // see comments above why this is necessary
+				// See comments above why these query parameters are necessary here:
+				.queryParam("expand", ResourcePath.REPORT_EXPAND_PARAM,
+						ResourcePath.REPORTCATEGORY_EXPAND_PARAM)
 				.request()
 				.header("Accept", MediaType.APPLICATION_JSON + ";v=" + defaultVersionGet)
 				.get();

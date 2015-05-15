@@ -33,11 +33,11 @@ public enum ResourcePath {
 	 * These are the values for each resource class that can be assigned to the
 	 * "expand" query parameter.
 	 */
-	private static final String CONFIGURATION_EXPAND_PARAM = "configuration";
-	private static final String REPORT_EXPAND_PARAM = "report";
-	private static final String REPORTCATEGORY_EXPAND_PARAM = "reportCategory";
-	private static final String REPORTVERSIONS_EXPAND_PARAM = "reportVersion";
-	private static final String ROLE_EXPAND_PARAM = "role";
+	public static final String CONFIGURATION_EXPAND_PARAM = "configurations";
+	public static final String REPORT_EXPAND_PARAM = "reports";
+	public static final String REPORTCATEGORY_EXPAND_PARAM = "reportCategories";
+	public static final String REPORTVERSIONS_EXPAND_PARAM = "reportVersions";
+	public static final String ROLE_EXPAND_PARAM = "roles";
 
 	private final String path;
 	private final String expandParam;
