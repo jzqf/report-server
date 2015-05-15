@@ -68,9 +68,28 @@ public class ReportResource extends AbstractBaseResource {
 			List<String> expandElementRemoved = new ArrayList<>(expand);
 			expandElementRemoved.remove(expandParam);
 
+			/*
+			 * Clear apiVersion since its current valsue is not necessarily
+			 * applicable to any resources associated with fields of this class. 
+			 * See ReportResource for a more detailed explanation.
+			 */
+			apiVersion = null;
+
+			/*
+			 * Set the API version to null for any/all constructors for 
+			 * resources associated with fields of this class. Passing null
+			 * means that we want to use the DEFAULT ReST API version for the
+			 * "href" attribute value. There is no reason why the ReST endpoint
+			 * version associated with these fields should be the same as the 
+			 * version specified for this particular resource class. We could 
+			 * simply pass null below where apiVersion appears, but this is more 
+			 * explicit and therefore clearer to the reader of this code.
+			 */
+			apiVersion = null;
+
 			this.reportId = report.getReportId();
-			this.reportCategoryResource = new ReportCategoryResource(report.getReportCategory(), uriInfo,
-					expandElementRemoved, apiVersion);
+			this.reportCategoryResource = new ReportCategoryResource(report.getReportCategory(),
+					uriInfo, expandElementRemoved, apiVersion);
 			this.name = report.getName();
 			this.number = report.getNumber();
 			this.active = report.isActive();

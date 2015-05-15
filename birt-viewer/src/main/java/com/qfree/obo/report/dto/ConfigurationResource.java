@@ -57,6 +57,13 @@ public class ConfigurationResource extends AbstractBaseResource {
 			List<String> expandElementRemoved = new ArrayList<>(expand);
 			expandElementRemoved.remove(expandParam);
 
+			/*
+			 * Clear apiVersion since its current value is not necessarily
+			 * applicable to any resources associated with fields of this class. 
+			 * See ReportResource for a more detailed explanation.
+			 */
+			apiVersion = null;
+
 			this.configurationId = configuration.getConfigurationId();
 			this.createdOn = configuration.getCreatedOn();
 			//		this.role = configuration.getRole();

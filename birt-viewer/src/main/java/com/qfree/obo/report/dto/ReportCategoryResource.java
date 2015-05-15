@@ -63,6 +63,13 @@ public class ReportCategoryResource extends AbstractBaseResource {
 			List<String> expandElementRemoved = new ArrayList<>(expand);
 			expandElementRemoved.remove(expandParam);
 
+			/*
+			 * Clear apiVersion since its current value is not necessarily
+			 * applicable to any resources associated with fields of this class. 
+			 * See ReportResource for a more detailed explanation.
+			 */
+			apiVersion = null;
+
 			this.reportCategoryId = reportCategory.getReportCategoryId();
 			this.abbreviation = reportCategory.getAbbreviation();
 			this.description = reportCategory.getDescription();
