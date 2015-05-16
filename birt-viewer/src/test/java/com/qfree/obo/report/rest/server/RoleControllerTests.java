@@ -125,6 +125,7 @@ public class RoleControllerTests {
 		 * Retrieve the RoleResource via HTTP GET.
 		 */
 		response = webTarget.path(path)
+				.queryParam("expand", ResourcePath.ROLE_EXPAND_PARAM)
 				.request()
 				.header("Accept", MediaType.APPLICATION_JSON + ";v=" + defaultVersionGet)
 				.get();
@@ -332,6 +333,7 @@ public class RoleControllerTests {
 		 * Retrieve the RoleResource that was updated via HTTP GET.
 		 */
 		response = webTarget.path(path)
+				.queryParam("expand", ResourcePath.ROLE_EXPAND_PARAM)
 				.request()
 				.header("Accept", MediaType.APPLICATION_JSON + ";v=" + defaultVersionGet)
 				.get();

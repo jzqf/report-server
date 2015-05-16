@@ -54,9 +54,13 @@ public class ReportController extends AbstractBaseController {
 	 *   $ mvn clean spring-boot:run
 	 *   $ curl -i -H "Accept: application/json;v=1" -X GET \
 	 *   http://localhost:8081/report-server/rest/reports
+	 * 
+	 * @Transactional is used to avoid org.hibernate.LazyInitializationException
+	 * being thrown when evaluating report.getReportVersions().
 	 */
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
+	@Transactional
 	//	public List<ReportResource> getList(
 	public ReportCollectionResource getList(
 			@HeaderParam("Accept") final String acceptHeader,
@@ -95,7 +99,9 @@ public class ReportController extends AbstractBaseController {
 
 		Report report = reportService.saveNewFromResource(reportResource);
 		logger.debug("report = {}", report);
-		addToExpandList(expand, Report.class);  // Force primary resource to be "expanded", if not already requested
+		if (RestUtils.AUTO_EXPAND_PRIMARY_RESOURCES) {
+			addToExpandList(expand, Report.class);
+		}
 		ReportResource resource = new ReportResource(report, uriInfo, expand, apiVersion);
 		logger.debug("resource = {}", resource);
 		return created(resource);
@@ -123,7 +129,9 @@ public class ReportController extends AbstractBaseController {
 		RestApiVersion apiVersion = RestUtils.extractAPIVersion(acceptHeader, RestApiVersion.v1);
 		logger.debug("expand = {}", expand);
 
-		addToExpandList(expand, Report.class);	// Force primary resource to be "expanded"
+		if (RestUtils.AUTO_EXPAND_PRIMARY_RESOURCES) {
+			addToExpandList(expand, Report.class);
+		}
 		Report report = reportRepository.findOne(id);
 		RestUtils.ifNullThen404(report, Report.class, "reportId", id.toString());
 		logger.debug("report = {}", report);

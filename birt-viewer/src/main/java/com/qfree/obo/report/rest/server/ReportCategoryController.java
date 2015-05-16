@@ -126,7 +126,9 @@ public class ReportCategoryController extends AbstractBaseController {
 			@Context final UriInfo uriInfo) {
 		RestApiVersion apiVersion = RestUtils.extractAPIVersion(acceptHeader, RestApiVersion.v1);
 
-		addToExpandList(expand, ReportCategory.class);	// Force primary resource to be "expanded"
+		if (RestUtils.AUTO_EXPAND_PRIMARY_RESOURCES) {
+			addToExpandList(expand, ReportCategory.class);
+		}
 		ReportCategory reportCategory = reportCategoryRepository.findOne(id);
 		RestUtils.ifNullThen404(reportCategory, ReportCategory.class, "reportCategoryId", id.toString());
 		ReportCategoryResource reportCategoryResource =
