@@ -27,4 +27,7 @@ public interface RoleRepository extends JpaRepository<Role, UUID>, RoleRepositor
 	@Query("SELECT r FROM RoleReport rr INNER JOIN rr.report r WHERE rr.role.roleId = :roleId")
 	public List<Report> findReportsByRoleId(@Param("roleId") UUID roleId);
 
+	@Query("SELECT r FROM RoleReport rr INNER JOIN rr.report r WHERE rr.role.roleId = :roleId AND r.active=true")
+	public List<Report> findActiveReportsByRoleId(@Param("roleId") UUID roleId);
+
 }

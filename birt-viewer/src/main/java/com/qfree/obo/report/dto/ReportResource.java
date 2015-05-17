@@ -15,6 +15,7 @@ import org.slf4j.LoggerFactory;
 
 import com.qfree.obo.report.domain.Report;
 import com.qfree.obo.report.domain.ReportVersion;
+import com.qfree.obo.report.rest.server.RestUtils;
 import com.qfree.obo.report.rest.server.RestUtils.RestApiVersion;
 
 @XmlRootElement
@@ -100,8 +101,15 @@ public class ReportResource extends AbstractBaseResource {
 				List<ReportVersion> reportVersions = report.getReportVersions();
 				List<ReportVersionResource> reportVersionResources = new ArrayList<>(reportVersions.size());
 				for (ReportVersion reportVersion : reportVersions) {
-					reportVersionResources.add(
-							new ReportVersionResource(reportVersion, uriInfo, expandElementRemoved, apiVersion));
+					/*
+					 * TODO Add a query parameter to disable filtering on *active* for ReportVersion's?
+					 * 		How about ...&nofilter=active or ... What if we want to see only
+					 * 		active Report's but unfiltered ReportVersion's (active or not)?
+					 */
+					if (reportVersion.isActive() || RestUtils.FILTER_INACTIVE_RECORDS == false) {
+						reportVersionResources.add(
+								new ReportVersionResource(reportVersion, uriInfo, expandElementRemoved, apiVersion));
+					}
 				}
 				//this.reportVersions = reportVersionResources;
 				this.reportVersions = new ReportVersionCollectionResource(reportVersionResources, ReportVersion.class,

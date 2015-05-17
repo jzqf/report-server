@@ -68,7 +68,12 @@ public class ReportController extends AbstractBaseController {
 			@Context final UriInfo uriInfo) {
 		RestApiVersion apiVersion = RestUtils.extractAPIVersion(acceptHeader, RestApiVersion.v1);
 
-		List<Report> reports = reportRepository.findByActiveTrue();
+		List<Report> reports = null;
+		if (RestUtils.FILTER_INACTIVE_RECORDS) {
+			reports = reportRepository.findByActiveTrue();
+		} else {
+			reports = reportRepository.findAll();
+		}
 		List<ReportResource> reportResources = new ArrayList<>(reports.size());
 		for (Report report : reports) {
 			reportResources.add(new ReportResource(report, uriInfo, expand, apiVersion));

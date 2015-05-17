@@ -75,10 +75,6 @@ public abstract class AbstractBaseResource {
 		//			}
 		//		}
 
-		logger.info("uriInfo.getBaseUri() = {}", uriInfo.getBaseUri());
-		logger.info("uriInfo.getAbsolutePath() = {}", uriInfo.getAbsolutePath());
-		logger.info("uriInfo.getRequestUri() = {}", uriInfo.getRequestUri());
-
 		/*
 		 * uriInfo.getBaseUriBuilder() returns a UriBuilder initialized with the
 		 * base URI of the application. This "base URI" includes the entire 
@@ -100,8 +96,8 @@ public abstract class AbstractBaseResource {
 			/*
 			 * Collection resources:
 			 */
-			return uriInfo.getBaseUriBuilder()
-					.path(resourcePath.getPath())
+			return uriInfo.getAbsolutePathBuilder()
+					//.path(resourcePath.getPath())
 					.queryParam("expand", expand.toArray())
 					.toString();
 		}

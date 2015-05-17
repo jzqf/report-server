@@ -6,6 +6,7 @@ import com.qfree.obo.report.exceptions.RestApiException;
 public class RestUtils {
 
 	public static final boolean AUTO_EXPAND_PRIMARY_RESOURCES = false;
+	public static final boolean FILTER_INACTIVE_RECORDS = true;
 
 	/**
 	 * Version numbers for JAX-RS ReST endpoints exposed by this application.<p>

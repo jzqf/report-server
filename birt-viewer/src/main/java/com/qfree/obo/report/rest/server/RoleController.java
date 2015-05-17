@@ -167,7 +167,17 @@ public class RoleController extends AbstractBaseController {
 		Role role = roleRepository.findOne(id);
 		RestUtils.ifNullThen404(role, Role.class, "roleId", id.toString());
 
-		List<Report> reports = roleRepository.findReportsByRoleId(role.getRoleId());
+		/*
+		 * TODO Add a query parameter to disable filtering on *active* for Report's?
+		 * 		How about ...&nofilter=active or ... What if we want to see only
+		 * 		active Report's but unfiltered ReportVersion's (active or not)?
+		 */
+		List<Report> reports = null;
+		if (RestUtils.FILTER_INACTIVE_RECORDS) {
+			reports = roleRepository.findActiveReportsByRoleId(role.getRoleId());
+		} else {
+			reports = roleRepository.findReportsByRoleId(role.getRoleId());
+		}
 		List<ReportResource> reportResources = new ArrayList<>(reports.size());
 		for (Report report : reports) {
 			reportResources.add(new ReportResource(report, uriInfo, expand, apiVersion));
