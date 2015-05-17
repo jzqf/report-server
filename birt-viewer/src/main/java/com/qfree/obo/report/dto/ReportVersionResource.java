@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.UUID;
 
 import javax.ws.rs.core.UriInfo;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
@@ -17,6 +19,7 @@ import com.qfree.obo.report.domain.ReportVersion;
 import com.qfree.obo.report.rest.server.RestUtils.RestApiVersion;
 
 @XmlRootElement
+@XmlAccessorType(XmlAccessType.FIELD)
 public class ReportVersionResource extends AbstractBaseResource {
 
 	private static final Logger logger = LoggerFactory.getLogger(ReportVersionResource.class);
@@ -29,6 +32,8 @@ public class ReportVersionResource extends AbstractBaseResource {
 	private ReportResource reportResource;
 
 	@XmlElement
+	// Do not serialize this field - needs @XmlAccessorType(XmlAccessType.FIELD);
+	//@XmlTransient
 	private String rptdesign;
 
 	@XmlElement
@@ -74,7 +79,13 @@ public class ReportVersionResource extends AbstractBaseResource {
 			this.reportVersionId = reportVersion.getReportVersionId();
 			this.reportResource = new ReportResource(reportVersion.getReport(),
 					uriInfo, expandElementRemoved, apiVersion);
-			this.rptdesign = reportVersion.getRptdesign();
+			if (expand.contains(ResourcePath.RPTDESIGN_EXPAND_PARAM)) {
+				this.rptdesign = reportVersion.getRptdesign();
+				expandElementRemoved.remove(ResourcePath.RPTDESIGN_EXPAND_PARAM);  // probably not necessary
+			} else {
+				this.rptdesign = String.format("<%s bytes>",
+						(reportVersion.getRptdesign() != null) ? reportVersion.getRptdesign().length() : 0);
+			}
 			this.versionName = reportVersion.getVersionName();
 			this.versionCode = reportVersion.getVersionCode();
 			this.active = reportVersion.isActive();
@@ -146,7 +157,8 @@ public class ReportVersionResource extends AbstractBaseResource {
 		builder.append(", reportResource=");
 		builder.append(reportResource);
 		builder.append(", rptdesign=");
-		builder.append("<" + ((rptdesign != null) ? rptdesign.length() : 0) + " bytes>");
+		builder.append(rptdesign);
+		//		builder.append("<" + ((rptdesign != null) ? rptdesign.length() : 0) + " bytes>");
 		builder.append(", versionName=");
 		builder.append(versionName);
 		builder.append(", versionCode=");

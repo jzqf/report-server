@@ -67,13 +67,17 @@ public abstract class AbstractBaseResource {
 		//		if (expand.size() > 0) {
 		//			queryParameters.append("?");
 		//			for (int i = 0; i < expand.size(); i++) {
-		//				if (i == 0) {
+		//				if (i == 0) {http://localhost:8080/rest/roles/b85fd129-17d9-40e7-ac11-7541040f8627/reports?expand=reports&expand=reportVersions
 		//					queryParameters.append("expand=" + expand.get(0));
 		//				} else {
 		//					queryParameters.append("&expand=" + expand.get(0));
 		//				}
 		//			}
 		//		}
+
+		logger.info("uriInfo.getBaseUri() = {}", uriInfo.getBaseUri());
+		logger.info("uriInfo.getAbsolutePath() = {}", uriInfo.getAbsolutePath());
+		logger.info("uriInfo.getRequestUri() = {}", uriInfo.getRequestUri());
 
 		/*
 		 * uriInfo.getBaseUriBuilder() returns a UriBuilder initialized with the

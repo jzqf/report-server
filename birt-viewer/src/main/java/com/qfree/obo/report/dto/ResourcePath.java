@@ -38,6 +38,10 @@ public enum ResourcePath {
 	public static final String REPORTCATEGORY_EXPAND_PARAM = "reportCategories";
 	public static final String REPORTVERSIONS_EXPAND_PARAM = "reportVersions";
 	public static final String ROLE_EXPAND_PARAM = "roles";
+	/*
+	 * Special "expand" parameter for the *field* ReportVersion.rptdesign.
+	 */
+	public static final String RPTDESIGN_EXPAND_PARAM = "rptdesign";
 
 	private final String path;
 	private final String expandParam;

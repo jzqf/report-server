@@ -22,9 +22,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.qfree.obo.report.db.RoleRepository;
+import com.qfree.obo.report.domain.Report;
 import com.qfree.obo.report.domain.Role;
+import com.qfree.obo.report.dto.ReportCollectionResource;
+import com.qfree.obo.report.dto.ReportResource;
 import com.qfree.obo.report.dto.ResourcePath;
 import com.qfree.obo.report.dto.RoleCollectionResource;
 import com.qfree.obo.report.dto.RoleResource;
@@ -103,7 +107,7 @@ public class RoleController extends AbstractBaseController {
 	 * 
 	 *   $ mvn clean spring-boot:run
 	 *   $ curl -i -H "Accept: application/json;v=1" -X GET \
-	 *   http://localhost:8080/rest/roles/0db97c2a-fb78-464a-a0e7-8d25f6003c14
+	 *   http://localhost:8080/rest/roles/b85fd129-17d9-40e7-ac11-7541040f8627
 	 */
 	@Path("/{id}")
 	@GET
@@ -122,6 +126,54 @@ public class RoleController extends AbstractBaseController {
 		RestUtils.ifNullThen404(role, Role.class, "roleId", id.toString());
 		RoleResource roleResource = new RoleResource(role, uriInfo, expand, apiVersion);
 		return roleResource;
+	}
+
+	/*
+	 * This endpoint can be tested with (note that "&" is escaped here as "\&"
+	 * so it will not be treated specially by the bash shell):
+	 * 
+	 *   $ mvn clean spring-boot:run
+	 *   $ curl -i -H "Accept: application/json;v=1" -X GET \
+	 *   http://localhost:8080/rest/roles/b85fd129-17d9-40e7-ac11-7541040f8627/reports\
+	 *   ?expand=reports\&expand=reportVersions\&expand=rptdesign
+	 * 
+	 * @Transactional is used to avoid org.hibernate.LazyInitializationException
+	 * being thrown when evaluating report.getReportVersions().
+	 */
+	/**
+	 * Return all Report instances that the Role with a specified id has access
+	 * to. Each Report will have zero or more ReportVersions 
+	 * 
+	 * @param id
+	 * @param acceptHeader
+	 * @param expand
+	 * @param uriInfo
+	 * @return
+	 */
+	@Transactional
+	@Path("/{id}/reports")
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	public ReportCollectionResource getReportsForRole(
+			@PathParam("id") final UUID id,
+			@HeaderParam("Accept") final String acceptHeader,
+			@QueryParam("expand") final List<String> expand,
+			@Context final UriInfo uriInfo) {
+		RestApiVersion apiVersion = RestUtils.extractAPIVersion(acceptHeader, RestApiVersion.v1);
+
+		if (RestUtils.AUTO_EXPAND_PRIMARY_RESOURCES) {
+			addToExpandList(expand, Role.class);
+		}
+		Role role = roleRepository.findOne(id);
+		RestUtils.ifNullThen404(role, Role.class, "roleId", id.toString());
+
+		List<Report> reports = roleRepository.findReportsByRoleId(role.getRoleId());
+		List<ReportResource> reportResources = new ArrayList<>(reports.size());
+		for (Report report : reports) {
+			reportResources.add(new ReportResource(report, uriInfo, expand, apiVersion));
+		}
+		//		return reportResources;
+		return new ReportCollectionResource(reportResources, Report.class, uriInfo, expand, apiVersion);
 	}
 
 	/*

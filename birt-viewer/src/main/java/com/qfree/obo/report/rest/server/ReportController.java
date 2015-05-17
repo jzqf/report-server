@@ -58,9 +58,9 @@ public class ReportController extends AbstractBaseController {
 	 * @Transactional is used to avoid org.hibernate.LazyInitializationException
 	 * being thrown when evaluating report.getReportVersions().
 	 */
+	@Transactional
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
-	@Transactional
 	//	public List<ReportResource> getList(
 	public ReportCollectionResource getList(
 			@HeaderParam("Accept") final String acceptHeader,
@@ -117,10 +117,10 @@ public class ReportController extends AbstractBaseController {
 	 * @Transactional is used to avoid org.hibernate.LazyInitializationException
 	 * being thrown when evaluating report.getReportVersions().
 	 */
+	@Transactional
 	@Path("/{id}")
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
-	@Transactional
 	public ReportResource getById(
 			@PathParam("id") final UUID id,
 			@HeaderParam("Accept") final String acceptHeader,
