@@ -69,20 +69,20 @@ public class ReportVersion implements Serializable {
 
 	/*
 	 * cascade = CascadeType.ALL:
-	 *     Deleting a Report will delete all of its ReportParameter's.
+	 *     Deleting a ReportVersion will delete all of its ReportParameter's.
 	 */
 	@OneToMany(mappedBy = "reportVersion", cascade = CascadeType.ALL)
 	private List<ReportParameter> reportParameters;
 	/*
 	 * cascade = CascadeType.ALL:
-	 *     Deleting a Report will delete all of its Subscription's.
+	 *     Deleting a ReportVersion will delete all of its Subscription's.
 	 */
 	@OneToMany(mappedBy = "reportVersion", cascade = CascadeType.ALL)
 	private List<Subscription> reportSubscriptions;
 
 	/*
 	 * cascade = CascadeType.ALL:
-	 *     Deleting a Report will delete all of its Job's.
+	 *     Deleting a ReportVersion will delete all of its Job's.
 	 */
 	@OneToMany(mappedBy = "reportVersion", cascade = CascadeType.ALL)
 	private List<Job> jobs;

@@ -133,16 +133,15 @@ public class ReportController extends AbstractBaseController {
 			@Context final UriInfo uriInfo) {
 		RestApiVersion apiVersion = RestUtils.extractAPIVersion(acceptHeader, RestApiVersion.v1);
 		logger.debug("expand = {}", expand);
+		logger.info("uriInfo.getBaseUri().toString() = {}", uriInfo.getBaseUri().toString());
+		logger.info("uriInfo.getAbsolutePath().toString() = {}", uriInfo.getAbsolutePath().toString());
 
 		if (RestUtils.AUTO_EXPAND_PRIMARY_RESOURCES) {
 			addToExpandList(expand, Report.class);
 		}
 		Report report = reportRepository.findOne(id);
 		RestUtils.ifNullThen404(report, Report.class, "reportId", id.toString());
-		logger.debug("report = {}", report);
-		RestUtils.ifNullThen404(report, Report.class, "reportId", id.toString());
 		ReportResource reportResource = new ReportResource(report, uriInfo, expand, apiVersion);
-		logger.debug("reportResource = {}", reportResource);
 		return reportResource;
 	}
 

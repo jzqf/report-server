@@ -189,11 +189,9 @@ public class ReportVersionController extends AbstractBaseController {
 			addToExpandList(expand, ReportVersion.class);
 		}
 		ReportVersion reportVersion = reportVersionRepository.findOne(id);
-		logger.debug("id = {}, reportVersion = {}", id, reportVersion);
 		RestUtils.ifNullThen404(reportVersion, ReportVersion.class, "reportVersionId", id.toString());
 		ReportVersionResource reportVersionResource = new ReportVersionResource(reportVersion,
 				uriInfo, expand, apiVersion);
-		logger.debug("reportVersionResource = {}", reportVersionResource);
 		return reportVersionResource;
 	}
 
