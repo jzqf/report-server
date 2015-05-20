@@ -135,6 +135,8 @@ public class ReportCategoryResource extends AbstractBaseResource {
 		builder.append(createdOn);
 		builder.append(", href=");
 		builder.append(href);
+		builder.append(", mediaType=");
+		builder.append(mediaType);
 		builder.append("]");
 		return builder.toString();
 	}

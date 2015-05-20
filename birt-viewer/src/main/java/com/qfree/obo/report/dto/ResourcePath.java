@@ -3,6 +3,7 @@ package com.qfree.obo.report.dto;
 import com.qfree.obo.report.domain.Configuration;
 import com.qfree.obo.report.domain.Report;
 import com.qfree.obo.report.domain.ReportCategory;
+import com.qfree.obo.report.domain.ReportParameter;
 import com.qfree.obo.report.domain.ReportVersion;
 import com.qfree.obo.report.domain.Role;
 
@@ -11,7 +12,9 @@ public enum ResourcePath {
 	CONFIGURATIONS(ResourcePath.CONFIGURATIONS_PATH, ResourcePath.CONFIGURATION_EXPAND_PARAM, Configuration.class),
 	REPORTS(ResourcePath.REPORTS_PATH, ResourcePath.REPORT_EXPAND_PARAM, Report.class),
 	REPORTCATEGORIES(ResourcePath.REPORTCATEGORIES_PATH, ResourcePath.REPORTCATEGORY_EXPAND_PARAM, ReportCategory.class),
-	REPORTVERSIONS(ResourcePath.REPORTVERSIONS_PATH, ResourcePath.REPORTVERSIONS_EXPAND_PARAM, ReportVersion.class),
+	REPORTPARAMETERS(ResourcePath.REPORTPARAMETERS_PATH, ResourcePath.REPORTPARAMETER_EXPAND_PARAM,
+			ReportParameter.class),
+	REPORTVERSIONS(ResourcePath.REPORTVERSIONS_PATH, ResourcePath.REPORTVERSION_EXPAND_PARAM, ReportVersion.class),
 	ROLES(ResourcePath.ROLES_PATH, ResourcePath.ROLE_EXPAND_PARAM, Role.class);
 
 	private static final String PATH_SEPARATOR = "/";
@@ -25,6 +28,7 @@ public enum ResourcePath {
 	 */
 	public static final String CONFIGURATIONS_PATH = ResourcePath.PATH_SEPARATOR + "configurations";
 	public static final String REPORTCATEGORIES_PATH = ResourcePath.PATH_SEPARATOR + "reportCategories";
+	public static final String REPORTPARAMETERS_PATH = ResourcePath.PATH_SEPARATOR + "reportParameters";
 	public static final String REPORTVERSIONS_PATH = ResourcePath.PATH_SEPARATOR + "reportVersions";
 	public static final String REPORTS_PATH = ResourcePath.PATH_SEPARATOR + "reports";
 	public static final String ROLES_PATH = ResourcePath.PATH_SEPARATOR + "roles";
@@ -36,7 +40,8 @@ public enum ResourcePath {
 	public static final String CONFIGURATION_EXPAND_PARAM = "configurations";
 	public static final String REPORT_EXPAND_PARAM = "reports";
 	public static final String REPORTCATEGORY_EXPAND_PARAM = "reportCategories";
-	public static final String REPORTVERSIONS_EXPAND_PARAM = "reportVersions";
+	public static final String REPORTPARAMETER_EXPAND_PARAM = "reportParameters";
+	public static final String REPORTVERSION_EXPAND_PARAM = "reportVersions";
 	public static final String ROLE_EXPAND_PARAM = "roles";
 	/*
 	 * Special "expand" parameter for the *field* ReportVersion.rptdesign.

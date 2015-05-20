@@ -24,6 +24,7 @@ import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;
 
+import com.qfree.obo.report.dto.ReportVersionResource;
 import com.qfree.obo.report.util.DateUtils;
 
 /**
@@ -130,12 +131,29 @@ public class ReportVersion implements Serializable {
 	public ReportVersion() {
 	}
 
-	public ReportVersion(Report report, String rptdesign, String versionName, Integer versionCode, boolean active) {
-		this(report, rptdesign, versionName, versionCode, active, DateUtils.nowUtc());
-	}
-
 	public ReportVersion(Report report, String rptdesign, String versionName, Integer versionCode, boolean active,
 			Date createdOn) {
+		this(null, report, rptdesign, versionName, versionCode, active, createdOn);
+	}
+
+	public ReportVersion(Report report, String rptdesign, String versionName, Integer versionCode, boolean active) {
+		this(null, report, rptdesign, versionName, versionCode, active, DateUtils.nowUtc());
+	}
+
+	public ReportVersion(ReportVersionResource reportVersionResource, Report report) {
+		this(
+				reportVersionResource.getReportVersionId(),
+				report,
+				reportVersionResource.getRptdesign(),
+				reportVersionResource.getVersionName(),
+				reportVersionResource.getVersionCode(),
+				reportVersionResource.isActive(),
+				reportVersionResource.getCreatedOn());
+	}
+
+	public ReportVersion(UUID reportVersionId, Report report, String rptdesign, String versionName, Integer versionCode,
+			boolean active, Date createdOn) {
+		this.reportVersionId = reportVersionId;
 		this.report = report;
 		this.rptdesign = rptdesign;
 		this.versionName = versionName;

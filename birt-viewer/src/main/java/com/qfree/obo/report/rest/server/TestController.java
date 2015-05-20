@@ -51,6 +51,15 @@ public class TestController extends AbstractBaseController {
 		return "/test endpoint: API version " + apiVersion.getVersion();
 	}
 
+	/*
+	 * This endpoint can be tested with:
+	 * 
+	 *   $ mvn clean spring-boot:run
+	 *   $ curl -i -H "Accept: text/plain;v=1" -X GET http://localhost:8080/rest/test/api_version
+	 * 
+	 * @Transactional is used to avoid org.hibernate.LazyInitializationException
+	 * being thrown when evaluating ...
+	 */
 	/**
 	 * ReST endpoint that can be used to confirm that the API version is being
 	 * specified correctly by a client.
@@ -73,6 +82,12 @@ public class TestController extends AbstractBaseController {
 		return apiVersion.getVersion();
 	}
 
+	/*
+	 * This endpoint can be tested with:
+	 * 
+	 *   $ mvn clean spring-boot:run
+	 *   $ curl -i -H "Accept: text/plain;v=1" -X POST http://localhost:8080/rest/test/api_version
+	 */
 	@POST
 	@Path("/api_version")
 	@Produces(MediaType.TEXT_PLAIN)

@@ -159,7 +159,7 @@ INSERT INTO tmp_rptdesign (rptdesign) VALUES ('<?xml version="1.0" encoding="UTF
 </report>');
 insert into reporting.report_version (report_version_id, report_id, rptdesign, version_name, version_code, active, created_on) VALUES ('d481c452-990c-4ea3-9afa-3ea60cef04ab', '702d5daa-e23d-4f00-b32b-67b44c06d8f6', (SELECT rptdesign FROM tmp_rptdesign), '1.0', 1, true, '2015-05-06T15:10:00');
 delete from tmp_rptdesign;
-
+--
 -- Report 400. 'Test Report #04', version 2:
 INSERT INTO tmp_rptdesign (rptdesign) VALUES ('<?xml version="1.0" encoding="UTF-8"?>
 <report xmlns="http://www.eclipse.org/birt/2005/design" version="3.2.23" id="1">

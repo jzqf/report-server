@@ -268,21 +268,38 @@ public class ReportParameter implements Serializable {
 		this.orderIndex = orderIndex;
 	}
 
+	public Date getCreatedOn() {
+		return createdOn;
+	}
+
+	public void setCreatedOn(Date createdOn) {
+		this.createdOn = createdOn;
+	}
+
 	@Override
 	public String toString() {
 		StringBuilder builder = new StringBuilder();
-		builder.append("ReportParameter [reportVersion=");
-		builder.append(reportVersion);
+		builder.append("ReportParameter [reportParameterId=");
+		builder.append(reportParameterId);
 		builder.append(", name=");
 		builder.append(name);
+		builder.append(", description=");
+		builder.append(description);
 		builder.append(", required=");
 		builder.append(required);
 		builder.append(", multivalued=");
 		builder.append(multivalued);
 		builder.append(", orderIndex=");
 		builder.append(orderIndex);
+		builder.append(", reportVersion=");
+		builder.append(reportVersion);
+		builder.append(", parameterType=");
+		builder.append(parameterType);
+		builder.append(", widget=");
+		builder.append(widget);
+		builder.append(", createdOn=");
+		builder.append(createdOn);
 		builder.append("]");
 		return builder.toString();
 	}
-
 }

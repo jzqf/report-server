@@ -70,13 +70,15 @@
 	</appender>
 
 	<!-- Application Loggers -->
-	<logger name="com.qfree.obo.report.dto.ReportResource"><level value="DEBUG" /></logger>
+	<!-- <logger name="com.qfree.obo.report.dto.ReportResource"><level value="DEBUG" /></logger> -->
 	<logger name="com.qfree.obo.report.dto.ReportVersionResource"><level value="DEBUG" /></logger>
 	<!-- <logger name="com.qfree.obo.report.exceptions.RestApiException"><level value="DEBUG" /></logger> -->
 	<!-- <logger name="com.qfree.obo.report.rest.server.LoginAttemptController"><level value="DEBUG" /></logger> -->
 	<!-- <logger name="com.qfree.obo.report.rest.server.ReportControllerTests"><level value="DEBUG" /></logger> -->
+	<logger name="com.qfree.obo.report.rest.server.ReportVersionController"><level value="DEBUG" /></logger>
 	<!-- <logger name="com.qfree.obo.report.rest.server.ReportController"><level value="DEBUG" /></logger> -->
 	<!-- <logger name="com.qfree.obo.report.rest.server.RoleController"><level value="DEBUG" /></logger> -->
+	<logger name="com.qfree.obo.report.service.ReportVersionService"><level value="DEBUG" /></logger>
 	<!-- <logger name="com.qfree.obo.report.service.RoleService"><level value="DEBUG" /></logger> -->
 		
 	<!-- 3rdparty Loggers -->

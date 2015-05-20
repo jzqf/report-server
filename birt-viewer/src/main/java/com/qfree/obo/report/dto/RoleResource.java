@@ -71,7 +71,7 @@ public class RoleResource extends AbstractBaseResource {
 			expandElementRemoved.remove(expandParam);
 
 			/*
-			 * Clear apiVersion since its current valsue is not necessarily
+			 * Clear apiVersion since its current value is not necessarily
 			 * applicable to any resources associated with fields of this class. 
 			 * See ReportResource for a more detailed explanation.
 			 */

@@ -161,6 +161,8 @@ public class RestErrorResource {
 						+ "the id from the resource instance must be null because "
 						+ "it will be generated for the new entity by the Entity Manager",
 				null),
+		FORBIDDEN_REPORTVERSION_REPORT_NULL(Response.Status.FORBIDDEN, "403.5",
+				"reportId is null for a report version being saved", null),
 		/**
 		 * {@code 404 Not Found}.
 		 * @see <a href="http://tools.ietf.org/html/rfc2616#section-10.4.5">HTTP/1.1</a>

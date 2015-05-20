@@ -15,6 +15,7 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.qfree.obo.report.domain.ReportParameter;
 import com.qfree.obo.report.domain.ReportVersion;
 import com.qfree.obo.report.rest.server.RestUtils.RestApiVersion;
 
@@ -49,12 +50,15 @@ public class ReportVersionResource extends AbstractBaseResource {
 	@XmlJavaTypeAdapter(DateAdapter.class)
 	private Date createdOn;
 
+	@XmlElement(name = "reportParameters")
+	//	private List<ReportParameterResource> reportParameters;
+	private ReportParameterCollectionResource reportParameters;
+
 	public ReportVersionResource() {
 	}
 
 	public ReportVersionResource(ReportVersion reportVersion, UriInfo uriInfo, List<String> expand,
 			RestApiVersion apiVersion) {
-
 		super(ReportVersion.class, reportVersion.getReportVersionId(), uriInfo, expand, apiVersion);
 
 		String expandParam = ResourcePath.forEntity(ReportVersion.class).getExpandParam();
@@ -70,7 +74,7 @@ public class ReportVersionResource extends AbstractBaseResource {
 			expandElementRemoved.remove(expandParam);
 
 			/*
-			 * Clear apiVersion since its current valsue is not necessarily
+			 * Clear apiVersion since its current value is not necessarily
 			 * applicable to any resources associated with fields of this class. 
 			 * See ReportResource for a more detailed explanation.
 			 */
@@ -90,6 +94,19 @@ public class ReportVersionResource extends AbstractBaseResource {
 			this.versionCode = reportVersion.getVersionCode();
 			this.active = reportVersion.isActive();
 			this.createdOn = reportVersion.getCreatedOn();
+
+			if (reportVersion.getReportParameters() != null) {
+
+				List<ReportParameter> reportParameters = reportVersion.getReportParameters();
+				List<ReportParameterResource> reportParameterResources = new ArrayList<>(reportParameters.size());
+				for (ReportParameter reportParameter : reportParameters) {
+					reportParameterResources.add(
+							new ReportParameterResource(reportParameter, uriInfo, expandElementRemoved, apiVersion));
+				}
+				//this.reportParameters = reportParameterResources;
+				this.reportParameters = new ReportParameterCollectionResource(reportParameterResources,
+						ReportParameter.class, uriInfo, expand, apiVersion);
+			}
 		}
 	}
 
@@ -147,6 +164,14 @@ public class ReportVersionResource extends AbstractBaseResource {
 
 	public void setCreatedOn(Date createdOn) {
 		this.createdOn = createdOn;
+	}
+
+	public ReportParameterCollectionResource getReportParameters() {
+		return reportParameters;
+	}
+
+	public void setReportParameters(ReportParameterCollectionResource reportParameters) {
+		this.reportParameters = reportParameters;
 	}
 
 	@Override
