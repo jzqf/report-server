@@ -3,6 +3,7 @@ package com.qfree.obo.report.dto;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import javax.ws.rs.core.UriInfo;
@@ -14,6 +15,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.qfree.obo.report.domain.ReportParameter;
+import com.qfree.obo.report.domain.ReportVersion;
 import com.qfree.obo.report.rest.server.RestUtils.RestApiVersion;
 
 @XmlRootElement
@@ -108,6 +110,21 @@ public class ReportParameterResource extends AbstractBaseResource {
 		}
 	}
 
+	public static List<ReportParameterResource> listFromReportVersion(ReportVersion reportVersion, UriInfo uriInfo,
+			List<String> expand, Map<String, List<String>> extraQueryParams, RestApiVersion apiVersion) {
+		if (reportVersion.getReportParameters() != null) {
+			List<ReportParameter> reportParameters = reportVersion.getReportParameters();
+			List<ReportParameterResource> reportParameterResources = new ArrayList<>(reportParameters.size());
+			for (ReportParameter reportParameter : reportParameters) {
+				reportParameterResources.add(
+						new ReportParameterResource(reportParameter, uriInfo, expand, apiVersion));
+			}
+			return reportParameterResources;
+		} else {
+			return null;
+		}
+	}
+
 	public UUID getReportParameterId() {
 		return reportParameterId;
 	}
@@ -194,5 +211,4 @@ public class ReportParameterResource extends AbstractBaseResource {
 		builder.append("]");
 		return builder.toString();
 	}
-
 }

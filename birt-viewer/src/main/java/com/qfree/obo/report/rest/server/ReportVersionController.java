@@ -5,7 +5,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import javax.ws.rs.Consumes;
@@ -31,7 +33,9 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.qfree.obo.report.db.ReportVersionRepository;
+import com.qfree.obo.report.domain.Report;
 import com.qfree.obo.report.domain.ReportVersion;
+import com.qfree.obo.report.dto.ReportParameterCollectionResource;
 import com.qfree.obo.report.dto.ReportVersionCollectionResource;
 import com.qfree.obo.report.dto.ReportVersionResource;
 import com.qfree.obo.report.dto.ResourcePath;
@@ -253,4 +257,35 @@ public class ReportVersionController extends AbstractBaseController {
 		return Response.status(Response.Status.OK).build();
 	}
 
+	/*
+	 * Return the ReportParameter's associated with a single ReportVersion that
+	 * is specified by its id. This endpoint can be tested with:
+	 * 
+	 *   $ mvn clean spring-boot:run
+	 *   $ curl -i -H "Accept: application/json;v=1" -X GET \
+	 *   http://localhost:8080/rest/reportVersions/293abf69-1516-4e9b-84ae-241d25c13e8d/reportParameters?expand=reportParameters
+	 * 
+	 * @Transactional is used to avoid org.hibernate.LazyInitializationException
+	 * being thrown when evaluating report.get...()?
+	 */
+	@Transactional
+	@Path("/{id}" + ResourcePath.REPORTPARAMETERS_PATH)
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	public ReportParameterCollectionResource getReportParametersByReportVersionId(
+			@PathParam("id") final UUID id,
+			@HeaderParam("Accept") final String acceptHeader,
+			@QueryParam("expand") final List<String> expand,
+			@Context final UriInfo uriInfo) {
+		Map<String, List<String>> extraQueryParams = new HashMap<>();
+		RestApiVersion apiVersion = RestUtils.extractAPIVersion(acceptHeader, RestApiVersion.v1);
+		logger.debug("expand = {}", expand);
+
+		if (RestUtils.AUTO_EXPAND_PRIMARY_RESOURCES) {
+			addToExpandList(expand, Report.class);
+		}
+		ReportVersion reportVersion = reportVersionRepository.findOne(id);
+		RestUtils.ifNullThen404(reportVersion, ReportVersion.class, "reportVersionId", id.toString());
+		return new ReportParameterCollectionResource(reportVersion, uriInfo, expand, extraQueryParams, apiVersion);
+	}
 }
