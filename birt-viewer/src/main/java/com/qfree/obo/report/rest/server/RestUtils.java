@@ -1,9 +1,14 @@
 package com.qfree.obo.report.rest.server;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.qfree.obo.report.dto.RestErrorResource.RestError;
 import com.qfree.obo.report.exceptions.RestApiException;
 
 public class RestUtils {
+
+	private static final Logger logger = LoggerFactory.getLogger(RestUtils.class);
 
 	public static final boolean AUTO_EXPAND_PRIMARY_RESOURCES = false;
 	public static final boolean FILTER_INACTIVE_RECORDS = true;
@@ -86,6 +91,7 @@ public class RestUtils {
 	public static void ifNullThen404(Object object, Class<?> objectClass, String attrName, String attrValue) {
 		if (object == null) {
 			String message = String.format("No %s for %s '%s'", objectClass.getSimpleName(), attrName, attrValue);
+			logger.info("message = {}", message);
 			throw new RestApiException(RestError.NOT_FOUND_RESOUCE, message, objectClass, attrName, attrValue);
 		}
 	}

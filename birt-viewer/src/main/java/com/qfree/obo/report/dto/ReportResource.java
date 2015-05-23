@@ -2,7 +2,9 @@ package com.qfree.obo.report.dto;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import javax.ws.rs.core.UriInfo;
@@ -14,8 +16,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.qfree.obo.report.domain.Report;
-import com.qfree.obo.report.domain.ReportVersion;
-import com.qfree.obo.report.rest.server.RestUtils;
 import com.qfree.obo.report.rest.server.RestUtils.RestApiVersion;
 
 @XmlRootElement
@@ -57,6 +57,7 @@ public class ReportResource extends AbstractBaseResource {
 
 		super(Report.class, report.getReportId(), uriInfo, expand, apiVersion);
 
+		Map<String, List<String>> extraQueryParams = new HashMap<>();
 		String expandParam = ResourcePath.forEntity(Report.class).getExpandParam();
 		if (expand.contains(expandParam)) {
 			/*
@@ -96,25 +97,11 @@ public class ReportResource extends AbstractBaseResource {
 			this.active = report.isActive();
 			this.createdOn = report.getCreatedOn();
 
-			if (report.getReportVersions() != null) {
+			logger.info("report = {}", report);
+			logger.info("report.getReportVersions() = {}", report.getReportVersions());
 
-				List<ReportVersion> reportVersions = report.getReportVersions();
-				List<ReportVersionResource> reportVersionResources = new ArrayList<>(reportVersions.size());
-				for (ReportVersion reportVersion : reportVersions) {
-					/*
-					 * TODO Add a query parameter to disable filtering on *active* for ReportVersion's?
-					 * 		How about ...&nofilter=active or ... What if we want to see only
-					 * 		active Report's but unfiltered ReportVersion's (active or not)?
-					 */
-					if (reportVersion.isActive() || RestUtils.FILTER_INACTIVE_RECORDS == false) {
-						reportVersionResources.add(
-								new ReportVersionResource(reportVersion, uriInfo, expandElementRemoved, apiVersion));
-					}
-				}
-				//this.reportVersions = reportVersionResources;
-				this.reportVersions = new ReportVersionCollectionResource(reportVersionResources, ReportVersion.class,
-						uriInfo, expand, apiVersion);
-			}
+			this.reportVersions = new ReportVersionCollectionResource(report,
+					uriInfo, expandElementRemoved, extraQueryParams, apiVersion);
 
 			//		this.roleReports = report.getRoleReports();
 		}

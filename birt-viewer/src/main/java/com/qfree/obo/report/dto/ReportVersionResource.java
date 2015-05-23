@@ -3,6 +3,7 @@ package com.qfree.obo.report.dto;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import javax.ws.rs.core.UriInfo;
@@ -15,8 +16,10 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.qfree.obo.report.domain.Report;
 import com.qfree.obo.report.domain.ReportParameter;
 import com.qfree.obo.report.domain.ReportVersion;
+import com.qfree.obo.report.rest.server.RestUtils;
 import com.qfree.obo.report.rest.server.RestUtils.RestApiVersion;
 
 @XmlRootElement
@@ -107,6 +110,28 @@ public class ReportVersionResource extends AbstractBaseResource {
 				this.reportParameters = new ReportParameterCollectionResource(reportParameterResources,
 						ReportParameter.class, uriInfo, expand, apiVersion);
 			}
+		}
+	}
+
+	public static List<ReportVersionResource> listFromReport(Report report, UriInfo uriInfo, List<String> expand,
+			Map<String, List<String>> extraQueryParams, RestApiVersion apiVersion) {
+		if (report.getReportVersions() != null) {
+			List<ReportVersion> reportVersions = report.getReportVersions();
+			List<ReportVersionResource> reportVersionResources = new ArrayList<>(reportVersions.size());
+			for (ReportVersion reportVersion : reportVersions) {
+				/*
+				 * TODO Add a query parameter to disable filtering on *active* for ReportVersion's?
+				 * 		How about ...&nofilter=active or ... What if we want to see only
+				 * 		active Report's but unfiltered ReportVersion's (active or not)?
+				 */
+				if (reportVersion.isActive() || RestUtils.FILTER_INACTIVE_RECORDS == false) {
+					reportVersionResources.add(
+							new ReportVersionResource(reportVersion, uriInfo, expand, apiVersion));
+				}
+			}
+			return reportVersionResources;
+		} else {
+			return null;
 		}
 	}
 

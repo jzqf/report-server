@@ -1,7 +1,9 @@
 package com.qfree.obo.report.dto;
 
 import java.util.List;
+import java.util.Map;
 
+import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlTransient;
@@ -33,9 +35,26 @@ public abstract class AbstractBaseResource {
 
 	public AbstractBaseResource(Class<?> entityClass, Object id, UriInfo uriInfo, List<String> expand,
 			RestApiVersion apiVersion) {
+		this(null, null, null, entityClass, id, uriInfo, expand, apiVersion);
+	}
+
+	/**
+	 * 
+	 * @param baseResourceUri currently only used for collection resources
+	 * @param collectionPath currently only used for collection resources
+	 * @param extraQueryParams currently only used for collection resources
+	 * @param entityClass
+	 * @param id currently only used for instance resources
+	 * @param uriInfo
+	 * @param expand
+	 * @param apiVersion
+	 */
+	public AbstractBaseResource(
+			String baseResourceUri, String collectionPath, Map<String, List<String>> extraQueryParams,
+			Class<?> entityClass, Object id, UriInfo uriInfo, List<String> expand, RestApiVersion apiVersion) {
 		super();
 		//		this.href = createHref(getFullyQualifiedContextPath(uriInfo), entityClass, id);
-		this.href = createHref(uriInfo, entityClass, id, expand);
+		this.href = createHref(baseResourceUri, collectionPath, extraQueryParams, uriInfo, entityClass, id, expand);
 		this.mediaType = createMediaType(apiVersion);
 	}
 
@@ -55,52 +74,72 @@ public abstract class AbstractBaseResource {
 		this.mediaType = mediaType;
 	}
 
-	protected static String createHref(UriInfo uriInfo, Class<?> entityClass, Object id, List<String> expand) {
-		//		logger.info("entityClass.getName() = {}", entityClass.getName());
-		//		logger.info("uriInfo.getRequestUri() = {}", uriInfo.getRequestUri());
-		//		logger.info("uriInfo.getQueryParameters() = {}", uriInfo.getQueryParameters());
+	protected static String createHref(
+			UriInfo uriInfo, Class<?> entityClass, Object instanceId, List<String> expand) {
+		return createHref(null, null, null, uriInfo, entityClass, instanceId, expand);
+	}
 
-		ResourcePath resourcePath = ResourcePath.forEntity(entityClass);
-		//		logger.info("resourcePath = {}", resourcePath);
+	protected static String createHref(
+			String baseResourceUri, String collectionPath, Map<String, List<String>> extraQueryParams,
+			UriInfo uriInfo, Class<?> entityClass, Object instanceId, List<String> expand) {
 
-		//		StringBuilder queryParameters = new StringBuilder();
-		//		if (expand.size() > 0) {
-		//			queryParameters.append("?");
-		//			for (int i = 0; i < expand.size(); i++) {
-		//				if (i == 0) {http://localhost:8080/rest/roles/b85fd129-17d9-40e7-ac11-7541040f8627/reports?expand=reports&expand=reportVersions
-		//					queryParameters.append("expand=" + expand.get(0));
-		//				} else {
-		//					queryParameters.append("&expand=" + expand.get(0));
-		//				}
-		//			}
-		//		}
-
-		/*
-		 * uriInfo.getBaseUriBuilder() returns a UriBuilder initialized with the
-		 * base URI of the application. This "base URI" includes the entire 
-		 * request URL except for path components that are specific to an 
-		 * endpoint. For example, this could be:
-		 * 
-		 *     http://localhost:8080/report-server/rest/
-		 */
-		if (id != null) {
+		UriBuilder uriBuilder = null;
+		if (instanceId != null) {
 			/*
 			 * Instance resources:
+			 * 
+			 * uriInfo.getBaseUriBuilder() returns a UriBuilder initialized with the
+			 * base URI of the application. This "base URI" includes the entire 
+			 * request URL except for path components that are specific to an 
+			 * endpoint. For example, this could be:
+			 * 
+			 *     http://localhost:8080/report-server/rest/
 			 */
-			return uriInfo.getBaseUriBuilder()
+			ResourcePath resourcePath = ResourcePath.forEntity(entityClass);
+			uriBuilder = uriInfo.getBaseUriBuilder()
 					.path(resourcePath.getPath())
-					.path(id.toString())
-					.queryParam("expand", expand.toArray())
-					.toString();
+					.path(instanceId.toString());
 		} else {
 			/*
 			 * Collection resources:
 			 */
-			return uriInfo.getAbsolutePathBuilder()
-					//.path(resourcePath.getPath())
-					.queryParam("expand", expand.toArray())
-					.toString();
+			if (baseResourceUri != null) {
+				/*
+				 * We are probably dealing with a collection resource that is an
+				 * attribute of another resource.
+				 */
+				uriBuilder = UriBuilder.fromPath(baseResourceUri);
+				if (collectionPath != null) {
+					uriBuilder = uriBuilder.path(collectionPath);
+				}
+			} else {
+				/*
+				 * We are probably dealing with a top level collection resource..
+				 */
+				ResourcePath resourcePath = ResourcePath.forEntity(entityClass);
+				uriBuilder = uriInfo.getBaseUriBuilder().path(resourcePath.getPath());
+			}
 		}
+
+		if (extraQueryParams != null) {
+			/*
+			 * Append any miscellaneous query parameters held in the Map 
+			 * "extraQueryParams". Each map key is the query parameter name, and 
+			 * each map value is a list of query parameter values. A list is 
+			 * used because there may be multiple values for each query 
+			 * parameter.
+			 */
+			for (Map.Entry<String, List<String>> entry : extraQueryParams.entrySet()) {
+				uriBuilder = uriBuilder.queryParam(entry.getKey(), entry.getValue().toArray());
+			}
+		}
+		if (expand != null) {
+			/*
+			 * Append the "expand" query parameters.
+			 */
+			uriBuilder = uriBuilder.queryParam("expand", expand.toArray());
+		}
+		return uriBuilder.toString();
 	}
 
 	private String createMediaType(RestApiVersion apiVersion) {

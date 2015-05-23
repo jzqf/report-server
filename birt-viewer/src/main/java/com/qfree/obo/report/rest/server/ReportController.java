@@ -1,7 +1,9 @@
 package com.qfree.obo.report.rest.server;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import javax.ws.rs.Consumes;
@@ -28,6 +30,7 @@ import com.qfree.obo.report.db.ReportRepository;
 import com.qfree.obo.report.domain.Report;
 import com.qfree.obo.report.dto.ReportCollectionResource;
 import com.qfree.obo.report.dto.ReportResource;
+import com.qfree.obo.report.dto.ReportVersionCollectionResource;
 import com.qfree.obo.report.dto.ResourcePath;
 import com.qfree.obo.report.rest.server.RestUtils.RestApiVersion;
 import com.qfree.obo.report.service.ReportService;
@@ -53,7 +56,7 @@ public class ReportController extends AbstractBaseController {
 	 * 
 	 *   $ mvn clean spring-boot:run
 	 *   $ curl -i -H "Accept: application/json;v=1" -X GET \
-	 *   http://localhost:8081/report-server/rest/reports
+	 *   http://localhost:8080/rest/reports
 	 * 
 	 * @Transactional is used to avoid org.hibernate.LazyInitializationException
 	 * being thrown when evaluating report.getReportVersions().
@@ -117,7 +120,7 @@ public class ReportController extends AbstractBaseController {
 	 * 
 	 *   $ mvn clean spring-boot:run
 	 *   $ curl -i -H "Accept: application/json;v=1" -X GET \
-	 *   http://localhost:8081/report-server/rest/reports/c7f1d394-9814-4ede-bb01-2700187d79ca
+	 *   http://localhost:8080/rest/reports/c7f1d394-9814-4ede-bb01-2700187d79ca
 	 * 
 	 * @Transactional is used to avoid org.hibernate.LazyInitializationException
 	 * being thrown when evaluating report.getReportVersions().
@@ -133,8 +136,6 @@ public class ReportController extends AbstractBaseController {
 			@Context final UriInfo uriInfo) {
 		RestApiVersion apiVersion = RestUtils.extractAPIVersion(acceptHeader, RestApiVersion.v1);
 		logger.debug("expand = {}", expand);
-		logger.info("uriInfo.getBaseUri().toString() = {}", uriInfo.getBaseUri().toString());
-		logger.info("uriInfo.getAbsolutePath().toString() = {}", uriInfo.getAbsolutePath().toString());
 
 		if (RestUtils.AUTO_EXPAND_PRIMARY_RESOURCES) {
 			addToExpandList(expand, Report.class);
@@ -195,4 +196,35 @@ public class ReportController extends AbstractBaseController {
 		return Response.status(Response.Status.OK).build();
 	}
 
+	/*
+	 * Return the ReportVersions associated with a single Report that is 
+	 * specified by its id. This endpoint can be tested with:
+	 * 
+	 *   $ mvn clean spring-boot:run
+	 *   $ curl -i -H "Accept: application/json;v=1" -X GET \
+	 *   http://localhost:8080/rest/reports/c7f1d394-9814-4ede-bb01-2700187d79ca/reportVersions
+	 * 
+	 * @Transactional is used to avoid org.hibernate.LazyInitializationException
+	 * being thrown when evaluating report.getReportVersions().
+	 */
+	@Transactional
+	@Path("/{id}" + ResourcePath.REPORTVERSIONS_PATH)
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	public ReportVersionCollectionResource getReportVersionsByReportId(
+			@PathParam("id") final UUID id,
+			@HeaderParam("Accept") final String acceptHeader,
+			@QueryParam("expand") final List<String> expand,
+			@Context final UriInfo uriInfo) {
+		Map<String, List<String>> extraQueryParams = new HashMap<>();
+		RestApiVersion apiVersion = RestUtils.extractAPIVersion(acceptHeader, RestApiVersion.v1);
+		logger.debug("expand = {}", expand);
+
+		if (RestUtils.AUTO_EXPAND_PRIMARY_RESOURCES) {
+			addToExpandList(expand, Report.class);
+		}
+		Report report = reportRepository.findOne(id);
+		RestUtils.ifNullThen404(report, Report.class, "reportId", id.toString());
+		return new ReportVersionCollectionResource(report, uriInfo, expand, extraQueryParams, apiVersion);
+	}
 }
