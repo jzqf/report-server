@@ -32,6 +32,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.qfree.obo.report.db.ReportRepository;
 import com.qfree.obo.report.db.ReportVersionRepository;
 import com.qfree.obo.report.domain.Report;
 import com.qfree.obo.report.domain.ReportVersion;
@@ -52,11 +53,14 @@ public class ReportVersionController extends AbstractBaseController {
 
 	private final ReportVersionService reportVersionService;
 
+	private final ReportRepository reportRepository;
+
 	@Autowired
 	public ReportVersionController(ReportVersionRepository reportVersionRepository,
-			ReportVersionService reportVersionService) {
+			ReportVersionService reportVersionService, ReportRepository reportRepository) {
 		this.reportVersionRepository = reportVersionRepository;
 		this.reportVersionService = reportVersionService;
+		this.reportRepository = reportRepository;
 	}
 
 	/*
@@ -133,7 +137,9 @@ public class ReportVersionController extends AbstractBaseController {
 	@Consumes(MediaType.MULTIPART_FORM_DATA)
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response createByUpload(
-			@FormDataParam("first_name") String firstName,
+			@FormDataParam("reportName") String reportName,
+			@FormDataParam("versionName") String versionName,
+			@FormDataParam("versionCode") Integer versionCode,
 			@FormDataParam("file") InputStream uploadedInputStream,
 			@FormDataParam("file") FormDataContentDisposition fileDetail,
 			@HeaderParam("Accept") final String acceptHeader,
@@ -141,28 +147,34 @@ public class ReportVersionController extends AbstractBaseController {
 			@Context final UriInfo uriInfo) throws IOException {
 		RestApiVersion apiVersion = RestUtils.extractAPIVersion(acceptHeader, RestApiVersion.v1);
 
+		String lineSeparator = System.getProperty("line.separator");
 		StringBuilder rptdesignStringBuilder = new StringBuilder();
 		try (BufferedReader reader = new BufferedReader(new InputStreamReader(uploadedInputStream))) {
 			String line;
 			while ((line = reader.readLine()) != null) {
 				rptdesignStringBuilder.append(line);
+				rptdesignStringBuilder.append(lineSeparator);
 			}
 		}
-		logger.info("firstName = {}", firstName);
+		logger.info("reportName = {}", reportName);
+		logger.info("versionName = {}", versionName);
+		logger.info("versionCode = {}", versionCode);	// should we assign this automatically (increment)?
 		logger.info("rptdesignStringBuilder.toString() = {}", rptdesignStringBuilder.toString());
+		logger.info("fileDetail.getFileName() = {}", fileDetail.getFileName());
 
-		//logger.info("rptdesignFile = {}");
+		Report report = reportRepository.findByName(reportName);
+		RestUtils.ifNullThen404(report, Report.class, "name", reportName);
+		logger.info("report = {}", report);
 
-		ReportVersionResource uploadedReportVersionResource = new ReportVersionResource();	// REPLACE WITH REAL CODE.  THIS IS ONLY TO AVOID AN ERROR
-		logger.debug("uploadedReportVersionResource = {}", uploadedReportVersionResource);
-
-		ReportVersion reportVersion = reportVersionService.saveNewFromResource(uploadedReportVersionResource);
-		logger.debug("reportVersion = {}", reportVersion);
+		ReportVersion reportVersion = new ReportVersion(report, rptdesignStringBuilder.toString(), versionName,
+				versionCode, true);
+		reportVersion = reportVersionRepository.save(reportVersion);
+		logger.info("reportVersion = {}", reportVersion);
 		if (RestUtils.AUTO_EXPAND_PRIMARY_RESOURCES) {
 			addToExpandList(expand, ReportVersion.class);
 		}
 		ReportVersionResource resource = new ReportVersionResource(reportVersion, uriInfo, expand, apiVersion);
-		logger.debug("resource = {}", resource);
+		logger.info("resource = {}", resource);
 		return created(resource);
 	}
 
