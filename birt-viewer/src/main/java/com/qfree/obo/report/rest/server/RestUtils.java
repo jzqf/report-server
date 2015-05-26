@@ -1,10 +1,14 @@
 package com.qfree.obo.report.rest.server;
 
+import java.io.IOException;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.xml.sax.SAXException;
 
 import com.qfree.obo.report.dto.RestErrorResource.RestError;
 import com.qfree.obo.report.exceptions.RestApiException;
+import com.qfree.obo.report.util.XmlUtils;
 
 public class RestUtils {
 
@@ -96,6 +100,27 @@ public class RestUtils {
 		}
 	}
 
+	public static void ifAttrNullOrBlankThen403(Object object, Class<?> objectClass, String attrName) {
+		//TODO Create different messages based on which arguments are not null.
+		if (object == null || (object instanceof String && object.toString().isEmpty())) {
+			String message = null;
+			if (objectClass != null && attrName != null) {
+				message = String.format("Attribute '%s' of %s is null or blank",
+						attrName, objectClass.getSimpleName());
+			} else if (objectClass != null) {
+				message = String.format("An attribute %s is null or blank",
+						objectClass.getSimpleName());
+			} else if (attrName != null) {
+				message = String.format("'%s' is null or blank", attrName);
+			} else {
+				message = RestError.FORBIDDEN_ATTRIBUTE_NULL_OR_BLANK.getErrorMessage();
+			}
+			logger.info("message = {}", message);
+			throw new RestApiException(RestError.FORBIDDEN_ATTRIBUTE_NULL_OR_BLANK, message, objectClass, attrName,
+					null);
+		}
+	}
+
 	public static void ifNewResourceIdNotNullThen403(Object id, Class<?> classToCreate, String attrName,
 			Object attrValueObject) {
 		if (id != null) {
@@ -108,9 +133,21 @@ public class RestUtils {
 			String message = String.format("%s = '%s'. The id must be null when creating a new %s. "
 					+ RestError.FORBIDDEN_NEW_RESOUCE_ID_NOTNULL.getErrorMessage(), attrName, attrValueString,
 					classToCreate.getSimpleName());
-			throw new RestApiException(RestError.FORBIDDEN_NEW_RESOUCE_ID_NOTNULL, message, classToCreate, attrName,
-					null);
+			throw new RestApiException(RestError.FORBIDDEN_NEW_RESOUCE_ID_NOTNULL, message,
+					classToCreate, attrName, null);
 		}
 	}
 
+	public static void ifNotValidXmlThen403(String xml, String errorMsg,
+			Class<?> referenceClass, String attrName, String attrValue) {
+		try {
+			XmlUtils.validate(xml);
+		} catch (SAXException | IOException e) {
+			if (errorMsg == null) {
+				errorMsg = RestError.FORBIDDEN_XML_NOT_VALID.getErrorMessage();
+			}
+			throw new RestApiException(RestError.FORBIDDEN_XML_NOT_VALID, errorMsg,
+					referenceClass, attrName, attrValue);
+		}
+	}
 }

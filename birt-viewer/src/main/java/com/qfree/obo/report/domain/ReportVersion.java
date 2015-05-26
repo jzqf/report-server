@@ -23,6 +23,7 @@ import javax.validation.constraints.NotNull;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;
+import org.hibernate.validator.constraints.NotBlank;
 
 import com.qfree.obo.report.dto.ReportVersionResource;
 import com.qfree.obo.report.util.DateUtils;
@@ -101,6 +102,7 @@ public class ReportVersion implements Serializable {
 	 * 
 	 *   .../resources/db/h2/schema.sql
 	 */
+	@NotBlank
 	@Column(name = "rptdesign", nullable = false, columnDefinition = "text")
 	private String rptdesign;
 
@@ -110,6 +112,7 @@ public class ReportVersion implements Serializable {
 	 * the report version as a <major>.<minor>.<point> string, or in any other
 	 * form
 	 */
+	@NotBlank
 	@Column(name = "version_name", nullable = false, length = 16)
 	private String versionName;
 
@@ -118,6 +121,7 @@ public class ReportVersion implements Serializable {
 	 * relative to other versions for the same Report. The value is an integer 
 	 * so that it can be used for ordering in a UI or for other numerical uses.
 	 */
+	@NotNull
 	@Column(name = "version_code", nullable = false)
 	private Integer versionCode;
 

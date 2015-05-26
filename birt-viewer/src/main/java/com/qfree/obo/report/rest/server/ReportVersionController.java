@@ -4,12 +4,18 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import javax.servlet.ServletConfig;
+import javax.servlet.ServletContext;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.HeaderParam;
@@ -48,6 +54,14 @@ import com.qfree.obo.report.service.ReportVersionService;
 public class ReportVersionController extends AbstractBaseController {
 
 	private static final Logger logger = LoggerFactory.getLogger(ReportVersionController.class);
+
+	/*
+	 * Directorin in /webapp where reports are stored. This must be set to the 
+	 * same value as the <context-param> wiht the same name in web.xml. The 
+	 * reason why I do not use that value set in web.xml is that I have not yet
+	 * been able to read/get that value.
+	 */
+	private static final String BIRT_VIEWER_WORKING_FOLDER = "reports";
 
 	private final ReportVersionRepository reportVersionRepository;
 
@@ -144,8 +158,28 @@ public class ReportVersionController extends AbstractBaseController {
 			@FormDataParam("file") FormDataContentDisposition fileDetail,
 			@HeaderParam("Accept") final String acceptHeader,
 			@QueryParam("expand") final List<String> expand,
+			@Context final ServletContext servletContext,
+			@Context final ServletConfig servletConfig,
 			@Context final UriInfo uriInfo) throws IOException {
 		RestApiVersion apiVersion = RestUtils.extractAPIVersion(acceptHeader, RestApiVersion.v1);
+
+		logger.debug("servletContext.getContextPath() = {}", servletContext.getContextPath());
+		logger.debug("servletContext.getRealPath(\"\") = {}", servletContext.getRealPath(""));
+		logger.debug("servletContext.getRealPath(\"/\") = {}", servletContext.getRealPath("/"));
+
+		Enumeration<String> servletContextinitParamEnum = servletContext.getInitParameterNames();
+		while (servletContextinitParamEnum.hasMoreElements()) {
+			String servletContextInitParamName = servletContextinitParamEnum.nextElement();
+			logger.debug("servletContextInitParamName = {}", servletContextInitParamName);
+		}
+		logger.info("BIRT_VIEWER_WORKING_FOLDER = {}", servletContext.getInitParameter("BIRT_VIEWER_WORKING_FOLDER"));
+
+		Enumeration<String> servletConfigInitParamEnum = servletConfig.getInitParameterNames();
+		while (servletConfigInitParamEnum.hasMoreElements()) {
+			String servletConfigInitParamName = servletConfigInitParamEnum.nextElement();
+			logger.debug("servletConfigInitParamName = {}", servletConfigInitParamName);
+		}
+		logger.debug("javax.ws.rs.Application = {}", servletConfig.getInitParameter("javax.ws.rs.Application"));
 
 		String lineSeparator = System.getProperty("line.separator");
 		StringBuilder rptdesignStringBuilder = new StringBuilder();
@@ -156,11 +190,15 @@ public class ReportVersionController extends AbstractBaseController {
 				rptdesignStringBuilder.append(lineSeparator);
 			}
 		}
-		logger.info("reportName = {}", reportName);
-		logger.info("versionName = {}", versionName);
-		logger.info("versionCode = {}", versionCode);	// should we assign this automatically (increment)?
-		logger.info("rptdesignStringBuilder.toString() = {}", rptdesignStringBuilder.toString());
-		logger.info("fileDetail.getFileName() = {}", fileDetail.getFileName());
+		String rptdesign = rptdesignStringBuilder.toString();
+
+		RestUtils.ifAttrNullOrBlankThen403(versionName, ReportVersion.class, "versionName");
+		RestUtils.ifAttrNullOrBlankThen403(versionCode, ReportVersion.class, "versionCode");
+		RestUtils.ifAttrNullOrBlankThen403(rptdesign, ReportVersion.class, "rptdesign");
+
+		RestUtils.ifNotValidXmlThen403(rptdesign,
+				String.format("The uploaded document '%s' is not valid XML", fileDetail.getFileName()),
+				ReportVersion.class, "rptdesign", null);
 
 		Report report = reportRepository.findByName(reportName);
 		RestUtils.ifNullThen404(report, Report.class, "name", reportName);
@@ -170,11 +208,21 @@ public class ReportVersionController extends AbstractBaseController {
 				versionCode, true);
 		reportVersion = reportVersionRepository.save(reportVersion);
 		logger.info("reportVersion = {}", reportVersion);
+		ReportVersionResource resource = new ReportVersionResource(reportVersion, uriInfo, expand, apiVersion);
+		logger.info("resource = {}", resource);
+
+		Files.write(
+				Paths.get(servletContext.getRealPath(""), BIRT_VIEWER_WORKING_FOLDER,
+						reportVersion.getReportVersionId() + ".rptdesign"),
+				reportVersion.getRptdesign().getBytes("utf-8"),
+				StandardOpenOption.CREATE,
+				StandardOpenOption.WRITE,
+				StandardOpenOption.TRUNCATE_EXISTING);
+
 		if (RestUtils.AUTO_EXPAND_PRIMARY_RESOURCES) {
 			addToExpandList(expand, ReportVersion.class);
 		}
-		ReportVersionResource resource = new ReportVersionResource(reportVersion, uriInfo, expand, apiVersion);
-		logger.info("resource = {}", resource);
+
 		return created(resource);
 	}
 

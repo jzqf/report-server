@@ -180,6 +180,13 @@
 			<artifactId>jersey-media-multipart</artifactId>
 			<version>${jersey.version}</version>
 		</dependency>
+		
+		<!-- Bean Validation support  -->
+		<dependency>
+			<groupId>org.glassfish.jersey.ext</groupId>
+			<artifactId>jersey-bean-validation</artifactId>
+			<!-- <version>${jersey.version}</version> -->
+		</dependency>
 
 		<!-- JAX-RS - Spring integration.
 			 The jersey-spring3.jar has its own dependencies on Spring libraries
