@@ -67,6 +67,7 @@ public class JAXRSConfiguration extends ResourceConfig {
 		register(LoginAttemptController.class);
 		register(ReportController.class);
 		register(ReportCategoryController.class);
+		register(ReportSyncController.class);
 		register(ReportVersionController.class);
 		register(RoleController.class);
 		register(TestController.class);

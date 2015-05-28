@@ -31,7 +31,7 @@
 		
 	<h2 style="text-align: center;">Q-Free OBO Dashboard (BIRT JSP tags)</h2>
 
-	<birt:report id="dashboardElement_r1c1" reportDesign="dvdrental.rptdesign"
+	<birt:report id="dashboardElement_r1c1" reportDesign="old/dvdrental.rptdesign"
 		position="absolute" top="200" left="0" height="800" width="800" 
 		reportContainer="iframe" scrolling="no" format="html">
 		<birt:param name="rp_max_length" value="50" ></birt:param>
@@ -41,7 +41,7 @@
 		</birt:param>
 	</birt:report>
 
-	<birt:report id="dashboardElement_r1c2" reportDesign="dvdrental.rptdesign"
+	<birt:report id="dashboardElement_r1c2" reportDesign="old/dvdrental.rptdesign"
 		position="absolute" top="200" left="800" height="800" width="800" 
 		reportContainer="iframe" scrolling="no" format="html">
 		<birt:param name="rp_max_length" value="50" ></birt:param>
@@ -50,7 +50,7 @@
 		</birt:param>
 	</birt:report>
 
-	<birt:report id="dashboardElement_r2c1" reportDesign="dvdrental.rptdesign"
+	<birt:report id="dashboardElement_r2c1" reportDesign="old/dvdrental.rptdesign"
 		position="absolute" top="1000" left="0" height="800" width="800" 
 		reportContainer="iframe" scrolling="no" format="html">
 		<birt:param name="rp_max_length" value="50" ></birt:param>
@@ -60,7 +60,7 @@
 		</birt:param>
 	</birt:report>
 
-	<birt:report id="dashboardElement_r2c2" reportDesign="dvdrental.rptdesign"
+	<birt:report id="dashboardElement_r2c2" reportDesign="old/dvdrental.rptdesign"
 		position="absolute" top="1000" left="800" height="800" width="800" 
 		reportContainer="iframe" scrolling="no" format="html">
 		<birt:param name="rp_max_length" value="50" ></birt:param>

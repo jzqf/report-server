@@ -4,9 +4,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -48,20 +45,13 @@ import com.qfree.obo.report.dto.ReportVersionResource;
 import com.qfree.obo.report.dto.ResourcePath;
 import com.qfree.obo.report.rest.server.RestUtils.RestApiVersion;
 import com.qfree.obo.report.service.ReportVersionService;
+import com.qfree.obo.report.util.ReportUtils;
 
 @Component
 @Path(ResourcePath.REPORTVERSIONS_PATH)
 public class ReportVersionController extends AbstractBaseController {
 
 	private static final Logger logger = LoggerFactory.getLogger(ReportVersionController.class);
-
-	/*
-	 * Directorin in /webapp where reports are stored. This must be set to the 
-	 * same value as the <context-param> wiht the same name in web.xml. The 
-	 * reason why I do not use that value set in web.xml is that I have not yet
-	 * been able to read/get that value.
-	 */
-	private static final String BIRT_VIEWER_WORKING_FOLDER = "reports";
 
 	private final ReportVersionRepository reportVersionRepository;
 
@@ -135,18 +125,25 @@ public class ReportVersionController extends AbstractBaseController {
 			@QueryParam("expand") final List<String> expand,
 			@Context final UriInfo uriInfo) {
 		RestApiVersion apiVersion = RestUtils.extractAPIVersion(acceptHeader, RestApiVersion.v1);
-		logger.debug("reportVersionResource = {}", reportVersionResource);
 
 		ReportVersion reportVersion = reportVersionService.saveNewFromResource(reportVersionResource);
-		logger.debug("reportVersion = {}", reportVersion);
 		if (RestUtils.AUTO_EXPAND_PRIMARY_RESOURCES) {
 			addToExpandList(expand, ReportVersion.class);
 		}
-		ReportVersionResource resource = new ReportVersionResource(reportVersion, uriInfo, expand, apiVersion);
-		logger.debug("resource = {}", resource);
-		return created(resource);
+		ReportVersionResource newReportVersionResource = new ReportVersionResource(reportVersion,
+				uriInfo, expand, apiVersion);
+		return created(newReportVersionResource);
 	}
 
+	/*
+	 * This endpoint can be tested with:
+	 * 
+	 *   1. $ mvn clean spring-boot:run
+	 *   
+	 *   2. Open the following URL in a web browser:
+	 *   
+	 *         http://localhost:8080/report_upload.html
+	 */
 	@POST
 	@Consumes(MediaType.MULTIPART_FORM_DATA)
 	@Produces(MediaType.APPLICATION_JSON)
@@ -208,22 +205,20 @@ public class ReportVersionController extends AbstractBaseController {
 				versionCode, true);
 		reportVersion = reportVersionRepository.save(reportVersion);
 		logger.info("reportVersion = {}", reportVersion);
-		ReportVersionResource resource = new ReportVersionResource(reportVersion, uriInfo, expand, apiVersion);
-		logger.info("resource = {}", resource);
-
-		Files.write(
-				Paths.get(servletContext.getRealPath(""), BIRT_VIEWER_WORKING_FOLDER,
-						reportVersion.getReportVersionId() + ".rptdesign"),
-				reportVersion.getRptdesign().getBytes("utf-8"),
-				StandardOpenOption.CREATE,
-				StandardOpenOption.WRITE,
-				StandardOpenOption.TRUNCATE_EXISTING);
-
 		if (RestUtils.AUTO_EXPAND_PRIMARY_RESOURCES) {
 			addToExpandList(expand, ReportVersion.class);
 		}
+		ReportVersionResource reportVersionResource = new ReportVersionResource(reportVersion, uriInfo, expand,
+				apiVersion);
+		logger.info("reportVersionResource = {}", reportVersionResource);
 
-		return created(resource);
+		/*
+		 * Write uploaded rptdesign file to the file system of the report 
+		 * server, overwriting a file with the same name, if one exists.
+		 */
+		ReportUtils.writeRptdesignFile(reportVersion, servletContext.getRealPath(""));
+
+		return created(reportVersionResource);
 	}
 
 	/*
