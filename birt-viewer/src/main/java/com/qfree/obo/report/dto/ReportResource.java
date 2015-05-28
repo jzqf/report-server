@@ -71,13 +71,6 @@ public class ReportResource extends AbstractBaseResource {
 			expandElementRemoved.remove(expandParam);
 
 			/*
-			 * Clear apiVersion since its current value is not necessarily
-			 * applicable to any resources associated with fields of this class. 
-			 * See ReportResource for a more detailed explanation.
-			 */
-			apiVersion = null;
-
-			/*
 			 * Set the API version to null for any/all constructors for 
 			 * resources associated with fields of this class. Passing null
 			 * means that we want to use the DEFAULT ReST API version for the

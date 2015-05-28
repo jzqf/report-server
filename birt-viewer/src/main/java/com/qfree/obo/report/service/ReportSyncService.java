@@ -3,7 +3,9 @@ package com.qfree.obo.report.service;
 import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -19,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.qfree.obo.report.db.ReportRepository;
 import com.qfree.obo.report.domain.Report;
 import com.qfree.obo.report.domain.ReportVersion;
+import com.qfree.obo.report.dto.ReportSyncResource;
 import com.qfree.obo.report.rest.server.RestUtils;
 import com.qfree.obo.report.rest.server.RestUtils.RestApiVersion;
 import com.qfree.obo.report.util.ReportUtils;
@@ -37,10 +40,9 @@ public class ReportSyncService {
 		this.reportRepository = reportRepository;
 	}
 
-	public void syncReportsWithFileSystem(ServletContext servletContext, UriInfo uriInfo,
+	public ReportSyncResource syncReportsWithFileSystem(ServletContext servletContext, UriInfo uriInfo,
 			List<String> expand, Map<String, List<String>> extraQueryParams, RestApiVersion apiVersion)
 			throws UnsupportedEncodingException, IOException {
-		//	public ReportSyncResource syncReportsWithFileSystem(ServletContext servletContext) throws UnsupportedEncodingException,IOException {
 
 		File reportsDirectory = Paths.get(servletContext.getRealPath(""),
 				ReportUtils.BIRT_VIEWER_WORKING_FOLDER).toFile();
@@ -48,10 +50,14 @@ public class ReportSyncService {
 		/*
 		 * Delete all existing "rptdesign" files in the "reports" directory.
 		 */
+		List<String> reportsDeleted = new ArrayList<>();
+		List<String> reportsNotDeleted = new ArrayList<>();
 		for (File file : reportsDirectory.listFiles(new RptdesignFileFilter())) {
 			if (file.delete()) {
+				reportsDeleted.add(file.getAbsolutePath());
 				logger.info("Deleted file \"{}\"", file.getAbsolutePath());
 			} else {
+				reportsNotDeleted.add(file.getAbsolutePath());
 				logger.warn("Unable to delete file \"{}\"", file.getAbsolutePath());
 			}
 		}
@@ -66,6 +72,8 @@ public class ReportSyncService {
 		} else {
 			reports = reportRepository.findAll();
 		}
+		List<String> reportsCreated = new ArrayList<>();
+		List<String> reportsNotCreated = new ArrayList<>();	// not currently used
 		for (Report report : reports) {
 			for (ReportVersion reportVersion : report.getReportVersions()) {
 				/*
@@ -82,10 +90,12 @@ public class ReportSyncService {
 					 * Write uploaded rptdesign file to the file system of the report 
 					 * server, overwriting a file with the same name, if one exists.
 					 */
-					ReportUtils.writeRptdesignFile(reportVersion, servletContext.getRealPath(""));
+					Path rptdesignFilePath = ReportUtils.writeRptdesignFile(reportVersion,
+							servletContext.getRealPath(""));
+					reportsCreated.add(rptdesignFilePath.toAbsolutePath().toString());
 				}
 			}
 		}
-
+		return new ReportSyncResource(reportsDeleted, reportsNotDeleted, reportsCreated, reportsNotCreated);
 	}
 }

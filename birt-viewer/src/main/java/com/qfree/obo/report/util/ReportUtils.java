@@ -50,7 +50,7 @@ public class ReportUtils {
 	 * @throws IOException 
 	 * @throws UnsupportedEncodingException 
 	 */
-	public static void writeRptdesignFile(ReportVersion reportVersion, String absoluteAppContextPath)
+	public static Path writeRptdesignFile(ReportVersion reportVersion, String absoluteAppContextPath)
 			throws UnsupportedEncodingException, IOException {
 		Path rptdesignFilePath = Paths.get(absoluteAppContextPath, ReportUtils.BIRT_VIEWER_WORKING_FOLDER,
 				reportVersion.getReportVersionId() + ".rptdesign");
@@ -61,6 +61,6 @@ public class ReportUtils {
 				StandardOpenOption.CREATE,
 				StandardOpenOption.WRITE,
 				StandardOpenOption.TRUNCATE_EXISTING);
-
+		return rptdesignFilePath;
 	}
 }
