@@ -40,8 +40,6 @@ public class ReportCategoryController extends AbstractBaseController {
 	private final ReportCategoryRepository reportCategoryRepository;
 	private final ReportCategoryService reportCategoryService;
 
-	//	private final ReportCategoryService reportCategoryService;
-
 	@Autowired
 	public ReportCategoryController(
 			ReportCategoryRepository reportCategoryRepository,

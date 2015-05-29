@@ -74,9 +74,9 @@ public class ReportSyncController extends AbstractBaseController {
 			reportSyncResource = reportSyncService.syncReportsWithFileSystem(servletContext,
 					uriInfo, expand, extraQueryParams, apiVersion);
 		} catch (InvalidPathException e) {
-			throw new RestApiException(RestError.INTERNAL_SERVER_ERROR_REPORT_FOLDER_MISSING, e);	//TODO Test this!!!!!!!!!!!!!!!!!!!!!!
+			throw new RestApiException(RestError.INTERNAL_SERVER_ERROR_REPORT_FOLDER_MISSING, e);
 		} catch (IOException e) {
-			throw new RestApiException(RestError.INTERNAL_SERVER_ERROR_RPTDESIGN_SYNC, e);	//TODO Test this!!!!!!!!!!!!!!!!!!!!!!
+			throw new RestApiException(RestError.INTERNAL_SERVER_ERROR_RPTDESIGN_SYNC, e);
 		}
 		return reportSyncResource;
 	}

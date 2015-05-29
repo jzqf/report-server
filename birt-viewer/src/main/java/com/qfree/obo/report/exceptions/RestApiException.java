@@ -28,6 +28,7 @@ public class RestApiException extends WebApplicationException {
 				.build());
 		logger.error(toSplunkString("restError", restError));
 		logger.error("stackTrace for '{}' exception:\n{}", restError, stackTraceToString(this));
+		logger.error("cause:\n{}", stackTraceToString(cause));
 	}
 
 	public RestApiException(

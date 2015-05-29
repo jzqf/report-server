@@ -281,9 +281,9 @@ public class RestErrorResource {
 		 * @see <a href="http://tools.ietf.org/html/rfc2616#section-10.5.1">HTTP/1.1</a>
 		 */
 		INTERNAL_SERVER_ERROR(Response.Status.INTERNAL_SERVER_ERROR, "500.0", null, null),
-		INTERNAL_SERVER_ERROR_REPORT_FOLDER_MISSING(Response.Status.FORBIDDEN, "500.1",
+		INTERNAL_SERVER_ERROR_REPORT_FOLDER_MISSING(Response.Status.INTERNAL_SERVER_ERROR, "500.1",
 				"BIRT Viewer working folder cannot be accessed", null),
-		INTERNAL_SERVER_ERROR_RPTDESIGN_SYNC(Response.Status.FORBIDDEN, "500.2",
+		INTERNAL_SERVER_ERROR_RPTDESIGN_SYNC(Response.Status.INTERNAL_SERVER_ERROR, "500.2",
 				"Error syncing rptdesign files between file system and database", null),
 		/**
 		 * {@code 501 Not Implemented}.
@@ -396,7 +396,8 @@ public class RestErrorResource {
 	@XmlElement
 	private String moreInfoUrl;
 	@XmlTransient
-	private Throwable throwable;	// @XmlTransient means this will not be serialized to JSON
+	//	@XmlElement
+	private Throwable cause;	// @XmlTransient means this will not be serialized to JSON
 
 	public RestErrorResource() {
 	}
@@ -516,7 +517,7 @@ public class RestErrorResource {
 		this.attrName = attrName;
 		this.attrValue = attrValue;
 		this.moreInfoUrl = moreInfoUrl;
-		this.throwable = throwable;
+		this.cause = throwable;
 	}
 
 	public int getHttpStatus() {
@@ -575,12 +576,12 @@ public class RestErrorResource {
 		this.moreInfoUrl = moreInfoUrl;
 	}
 
-	public Throwable getThrowable() {
-		return throwable;
+	public Throwable getCause() {
+		return cause;
 	}
 
-	public void setThrowable(Throwable throwable) {
-		this.throwable = throwable;
+	public void setCause(Throwable throwable) {
+		this.cause = throwable;
 	}
 
 }

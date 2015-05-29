@@ -3,6 +3,7 @@ package com.qfree.obo.report.service;
 import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -46,19 +47,25 @@ public class ReportSyncService {
 
 		File reportsDirectory = Paths.get(servletContext.getRealPath(""),
 				ReportUtils.BIRT_VIEWER_WORKING_FOLDER).toFile();
+		if (!reportsDirectory.isDirectory()) {
+			throw new InvalidPathException(reportsDirectory.toString(), "\"reports\" directory does not exist");
+		}
 
 		/*
 		 * Delete all existing "rptdesign" files in the "reports" directory.
 		 */
 		List<String> reportsDeleted = new ArrayList<>();
 		List<String> reportsNotDeleted = new ArrayList<>();
-		for (File file : reportsDirectory.listFiles(new RptdesignFileFilter())) {
-			if (file.delete()) {
-				reportsDeleted.add(file.getAbsolutePath());
-				logger.info("Deleted file \"{}\"", file.getAbsolutePath());
-			} else {
-				reportsNotDeleted.add(file.getAbsolutePath());
-				logger.warn("Unable to delete file \"{}\"", file.getAbsolutePath());
+		File[] files = reportsDirectory.listFiles(new RptdesignFileFilter());
+		if (files != null) {
+			for (File file : files) {
+				if (file.delete()) {
+					reportsDeleted.add(file.getAbsolutePath());
+					logger.info("Deleted file \"{}\"", file.getAbsolutePath());
+				} else {
+					reportsNotDeleted.add(file.getAbsolutePath());
+					logger.warn("Unable to delete file \"{}\"", file.getAbsolutePath());
+				}
 			}
 		}
 

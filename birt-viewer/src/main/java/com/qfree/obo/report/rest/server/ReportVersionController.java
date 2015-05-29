@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.nio.file.InvalidPathException;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -43,6 +44,8 @@ import com.qfree.obo.report.dto.ReportParameterCollectionResource;
 import com.qfree.obo.report.dto.ReportVersionCollectionResource;
 import com.qfree.obo.report.dto.ReportVersionResource;
 import com.qfree.obo.report.dto.ResourcePath;
+import com.qfree.obo.report.dto.RestErrorResource.RestError;
+import com.qfree.obo.report.exceptions.RestApiException;
 import com.qfree.obo.report.rest.server.RestUtils.RestApiVersion;
 import com.qfree.obo.report.service.ReportVersionService;
 import com.qfree.obo.report.util.ReportUtils;
@@ -54,9 +57,7 @@ public class ReportVersionController extends AbstractBaseController {
 	private static final Logger logger = LoggerFactory.getLogger(ReportVersionController.class);
 
 	private final ReportVersionRepository reportVersionRepository;
-
 	private final ReportVersionService reportVersionService;
-
 	private final ReportRepository reportRepository;
 
 	@Autowired
@@ -124,15 +125,31 @@ public class ReportVersionController extends AbstractBaseController {
 			ReportVersionResource reportVersionResource,
 			@HeaderParam("Accept") final String acceptHeader,
 			@QueryParam("expand") final List<String> expand,
+			@Context final ServletContext servletContext,
 			@Context final UriInfo uriInfo) {
 		RestApiVersion apiVersion = RestUtils.extractAPIVersion(acceptHeader, RestApiVersion.v1);
 
-		ReportVersion reportVersion = reportVersionService.saveNewFromResource(reportVersionResource);
-		if (RestUtils.AUTO_EXPAND_PRIMARY_RESOURCES) {
-			addToExpandList(expand, ReportVersion.class);
+		ReportVersionResource newReportVersionResource = null;
+		try {
+
+			ReportVersion reportVersion = reportVersionService.saveNewFromResource(reportVersionResource);
+			if (RestUtils.AUTO_EXPAND_PRIMARY_RESOURCES) {
+				addToExpandList(expand, ReportVersion.class);
+			}
+			newReportVersionResource = new ReportVersionResource(reportVersion, uriInfo, expand, apiVersion);
+
+			/*
+			 * Write uploaded rptdesign file to the file system of the report 
+			 * server, overwriting a file with the same name, if one exists.
+			 */
+			ReportUtils.writeRptdesignFile(reportVersion, servletContext.getRealPath(""));
+
+		} catch (InvalidPathException e) {
+			throw new RestApiException(RestError.INTERNAL_SERVER_ERROR_REPORT_FOLDER_MISSING, e);
+		} catch (IOException e) {
+			throw new RestApiException(RestError.INTERNAL_SERVER_ERROR_RPTDESIGN_SYNC, e);
 		}
-		ReportVersionResource newReportVersionResource = new ReportVersionResource(reportVersion,
-				uriInfo, expand, apiVersion);
+
 		return created(newReportVersionResource);
 	}
 
@@ -158,7 +175,7 @@ public class ReportVersionController extends AbstractBaseController {
 			@QueryParam("expand") final List<String> expand,
 			@Context final ServletContext servletContext,
 			@Context final ServletConfig servletConfig,
-			@Context final UriInfo uriInfo) throws IOException {
+			@Context final UriInfo uriInfo) {
 		RestApiVersion apiVersion = RestUtils.extractAPIVersion(acceptHeader, RestApiVersion.v1);
 
 		logger.debug("servletContext.getContextPath() = {}", servletContext.getContextPath());
@@ -179,45 +196,53 @@ public class ReportVersionController extends AbstractBaseController {
 		}
 		logger.debug("javax.ws.rs.Application = {}", servletConfig.getInitParameter("javax.ws.rs.Application"));
 
-		String lineSeparator = System.getProperty("line.separator");
-		StringBuilder rptdesignStringBuilder = new StringBuilder();
-		try (BufferedReader reader = new BufferedReader(new InputStreamReader(uploadedInputStream))) {
-			String line;
-			while ((line = reader.readLine()) != null) {
-				rptdesignStringBuilder.append(line);
-				rptdesignStringBuilder.append(lineSeparator);
+		ReportVersionResource reportVersionResource = null;
+		try {
+
+			String lineSeparator = System.getProperty("line.separator");
+			StringBuilder rptdesignStringBuilder = new StringBuilder();
+			try (BufferedReader reader = new BufferedReader(new InputStreamReader(uploadedInputStream))) {
+				String line;
+				while ((line = reader.readLine()) != null) {
+					rptdesignStringBuilder.append(line);
+					rptdesignStringBuilder.append(lineSeparator);
+				}
 			}
+			String rptdesign = rptdesignStringBuilder.toString();
+
+			RestUtils.ifAttrNullOrBlankThen403(versionName, ReportVersion.class, "versionName");
+			RestUtils.ifAttrNullOrBlankThen403(versionCode, ReportVersion.class, "versionCode");
+			RestUtils.ifAttrNullOrBlankThen403(rptdesign, ReportVersion.class, "rptdesign");
+
+			RestUtils.ifNotValidXmlThen403(rptdesign,
+					String.format("The uploaded document '%s' is not valid XML", fileDetail.getFileName()),
+					ReportVersion.class, "rptdesign", null);
+
+			Report report = reportRepository.findByName(reportName);
+			RestUtils.ifNullThen404(report, Report.class, "name", reportName);
+			logger.info("report = {}", report);
+
+			ReportVersion reportVersion = new ReportVersion(report, fileDetail.getFileName(),
+					rptdesignStringBuilder.toString(), versionName, versionCode, true);
+			reportVersion = reportVersionRepository.save(reportVersion);
+			logger.info("reportVersion = {}", reportVersion);
+			if (RestUtils.AUTO_EXPAND_PRIMARY_RESOURCES) {
+				addToExpandList(expand, ReportVersion.class);
+			}
+			reportVersionResource = new ReportVersionResource(reportVersion, uriInfo, expand, apiVersion);
+			logger.info("reportVersionResource = {}", reportVersionResource);
+
+			/*
+			 * Write uploaded rptdesign file to the file system of the report 
+			 * server, overwriting a file with the same name, if one exists.
+			 */
+			ReportUtils.writeRptdesignFile(reportVersion, servletContext.getRealPath(""));
+
+		} catch (InvalidPathException e) {
+			throw new RestApiException(RestError.INTERNAL_SERVER_ERROR_REPORT_FOLDER_MISSING, e);
+		} catch (IOException e) {
+			throw new RestApiException(RestError.INTERNAL_SERVER_ERROR_RPTDESIGN_SYNC, e);
 		}
-		String rptdesign = rptdesignStringBuilder.toString();
-
-		RestUtils.ifAttrNullOrBlankThen403(versionName, ReportVersion.class, "versionName");
-		RestUtils.ifAttrNullOrBlankThen403(versionCode, ReportVersion.class, "versionCode");
-		RestUtils.ifAttrNullOrBlankThen403(rptdesign, ReportVersion.class, "rptdesign");
-
-		RestUtils.ifNotValidXmlThen403(rptdesign,
-				String.format("The uploaded document '%s' is not valid XML", fileDetail.getFileName()),
-				ReportVersion.class, "rptdesign", null);
-
-		Report report = reportRepository.findByName(reportName);
-		RestUtils.ifNullThen404(report, Report.class, "name", reportName);
-		logger.info("report = {}", report);
-
-		ReportVersion reportVersion = new ReportVersion(report, fileDetail.getFileName(),
-				rptdesignStringBuilder.toString(), versionName, versionCode, true);
-		reportVersion = reportVersionRepository.save(reportVersion);
-		logger.info("reportVersion = {}", reportVersion);
-		if (RestUtils.AUTO_EXPAND_PRIMARY_RESOURCES) {
-			addToExpandList(expand, ReportVersion.class);
-		}
-		ReportVersionResource reportVersionResource = new ReportVersionResource(reportVersion, uriInfo, expand,
-				apiVersion);
-		logger.info("reportVersionResource = {}", reportVersionResource);
-
-		/*
-		 * Write uploaded rptdesign file to the file system of the report 
-		 * server, overwriting a file with the same name, if one exists.
-		 */
-		ReportUtils.writeRptdesignFile(reportVersion, servletContext.getRealPath(""));
 
 		return created(reportVersionResource);
 	}
