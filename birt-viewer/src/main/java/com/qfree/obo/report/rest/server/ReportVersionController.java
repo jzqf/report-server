@@ -107,6 +107,7 @@ public class ReportVersionController extends AbstractBaseController {
 	 *   $ mvn clean spring-boot:run
 	 *   $ curl -iH "Content-Type: application/json;v=1" -X POST -d \
 	 *   '{"report":{"reportId":"702d5daa-e23d-4f00-b32b-67b44c06d8f6"},\
+	 *   "fileName":"NewReportVersionFromPOST.rptdesign",\
 	 *   "rptdesign":"Not a valid rptdesign, but this cannot be null",\
 	 *   "versionName":"3.9","versionCode":17,"active":true}' \
 	 *   http://localhost:8080/rest/reportVersions
@@ -119,7 +120,7 @@ public class ReportVersionController extends AbstractBaseController {
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response create(
+	public Response createByPost(
 			ReportVersionResource reportVersionResource,
 			@HeaderParam("Accept") final String acceptHeader,
 			@QueryParam("expand") final List<String> expand,
@@ -201,8 +202,8 @@ public class ReportVersionController extends AbstractBaseController {
 		RestUtils.ifNullThen404(report, Report.class, "name", reportName);
 		logger.info("report = {}", report);
 
-		ReportVersion reportVersion = new ReportVersion(report, rptdesignStringBuilder.toString(), versionName,
-				versionCode, true);
+		ReportVersion reportVersion = new ReportVersion(report, fileDetail.getFileName(),
+				rptdesignStringBuilder.toString(), versionName, versionCode, true);
 		reportVersion = reportVersionRepository.save(reportVersion);
 		logger.info("reportVersion = {}", reportVersion);
 		if (RestUtils.AUTO_EXPAND_PRIMARY_RESOURCES) {
@@ -260,14 +261,15 @@ public class ReportVersionController extends AbstractBaseController {
 	 *   $ mvn clean spring-boot:run
 	 *   $ curl -iH "Content-Type: application/json;v=1" -X PUT -d \
 	 *   '{"report":{"reportId":"702d5daa-e23d-4f00-b32b-67b44c06d8f6"},\
-	 *   "rptdesign":"Not a valid rptdesign, but this cannot be null",\
+	 *   "fileName":"XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX","rptdesign":"Not a valid rptdesign, but this cannot be null",\
 	 *   "versionName":"1.1.1","versionCode":2,"active":false}' \
 	 *   http://localhost:8080/rest/reportVersions/bbd23109-e1e9-404e-913d-32150d8fd92f
 	 *   
 	 * This updates the ReportVersion with UUID 
 	 * bbd23109-e1e9-404e-913d-32150d8fd92f with the following changes:
 	 * 
-	 * report:			Do not change - keep same parent report
+	 * report:			Do not change - keep same parent report ("Test Report #04")
+	 * fileName:		"YYYYYYYYYYYYYYYYY"	->	"XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
 	 * rptdesign:							-> "Not a valid rptdesign, but this cannot be null"
 	 * versionName:		"1.1"				-> "1.1.1"
 	 * versionCode:		2					-> 2

@@ -36,6 +36,9 @@ public class ReportVersionResource extends AbstractBaseResource {
 	private ReportResource reportResource;
 
 	@XmlElement
+	private String fileName;
+
+	@XmlElement
 	// Do not serialize this field - needs @XmlAccessorType(XmlAccessType.FIELD);
 	//@XmlTransient
 	private String rptdesign;
@@ -87,6 +90,7 @@ public class ReportVersionResource extends AbstractBaseResource {
 			this.reportVersionId = reportVersion.getReportVersionId();
 			this.reportResource = new ReportResource(reportVersion.getReport(),
 					uriInfo, expandElementRemoved, apiVersion);
+			this.fileName = reportVersion.getFileName();
 			if (expand.contains(ResourcePath.RPTDESIGN_EXPAND_PARAM)) {
 				this.rptdesign = reportVersion.getRptdesign();
 				expandElementRemoved.remove(ResourcePath.RPTDESIGN_EXPAND_PARAM);  // probably not necessary
@@ -152,6 +156,14 @@ public class ReportVersionResource extends AbstractBaseResource {
 
 	public void setReportResource(ReportResource reportResource) {
 		this.reportResource = reportResource;
+	}
+
+	public String getFileName() {
+		return fileName;
+	}
+
+	public void setFileName(String fileName) {
+		this.fileName = fileName;
 	}
 
 	public String getRptdesign() {

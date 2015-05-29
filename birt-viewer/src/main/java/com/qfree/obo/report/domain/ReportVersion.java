@@ -88,6 +88,14 @@ public class ReportVersion implements Serializable {
 	@OneToMany(mappedBy = "reportVersion", cascade = CascadeType.ALL)
 	private List<Job> jobs;
 
+	/**
+	 * The name of the file as uploaded from disk or written to disk. This must
+	 * be preserved because some reports may refer to other reports by name.
+	 */
+	@NotBlank
+	@Column(name = "file_name", nullable = false, length = 80)
+	private String fileName;
+
 	// Works for H2, but not PostgreSQL:
 	//	@Column(name = "rptdesign", nullable = false, columnDefinition = "clob")
 	/* This works for PostgreSQL but not for H2. With H2, it seems that if you 
@@ -110,7 +118,7 @@ public class ReportVersion implements Serializable {
 	 * A string value that represents the release version of the report as it 
 	 * should be shown to users. The value is a string so that you can describe
 	 * the report version as a <major>.<minor>.<point> string, or in any other
-	 * form
+	 * chosen format.
 	 */
 	@NotBlank
 	@Column(name = "version_name", nullable = false, length = 16)
@@ -135,19 +143,27 @@ public class ReportVersion implements Serializable {
 	public ReportVersion() {
 	}
 
-	public ReportVersion(Report report, String rptdesign, String versionName, Integer versionCode, boolean active,
+	public ReportVersion(
+			Report report,
+			String fileName,
+			String rptdesign,
+			String versionName,
+			Integer versionCode,
+			boolean active,
 			Date createdOn) {
-		this(null, report, rptdesign, versionName, versionCode, active, createdOn);
+		this(null, report, fileName, rptdesign, versionName, versionCode, active, createdOn);
 	}
 
-	public ReportVersion(Report report, String rptdesign, String versionName, Integer versionCode, boolean active) {
-		this(null, report, rptdesign, versionName, versionCode, active, DateUtils.nowUtc());
+	public ReportVersion(Report report, String fileName, String rptdesign, String versionName, Integer versionCode,
+			boolean active) {
+		this(null, report, fileName, rptdesign, versionName, versionCode, active, DateUtils.nowUtc());
 	}
 
 	public ReportVersion(ReportVersionResource reportVersionResource, Report report) {
 		this(
 				reportVersionResource.getReportVersionId(),
 				report,
+				reportVersionResource.getFileName(),
 				reportVersionResource.getRptdesign(),
 				reportVersionResource.getVersionName(),
 				reportVersionResource.getVersionCode(),
@@ -155,10 +171,11 @@ public class ReportVersion implements Serializable {
 				reportVersionResource.getCreatedOn());
 	}
 
-	public ReportVersion(UUID reportVersionId, Report report, String rptdesign, String versionName, Integer versionCode,
-			boolean active, Date createdOn) {
+	public ReportVersion(UUID reportVersionId, Report report, String fileName, String rptdesign,
+			String versionName, Integer versionCode, boolean active, Date createdOn) {
 		this.reportVersionId = reportVersionId;
 		this.report = report;
+		this.fileName = fileName;
 		this.rptdesign = rptdesign;
 		this.versionName = versionName;
 		this.versionCode = versionCode;
@@ -206,6 +223,14 @@ public class ReportVersion implements Serializable {
 		this.jobs = jobs;
 	}
 
+	public String getFileName() {
+		return fileName;
+	}
+
+	public void setFileName(String fileName) {
+		this.fileName = fileName;
+	}
+
 	public String getRptdesign() {
 		return rptdesign;
 	}
@@ -242,6 +267,10 @@ public class ReportVersion implements Serializable {
 		return createdOn;
 	}
 
+	public void setCreatedOn(Date createdOn) {
+		this.createdOn = createdOn;
+	}
+
 	@Override
 	public String toString() {
 		StringBuilder builder = new StringBuilder();
@@ -249,6 +278,8 @@ public class ReportVersion implements Serializable {
 		builder.append(reportVersionId);
 		builder.append(", report=");
 		builder.append(report);
+		builder.append(", fileName=");
+		builder.append(fileName);
 		builder.append(", rptdesign=");
 		builder.append("<" + ((rptdesign != null) ? rptdesign.length() : 0) + " bytes>");
 		builder.append(", versionName=");

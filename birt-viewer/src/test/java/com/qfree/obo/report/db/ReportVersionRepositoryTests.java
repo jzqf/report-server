@@ -112,6 +112,7 @@ public class ReportVersionRepositoryTests {
 		UUID uuidOfReport04 = UUID.fromString("702d5daa-e23d-4f00-b32b-67b44c06d8f6");
 		Report report04 = reportRepository.findOne(uuidOfReport04);
 		assertThat(report04, is(not(nullValue())));
+		String newFilename = "400-TestReport04_v2.1.rptdesign";
 		String newRptdesign = new StringBuilder()
 				.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n")
 				.append("<report xmlns=\"http://www.eclipse.org/birt/2005/design\" version=\"3.2.23\" id=\"1\">\n")
@@ -141,8 +142,8 @@ public class ReportVersionRepositoryTests {
 		assertThat(report04.getReportVersions(),is(not(nullValue())));
 		assertThat(report04.getReportVersions(), hasSize(currentNumberOfReport04ReportVersions));
 
-		ReportVersion reportVersionToCreate = new ReportVersion(report04, newRptdesign, newVersionName, newVersionCode,
-				newActive, newCreatedOn);
+		ReportVersion reportVersionToCreate = new ReportVersion(report04, newFilename, newRptdesign,
+				newVersionName, newVersionCode, newActive, newCreatedOn);
 		ReportVersion saved = reportVersionRepository.save(reportVersionToCreate);
 		assertThat(saved, is(not(nullValue())));
 		assertThat(saved.getReportVersionId(), is(not(nullValue())));    // Check that id was created.
@@ -153,6 +154,7 @@ public class ReportVersionRepositoryTests {
 
 		ReportVersion foundReportVersion = reportVersionRepository.findOne(saved.getReportVersionId());
 		assertThat(foundReportVersion, is(saved));
+		assertThat(foundReportVersion.getFileName(), is(equalTo(newFilename)));
 		assertThat(foundReportVersion.getRptdesign(), is(equalTo(newRptdesign)));
 		assertThat(foundReportVersion.getVersionName(), is(equalTo(newVersionName)));
 		assertThat(foundReportVersion.getVersionCode(), is(equalTo(newVersionCode)));

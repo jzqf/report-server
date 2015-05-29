@@ -38,7 +38,8 @@ public class ReportUtils {
 	 */
 	public static Path rptdesignFilePath(ReportVersion reportVersion, String absoluteAppContextPath) {
 		return Paths.get(absoluteAppContextPath, ReportUtils.BIRT_VIEWER_WORKING_FOLDER,
-				reportVersion.getReportVersionId().toString() + ".rptdesign");
+				reportVersion.getFileName());
+				//reportVersion.getReportVersionId().toString() + ".rptdesign");
 	}
 
 	/**
@@ -52,8 +53,7 @@ public class ReportUtils {
 	 */
 	public static Path writeRptdesignFile(ReportVersion reportVersion, String absoluteAppContextPath)
 			throws UnsupportedEncodingException, IOException {
-		Path rptdesignFilePath = Paths.get(absoluteAppContextPath, ReportUtils.BIRT_VIEWER_WORKING_FOLDER,
-				reportVersion.getReportVersionId() + ".rptdesign");
+		Path rptdesignFilePath = rptdesignFilePath(reportVersion, absoluteAppContextPath);
 		logger.info("Writing file \"{}\"...", rptdesignFilePath);
 		Files.write(
 				rptdesignFilePath,

@@ -114,6 +114,7 @@ public class ReportVersionControllerTests {
 		/*
 		 * ReportVersionResource attributes for creating a new ReportVersion.
 		 */
+		String newFilename = "400-TestReport04_v2.1.rptdesign";
 		String newRptdesign = new StringBuilder()
 				.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n")
 				.append("<report xmlns=\"http://www.eclipse.org/birt/2005/design\" version=\"3.2.23\" id=\"1\">\n")
@@ -148,6 +149,7 @@ public class ReportVersionControllerTests {
 
 		ReportVersionResource reportVersionResource = new ReportVersionResource();
 		reportVersionResource.setReportResource(newReportResource);
+		reportVersionResource.setFileName(newFilename);
 		reportVersionResource.setRptdesign(newRptdesign);
 		reportVersionResource.setVersionName(newVersionName);
 		reportVersionResource.setVersionCode(newVersionCode);
@@ -292,6 +294,7 @@ public class ReportVersionControllerTests {
 		UUID reportParameterUuid_5 = UUID.fromString("bcab7172-a063-46ba-857d-2acaa5e498df");
 		UUID reportParameterUuid_6 = UUID.fromString("72478fe3-cb7a-4df9-b8e1-fc05b71195c5");
 		UUID reportParameterUuid_7 = UUID.fromString("be77549d-bf1a-4aee-b9aa-78ba633a8358");
+		String filename = "400-TestReport04_v0.6.rptdesign";
 		String versionName = "0.6";
 		Integer versionCode = 2;
 		Boolean active = true;
@@ -331,6 +334,7 @@ public class ReportVersionControllerTests {
 		ReportVersion reportVersion = reportVersionRepository.findOne(uuidOfReport04Version2);
 		assertThat(reportVersion, is(not(nullValue())));
 		assertThat(reportVersion.getReport(), is(report));
+		assertThat(reportVersion.getFileName(), is(filename));
 		assertThat(reportVersion.getVersionName(), is(versionName));
 		assertThat(reportVersion.getVersionCode(), is(versionCode));
 		assertThat(reportVersion.isActive(), is(active));
@@ -384,6 +388,7 @@ public class ReportVersionControllerTests {
 		assertThat(response.getStatus(), is(Response.Status.OK.getStatusCode()));
 		ReportVersionResource reportVersionResource = response.readEntity(ReportVersionResource.class);
 		assertThat(reportVersionResource, is(not(nullValue())));
+		assertThat(reportVersionResource.getFileName(), is(filename));
 		assertThat(reportVersionResource.getVersionName(), is(versionName));
 		assertThat(reportVersionResource.getVersionCode(), is(versionCode));
 		assertThat(reportVersionResource.isActive(), is(active));
@@ -477,6 +482,7 @@ public class ReportVersionControllerTests {
 		// UUID currentReportUuid = reportVersion.getReport().getReportId();
 		UUID currentReportUuid = UUID.fromString("702d5daa-e23d-4f00-b32b-67b44c06d8f6");
 
+		String currentFilename = "400-TestReport04_v0.5.rptdesign";
 		String currentRptdesign = new StringBuilder()
 				.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n")
 				.append("<report xmlns=\"http://www.eclipse.org/birt/2005/design\" version=\"3.2.23\" id=\"1\">\n")
@@ -497,6 +503,7 @@ public class ReportVersionControllerTests {
 		Report currentReport = reportRepository.findOne(currentReportUuid);
 		assertThat(currentReport, is(not(nullValue())));
 		assertThat(reportVersion.getReport(), is(currentReport));
+		assertThat(reportVersion.getFileName(), is(currentFilename));
 		assertThat(reportVersion.getRptdesign(), is(currentRptdesign));
 		assertThat(reportVersion.getVersionName(), is(currentVersionName));
 		assertThat(reportVersion.getVersionCode(), is(currentVersionCode));
@@ -507,6 +514,7 @@ public class ReportVersionControllerTests {
 		 * New details that will be used to update the ReportVersion.
 		 */
 		UUID newReportUuid = currentReportUuid;  // do not link to different parent report
+		String newFilename = "400-TestReport04_v0.5.1.rptdesign";
 		Report newReport = reportRepository.findOne(newReportUuid);
 		String newRptdesign = new StringBuilder()
 				.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n")
@@ -544,6 +552,7 @@ public class ReportVersionControllerTests {
 
 		ReportVersionResource reportVersionResource = new ReportVersionResource();
 		reportVersionResource.setReportResource(newReportResource);
+		reportVersionResource.setFileName(newFilename);
 		reportVersionResource.setRptdesign(newRptdesign);
 		reportVersionResource.setVersionName(newVersionName);
 		reportVersionResource.setVersionCode(newVersionCode);
@@ -607,6 +616,7 @@ public class ReportVersionControllerTests {
 		assertThat(resource, is(not(nullValue())));
 		assertThat(resource.getReportResource(), is(not(nullValue())));
 		assertThat(resource.getReportResource().getReportId(), is(newReportUuid));
+		assertThat(resource.getFileName(), is(newFilename));
 		assertThat(resource.getRptdesign(), is(newRptdesign));
 		assertThat(resource.getVersionName(), is(newVersionName));
 		assertThat(resource.getVersionCode(), is(newVersionCode));
@@ -631,6 +641,7 @@ public class ReportVersionControllerTests {
 		logger.debug("reportVersion (refeshed) = {}", reportVersion);
 		assertThat(reportVersion, is(not(nullValue())));
 		assertThat(reportVersion.getReport(), is(newReport));
+		assertThat(reportVersion.getFileName(), is(newFilename));
 		assertThat(reportVersion.getRptdesign(), is(newRptdesign));
 		assertThat(reportVersion.getVersionName(), is(newVersionName));
 		assertThat(reportVersion.getVersionCode(), is(newVersionCode));

@@ -24,9 +24,9 @@ insert into reporting.parameter_type (parameter_type_id, description, abbreviati
 --insert into reporting.document_format (document_format_id, name, file_extension, media_type, binary_data, birt_format, active, created_on) values ('c78ac922-2f37-4855-83ae-b708d453b005', 'Office Open XML Workbook'     , 'xlsx', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'        , true , 'xlsx', true , '2015-06-30T11:59:00');
 
 
-insert into reporting.report_category (report_category_id, description, abbreviation, active, created_on) values ('7a482694-51d2-42d0-b0e2-19dd13bbbc64', 'Accounting'       , 'ACCT' , false, '2015-04-30T12:00:00');
+insert into reporting.report_category (report_category_id, description, abbreviation, active, created_on) values ('7a482694-51d2-42d0-b0e2-19dd13bbbc64', 'Accounting'       , 'ACCT' , true, '2015-04-30T12:00:00');
 insert into reporting.report_category (report_category_id, description, abbreviation, active, created_on) values ('bb2bc482-c19a-4c19-a087-e68ffc62b5a0', 'Q-Free internal'  , 'QFREE', true , '2015-05-30T22:00:00');
-insert into reporting.report_category (report_category_id, description, abbreviation, active, created_on) values ('5c3cc664-b685-4f6e-8d9a-2927c6bcffdc', 'Manual validation', 'MIR'  , false, '2015-03-01T02:00:00');
+insert into reporting.report_category (report_category_id, description, abbreviation, active, created_on) values ('5c3cc664-b685-4f6e-8d9a-2927c6bcffdc', 'Manual validation', 'MIR'  , true, '2015-03-01T02:00:00');
 insert into reporting.report_category (report_category_id, description, abbreviation, active, created_on) values ('72d7cb27-1770-4cc7-b301-44d39ccf1e76', 'Traffic'          , 'TRA'  , true , '2015-03-01T02:00:10');
 
 
@@ -57,7 +57,7 @@ INSERT INTO tmp_rptdesign (rptdesign) VALUES ('<?xml version="1.0" encoding="UTF
         </label>
     </body>
 </report>');
-insert into reporting.report_version (report_version_id, report_id, rptdesign, version_name, version_code, active, created_on) VALUES ('dbc0883b-afe3-4147-87b4-0ed35869cd35', 'd65f3d9c-f67d-4beb-9936-9dfa19aa1407', (SELECT rptdesign FROM tmp_rptdesign), '0.5', 1, true, '2015-05-06T15:10:00');
+insert into reporting.report_version (report_version_id, report_id, file_name, rptdesign, version_name, version_code, active, created_on) VALUES ('dbc0883b-afe3-4147-87b4-0ed35869cd35', 'd65f3d9c-f67d-4beb-9936-9dfa19aa1407', '100-TestReport01_v0.5.rptdesign', (SELECT rptdesign FROM tmp_rptdesign), '0.5', 1, true, '2015-05-06T15:10:00');
 delete from tmp_rptdesign;
 
 -- Report 200. 'Test Report #02', version 1:
@@ -77,7 +77,7 @@ INSERT INTO tmp_rptdesign (rptdesign) VALUES ('<?xml version="1.0" encoding="UTF
         </label>
     </body>
 </report>');
-insert into reporting.report_version (report_version_id, report_id, rptdesign, version_name, version_code, active, created_on) VALUES ('fb8a4896-609b-438a-81b0-c70587f8f637', 'c7f1d394-9814-4ede-bb01-2700187d79ca', (SELECT rptdesign FROM tmp_rptdesign), '0.9', 1, false, '2015-05-06T15:10:00');
+insert into reporting.report_version (report_version_id, report_id, file_name, rptdesign, version_name, version_code, active, created_on) VALUES ('fb8a4896-609b-438a-81b0-c70587f8f637', 'c7f1d394-9814-4ede-bb01-2700187d79ca', '200-TestReport02_v0.9.rptdesign', (SELECT rptdesign FROM tmp_rptdesign), '0.9', 1, false, '2015-05-06T15:10:00');
 delete from tmp_rptdesign;
 
 -- Report 200. 'Test Report #02', version 2:
@@ -97,7 +97,7 @@ INSERT INTO tmp_rptdesign (rptdesign) VALUES ('<?xml version="1.0" encoding="UTF
         </label>
     </body>
 </report>');
-insert into reporting.report_version (report_version_id, report_id, rptdesign, version_name, version_code, active, created_on) VALUES ('2f88d7ff-8b74-457a-bce6-89d3e74d0bb9', 'c7f1d394-9814-4ede-bb01-2700187d79ca', (SELECT rptdesign FROM tmp_rptdesign), '1.0', 2, true, '2015-05-06T09:00:00');
+insert into reporting.report_version (report_version_id, report_id, file_name, rptdesign, version_name, version_code, active, created_on) VALUES ('2f88d7ff-8b74-457a-bce6-89d3e74d0bb9', 'c7f1d394-9814-4ede-bb01-2700187d79ca', '200-TestReport02_v1.0.rptdesign', (SELECT rptdesign FROM tmp_rptdesign), '1.0', 2, true, '2015-05-06T09:00:00');
 delete from tmp_rptdesign;
 
 -- Report 200. 'Test Report #02', version 3:
@@ -117,7 +117,7 @@ INSERT INTO tmp_rptdesign (rptdesign) VALUES ('<?xml version="1.0" encoding="UTF
         </label>
     </body>
 </report>');
-insert into reporting.report_version (report_version_id, report_id, rptdesign, version_name, version_code, active, created_on) VALUES ('293abf69-1516-4e9b-84ae-241d25c13e8d', 'c7f1d394-9814-4ede-bb01-2700187d79ca', (SELECT rptdesign FROM tmp_rptdesign), '2.0', 3, true, '2015-05-08T15:00:00');
+insert into reporting.report_version (report_version_id, report_id, file_name, rptdesign, version_name, version_code, active, created_on) VALUES ('293abf69-1516-4e9b-84ae-241d25c13e8d', 'c7f1d394-9814-4ede-bb01-2700187d79ca', '200-TestReport02_v2.0.rptdesign', (SELECT rptdesign FROM tmp_rptdesign), '2.0', 3, true, '2015-05-08T15:00:00');
 delete from tmp_rptdesign;
 
 -- Report 300. 'Test Report #03', version 1:
@@ -137,7 +137,7 @@ INSERT INTO tmp_rptdesign (rptdesign) VALUES ('<?xml version="1.0" encoding="UTF
         </label>
     </body>
 </report>');
-insert into reporting.report_version (report_version_id, report_id, rptdesign, version_name, version_code, active, created_on) VALUES ('8dd9bb5a-1565-4d38-8a8b-857803088626', 'fe718314-5b39-40e7-aed2-279354c04a9d', (SELECT rptdesign FROM tmp_rptdesign), '0.5', 1, true, '2015-05-06T15:10:00');
+insert into reporting.report_version (report_version_id, report_id, file_name, rptdesign, version_name, version_code, active, created_on) VALUES ('8dd9bb5a-1565-4d38-8a8b-857803088626', 'fe718314-5b39-40e7-aed2-279354c04a9d', '300-TestReport03_v0.5.rptdesign', (SELECT rptdesign FROM tmp_rptdesign), '0.5', 1, true, '2015-05-06T15:10:00');
 delete from tmp_rptdesign;
 
 -- Report 400. 'Test Report #04', version 1:
@@ -157,7 +157,7 @@ INSERT INTO tmp_rptdesign (rptdesign) VALUES ('<?xml version="1.0" encoding="UTF
         </label>
     </body>
 </report>');
-insert into reporting.report_version (report_version_id, report_id, rptdesign, version_name, version_code, active, created_on) VALUES ('d481c452-990c-4ea3-9afa-3ea60cef04ab', '702d5daa-e23d-4f00-b32b-67b44c06d8f6', (SELECT rptdesign FROM tmp_rptdesign), '1.0', 1, true, '2015-05-06T15:10:00');
+insert into reporting.report_version (report_version_id, report_id, file_name, rptdesign, version_name, version_code, active, created_on) VALUES ('d481c452-990c-4ea3-9afa-3ea60cef04ab', '702d5daa-e23d-4f00-b32b-67b44c06d8f6', '400-TestReport04_v1.0.rptdesign', (SELECT rptdesign FROM tmp_rptdesign), '1.0', 1, true, '2015-05-06T15:10:00');
 delete from tmp_rptdesign;
 --
 -- Report 400. 'Test Report #04', version 2:
@@ -177,7 +177,7 @@ INSERT INTO tmp_rptdesign (rptdesign) VALUES ('<?xml version="1.0" encoding="UTF
         </label>
     </body>
 </report>');
-insert into reporting.report_version (report_version_id, report_id, rptdesign, version_name, version_code, active, created_on) VALUES ('bbd23109-e1e9-404e-913d-32150d8fd92f', '702d5daa-e23d-4f00-b32b-67b44c06d8f6', (SELECT rptdesign FROM tmp_rptdesign), '1.1', 2, true, '2015-05-10T19:00:00');
+insert into reporting.report_version (report_version_id, report_id, file_name, rptdesign, version_name, version_code, active, created_on) VALUES ('bbd23109-e1e9-404e-913d-32150d8fd92f', '702d5daa-e23d-4f00-b32b-67b44c06d8f6', '400-TestReport04_v1.1.rptdesign', (SELECT rptdesign FROM tmp_rptdesign), '1.1', 2, true, '2015-05-10T19:00:00');
 delete from tmp_rptdesign;
 
 
