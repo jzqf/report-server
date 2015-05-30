@@ -81,7 +81,7 @@ public class ReportRepositoryTests {
 		//		} catch (ParseException e) {
 		//			e.printStackTrace();
 		//		}
-		//		assertEquals(date.getTime(), report04.getCreatedOn().getTime());
+		//		assertThat(report04.getCreatedOn().getTime(), is(date.getTime()));
 		assertThat(DateUtils.entityTimestampToNormalDate(report04.getCreatedOn()),
 				is(DateUtils.dateUtcFromIso8601String("2014-03-25T12:15:00.000Z")));
 

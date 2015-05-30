@@ -1,14 +1,11 @@
 package com.qfree.obo.report.db;
 
-//import static org.hamcrest.CoreMatchers.equalTo;
-//import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.lessThan;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.nullValue;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 
 import java.util.ArrayList;
@@ -182,7 +179,7 @@ public class ReportVersionRepositoryTests {
 		assertThat(reportVersionRepository.count(), is(currentNumberOfReportVersions));
 		assertThat(reportParameterRepository.count(), is(currentTotalNumberOfReportParameters));
 		assertThat(reportRepository.count(), is(currentTotalNumberOfReports));
-		assertNotNull(reportVersionRepository.findOne(uuidOfReport04Version2));
+		assertThat(reportVersionRepository.findOne(uuidOfReport04Version2), is(not(nullValue())));
 		//ReportVersion Report04Version2 = reportVersionRepository.findOne(uuidOfReport04Version2);
 		reportVersionRepository.delete(uuidOfReport04Version2);
 		assertThat(reportVersionRepository.count(), is(currentNumberOfReportVersions - 1));

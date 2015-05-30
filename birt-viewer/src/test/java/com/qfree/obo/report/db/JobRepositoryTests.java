@@ -4,7 +4,6 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 
 import java.util.List;
@@ -48,21 +47,21 @@ public class JobRepositoryTests {
 	@Test
 	@Transactional
 	public void count() {
-		assertEquals(2, jobRepository.count());
+		assertThat(jobRepository.count(), is(2L));
 	}
 
 	@Test
 	@Transactional
 	public void findAll() {
 		List<Job> jobs = jobRepository.findAll();
-		assertEquals(2, jobs.size());
+		assertThat(jobs.size(), is(2));
 	}
 
 	@Test
 	@Transactional
 	public void save_newJob() {
 
-		assertEquals(2, jobRepository.count());
+		assertThat(jobRepository.count(), is(2L));
 
 		UUID uuidOfReport04 = UUID.fromString("702d5daa-e23d-4f00-b32b-67b44c06d8f6");
 		Report report04 = reportRepository.findOne(uuidOfReport04);
@@ -82,7 +81,7 @@ public class JobRepositoryTests {
 		Job unsavedJob = new Job(report04Version01, role_aabb, pdfFormat);
 		Job savedJob = jobRepository.save(unsavedJob);
 
-		assertEquals(3, jobRepository.count());
+		assertThat(jobRepository.count(), is(3L));
 
 		Long uuidFromSavedJob = savedJob.getJobId();
 		Job foundJob = jobRepository.findOne(uuidFromSavedJob);

@@ -404,7 +404,7 @@ public class TestControllerTests {
 	//	@Test
 	//	public void addCallNullParameter() {
 	//		final Response response = target("set/add").request(MediaType.APPLICATION_JSON_TYPE).get();
-	//		assertEquals(Response.Status.METHOD_NOT_ALLOWED.getStatusCode(), response.getStatus());
+	//		assertThat(response.getStatus(),is (Response.Status.METHOD_NOT_ALLOWED.getStatusCode()));
 	//	}
 	//
 	//	/**
@@ -451,8 +451,8 @@ public class TestControllerTests {
 	//	 * Check that the response to {@link SetResource#getAll()} is as expected.
 	//	 */
 	//	private void checkGetCallResponse(final Response callResponse, final Set<String> expectedResponse) {
-	//		assertEquals(Response.Status.OK.getStatusCode(), callResponse.getStatus());
-	//		assertEquals(expectedResponse, callResponse.readEntity(STRING_SET_RETURN_TYPE));
+	//		assertThat(callResponse.getStatus(), is(Response.Status.OK.getStatusCode()));
+	//		assertThat(callResponse.readEntity(STRING_SET_RETURN_TYPE), is(expectedResponse));
 	//	}
 	//
 	//	/**
@@ -460,8 +460,8 @@ public class TestControllerTests {
 	//	 * value returned is as expected.
 	//	 */
 	//	private void checkAddCallResponse(final Response responseWrapper, final boolean expectedResponse) {
-	//		assertEquals(Response.Status.OK.getStatusCode(), responseWrapper.getStatus());
-	//		assertEquals(expectedResponse, responseWrapper.readEntity(BOOLEAN_RETURN_TYPE));
+	//		assertThat(responseWrapper.getStatus(), is(Response.Status.OK.getStatusCode()));
+	//		assertThat(responseWrapper.readEntity(BOOLEAN_RETURN_TYPE), is(expectedResponse));
 	//	}
 	//
 	//	/**
