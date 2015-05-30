@@ -4,7 +4,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.nio.file.InvalidPathException;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -47,8 +46,8 @@ import com.qfree.obo.report.dto.ResourcePath;
 import com.qfree.obo.report.dto.RestErrorResource.RestError;
 import com.qfree.obo.report.exceptions.RestApiException;
 import com.qfree.obo.report.rest.server.RestUtils.RestApiVersion;
+import com.qfree.obo.report.service.ReportSyncService;
 import com.qfree.obo.report.service.ReportVersionService;
-import com.qfree.obo.report.util.ReportUtils;
 
 @Component
 @Path(ResourcePath.REPORTVERSIONS_PATH)
@@ -59,13 +58,18 @@ public class ReportVersionController extends AbstractBaseController {
 	private final ReportVersionRepository reportVersionRepository;
 	private final ReportVersionService reportVersionService;
 	private final ReportRepository reportRepository;
+	private final ReportSyncService reportSyncService;
 
 	@Autowired
-	public ReportVersionController(ReportVersionRepository reportVersionRepository,
-			ReportVersionService reportVersionService, ReportRepository reportRepository) {
+	public ReportVersionController(
+			ReportVersionRepository reportVersionRepository,
+			ReportVersionService reportVersionService,
+			ReportRepository reportRepository,
+			ReportSyncService reportSyncService) {
 		this.reportVersionRepository = reportVersionRepository;
 		this.reportVersionService = reportVersionService;
 		this.reportRepository = reportRepository;
+		this.reportSyncService = reportSyncService;
 	}
 
 	/*
@@ -129,26 +133,19 @@ public class ReportVersionController extends AbstractBaseController {
 			@Context final UriInfo uriInfo) {
 		RestApiVersion apiVersion = RestUtils.extractAPIVersion(acceptHeader, RestApiVersion.v1);
 
-		ReportVersionResource newReportVersionResource = null;
-		try {
-
-			ReportVersion reportVersion = reportVersionService.saveNewFromResource(reportVersionResource);
-			if (RestUtils.AUTO_EXPAND_PRIMARY_RESOURCES) {
-				addToExpandList(expand, ReportVersion.class);
-			}
-			newReportVersionResource = new ReportVersionResource(reportVersion, uriInfo, expand, apiVersion);
-
-			/*
-			 * Write uploaded rptdesign file to the file system of the report 
-			 * server, overwriting a file with the same name, if one exists.
-			 */
-			ReportUtils.writeRptdesignFile(reportVersion, servletContext.getRealPath(""));
-
-		} catch (InvalidPathException e) {
-			throw new RestApiException(RestError.INTERNAL_SERVER_ERROR_REPORT_FOLDER_MISSING, e);
-		} catch (IOException e) {
-			throw new RestApiException(RestError.INTERNAL_SERVER_ERROR_RPTDESIGN_SYNC, e);
+		ReportVersion reportVersion = reportVersionService.saveNewFromResource(reportVersionResource);
+		if (RestUtils.AUTO_EXPAND_PRIMARY_RESOURCES) {
+			addToExpandList(expand, ReportVersion.class);
 		}
+		ReportVersionResource newReportVersionResource =
+				new ReportVersionResource(reportVersion, uriInfo, expand, apiVersion);
+
+		/*
+		 * Write uploaded rptdesign file to the file system of the report 
+		 * server, overwriting a file with the same name, if one exists.
+		 */
+		java.nio.file.Path rptdesignFilePath = reportSyncService.writeRptdesignFile(reportVersion,
+				servletContext.getRealPath(""));
 
 		return created(newReportVersionResource);
 	}
@@ -236,10 +233,12 @@ public class ReportVersionController extends AbstractBaseController {
 			 * Write uploaded rptdesign file to the file system of the report 
 			 * server, overwriting a file with the same name, if one exists.
 			 */
-			ReportUtils.writeRptdesignFile(reportVersion, servletContext.getRealPath(""));
+			//			ReportUtils.writeRptdesignFile(reportVersion, servletContext.getRealPath(""));
+			java.nio.file.Path rptdesignFilePath = reportSyncService.writeRptdesignFile(reportVersion,
+					servletContext.getRealPath(""));
 
-		} catch (InvalidPathException e) {
-			throw new RestApiException(RestError.INTERNAL_SERVER_ERROR_REPORT_FOLDER_MISSING, e);
+			//} catch (InvalidPathException e) {
+			//	throw new RestApiException(RestError.INTERNAL_SERVER_ERROR_REPORT_FOLDER_MISSING, e);
 		} catch (IOException e) {
 			throw new RestApiException(RestError.INTERNAL_SERVER_ERROR_RPTDESIGN_SYNC, e);
 		}

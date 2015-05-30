@@ -1,7 +1,5 @@
 package com.qfree.obo.report.rest.server;
 
-import java.io.IOException;
-import java.nio.file.InvalidPathException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -24,8 +22,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.qfree.obo.report.db.ReportRepository;
 import com.qfree.obo.report.dto.ReportSyncResource;
-import com.qfree.obo.report.dto.RestErrorResource.RestError;
-import com.qfree.obo.report.exceptions.RestApiException;
 import com.qfree.obo.report.rest.server.RestUtils.RestApiVersion;
 import com.qfree.obo.report.service.ReportSyncService;
 
@@ -69,15 +65,7 @@ public class ReportSyncController extends AbstractBaseController {
 		RestApiVersion apiVersion = RestUtils.extractAPIVersion(acceptHeader, RestApiVersion.v1);
 		Map<String, List<String>> extraQueryParams = new HashMap<>();
 
-		ReportSyncResource reportSyncResource = null;
-		try {
-			reportSyncResource = reportSyncService.syncReportsWithFileSystem(servletContext,
-					uriInfo, expand, extraQueryParams, apiVersion);
-		} catch (InvalidPathException e) {
-			throw new RestApiException(RestError.INTERNAL_SERVER_ERROR_REPORT_FOLDER_MISSING, e);
-		} catch (IOException e) {
-			throw new RestApiException(RestError.INTERNAL_SERVER_ERROR_RPTDESIGN_SYNC, e);
-		}
-		return reportSyncResource;
+		return reportSyncService.syncReportsWithFileSystem(servletContext,
+				uriInfo, expand, extraQueryParams, apiVersion);
 	}
 }
