@@ -40,6 +40,7 @@ import com.qfree.obo.report.db.ReportVersionRepository;
 import com.qfree.obo.report.domain.Report;
 import com.qfree.obo.report.domain.ReportVersion;
 import com.qfree.obo.report.dto.ReportParameterCollectionResource;
+import com.qfree.obo.report.dto.ReportSyncResource;
 import com.qfree.obo.report.dto.ReportVersionCollectionResource;
 import com.qfree.obo.report.dto.ReportVersionResource;
 import com.qfree.obo.report.dto.ResourcePath;
@@ -285,18 +286,18 @@ public class ReportVersionController extends AbstractBaseController {
 	 *   $ mvn clean spring-boot:run
 	 *   $ curl -iH "Content-Type: application/json;v=1" -X PUT -d \
 	 *   '{"report":{"reportId":"702d5daa-e23d-4f00-b32b-67b44c06d8f6"},\
-	 *   "fileName":"XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX","rptdesign":"Not a valid rptdesign, but this cannot be null",\
-	 *   "versionName":"1.1.1","versionCode":2,"active":false}' \
+	 *   "fileName":"400-TestReport04_v1.1.1.rptdesign","rptdesign":"Not a valid rptdesign, but this cannot be null",\
+	 *   "versionName":"0.6.1","versionCode":3,"active":false}' \
 	 *   http://localhost:8080/rest/reportVersions/bbd23109-e1e9-404e-913d-32150d8fd92f
 	 *   
 	 * This updates the ReportVersion with UUID 
 	 * bbd23109-e1e9-404e-913d-32150d8fd92f with the following changes:
 	 * 
 	 * report:			Do not change - keep same parent report ("Test Report #04")
-	 * fileName:		"YYYYYYYYYYYYYYYYY"	->	"XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
+	 * fileName:		"400-TestReport04_v0.6.rptdesign"	->	"400-TestReport04_v1.1.1.rptdesign"
 	 * rptdesign:							-> "Not a valid rptdesign, but this cannot be null"
 	 * versionName:		"1.1"				-> "1.1.1"
-	 * versionCode:		2					-> 2
+	 * versionCode:		2					-> 3
 	 * active:			true				-> false
 	 * 
 	 * @Transactional may be needed here to avoid future exceptions of the type
@@ -313,28 +314,34 @@ public class ReportVersionController extends AbstractBaseController {
 			ReportVersionResource reportVersionResource,
 			@PathParam("id") final UUID id,
 			@HeaderParam("Accept") final String acceptHeader,
+			@QueryParam("expand") final List<String> expand,
+			@Context final ServletContext servletContext,
 			@Context final UriInfo uriInfo) {
 		RestApiVersion apiVersion = RestUtils.extractAPIVersion(acceptHeader, RestApiVersion.v1);
-		logger.debug("apiVersion = {}", apiVersion);
-		logger.debug("reportVersionResource = {}", reportVersionResource);
+		Map<String, List<String>> extraQueryParams = new HashMap<>();
 
 		/*
 		 * Retrieve ReportVersion entity to be updated.
 		 */
 		ReportVersion reportVersion = reportVersionRepository.findOne(id);
 		RestUtils.ifNullThen404(reportVersion, ReportVersion.class, "reportVersionId", id.toString());
-		logger.debug("reportVersion (to be updated) = {}", reportVersion);
 		/*
 		 * Ensure that the entity's "id" and "CreatedOn" are not changed.
 		 */
 		reportVersionResource.setReportVersionId(reportVersion.getReportVersionId());
 		reportVersionResource.setCreatedOn(reportVersion.getCreatedOn());
-		logger.debug("reportVersionResource (adjusted) = {}", reportVersionResource);
 		/*
 		 * Save updated entity.
 		 */
 		reportVersion = reportVersionService.saveExistingFromResource(reportVersionResource);
-		logger.debug("reportVersion (after saveOrUpdateFromResource) = {}", reportVersion);
+
+		/*
+		 * Synchronize "rptdesign" files in the report server's file system with
+		 * the "rptdesign" definitions stored in the report server's database.
+		 */
+		ReportSyncResource reportSyncResource = reportSyncService.syncReportsWithFileSystem(servletContext,
+				uriInfo, expand, extraQueryParams, apiVersion);
+
 		return Response.status(Response.Status.OK).build();
 	}
 

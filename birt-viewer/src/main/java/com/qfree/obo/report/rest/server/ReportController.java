@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import javax.servlet.ServletContext;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.HeaderParam;
@@ -30,10 +31,12 @@ import com.qfree.obo.report.db.ReportRepository;
 import com.qfree.obo.report.domain.Report;
 import com.qfree.obo.report.dto.ReportCollectionResource;
 import com.qfree.obo.report.dto.ReportResource;
+import com.qfree.obo.report.dto.ReportSyncResource;
 import com.qfree.obo.report.dto.ReportVersionCollectionResource;
 import com.qfree.obo.report.dto.ResourcePath;
 import com.qfree.obo.report.rest.server.RestUtils.RestApiVersion;
 import com.qfree.obo.report.service.ReportService;
+import com.qfree.obo.report.service.ReportSyncService;
 
 @Component
 @Path(ResourcePath.REPORTS_PATH)
@@ -42,13 +45,17 @@ public class ReportController extends AbstractBaseController {
 	private static final Logger logger = LoggerFactory.getLogger(ReportController.class);
 
 	private final ReportRepository reportRepository;
-
 	private final ReportService reportService;
+	private final ReportSyncService reportSyncService;
 
 	@Autowired
-	public ReportController(ReportRepository reportRepository, ReportService reportService) {
+	public ReportController(
+			ReportRepository reportRepository,
+			ReportService reportService,
+			ReportSyncService reportSyncService) {
 		this.reportRepository = reportRepository;
 		this.reportService = reportService;
+		this.reportSyncService = reportSyncService;
 	}
 
 	/*
@@ -151,15 +158,15 @@ public class ReportController extends AbstractBaseController {
 	 * 
 	 *   $ mvn clean spring-boot:run
 	 *   $ curl -iH "Content-Type: application/json;v=1" -X PUT -d \
-	 *   '{"reportCategory":{"reportCategoryId":"72d7cb27-1770-4cc7-b301-44d39ccf1e76"},'\
-	 *   '"name":"Report #04 (modified by PUT)","number":1400,"active":false}' \
+	 *   '{"reportCategory":{"reportCategoryId":"72d7cb27-1770-4cc7-b301-44d39ccf1e76"},\
+	 *   "name":"Test Report #04 (modified by PUT)","number":1400,"active":false}' \
 	 *   http://localhost:8080/rest/reports/702d5daa-e23d-4f00-b32b-67b44c06d8f6
 	 *   
 	 * This updates the report with UUID 702d5daa-e23d-4f00-b32b-67b44c06d8f6
 	 * with the following changes:
 	 * 
-	 * report category:	"Q-Free internal"	->	"Traffic"
-	 * name:			"Report name #04"	-> "Report name #04 (modified by PUT)"
+	 * report category:	"Q-Free internal"	-> "Traffic"
+	 * name:			"Test Report #04"	-> "Test Report #04 (modified by PUT)"
 	 * number:			400					-> 1400
 	 * active:			true				-> false
 	 */
@@ -171,28 +178,40 @@ public class ReportController extends AbstractBaseController {
 			ReportResource reportResource,
 			@PathParam("id") final UUID id,
 			@HeaderParam("Accept") final String acceptHeader,
+			@QueryParam("expand") final List<String> expand,
+			@Context final ServletContext servletContext,
 			@Context final UriInfo uriInfo) {
 		RestApiVersion apiVersion = RestUtils.extractAPIVersion(acceptHeader, RestApiVersion.v1);
-		logger.debug("apiVersion = {}", apiVersion);
-		logger.debug("reportResource = {}", reportResource);
+		Map<String, List<String>> extraQueryParams = new HashMap<>();
+		//		logger.debug("apiVersion = {}", apiVersion);
+		//		logger.info("reportResource = {}", reportResource);
 
 		/*
 		 * Retrieve Report entity to be updated.
 		 */
 		Report report = reportRepository.findOne(id);
 		RestUtils.ifNullThen404(report, Report.class, "reportId", id.toString());
-		logger.debug("report (to be updated) = {}", report);
+
 		/*
 		 * Ensure that the entity's "id" and "CreatedOn" are not changed.
 		 */
 		reportResource.setReportId(report.getReportId());
 		reportResource.setCreatedOn(report.getCreatedOn());
-		logger.debug("reportResource (adjusted) = {}", reportResource);
+
 		/*
 		 * Save updated entity.
 		 */
 		report = reportService.saveExistingFromResource(reportResource);
-		logger.debug("report (after saveOrUpdateFromResource) = {}", report);
+
+		/*
+		 * Synchronize "rptdesign" files in the report server's file system with
+		 * the "rptdesign" definitions stored in the report server's database.
+		 * This may create or delete files if the report's "active" attribute 
+		 * has been modified.
+		 */
+		ReportSyncResource reportSyncResource = reportSyncService.syncReportsWithFileSystem(servletContext,
+				uriInfo, expand, extraQueryParams, apiVersion);
+
 		return Response.status(Response.Status.OK).build();
 	}
 

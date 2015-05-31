@@ -154,6 +154,8 @@ public class ReportSyncService {
 					throw new RestApiException(RestError.INTERNAL_SERVER_ERROR_REPORT_FOLDER_MISSING, e);
 				} catch (IOException e) {
 					throw new RestApiException(RestError.INTERNAL_SERVER_ERROR_RPTDESIGN_SYNC, e);
+				} finally {
+					ReportUtils.reportSyncSemaphore.release();
 				}
 			} else {
 				throw new RestApiException(RestError.INTERNAL_SERVER_ERROR_RPTDESIGN_SYNC_NO_PERMIT);
