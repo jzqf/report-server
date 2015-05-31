@@ -109,7 +109,7 @@ public class ReportVersionRepositoryTests {
 		UUID uuidOfReport04 = UUID.fromString("702d5daa-e23d-4f00-b32b-67b44c06d8f6");
 		Report report04 = reportRepository.findOne(uuidOfReport04);
 		assertThat(report04, is(not(nullValue())));
-		String newFilename = "400-TestReport04_v2.1.rptdesign";
+		String newFilename = "400-TestReport04_v2.1-CreatedByIntegrationTesting.rptdesign";
 		String newRptdesign = new StringBuilder()
 				.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n")
 				.append("<report xmlns=\"http://www.eclipse.org/birt/2005/design\" version=\"3.2.23\" id=\"1\">\n")

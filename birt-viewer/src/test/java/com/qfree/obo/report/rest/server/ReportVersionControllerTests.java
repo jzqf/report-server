@@ -114,7 +114,7 @@ public class ReportVersionControllerTests {
 		/*
 		 * ReportVersionResource attributes for creating a new ReportVersion.
 		 */
-		String newFilename = "400-TestReport04_v2.1.rptdesign";
+		String newFilename = "400-TestReport04_v2.1-CreatedByIntegrationTesting.rptdesign";
 		String newRptdesign = new StringBuilder()
 				.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n")
 				.append("<report xmlns=\"http://www.eclipse.org/birt/2005/design\" version=\"3.2.23\" id=\"1\">\n")

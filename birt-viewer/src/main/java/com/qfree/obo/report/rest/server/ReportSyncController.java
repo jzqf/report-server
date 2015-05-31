@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.servlet.ServletContext;
+import javax.ws.rs.GET;
 import javax.ws.rs.HeaderParam;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -24,6 +25,7 @@ import com.qfree.obo.report.db.ReportRepository;
 import com.qfree.obo.report.dto.ReportSyncResource;
 import com.qfree.obo.report.rest.server.RestUtils.RestApiVersion;
 import com.qfree.obo.report.service.ReportSyncService;
+import com.qfree.obo.report.util.ReportUtils;
 
 @Component
 @Path("reportSyncs")
@@ -42,6 +44,24 @@ public class ReportSyncController extends AbstractBaseController {
 			ReportRepository reportRepository, ReportSyncService reportSyncService) {
 		this.reportRepository = reportRepository;
 		this.reportSyncService = reportSyncService;
+	}
+
+	/*
+	 * This endpoint can be tested with:
+	 * 
+	 *   $ mvn clean spring-boot:run
+	 *   $ curl -i -H "Accept: text/plain;v=1" -X GET http://localhost:8080/rest/reportSyncs/availablePermits
+	 * 
+	 */
+	@Path("/availablePermits")
+	@GET
+	@Produces(MediaType.TEXT_PLAIN)
+	public int getList(
+			@HeaderParam("Accept") final String acceptHeader,
+			@Context final UriInfo uriInfo) {
+		RestApiVersion apiVersion = RestUtils.extractAPIVersion(acceptHeader, RestApiVersion.v1);
+
+		return ReportUtils.reportSyncSemaphore.availablePermits();
 	}
 
 	/*

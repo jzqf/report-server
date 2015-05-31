@@ -142,7 +142,7 @@ public class ReportVersionController extends AbstractBaseController {
 
 		/*
 		 * Write uploaded rptdesign file to the file system of the report 
-		 * server, overwriting a file with the same name, if one exists.
+		 * server, overwriting a file with the same name if one exists.
 		 */
 		java.nio.file.Path rptdesignFilePath = reportSyncService.writeRptdesignFile(reportVersion,
 				servletContext.getRealPath(""));
@@ -231,7 +231,7 @@ public class ReportVersionController extends AbstractBaseController {
 
 			/*
 			 * Write uploaded rptdesign file to the file system of the report 
-			 * server, overwriting a file with the same name, if one exists.
+			 * server, overwriting a file with the same name if one exists.
 			 */
 			//			ReportUtils.writeRptdesignFile(reportVersion, servletContext.getRealPath(""));
 			java.nio.file.Path rptdesignFilePath = reportSyncService.writeRptdesignFile(reportVersion,
