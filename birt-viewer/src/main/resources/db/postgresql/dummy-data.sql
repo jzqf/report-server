@@ -168,13 +168,2156 @@ INSERT INTO tmp_rptdesign (rptdesign) VALUES ('<?xml version="1.0" encoding="UTF
     <property name="iconFile">/templates/blank_report.gif</property>
     <property name="bidiLayoutOrientation">ltr</property>
     <property name="imageDPI">96</property>
+    <parameters>
+        <scalar-parameter name="StringParameterTextBoxReqd" id="5">
+            <text-property name="helpText">This is some help text for "StringParameterTextBoxReqd"</text-property>
+            <text-property name="promptText">String: TextBox (required)</text-property>
+            <property name="valueType">static</property>
+            <property name="dataType">string</property>
+            <property name="distinct">true</property>
+            <simple-property-list name="defaultValue">
+                <value type="constant">some default value</value>
+            </simple-property-list>
+            <list-property name="selectionList"/>
+            <property name="paramType">simple</property>
+            <property name="controlType">text-box</property>
+            <structure name="format">
+                <property name="category">Unformatted</property>
+            </structure>
+        </scalar-parameter>
+        <scalar-parameter name="StringParameterTextBoxNotReqd" id="236">
+            <text-property name="helpText">This is some help text for "StringParameterTextBoxNotReqd"</text-property>
+            <text-property name="promptText">String: TextBox (not required)</text-property>
+            <property name="valueType">static</property>
+            <property name="isRequired">false</property>
+            <property name="dataType">string</property>
+            <property name="distinct">true</property>
+            <simple-property-list name="defaultValue">
+                <value type="constant">some default value</value>
+            </simple-property-list>
+            <list-property name="selectionList"/>
+            <property name="paramType">simple</property>
+            <property name="controlType">text-box</property>
+            <structure name="format">
+                <property name="category">Unformatted</property>
+            </structure>
+        </scalar-parameter>
+        <scalar-parameter name="StringParameterComboBoxStaticReqd" id="57">
+            <text-property name="helpText">This is some help text for "StringParameterComboBoxStaticReqd"</text-property>
+            <text-property name="promptText">String: ComboBox (static list, required)</text-property>
+            <property name="valueType">static</property>
+            <property name="dataType">string</property>
+            <property name="distinct">true</property>
+            <simple-property-list name="defaultValue">
+                <value type="constant">value2</value>
+            </simple-property-list>
+            <list-property name="selectionList">
+                <structure>
+                    <property name="value">value1</property>
+                    <property name="label">Display value 1</property>
+                </structure>
+                <structure>
+                    <property name="value">value2</property>
+                    <property name="label">Display value 2</property>
+                </structure>
+                <structure>
+                    <property name="value">value3</property>
+                    <property name="label">Display value 3</property>
+                </structure>
+                <structure>
+                    <property name="value">value4</property>
+                    <property name="label">Display value 4</property>
+                </structure>
+            </list-property>
+            <property name="paramType">simple</property>
+            <property name="controlType">list-box</property>
+            <property name="mustMatch">false</property>
+            <property name="fixedOrder">true</property>
+            <structure name="format">
+                <property name="category">Unformatted</property>
+            </structure>
+        </scalar-parameter>
+        <scalar-parameter name="StringParameterComboBoxStaticNotReqd" id="240">
+            <text-property name="helpText">This is some help text for "StringParameterComboBoxStaticNotReqd"</text-property>
+            <text-property name="promptText">String: ComboBox (static list, not required)</text-property>
+            <property name="valueType">static</property>
+            <property name="isRequired">false</property>
+            <property name="dataType">string</property>
+            <property name="distinct">true</property>
+            <simple-property-list name="defaultValue">
+                <value type="constant">value2</value>
+            </simple-property-list>
+            <list-property name="selectionList">
+                <structure>
+                    <property name="value">value1</property>
+                    <property name="label">Display value 1</property>
+                </structure>
+                <structure>
+                    <property name="value">value2</property>
+                    <property name="label">Display value 2</property>
+                </structure>
+                <structure>
+                    <property name="value">value3</property>
+                    <property name="label">Display value 3</property>
+                </structure>
+                <structure>
+                    <property name="value">value4</property>
+                    <property name="label">Display value 4</property>
+                </structure>
+            </list-property>
+            <property name="paramType">simple</property>
+            <property name="controlType">list-box</property>
+            <property name="mustMatch">false</property>
+            <property name="fixedOrder">true</property>
+            <structure name="format">
+                <property name="category">Unformatted</property>
+            </structure>
+        </scalar-parameter>
+        <scalar-parameter name="StringParameterListBoxStaticSingleReqd" id="63">
+            <text-property name="helpText">This is some help text for "StringParameterListBoxStaticSingleReqd"</text-property>
+            <text-property name="promptText">String: ListBox (static list, single select, required)</text-property>
+            <property name="valueType">static</property>
+            <property name="dataType">string</property>
+            <property name="distinct">true</property>
+            <simple-property-list name="defaultValue">
+                <value type="constant">value2</value>
+            </simple-property-list>
+            <list-property name="selectionList">
+                <structure>
+                    <property name="value">value1</property>
+                    <property name="label">Display value 1</property>
+                </structure>
+                <structure>
+                    <property name="value">value2</property>
+                    <property name="label">Display value 2</property>
+                </structure>
+                <structure>
+                    <property name="value">value3</property>
+                    <property name="label">Display value 3</property>
+                </structure>
+                <structure>
+                    <property name="value">value4</property>
+                    <property name="label">Display value 4</property>
+                </structure>
+            </list-property>
+            <property name="paramType">simple</property>
+            <property name="controlType">list-box</property>
+            <property name="mustMatch">true</property>
+            <property name="fixedOrder">true</property>
+            <structure name="format">
+                <property name="category">Unformatted</property>
+            </structure>
+        </scalar-parameter>
+        <scalar-parameter name="StringParameterListBoxStaticSingleNotReqd" id="253">
+            <text-property name="helpText">This is some help text for "StringParameterListBoxStaticSingleNotReqd"</text-property>
+            <text-property name="promptText">String: ListBox (static list, single select, not required)</text-property>
+            <property name="valueType">static</property>
+            <property name="isRequired">false</property>
+            <property name="dataType">string</property>
+            <property name="distinct">true</property>
+            <simple-property-list name="defaultValue">
+                <value type="constant">value2</value>
+            </simple-property-list>
+            <list-property name="selectionList">
+                <structure>
+                    <property name="value">value1</property>
+                    <property name="label">Display value 1</property>
+                </structure>
+                <structure>
+                    <property name="value">value2</property>
+                    <property name="label">Display value 2</property>
+                </structure>
+                <structure>
+                    <property name="value">value3</property>
+                    <property name="label">Display value 3</property>
+                </structure>
+                <structure>
+                    <property name="value">value4</property>
+                    <property name="label">Display value 4</property>
+                </structure>
+            </list-property>
+            <property name="paramType">simple</property>
+            <property name="controlType">list-box</property>
+            <property name="mustMatch">true</property>
+            <property name="fixedOrder">true</property>
+            <structure name="format">
+                <property name="category">Unformatted</property>
+            </structure>
+        </scalar-parameter>
+        <scalar-parameter name="StringParameterListBoxStaticMultipleReqd" id="67">
+            <text-property name="helpText">This is some help text for "StringParameterListBoxStaticMultipleReqd"</text-property>
+            <text-property name="promptText">String: ListBox (static list, multiple select, required)</text-property>
+            <property name="valueType">static</property>
+            <property name="dataType">string</property>
+            <property name="distinct">true</property>
+            <simple-property-list name="defaultValue">
+                <value type="constant">value2</value>
+            </simple-property-list>
+            <list-property name="selectionList">
+                <structure>
+                    <property name="value">value1</property>
+                    <property name="label">Display value 1</property>
+                </structure>
+                <structure>
+                    <property name="value">value2</property>
+                    <property name="label">Display value 2</property>
+                </structure>
+                <structure>
+                    <property name="value">value3</property>
+                    <property name="label">Display value 3</property>
+                </structure>
+                <structure>
+                    <property name="value">value4</property>
+                    <property name="label">Display value 4</property>
+                </structure>
+            </list-property>
+            <property name="paramType">multi-value</property>
+            <property name="controlType">list-box</property>
+            <property name="mustMatch">true</property>
+            <property name="fixedOrder">true</property>
+            <structure name="format">
+                <property name="category">Unformatted</property>
+            </structure>
+        </scalar-parameter>
+        <scalar-parameter name="StringParameterListBoxStaticMultipleNotReqd" id="266">
+            <text-property name="helpText">This is some help text for "StringParameterListBoxStaticMultipleNotReqd"</text-property>
+            <text-property name="promptText">String: ListBox (static list, multiple select, not required)</text-property>
+            <property name="valueType">static</property>
+            <property name="isRequired">false</property>
+            <property name="dataType">string</property>
+            <property name="distinct">true</property>
+            <simple-property-list name="defaultValue">
+                <value type="constant">value2</value>
+            </simple-property-list>
+            <list-property name="selectionList">
+                <structure>
+                    <property name="value">value1</property>
+                    <property name="label">Display value 1</property>
+                </structure>
+                <structure>
+                    <property name="value">value2</property>
+                    <property name="label">Display value 2</property>
+                </structure>
+                <structure>
+                    <property name="value">value3</property>
+                    <property name="label">Display value 3</property>
+                </structure>
+                <structure>
+                    <property name="value">value4</property>
+                    <property name="label">Display value 4</property>
+                </structure>
+            </list-property>
+            <property name="paramType">multi-value</property>
+            <property name="controlType">list-box</property>
+            <property name="mustMatch">true</property>
+            <property name="fixedOrder">true</property>
+            <structure name="format">
+                <property name="category">Unformatted</property>
+            </structure>
+        </scalar-parameter>
+        <scalar-parameter name="BooleanParameterCheckBox" id="184">
+            <text-property name="helpText">This is some help text for "BooleanParameterCheckBox"</text-property>
+            <text-property name="promptText">Boolean: Check Box</text-property>
+            <property name="valueType">static</property>
+            <property name="isRequired">true</property>
+            <property name="dataType">boolean</property>
+            <property name="distinct">true</property>
+            <simple-property-list name="defaultValue">
+                <value type="constant">True</value>
+            </simple-property-list>
+            <list-property name="selectionList"/>
+            <property name="paramType">simple</property>
+            <property name="controlType">check-box</property>
+            <structure name="format"/>
+        </scalar-parameter>
+        <scalar-parameter name="BooleanParameterRadioButtonReqd" id="196">
+            <text-property name="helpText">This is some help text for "BooleanParameterRadioButtonReqd"</text-property>
+            <text-property name="promptText">Boolean: Radio Button (required)</text-property>
+            <property name="valueType">static</property>
+            <property name="isRequired">true</property>
+            <property name="dataType">boolean</property>
+            <property name="distinct">true</property>
+            <simple-property-list name="defaultValue">
+                <value type="constant">true</value>
+            </simple-property-list>
+            <list-property name="selectionList">
+                <structure>
+                    <property name="value">false</property>
+                    <property name="label">Click this for no/false</property>
+                </structure>
+                <structure>
+                    <property name="value">true</property>
+                    <property name="label">Click this for yes/true</property>
+                </structure>
+            </list-property>
+            <property name="paramType">simple</property>
+            <property name="controlType">radio-button</property>
+            <property name="fixedOrder">true</property>
+            <structure name="format"/>
+        </scalar-parameter>
+        <scalar-parameter name="BooleanParameterRadioButtonNotReqd" id="283">
+            <text-property name="helpText">This is some help text for "BooleanParameterRadioButtonNotReqd"</text-property>
+            <text-property name="promptText">Boolean: Radio Button (not required)</text-property>
+            <property name="valueType">static</property>
+            <property name="isRequired">false</property>
+            <property name="dataType">boolean</property>
+            <property name="distinct">true</property>
+            <simple-property-list name="defaultValue">
+                <value type="constant">true</value>
+            </simple-property-list>
+            <list-property name="selectionList">
+                <structure>
+                    <property name="value">false</property>
+                    <property name="label">Click this for no/false</property>
+                </structure>
+                <structure>
+                    <property name="value">true</property>
+                    <property name="label">Click this for yes/true</property>
+                </structure>
+            </list-property>
+            <property name="paramType">simple</property>
+            <property name="controlType">radio-button</property>
+            <property name="fixedOrder">true</property>
+            <structure name="format"/>
+        </scalar-parameter>
+        <scalar-parameter name="DateParameterTextBoxReqd" id="78">
+            <text-property name="helpText">This is some help text for "DateParameterTextBoxReqd"</text-property>
+            <text-property name="promptText">Date: TextBox (required)</text-property>
+            <property name="valueType">static</property>
+            <property name="dataType">date</property>
+            <property name="distinct">true</property>
+            <simple-property-list name="defaultValue">
+                <value type="constant">2015-06-30</value>
+            </simple-property-list>
+            <list-property name="selectionList"/>
+            <property name="paramType">simple</property>
+            <property name="controlType">text-box</property>
+            <structure name="format">
+                <property name="category">Custom</property>
+                <property name="pattern">yyyy.MM.dd</property>
+            </structure>
+        </scalar-parameter>
+        <scalar-parameter name="DateParameterTextBoxNotReqd" id="292">
+            <text-property name="helpText">This is some help text for "DateParameterTextBoxNotReqd"</text-property>
+            <text-property name="promptText">Date: TextBox (not required)</text-property>
+            <property name="valueType">static</property>
+            <property name="isRequired">false</property>
+            <property name="dataType">date</property>
+            <property name="distinct">true</property>
+            <simple-property-list name="defaultValue">
+                <value type="constant">2015-06-30</value>
+            </simple-property-list>
+            <list-property name="selectionList"/>
+            <property name="paramType">simple</property>
+            <property name="controlType">text-box</property>
+            <structure name="format">
+                <property name="category">Custom</property>
+                <property name="pattern">yyyy.MM.dd</property>
+            </structure>
+        </scalar-parameter>
+        <scalar-parameter name="DatetimeParameterTextboxReqd" id="176">
+            <text-property name="helpText">This is some help text for "DatetimeParameterTextboxReqd"</text-property>
+            <text-property name="promptText">Datetime:: TextBox (required)</text-property>
+            <property name="valueType">static</property>
+            <property name="dataType">dateTime</property>
+            <property name="distinct">true</property>
+            <simple-property-list name="defaultValue">
+                <value type="constant">2015-06-30 12:00:00</value>
+            </simple-property-list>
+            <list-property name="selectionList"/>
+            <property name="paramType">simple</property>
+            <property name="controlType">text-box</property>
+            <structure name="format">
+                <property name="category">Custom</property>
+                <property name="pattern">yyyy.MM.dd hh:mm:ss</property>
+            </structure>
+        </scalar-parameter>
+        <scalar-parameter name="DatetimeParameterTextboxNotReqd" id="299">
+            <text-property name="helpText">This is some help text for "DatetimeParameterTextboxNotReqd"</text-property>
+            <text-property name="promptText">Datetime:: TextBox (not required)</text-property>
+            <property name="valueType">static</property>
+            <property name="isRequired">false</property>
+            <property name="dataType">dateTime</property>
+            <property name="distinct">true</property>
+            <simple-property-list name="defaultValue">
+                <value type="constant">2015-06-30 12:00:00</value>
+            </simple-property-list>
+            <list-property name="selectionList"/>
+            <property name="paramType">simple</property>
+            <property name="controlType">text-box</property>
+            <structure name="format">
+                <property name="category">Custom</property>
+                <property name="pattern">yyyy.MM.dd hh:mm:ss</property>
+            </structure>
+        </scalar-parameter>
+        <scalar-parameter name="TimeParameterTextboxReqd" id="180">
+            <text-property name="helpText">This is some help text for "TimeParameterTextboxReqd"</text-property>
+            <text-property name="promptText">Time: Textbox (required)</text-property>
+            <property name="valueType">static</property>
+            <property name="dataType">time</property>
+            <property name="distinct">true</property>
+            <simple-property-list name="defaultValue">
+                <value type="constant">08:00:00</value>
+            </simple-property-list>
+            <list-property name="selectionList"/>
+            <property name="paramType">simple</property>
+            <property name="controlType">text-box</property>
+            <structure name="format">
+                <property name="category">Custom</property>
+                <property name="pattern">hh:mm:ss</property>
+            </structure>
+        </scalar-parameter>
+        <scalar-parameter name="TimeParameterTextboxNotReqd" id="308">
+            <text-property name="helpText">This is some help text for "TimeParameterTextboxNotReqd"</text-property>
+            <text-property name="promptText">Time: Textbox (not required)</text-property>
+            <property name="valueType">static</property>
+            <property name="isRequired">false</property>
+            <property name="dataType">time</property>
+            <property name="distinct">true</property>
+            <simple-property-list name="defaultValue">
+                <value type="constant">08:00:00</value>
+            </simple-property-list>
+            <list-property name="selectionList"/>
+            <property name="paramType">simple</property>
+            <property name="controlType">text-box</property>
+            <structure name="format">
+                <property name="category">Custom</property>
+                <property name="pattern">hh:mm:ss</property>
+            </structure>
+        </scalar-parameter>
+        <scalar-parameter name="IntegerParameterTextBoxReqd" id="203">
+            <text-property name="helpText">This is some help text for "IntegerParameterTextBoxReqd"</text-property>
+            <text-property name="promptText">Integer: TextBox (required)</text-property>
+            <property name="valueType">static</property>
+            <property name="dataType">integer</property>
+            <property name="distinct">true</property>
+            <simple-property-list name="defaultValue">
+                <value type="constant">42</value>
+            </simple-property-list>
+            <list-property name="selectionList"/>
+            <property name="paramType">simple</property>
+            <property name="controlType">text-box</property>
+            <structure name="format">
+                <property name="category">Unformatted</property>
+            </structure>
+        </scalar-parameter>
+        <scalar-parameter name="IntegerParameterTextBoxNotReqd" id="316">
+            <text-property name="helpText">This is some help text for "IntegerParameterTextBoxNotReqd"</text-property>
+            <text-property name="promptText">Integer: TextBox (not required)</text-property>
+            <property name="valueType">static</property>
+            <property name="isRequired">false</property>
+            <property name="dataType">integer</property>
+            <property name="distinct">true</property>
+            <simple-property-list name="defaultValue">
+                <value type="constant">42</value>
+            </simple-property-list>
+            <list-property name="selectionList"/>
+            <property name="paramType">simple</property>
+            <property name="controlType">text-box</property>
+            <structure name="format">
+                <property name="category">Unformatted</property>
+            </structure>
+        </scalar-parameter>
+        <scalar-parameter name="IntegerParameterComboBoxStaticReqd" id="207">
+            <text-property name="helpText">This is some help text for "IntegerParameterComboBoxStaticReqd"</text-property>
+            <text-property name="promptText">Integer: Combo Box (static list, required)</text-property>
+            <property name="valueType">static</property>
+            <property name="dataType">integer</property>
+            <property name="distinct">true</property>
+            <simple-property-list name="defaultValue">
+                <value type="constant">42</value>
+            </simple-property-list>
+            <list-property name="selectionList">
+                <structure>
+                    <property name="value">0</property>
+                    <property name="label">Display test for 0</property>
+                </structure>
+                <structure>
+                    <property name="value">42</property>
+                    <property name="label">Display test for 42</property>
+                </structure>
+                <structure>
+                    <property name="value">666</property>
+                    <property name="label">Display test for 666</property>
+                </structure>
+                <structure>
+                    <property name="value">12345678</property>
+                    <property name="label">Display test for 12345678</property>
+                </structure>
+            </list-property>
+            <property name="paramType">simple</property>
+            <property name="controlType">list-box</property>
+            <property name="mustMatch">false</property>
+            <property name="fixedOrder">true</property>
+            <structure name="format">
+                <property name="category">Unformatted</property>
+            </structure>
+        </scalar-parameter>
+        <scalar-parameter name="IntegerParameterComboBoxStaticNotReqd" id="319">
+            <text-property name="helpText">This is some help text for "IntegerParameterComboBoxStaticNotReqd"</text-property>
+            <text-property name="promptText">Integer: Combo Box (static list, not required)</text-property>
+            <property name="valueType">static</property>
+            <property name="isRequired">false</property>
+            <property name="dataType">integer</property>
+            <property name="distinct">true</property>
+            <simple-property-list name="defaultValue">
+                <value type="constant">42</value>
+            </simple-property-list>
+            <list-property name="selectionList">
+                <structure>
+                    <property name="value">0</property>
+                    <property name="label">Display test for 0</property>
+                </structure>
+                <structure>
+                    <property name="value">42</property>
+                    <property name="label">Display test for 42</property>
+                </structure>
+                <structure>
+                    <property name="value">666</property>
+                    <property name="label">Display test for 666</property>
+                </structure>
+                <structure>
+                    <property name="value">12345678</property>
+                    <property name="label">Display test for 12345678</property>
+                </structure>
+            </list-property>
+            <property name="paramType">simple</property>
+            <property name="controlType">list-box</property>
+            <property name="mustMatch">false</property>
+            <property name="fixedOrder">true</property>
+            <structure name="format">
+                <property name="category">Unformatted</property>
+            </structure>
+        </scalar-parameter>
+        <scalar-parameter name="IntegerParameterListBoxStaticSingleReqd" id="218">
+            <text-property name="helpText">This is some help text for "IntegerParameterListBoxStaticSingleReqd"</text-property>
+            <text-property name="promptText">Integer: List Box (static list, single select, required)</text-property>
+            <property name="valueType">static</property>
+            <property name="dataType">integer</property>
+            <property name="distinct">true</property>
+            <simple-property-list name="defaultValue">
+                <value type="constant">42</value>
+            </simple-property-list>
+            <list-property name="selectionList">
+                <structure>
+                    <property name="value">0</property>
+                    <property name="label">Display test for 0</property>
+                </structure>
+                <structure>
+                    <property name="value">42</property>
+                    <property name="label">Display test for 42</property>
+                </structure>
+                <structure>
+                    <property name="value">666</property>
+                    <property name="label">Display test for 666</property>
+                </structure>
+                <structure>
+                    <property name="value">12345678</property>
+                    <property name="label">Display test for 12345678</property>
+                </structure>
+            </list-property>
+            <property name="paramType">simple</property>
+            <property name="controlType">list-box</property>
+            <property name="mustMatch">true</property>
+            <property name="fixedOrder">true</property>
+            <structure name="format">
+                <property name="category">Unformatted</property>
+            </structure>
+        </scalar-parameter>
+        <scalar-parameter name="IntegerParameterListBoxStaticSingleNotReqd" id="337">
+            <text-property name="helpText">This is some help text for "IntegerParameterListBoxStaticSingleNotReqd"</text-property>
+            <text-property name="promptText">Integer: List Box (static list, single select, not required)</text-property>
+            <property name="valueType">static</property>
+            <property name="isRequired">false</property>
+            <property name="dataType">integer</property>
+            <property name="distinct">true</property>
+            <simple-property-list name="defaultValue">
+                <value type="constant">42</value>
+            </simple-property-list>
+            <list-property name="selectionList">
+                <structure>
+                    <property name="value">0</property>
+                    <property name="label">Display test for 0</property>
+                </structure>
+                <structure>
+                    <property name="value">42</property>
+                    <property name="label">Display test for 42</property>
+                </structure>
+                <structure>
+                    <property name="value">666</property>
+                    <property name="label">Display test for 666</property>
+                </structure>
+                <structure>
+                    <property name="value">12345678</property>
+                    <property name="label">Display test for 12345678</property>
+                </structure>
+            </list-property>
+            <property name="paramType">simple</property>
+            <property name="controlType">list-box</property>
+            <property name="mustMatch">true</property>
+            <property name="fixedOrder">true</property>
+            <structure name="format">
+                <property name="category">Unformatted</property>
+            </structure>
+        </scalar-parameter>
+        <scalar-parameter name="IntegerParameterListBoxStaticMultipleReqd" id="220">
+            <text-property name="helpText">This is some help text for "IntegerParameterListBoxStaticMultipleReqd"</text-property>
+            <text-property name="promptText">Integer: List Box (static list, multiple select, required)</text-property>
+            <property name="valueType">static</property>
+            <property name="dataType">integer</property>
+            <property name="distinct">true</property>
+            <simple-property-list name="defaultValue">
+                <value type="constant">42</value>
+            </simple-property-list>
+            <list-property name="selectionList">
+                <structure>
+                    <property name="value">0</property>
+                    <property name="label">Display test for 0</property>
+                </structure>
+                <structure>
+                    <property name="value">42</property>
+                    <property name="label">Display test for 42</property>
+                </structure>
+                <structure>
+                    <property name="value">666</property>
+                    <property name="label">Display test for 666</property>
+                </structure>
+                <structure>
+                    <property name="value">12345678</property>
+                    <property name="label">Display test for 12345678</property>
+                </structure>
+            </list-property>
+            <property name="paramType">multi-value</property>
+            <property name="controlType">list-box</property>
+            <property name="mustMatch">true</property>
+            <property name="fixedOrder">true</property>
+            <structure name="format">
+                <property name="category">Unformatted</property>
+            </structure>
+        </scalar-parameter>
+        <scalar-parameter name="IntegerParameterListBoxStaticMultipleNotReqd" id="340">
+            <text-property name="helpText">This is some help text for "IntegerParameterListBoxStaticMultipleNotReqd"</text-property>
+            <text-property name="promptText">Integer: List Box (static list, multiple select, not required)</text-property>
+            <property name="valueType">static</property>
+            <property name="isRequired">false</property>
+            <property name="dataType">integer</property>
+            <property name="distinct">true</property>
+            <simple-property-list name="defaultValue">
+                <value type="constant">42</value>
+            </simple-property-list>
+            <list-property name="selectionList">
+                <structure>
+                    <property name="value">0</property>
+                    <property name="label">Display test for 0</property>
+                </structure>
+                <structure>
+                    <property name="value">42</property>
+                    <property name="label">Display test for 42</property>
+                </structure>
+                <structure>
+                    <property name="value">666</property>
+                    <property name="label">Display test for 666</property>
+                </structure>
+                <structure>
+                    <property name="value">12345678</property>
+                    <property name="label">Display test for 12345678</property>
+                </structure>
+            </list-property>
+            <property name="paramType">multi-value</property>
+            <property name="controlType">list-box</property>
+            <property name="mustMatch">true</property>
+            <property name="fixedOrder">true</property>
+            <structure name="format">
+                <property name="category">Unformatted</property>
+            </structure>
+        </scalar-parameter>
+        <scalar-parameter name="FloatParameterTextBoxReqd" id="199">
+            <text-property name="helpText">This is some help text for "FloatParameterTextBoxReqd"</text-property>
+            <text-property name="promptText">Float: TextBox - required</text-property>
+            <property name="valueType">static</property>
+            <property name="dataType">float</property>
+            <property name="distinct">true</property>
+            <simple-property-list name="defaultValue">
+                <value type="constant">3.14159</value>
+            </simple-property-list>
+            <list-property name="selectionList"/>
+            <property name="paramType">simple</property>
+            <property name="controlType">text-box</property>
+            <structure name="format">
+                <property name="category">Unformatted</property>
+            </structure>
+        </scalar-parameter>
+        <scalar-parameter name="FloatParameterTextBoxNotReqd" id="349">
+            <text-property name="helpText">This is some help text for "FloatParameterTextBoxNotReqd"</text-property>
+            <text-property name="promptText">Float: TextBox - not required</text-property>
+            <property name="valueType">static</property>
+            <property name="isRequired">false</property>
+            <property name="dataType">float</property>
+            <property name="distinct">true</property>
+            <simple-property-list name="defaultValue">
+                <value type="constant">3.14159</value>
+            </simple-property-list>
+            <list-property name="selectionList"/>
+            <property name="paramType">simple</property>
+            <property name="controlType">text-box</property>
+            <structure name="format">
+                <property name="category">Unformatted</property>
+            </structure>
+        </scalar-parameter>
+    </parameters>
     <page-setup>
         <simple-master-page name="Simple MasterPage" id="2"/>
     </page-setup>
     <body>
         <label id="3">
-            <text-property name="text">Report 400:  Test Report #04 - v2</text-property>
+            <text-property name="text">400-TestReport04_v1.1</text-property>
         </label>
+        <label id="227">
+            <property name="fontSize">12pt</property>
+            <property name="fontWeight">bold</property>
+            <property name="paddingTop">10pt</property>
+            <property name="paddingBottom">2pt</property>
+            <property name="textAlign">center</property>
+            <text-property name="text">Report Parameters</text-property>
+        </label>
+        <grid id="6">
+            <property name="borderBottomStyle">solid</property>
+            <property name="borderBottomWidth">thin</property>
+            <property name="borderLeftStyle">solid</property>
+            <property name="borderLeftWidth">thin</property>
+            <property name="borderRightStyle">solid</property>
+            <property name="borderRightWidth">thin</property>
+            <property name="borderTopStyle">solid</property>
+            <property name="borderTopWidth">thin</property>
+            <property name="marginTop">0pt</property>
+            <property name="marginLeft">4pt</property>
+            <property name="marginRight">4pt</property>
+            <property name="width">7.84375in</property>
+            <column id="7">
+                <property name="verticalAlign">top</property>
+                <property name="width">1.6041666666666667in</property>
+            </column>
+            <column id="49">
+                <property name="width">3.6666666666666665in</property>
+            </column>
+            <column id="8">
+                <property name="width">2.5729166666666665in</property>
+            </column>
+            <row id="9">
+                <property name="borderBottomStyle">solid</property>
+                <property name="borderBottomWidth">thin</property>
+                <property name="borderLeftStyle">solid</property>
+                <property name="borderLeftWidth">thin</property>
+                <property name="borderRightStyle">solid</property>
+                <property name="borderRightWidth">thin</property>
+                <property name="borderTopStyle">solid</property>
+                <property name="borderTopWidth">thin</property>
+                <cell id="10">
+                    <property name="borderLeftStyle">solid</property>
+                    <property name="borderLeftWidth">thin</property>
+                    <property name="borderRightStyle">solid</property>
+                    <property name="borderRightWidth">thin</property>
+                    <property name="paddingTop">2pt</property>
+                    <property name="paddingLeft">3pt</property>
+                    <property name="paddingBottom">2pt</property>
+                    <property name="paddingRight">3pt</property>
+                    <label id="50">
+                        <property name="fontWeight">bold</property>
+                        <text-property name="text">Data type</text-property>
+                    </label>
+                </cell>
+                <cell id="39">
+                    <property name="borderLeftStyle">solid</property>
+                    <property name="borderLeftWidth">thin</property>
+                    <property name="borderRightStyle">solid</property>
+                    <property name="borderRightWidth">thin</property>
+                    <property name="paddingTop">2pt</property>
+                    <property name="paddingLeft">3pt</property>
+                    <property name="paddingBottom">2pt</property>
+                    <property name="paddingRight">3pt</property>
+                    <label id="51">
+                        <property name="fontWeight">bold</property>
+                        <text-property name="text">Widget</text-property>
+                    </label>
+                </cell>
+                <cell id="11">
+                    <property name="borderLeftStyle">solid</property>
+                    <property name="borderLeftWidth">thin</property>
+                    <property name="borderRightStyle">solid</property>
+                    <property name="borderRightWidth">thin</property>
+                    <property name="paddingTop">2pt</property>
+                    <property name="paddingLeft">3pt</property>
+                    <property name="paddingBottom">2pt</property>
+                    <property name="paddingRight">3pt</property>
+                    <label id="52">
+                        <property name="fontWeight">bold</property>
+                        <text-property name="text">Parameter value entered</text-property>
+                    </label>
+                </cell>
+            </row>
+            <row id="12">
+                <cell id="13">
+                    <property name="borderLeftStyle">solid</property>
+                    <property name="borderLeftWidth">thin</property>
+                    <property name="borderRightStyle">solid</property>
+                    <property name="borderRightWidth">thin</property>
+                    <property name="paddingTop">5pt</property>
+                    <property name="paddingLeft">3pt</property>
+                    <property name="paddingRight">3pt</property>
+                    <label id="54">
+                        <text-property name="text">String</text-property>
+                    </label>
+                </cell>
+                <cell id="40">
+                    <property name="borderLeftStyle">solid</property>
+                    <property name="borderLeftWidth">thin</property>
+                    <property name="borderRightStyle">solid</property>
+                    <property name="borderRightWidth">thin</property>
+                    <property name="paddingTop">5pt</property>
+                    <property name="paddingLeft">3pt</property>
+                    <property name="paddingRight">3pt</property>
+                    <label id="56">
+                        <text-property name="text">Textbox - required</text-property>
+                    </label>
+                </cell>
+                <cell id="14">
+                    <property name="borderLeftStyle">solid</property>
+                    <property name="borderLeftWidth">thin</property>
+                    <property name="borderRightStyle">solid</property>
+                    <property name="borderRightWidth">thin</property>
+                    <property name="paddingTop">5pt</property>
+                    <property name="paddingLeft">3pt</property>
+                    <property name="paddingRight">3pt</property>
+                    <data id="255">
+                        <list-property name="boundDataColumns">
+                            <structure>
+                                <property name="name">StringParameterTextBoxReqd</property>
+                                <expression name="expression" type="javascript">params["StringParameterTextBoxReqd"]</expression>
+                                <property name="dataType">string</property>
+                            </structure>
+                        </list-property>
+                        <property name="resultSetColumn">StringParameterTextBoxReqd</property>
+                    </data>
+                </cell>
+            </row>
+            <row id="231">
+                <cell id="232">
+                    <property name="borderLeftStyle">solid</property>
+                    <property name="borderLeftWidth">thin</property>
+                    <property name="borderRightStyle">solid</property>
+                    <property name="borderRightWidth">thin</property>
+                    <property name="paddingLeft">3pt</property>
+                    <property name="paddingRight">3pt</property>
+                </cell>
+                <cell id="233">
+                    <property name="borderLeftStyle">solid</property>
+                    <property name="borderLeftWidth">thin</property>
+                    <property name="borderRightStyle">solid</property>
+                    <property name="borderRightWidth">thin</property>
+                    <property name="paddingLeft">3pt</property>
+                    <property name="paddingRight">3pt</property>
+                    <label id="235">
+                        <text-property name="text">Textbox - not required</text-property>
+                    </label>
+                </cell>
+                <cell id="234">
+                    <property name="borderLeftStyle">solid</property>
+                    <property name="borderLeftWidth">thin</property>
+                    <property name="borderRightStyle">solid</property>
+                    <property name="borderRightWidth">thin</property>
+                    <property name="paddingLeft">3pt</property>
+                    <property name="paddingRight">3pt</property>
+                    <data id="256">
+                        <list-property name="boundDataColumns">
+                            <structure>
+                                <property name="name">StringParameterTextBoxNotReqd</property>
+                                <expression name="expression" type="javascript">params["StringParameterTextBoxNotReqd"]</expression>
+                                <property name="dataType">string</property>
+                            </structure>
+                        </list-property>
+                        <property name="resultSetColumn">StringParameterTextBoxNotReqd</property>
+                    </data>
+                </cell>
+            </row>
+            <row id="15">
+                <cell id="16">
+                    <property name="borderLeftStyle">solid</property>
+                    <property name="borderLeftWidth">thin</property>
+                    <property name="borderRightStyle">solid</property>
+                    <property name="borderRightWidth">thin</property>
+                    <property name="paddingLeft">3pt</property>
+                    <property name="paddingRight">3pt</property>
+                </cell>
+                <cell id="41">
+                    <property name="borderLeftStyle">solid</property>
+                    <property name="borderLeftWidth">thin</property>
+                    <property name="borderRightStyle">solid</property>
+                    <property name="borderRightWidth">thin</property>
+                    <property name="paddingLeft">3pt</property>
+                    <property name="paddingRight">3pt</property>
+                    <label id="59">
+                        <text-property name="text">Combo Box - static list, required</text-property>
+                    </label>
+                </cell>
+                <cell id="17">
+                    <property name="borderLeftStyle">solid</property>
+                    <property name="borderLeftWidth">thin</property>
+                    <property name="borderRightStyle">solid</property>
+                    <property name="borderRightWidth">thin</property>
+                    <property name="paddingLeft">3pt</property>
+                    <property name="paddingRight">3pt</property>
+                    <data id="257">
+                        <list-property name="boundDataColumns">
+                            <structure>
+                                <property name="name">StringParameterComboBoxStaticReqd</property>
+                                <expression name="expression" type="javascript">params["StringParameterComboBoxStaticReqd"]</expression>
+                                <property name="dataType">string</property>
+                            </structure>
+                        </list-property>
+                        <property name="resultSetColumn">StringParameterComboBoxStaticReqd</property>
+                    </data>
+                </cell>
+            </row>
+            <row id="241">
+                <cell id="242">
+                    <property name="borderLeftStyle">solid</property>
+                    <property name="borderLeftWidth">thin</property>
+                    <property name="borderRightStyle">solid</property>
+                    <property name="borderRightWidth">thin</property>
+                    <property name="paddingLeft">3pt</property>
+                    <property name="paddingRight">3pt</property>
+                </cell>
+                <cell id="243">
+                    <property name="borderLeftStyle">solid</property>
+                    <property name="borderLeftWidth">thin</property>
+                    <property name="borderRightStyle">solid</property>
+                    <property name="borderRightWidth">thin</property>
+                    <property name="paddingLeft">3pt</property>
+                    <property name="paddingRight">3pt</property>
+                    <label id="245">
+                        <text-property name="text">Combo Box - static list, not required</text-property>
+                    </label>
+                </cell>
+                <cell id="244">
+                    <property name="borderLeftStyle">solid</property>
+                    <property name="borderLeftWidth">thin</property>
+                    <property name="borderRightStyle">solid</property>
+                    <property name="borderRightWidth">thin</property>
+                    <property name="paddingLeft">3pt</property>
+                    <property name="paddingRight">3pt</property>
+                    <data id="258">
+                        <list-property name="boundDataColumns">
+                            <structure>
+                                <property name="name">StringParameterComboBoxStaticNotReqd</property>
+                                <expression name="expression" type="javascript">params["StringParameterComboBoxStaticNotReqd"]</expression>
+                                <property name="dataType">string</property>
+                            </structure>
+                        </list-property>
+                        <property name="resultSetColumn">StringParameterComboBoxStaticNotReqd</property>
+                    </data>
+                </cell>
+            </row>
+            <row id="18">
+                <cell id="19">
+                    <property name="borderLeftStyle">solid</property>
+                    <property name="borderLeftWidth">thin</property>
+                    <property name="borderRightStyle">solid</property>
+                    <property name="borderRightWidth">thin</property>
+                    <property name="paddingLeft">3pt</property>
+                    <property name="paddingRight">3pt</property>
+                </cell>
+                <cell id="42">
+                    <property name="borderLeftStyle">solid</property>
+                    <property name="borderLeftWidth">thin</property>
+                    <property name="borderRightStyle">solid</property>
+                    <property name="borderRightWidth">thin</property>
+                    <property name="paddingLeft">3pt</property>
+                    <property name="paddingRight">3pt</property>
+                    <label id="61">
+                        <text-property name="text">Combo Box - dynamic list</text-property>
+                    </label>
+                </cell>
+                <cell id="20">
+                    <property name="borderLeftStyle">solid</property>
+                    <property name="borderLeftWidth">thin</property>
+                    <property name="borderRightStyle">solid</property>
+                    <property name="borderRightWidth">thin</property>
+                    <property name="paddingLeft">3pt</property>
+                    <property name="paddingRight">3pt</property>
+                    <label id="62">
+                        <property name="fontStyle">italic</property>
+                        <property name="color">gray</property>
+                        <text-property name="text">not implemented</text-property>
+                    </label>
+                </cell>
+            </row>
+            <row id="21">
+                <cell id="22">
+                    <property name="borderLeftStyle">solid</property>
+                    <property name="borderLeftWidth">thin</property>
+                    <property name="borderRightStyle">solid</property>
+                    <property name="borderRightWidth">thin</property>
+                    <property name="paddingLeft">3pt</property>
+                    <property name="paddingRight">3pt</property>
+                </cell>
+                <cell id="43">
+                    <property name="borderLeftStyle">solid</property>
+                    <property name="borderLeftWidth">thin</property>
+                    <property name="borderRightStyle">solid</property>
+                    <property name="borderRightWidth">thin</property>
+                    <property name="paddingLeft">3pt</property>
+                    <property name="paddingRight">3pt</property>
+                    <label id="65">
+                        <text-property name="text">List Box - static list, single select, required</text-property>
+                    </label>
+                </cell>
+                <cell id="23">
+                    <property name="borderLeftStyle">solid</property>
+                    <property name="borderLeftWidth">thin</property>
+                    <property name="borderRightStyle">solid</property>
+                    <property name="borderRightWidth">thin</property>
+                    <property name="paddingLeft">3pt</property>
+                    <property name="paddingRight">3pt</property>
+                    <data id="259">
+                        <list-property name="boundDataColumns">
+                            <structure>
+                                <property name="name">StringParameterListBoxStaticSingleReqd</property>
+                                <expression name="expression" type="javascript">params["StringParameterListBoxStaticSingleReqd"]</expression>
+                                <property name="dataType">string</property>
+                            </structure>
+                        </list-property>
+                        <property name="resultSetColumn">StringParameterListBoxStaticSingleReqd</property>
+                    </data>
+                </cell>
+            </row>
+            <row id="248">
+                <cell id="249">
+                    <property name="borderLeftStyle">solid</property>
+                    <property name="borderLeftWidth">thin</property>
+                    <property name="borderRightStyle">solid</property>
+                    <property name="borderRightWidth">thin</property>
+                    <property name="paddingLeft">3pt</property>
+                    <property name="paddingRight">3pt</property>
+                </cell>
+                <cell id="250">
+                    <property name="borderLeftStyle">solid</property>
+                    <property name="borderLeftWidth">thin</property>
+                    <property name="borderRightStyle">solid</property>
+                    <property name="borderRightWidth">thin</property>
+                    <property name="paddingLeft">3pt</property>
+                    <property name="paddingRight">3pt</property>
+                    <label id="252">
+                        <text-property name="text">List Box - static list, single select, not required</text-property>
+                    </label>
+                </cell>
+                <cell id="251">
+                    <property name="borderLeftStyle">solid</property>
+                    <property name="borderLeftWidth">thin</property>
+                    <property name="borderRightStyle">solid</property>
+                    <property name="borderRightWidth">thin</property>
+                    <property name="paddingLeft">3pt</property>
+                    <property name="paddingRight">3pt</property>
+                    <data id="260">
+                        <list-property name="boundDataColumns">
+                            <structure>
+                                <property name="name">StringParameterListBoxStaticSingleNotReqd</property>
+                                <expression name="expression" type="javascript">params["StringParameterListBoxStaticSingleNotReqd"]</expression>
+                                <property name="dataType">string</property>
+                            </structure>
+                        </list-property>
+                        <property name="resultSetColumn">StringParameterListBoxStaticSingleNotReqd</property>
+                    </data>
+                </cell>
+            </row>
+            <row id="24">
+                <cell id="25">
+                    <property name="borderLeftStyle">solid</property>
+                    <property name="borderLeftWidth">thin</property>
+                    <property name="borderRightStyle">solid</property>
+                    <property name="borderRightWidth">thin</property>
+                    <property name="paddingLeft">3pt</property>
+                    <property name="paddingRight">3pt</property>
+                </cell>
+                <cell id="44">
+                    <property name="borderLeftStyle">solid</property>
+                    <property name="borderLeftWidth">thin</property>
+                    <property name="borderRightStyle">solid</property>
+                    <property name="borderRightWidth">thin</property>
+                    <property name="paddingLeft">3pt</property>
+                    <property name="paddingRight">3pt</property>
+                    <label id="66">
+                        <text-property name="text">List Box - static list, multiple select, required</text-property>
+                    </label>
+                </cell>
+                <cell id="26">
+                    <property name="borderLeftStyle">solid</property>
+                    <property name="borderLeftWidth">thin</property>
+                    <property name="borderRightStyle">solid</property>
+                    <property name="borderRightWidth">thin</property>
+                    <property name="paddingLeft">3pt</property>
+                    <property name="paddingRight">3pt</property>
+                    <data id="267">
+                        <list-property name="boundDataColumns">
+                            <structure>
+                                <property name="name">StringParameterListBoxStaticMultipleReqd</property>
+                                <expression name="expression" type="javascript">params["StringParameterListBoxStaticMultipleReqd"]</expression>
+                                <property name="dataType">javaObject</property>
+                            </structure>
+                        </list-property>
+                        <property name="resultSetColumn">StringParameterListBoxStaticMultipleReqd</property>
+                    </data>
+                </cell>
+            </row>
+            <row id="261">
+                <cell id="262">
+                    <property name="borderLeftStyle">solid</property>
+                    <property name="borderLeftWidth">thin</property>
+                    <property name="borderRightStyle">solid</property>
+                    <property name="borderRightWidth">thin</property>
+                    <property name="paddingLeft">3pt</property>
+                    <property name="paddingRight">3pt</property>
+                </cell>
+                <cell id="263">
+                    <property name="borderLeftStyle">solid</property>
+                    <property name="borderLeftWidth">thin</property>
+                    <property name="borderRightStyle">solid</property>
+                    <property name="borderRightWidth">thin</property>
+                    <property name="paddingLeft">3pt</property>
+                    <property name="paddingRight">3pt</property>
+                    <label id="265">
+                        <text-property name="text">List Box - static list, multiple select, not required</text-property>
+                    </label>
+                </cell>
+                <cell id="264">
+                    <property name="borderLeftStyle">solid</property>
+                    <property name="borderLeftWidth">thin</property>
+                    <property name="borderRightStyle">solid</property>
+                    <property name="borderRightWidth">thin</property>
+                    <property name="paddingLeft">3pt</property>
+                    <property name="paddingRight">3pt</property>
+                    <data id="268">
+                        <list-property name="boundDataColumns">
+                            <structure>
+                                <property name="name">StringParameterListBoxStaticMultipleNotReqd</property>
+                                <expression name="expression" type="javascript">params["StringParameterListBoxStaticMultipleNotReqd"]</expression>
+                                <property name="dataType">javaObject</property>
+                            </structure>
+                        </list-property>
+                        <property name="resultSetColumn">StringParameterListBoxStaticMultipleNotReqd</property>
+                    </data>
+                </cell>
+            </row>
+            <row id="27">
+                <cell id="28">
+                    <property name="borderLeftStyle">solid</property>
+                    <property name="borderLeftWidth">thin</property>
+                    <property name="borderRightStyle">solid</property>
+                    <property name="borderRightWidth">thin</property>
+                    <property name="paddingLeft">3pt</property>
+                    <property name="paddingRight">3pt</property>
+                </cell>
+                <cell id="45">
+                    <property name="borderLeftStyle">solid</property>
+                    <property name="borderLeftWidth">thin</property>
+                    <property name="borderRightStyle">solid</property>
+                    <property name="borderRightWidth">thin</property>
+                    <property name="paddingLeft">3pt</property>
+                    <property name="paddingRight">3pt</property>
+                    <label id="69">
+                        <text-property name="text">List Box - dynamic list, single select</text-property>
+                    </label>
+                </cell>
+                <cell id="29">
+                    <property name="borderLeftStyle">solid</property>
+                    <property name="borderLeftWidth">thin</property>
+                    <property name="borderRightStyle">solid</property>
+                    <property name="borderRightWidth">thin</property>
+                    <property name="paddingLeft">3pt</property>
+                    <property name="paddingRight">3pt</property>
+                    <label id="71">
+                        <property name="fontStyle">italic</property>
+                        <property name="color">gray</property>
+                        <text-property name="text">not implemented</text-property>
+                    </label>
+                </cell>
+            </row>
+            <row id="30">
+                <cell id="31">
+                    <property name="borderLeftStyle">solid</property>
+                    <property name="borderLeftWidth">thin</property>
+                    <property name="borderRightStyle">solid</property>
+                    <property name="borderRightWidth">thin</property>
+                    <property name="paddingLeft">3pt</property>
+                    <property name="paddingRight">3pt</property>
+                </cell>
+                <cell id="46">
+                    <property name="borderLeftStyle">solid</property>
+                    <property name="borderLeftWidth">thin</property>
+                    <property name="borderRightStyle">solid</property>
+                    <property name="borderRightWidth">thin</property>
+                    <property name="paddingLeft">3pt</property>
+                    <property name="paddingRight">3pt</property>
+                    <label id="70">
+                        <text-property name="text">List Box - dynamic list, multiple select</text-property>
+                    </label>
+                </cell>
+                <cell id="32">
+                    <property name="borderLeftStyle">solid</property>
+                    <property name="borderLeftWidth">thin</property>
+                    <property name="borderRightStyle">solid</property>
+                    <property name="borderRightWidth">thin</property>
+                    <property name="paddingLeft">3pt</property>
+                    <property name="paddingRight">3pt</property>
+                    <label id="72">
+                        <property name="fontStyle">italic</property>
+                        <property name="color">gray</property>
+                        <text-property name="text">not implemented</text-property>
+                    </label>
+                </cell>
+            </row>
+            <row id="189">
+                <property name="borderTopColor">#C0C0C0</property>
+                <property name="borderTopStyle">solid</property>
+                <property name="borderTopWidth">thin</property>
+                <cell id="190">
+                    <property name="borderLeftStyle">solid</property>
+                    <property name="borderLeftWidth">thin</property>
+                    <property name="borderRightStyle">solid</property>
+                    <property name="borderRightWidth">thin</property>
+                    <property name="paddingTop">5pt</property>
+                    <property name="paddingLeft">3pt</property>
+                    <property name="paddingRight">3pt</property>
+                    <label id="193">
+                        <text-property name="text">Boolean</text-property>
+                    </label>
+                </cell>
+                <cell id="191">
+                    <property name="borderLeftStyle">solid</property>
+                    <property name="borderLeftWidth">thin</property>
+                    <property name="borderRightStyle">solid</property>
+                    <property name="borderRightWidth">thin</property>
+                    <property name="paddingTop">5pt</property>
+                    <property name="paddingLeft">3pt</property>
+                    <property name="paddingRight">3pt</property>
+                    <label id="194">
+                        <text-property name="text">Check Box</text-property>
+                    </label>
+                </cell>
+                <cell id="192">
+                    <property name="borderLeftStyle">solid</property>
+                    <property name="borderLeftWidth">thin</property>
+                    <property name="borderRightStyle">solid</property>
+                    <property name="borderRightWidth">thin</property>
+                    <property name="paddingTop">5pt</property>
+                    <property name="paddingLeft">3pt</property>
+                    <property name="paddingRight">3pt</property>
+                    <data id="278">
+                        <list-property name="boundDataColumns">
+                            <structure>
+                                <property name="name">BooleanParameterCheckBox</property>
+                                <expression name="expression" type="javascript">params["BooleanParameterCheckBox"]</expression>
+                                <property name="dataType">boolean</property>
+                            </structure>
+                        </list-property>
+                        <property name="resultSetColumn">BooleanParameterCheckBox</property>
+                    </data>
+                </cell>
+            </row>
+            <row id="185">
+                <cell id="186">
+                    <property name="borderLeftStyle">solid</property>
+                    <property name="borderLeftWidth">thin</property>
+                    <property name="borderRightStyle">solid</property>
+                    <property name="borderRightWidth">thin</property>
+                    <property name="paddingTop">1pt</property>
+                    <property name="paddingLeft">3pt</property>
+                    <property name="paddingRight">3pt</property>
+                </cell>
+                <cell id="187">
+                    <property name="borderLeftStyle">solid</property>
+                    <property name="borderLeftWidth">thin</property>
+                    <property name="borderRightStyle">solid</property>
+                    <property name="borderRightWidth">thin</property>
+                    <property name="paddingTop">1pt</property>
+                    <property name="paddingLeft">3pt</property>
+                    <property name="paddingRight">3pt</property>
+                    <label id="197">
+                        <text-property name="text">Radio Button - required</text-property>
+                    </label>
+                </cell>
+                <cell id="188">
+                    <property name="borderLeftStyle">solid</property>
+                    <property name="borderLeftWidth">thin</property>
+                    <property name="borderRightStyle">solid</property>
+                    <property name="borderRightWidth">thin</property>
+                    <property name="paddingTop">1pt</property>
+                    <property name="paddingLeft">3pt</property>
+                    <property name="paddingRight">3pt</property>
+                    <data id="284">
+                        <list-property name="boundDataColumns">
+                            <structure>
+                                <property name="name">BooleanParameterRadioButtonReqd</property>
+                                <expression name="expression" type="javascript">params["BooleanParameterRadioButtonReqd"]</expression>
+                                <property name="dataType">boolean</property>
+                            </structure>
+                        </list-property>
+                        <property name="resultSetColumn">BooleanParameterRadioButtonReqd</property>
+                    </data>
+                </cell>
+            </row>
+            <row id="279">
+                <cell id="280">
+                    <property name="borderLeftStyle">solid</property>
+                    <property name="borderLeftWidth">thin</property>
+                    <property name="borderRightStyle">solid</property>
+                    <property name="borderRightWidth">thin</property>
+                    <property name="paddingTop">1pt</property>
+                    <property name="paddingLeft">3pt</property>
+                    <property name="paddingRight">3pt</property>
+                </cell>
+                <cell id="281">
+                    <property name="borderLeftStyle">solid</property>
+                    <property name="borderLeftWidth">thin</property>
+                    <property name="borderRightStyle">solid</property>
+                    <property name="borderRightWidth">thin</property>
+                    <property name="paddingTop">1pt</property>
+                    <property name="paddingLeft">3pt</property>
+                    <property name="paddingRight">3pt</property>
+                    <label id="286">
+                        <text-property name="text">Radio Button - not required</text-property>
+                    </label>
+                </cell>
+                <cell id="282">
+                    <property name="borderLeftStyle">solid</property>
+                    <property name="borderLeftWidth">thin</property>
+                    <property name="borderRightStyle">solid</property>
+                    <property name="borderRightWidth">thin</property>
+                    <property name="paddingTop">1pt</property>
+                    <property name="paddingLeft">3pt</property>
+                    <property name="paddingRight">3pt</property>
+                    <data id="285">
+                        <list-property name="boundDataColumns">
+                            <structure>
+                                <property name="name">BooleanParameterRadioButtonNotReqd</property>
+                                <expression name="expression" type="javascript">params["BooleanParameterRadioButtonNotReqd"]</expression>
+                                <property name="dataType">boolean</property>
+                            </structure>
+                        </list-property>
+                        <property name="resultSetColumn">BooleanParameterRadioButtonNotReqd</property>
+                    </data>
+                </cell>
+            </row>
+            <row id="74">
+                <property name="borderTopColor">#C0C0C0</property>
+                <property name="borderTopStyle">solid</property>
+                <property name="borderTopWidth">thin</property>
+                <cell id="75">
+                    <property name="borderLeftStyle">solid</property>
+                    <property name="borderLeftWidth">thin</property>
+                    <property name="borderRightStyle">solid</property>
+                    <property name="borderRightWidth">thin</property>
+                    <property name="paddingTop">5pt</property>
+                    <property name="paddingLeft">3pt</property>
+                    <property name="paddingRight">3pt</property>
+                    <label id="79">
+                        <text-property name="text">Date</text-property>
+                    </label>
+                </cell>
+                <cell id="76">
+                    <property name="borderLeftStyle">solid</property>
+                    <property name="borderLeftWidth">thin</property>
+                    <property name="borderRightStyle">solid</property>
+                    <property name="borderRightWidth">thin</property>
+                    <property name="paddingTop">5pt</property>
+                    <property name="paddingLeft">3pt</property>
+                    <property name="paddingRight">3pt</property>
+                    <label id="81">
+                        <text-property name="text">Textbox - Input format: yyyy.MM.dd, required</text-property>
+                    </label>
+                </cell>
+                <cell id="77">
+                    <property name="borderLeftStyle">solid</property>
+                    <property name="borderLeftWidth">thin</property>
+                    <property name="borderRightStyle">solid</property>
+                    <property name="borderRightWidth">thin</property>
+                    <property name="paddingTop">5pt</property>
+                    <property name="paddingLeft">3pt</property>
+                    <property name="paddingRight">3pt</property>
+                    <data id="291">
+                        <structure name="dateTimeFormat">
+                            <property name="category">Custom</property>
+                            <property name="pattern">MMM dd, yyyy</property>
+                        </structure>
+                        <list-property name="boundDataColumns">
+                            <structure>
+                                <property name="name">DateParameterTextBoxReqd</property>
+                                <expression name="expression" type="javascript">params["DateParameterTextBoxReqd"]</expression>
+                                <property name="dataType">date</property>
+                            </structure>
+                        </list-property>
+                        <property name="resultSetColumn">DateParameterTextBoxReqd</property>
+                    </data>
+                </cell>
+            </row>
+            <row id="287">
+                <cell id="288">
+                    <property name="borderLeftStyle">solid</property>
+                    <property name="borderLeftWidth">thin</property>
+                    <property name="borderRightStyle">solid</property>
+                    <property name="borderRightWidth">thin</property>
+                    <property name="paddingTop">1pt</property>
+                    <property name="paddingLeft">3pt</property>
+                    <property name="paddingRight">3pt</property>
+                </cell>
+                <cell id="289">
+                    <property name="borderLeftStyle">solid</property>
+                    <property name="borderLeftWidth">thin</property>
+                    <property name="borderRightStyle">solid</property>
+                    <property name="borderRightWidth">thin</property>
+                    <property name="paddingTop">1pt</property>
+                    <property name="paddingLeft">3pt</property>
+                    <property name="paddingRight">3pt</property>
+                    <label id="294">
+                        <text-property name="text">Textbox - Input format: yyyy.MM.dd, not required</text-property>
+                    </label>
+                </cell>
+                <cell id="290">
+                    <property name="borderLeftStyle">solid</property>
+                    <property name="borderLeftWidth">thin</property>
+                    <property name="borderRightStyle">solid</property>
+                    <property name="borderRightWidth">thin</property>
+                    <property name="paddingTop">1pt</property>
+                    <property name="paddingLeft">3pt</property>
+                    <property name="paddingRight">3pt</property>
+                    <data id="293">
+                        <structure name="dateTimeFormat">
+                            <property name="category">Custom</property>
+                            <property name="pattern">MMM dd, yyyy</property>
+                        </structure>
+                        <list-property name="boundDataColumns">
+                            <structure>
+                                <property name="name">DateParameterTextBoxNotReqd</property>
+                                <expression name="expression" type="javascript">params["DateParameterTextBoxNotReqd"]</expression>
+                                <property name="dataType">date</property>
+                            </structure>
+                        </list-property>
+                        <property name="resultSetColumn">DateParameterTextBoxNotReqd</property>
+                    </data>
+                </cell>
+            </row>
+            <row id="171">
+                <property name="borderTopColor">#C0C0C0</property>
+                <property name="borderTopStyle">solid</property>
+                <property name="borderTopWidth">thin</property>
+                <cell id="172">
+                    <property name="borderLeftStyle">solid</property>
+                    <property name="borderLeftWidth">thin</property>
+                    <property name="borderRightStyle">solid</property>
+                    <property name="borderRightWidth">thin</property>
+                    <property name="paddingTop">5pt</property>
+                    <property name="paddingLeft">3pt</property>
+                    <property name="paddingRight">3pt</property>
+                    <label id="178">
+                        <text-property name="text">Datetime</text-property>
+                    </label>
+                </cell>
+                <cell id="173">
+                    <property name="borderLeftStyle">solid</property>
+                    <property name="borderLeftWidth">thin</property>
+                    <property name="borderRightStyle">solid</property>
+                    <property name="borderRightWidth">thin</property>
+                    <property name="paddingTop">5pt</property>
+                    <property name="paddingLeft">3pt</property>
+                    <property name="paddingRight">3pt</property>
+                    <label id="179">
+                        <text-property name="text">Textbox - Input format: yyyy.MM.dd hh:mm:ss, required</text-property>
+                    </label>
+                </cell>
+                <cell id="174">
+                    <property name="borderLeftStyle">solid</property>
+                    <property name="borderLeftWidth">thin</property>
+                    <property name="borderRightStyle">solid</property>
+                    <property name="borderRightWidth">thin</property>
+                    <property name="paddingTop">5pt</property>
+                    <property name="paddingLeft">3pt</property>
+                    <property name="paddingRight">3pt</property>
+                    <data id="300">
+                        <structure name="dateTimeFormat">
+                            <property name="category">Custom</property>
+                            <property name="pattern">MMM dd, yyyy ''at'' kk:mm:ss</property>
+                        </structure>
+                        <list-property name="boundDataColumns">
+                            <structure>
+                                <property name="name">DatetimeParameterTextboxReqd</property>
+                                <expression name="expression" type="javascript">params["DatetimeParameterTextboxReqd"]</expression>
+                                <property name="dataType">date-time</property>
+                            </structure>
+                        </list-property>
+                        <property name="resultSetColumn">DatetimeParameterTextboxReqd</property>
+                    </data>
+                </cell>
+            </row>
+            <row id="295">
+                <cell id="296">
+                    <property name="borderLeftStyle">solid</property>
+                    <property name="borderLeftWidth">thin</property>
+                    <property name="borderRightStyle">solid</property>
+                    <property name="borderRightWidth">thin</property>
+                    <property name="paddingTop">1pt</property>
+                    <property name="paddingLeft">3pt</property>
+                    <property name="paddingRight">3pt</property>
+                </cell>
+                <cell id="297">
+                    <property name="borderLeftStyle">solid</property>
+                    <property name="borderLeftWidth">thin</property>
+                    <property name="borderRightStyle">solid</property>
+                    <property name="borderRightWidth">thin</property>
+                    <property name="paddingTop">1pt</property>
+                    <property name="paddingLeft">3pt</property>
+                    <property name="paddingRight">3pt</property>
+                    <label id="302">
+                        <text-property name="text">Textbox - Input format: yyyy.MM.dd hh:mm:ss, not required</text-property>
+                    </label>
+                </cell>
+                <cell id="298">
+                    <property name="borderLeftStyle">solid</property>
+                    <property name="borderLeftWidth">thin</property>
+                    <property name="borderRightStyle">solid</property>
+                    <property name="borderRightWidth">thin</property>
+                    <property name="paddingTop">1pt</property>
+                    <property name="paddingLeft">3pt</property>
+                    <property name="paddingRight">3pt</property>
+                    <data id="301">
+                        <structure name="dateTimeFormat">
+                            <property name="category">Custom</property>
+                            <property name="pattern">MMM dd, yyyy ''at'' kk:mm:ss</property>
+                        </structure>
+                        <list-property name="boundDataColumns">
+                            <structure>
+                                <property name="name">DatetimeParameterTextboxNotReqd</property>
+                                <expression name="expression" type="javascript">params["DatetimeParameterTextboxNotReqd"]</expression>
+                                <property name="dataType">date-time</property>
+                            </structure>
+                        </list-property>
+                        <property name="resultSetColumn">DatetimeParameterTextboxNotReqd</property>
+                    </data>
+                </cell>
+            </row>
+            <row id="167">
+                <property name="borderTopColor">#C0C0C0</property>
+                <property name="borderTopStyle">solid</property>
+                <property name="borderTopWidth">thin</property>
+                <cell id="168">
+                    <property name="borderLeftStyle">solid</property>
+                    <property name="borderLeftWidth">thin</property>
+                    <property name="borderRightStyle">solid</property>
+                    <property name="borderRightWidth">thin</property>
+                    <property name="paddingTop">5pt</property>
+                    <property name="paddingLeft">3pt</property>
+                    <property name="paddingRight">3pt</property>
+                    <label id="181">
+                        <text-property name="text">Time</text-property>
+                    </label>
+                </cell>
+                <cell id="169">
+                    <property name="borderLeftStyle">solid</property>
+                    <property name="borderLeftWidth">thin</property>
+                    <property name="borderRightStyle">solid</property>
+                    <property name="borderRightWidth">thin</property>
+                    <property name="paddingTop">5pt</property>
+                    <property name="paddingLeft">3pt</property>
+                    <property name="paddingRight">3pt</property>
+                    <label id="182">
+                        <text-property name="text">Textbox - Input format: hh:mm:ss, required</text-property>
+                    </label>
+                </cell>
+                <cell id="170">
+                    <property name="borderLeftStyle">solid</property>
+                    <property name="borderLeftWidth">thin</property>
+                    <property name="borderRightStyle">solid</property>
+                    <property name="borderRightWidth">thin</property>
+                    <property name="paddingTop">5pt</property>
+                    <property name="paddingLeft">3pt</property>
+                    <property name="paddingRight">3pt</property>
+                    <data id="309">
+                        <structure name="dateTimeFormat">
+                            <property name="category">Custom</property>
+                            <property name="pattern">kk:mm:ss</property>
+                        </structure>
+                        <list-property name="boundDataColumns">
+                            <structure>
+                                <property name="name">TimeParameterTextboxReqd</property>
+                                <expression name="expression" type="javascript">params["TimeParameterTextboxReqd"]</expression>
+                                <property name="dataType">time</property>
+                            </structure>
+                        </list-property>
+                        <property name="resultSetColumn">TimeParameterTextboxReqd</property>
+                    </data>
+                </cell>
+            </row>
+            <row id="303">
+                <cell id="304">
+                    <property name="borderLeftStyle">solid</property>
+                    <property name="borderLeftWidth">thin</property>
+                    <property name="borderRightStyle">solid</property>
+                    <property name="borderRightWidth">thin</property>
+                    <property name="paddingTop">1pt</property>
+                    <property name="paddingLeft">3pt</property>
+                    <property name="paddingRight">3pt</property>
+                </cell>
+                <cell id="305">
+                    <property name="borderLeftStyle">solid</property>
+                    <property name="borderLeftWidth">thin</property>
+                    <property name="borderRightStyle">solid</property>
+                    <property name="borderRightWidth">thin</property>
+                    <property name="paddingTop">1pt</property>
+                    <property name="paddingLeft">3pt</property>
+                    <property name="paddingRight">3pt</property>
+                    <label id="307">
+                        <text-property name="text">Textbox - Input format: hh:mm:ss, not required</text-property>
+                    </label>
+                </cell>
+                <cell id="306">
+                    <property name="borderLeftStyle">solid</property>
+                    <property name="borderLeftWidth">thin</property>
+                    <property name="borderRightStyle">solid</property>
+                    <property name="borderRightWidth">thin</property>
+                    <property name="paddingTop">1pt</property>
+                    <property name="paddingLeft">3pt</property>
+                    <property name="paddingRight">3pt</property>
+                    <data id="310">
+                        <structure name="dateTimeFormat">
+                            <property name="category">Custom</property>
+                            <property name="pattern">kk:mm:ss</property>
+                        </structure>
+                        <list-property name="boundDataColumns">
+                            <structure>
+                                <property name="name">TimeParameterTextboxNotReqd</property>
+                                <expression name="expression" type="javascript">params["TimeParameterTextboxNotReqd"]</expression>
+                                <property name="dataType">time</property>
+                            </structure>
+                        </list-property>
+                        <property name="resultSetColumn">TimeParameterTextboxNotReqd</property>
+                    </data>
+                </cell>
+            </row>
+            <row id="159">
+                <property name="borderTopColor">#C0C0C0</property>
+                <property name="borderTopStyle">solid</property>
+                <property name="borderTopWidth">thin</property>
+                <cell id="160">
+                    <property name="borderLeftStyle">solid</property>
+                    <property name="borderLeftWidth">thin</property>
+                    <property name="borderRightStyle">solid</property>
+                    <property name="borderRightWidth">thin</property>
+                    <property name="borderTopColor">#C0C0C0</property>
+                    <property name="borderTopStyle">solid</property>
+                    <property name="borderTopWidth">thin</property>
+                    <property name="paddingTop">5pt</property>
+                    <property name="paddingLeft">3pt</property>
+                    <property name="paddingRight">3pt</property>
+                    <label id="204">
+                        <text-property name="text">Integer</text-property>
+                    </label>
+                </cell>
+                <cell id="161">
+                    <property name="borderLeftStyle">solid</property>
+                    <property name="borderLeftWidth">thin</property>
+                    <property name="borderRightStyle">solid</property>
+                    <property name="borderRightWidth">thin</property>
+                    <property name="paddingTop">5pt</property>
+                    <property name="paddingLeft">3pt</property>
+                    <property name="paddingRight">3pt</property>
+                    <label id="205">
+                        <text-property name="text">Textbox - required</text-property>
+                    </label>
+                </cell>
+                <cell id="162">
+                    <property name="borderLeftStyle">solid</property>
+                    <property name="borderLeftWidth">thin</property>
+                    <property name="borderRightStyle">solid</property>
+                    <property name="borderRightWidth">thin</property>
+                    <property name="paddingTop">5pt</property>
+                    <property name="paddingLeft">3pt</property>
+                    <property name="paddingRight">3pt</property>
+                    <data id="317">
+                        <list-property name="boundDataColumns">
+                            <structure>
+                                <property name="name">IntegerParameterTextBoxReqd</property>
+                                <expression name="expression" type="javascript">params["IntegerParameterTextBoxReqd"]</expression>
+                                <property name="dataType">integer</property>
+                            </structure>
+                        </list-property>
+                        <property name="resultSetColumn">IntegerParameterTextBoxReqd</property>
+                    </data>
+                </cell>
+            </row>
+            <row id="311">
+                <cell id="312">
+                    <property name="borderLeftStyle">solid</property>
+                    <property name="borderLeftWidth">thin</property>
+                    <property name="borderRightStyle">solid</property>
+                    <property name="borderRightWidth">thin</property>
+                    <property name="paddingLeft">3pt</property>
+                    <property name="paddingRight">3pt</property>
+                </cell>
+                <cell id="313">
+                    <property name="borderLeftStyle">solid</property>
+                    <property name="borderLeftWidth">thin</property>
+                    <property name="borderRightStyle">solid</property>
+                    <property name="borderRightWidth">thin</property>
+                    <property name="paddingLeft">3pt</property>
+                    <property name="paddingRight">3pt</property>
+                    <label id="315">
+                        <text-property name="text">Textbox - not required</text-property>
+                    </label>
+                </cell>
+                <cell id="314">
+                    <property name="borderLeftStyle">solid</property>
+                    <property name="borderLeftWidth">thin</property>
+                    <property name="borderRightStyle">solid</property>
+                    <property name="borderRightWidth">thin</property>
+                    <property name="paddingLeft">3pt</property>
+                    <property name="paddingRight">3pt</property>
+                    <data id="318">
+                        <list-property name="boundDataColumns">
+                            <structure>
+                                <property name="name">IntegerParameterTextBoxNotReqd</property>
+                                <expression name="expression" type="javascript">params["IntegerParameterTextBoxNotReqd"]</expression>
+                                <property name="dataType">integer</property>
+                            </structure>
+                        </list-property>
+                        <property name="resultSetColumn">IntegerParameterTextBoxNotReqd</property>
+                    </data>
+                </cell>
+            </row>
+            <row id="155">
+                <cell id="156">
+                    <property name="borderLeftStyle">solid</property>
+                    <property name="borderLeftWidth">thin</property>
+                    <property name="borderRightStyle">solid</property>
+                    <property name="borderRightWidth">thin</property>
+                    <property name="paddingLeft">3pt</property>
+                    <property name="paddingRight">3pt</property>
+                </cell>
+                <cell id="157">
+                    <property name="borderLeftStyle">solid</property>
+                    <property name="borderLeftWidth">thin</property>
+                    <property name="borderRightStyle">solid</property>
+                    <property name="borderRightWidth">thin</property>
+                    <property name="paddingLeft">3pt</property>
+                    <property name="paddingRight">3pt</property>
+                    <label id="208">
+                        <text-property name="text">Combo Box - static list, required</text-property>
+                    </label>
+                </cell>
+                <cell id="158">
+                    <property name="borderLeftStyle">solid</property>
+                    <property name="borderLeftWidth">thin</property>
+                    <property name="borderRightStyle">solid</property>
+                    <property name="borderRightWidth">thin</property>
+                    <property name="paddingLeft">3pt</property>
+                    <property name="paddingRight">3pt</property>
+                    <data id="325">
+                        <list-property name="boundDataColumns">
+                            <structure>
+                                <property name="name">IntegerParameterComboBoxStaticReqd</property>
+                                <expression name="expression" type="javascript">params["IntegerParameterComboBoxStaticReqd"]</expression>
+                                <property name="dataType">integer</property>
+                            </structure>
+                        </list-property>
+                        <property name="resultSetColumn">IntegerParameterComboBoxStaticReqd</property>
+                    </data>
+                </cell>
+            </row>
+            <row id="320">
+                <cell id="321">
+                    <property name="borderLeftStyle">solid</property>
+                    <property name="borderLeftWidth">thin</property>
+                    <property name="borderRightStyle">solid</property>
+                    <property name="borderRightWidth">thin</property>
+                    <property name="paddingLeft">3pt</property>
+                    <property name="paddingRight">3pt</property>
+                </cell>
+                <cell id="322">
+                    <property name="borderLeftStyle">solid</property>
+                    <property name="borderLeftWidth">thin</property>
+                    <property name="borderRightStyle">solid</property>
+                    <property name="borderRightWidth">thin</property>
+                    <property name="paddingLeft">3pt</property>
+                    <property name="paddingRight">3pt</property>
+                    <label id="324">
+                        <text-property name="text">Combo Box - static list, not required</text-property>
+                    </label>
+                </cell>
+                <cell id="323">
+                    <property name="borderLeftStyle">solid</property>
+                    <property name="borderLeftWidth">thin</property>
+                    <property name="borderRightStyle">solid</property>
+                    <property name="borderRightWidth">thin</property>
+                    <property name="paddingLeft">3pt</property>
+                    <property name="paddingRight">3pt</property>
+                    <data id="326">
+                        <list-property name="boundDataColumns">
+                            <structure>
+                                <property name="name">IntegerParameterComboBoxStaticNotReqd</property>
+                                <expression name="expression" type="javascript">params["IntegerParameterComboBoxStaticNotReqd"]</expression>
+                                <property name="dataType">integer</property>
+                            </structure>
+                        </list-property>
+                        <property name="resultSetColumn">IntegerParameterComboBoxStaticNotReqd</property>
+                    </data>
+                </cell>
+            </row>
+            <row id="151">
+                <cell id="152">
+                    <property name="borderLeftStyle">solid</property>
+                    <property name="borderLeftWidth">thin</property>
+                    <property name="borderRightStyle">solid</property>
+                    <property name="borderRightWidth">thin</property>
+                    <property name="paddingLeft">3pt</property>
+                    <property name="paddingRight">3pt</property>
+                </cell>
+                <cell id="153">
+                    <property name="borderLeftStyle">solid</property>
+                    <property name="borderLeftWidth">thin</property>
+                    <property name="borderRightStyle">solid</property>
+                    <property name="borderRightWidth">thin</property>
+                    <property name="paddingLeft">3pt</property>
+                    <property name="paddingRight">3pt</property>
+                    <label id="209">
+                        <text-property name="text">Combo Box - dynamic list</text-property>
+                    </label>
+                </cell>
+                <cell id="154">
+                    <property name="borderLeftStyle">solid</property>
+                    <property name="borderLeftWidth">thin</property>
+                    <property name="borderRightStyle">solid</property>
+                    <property name="borderRightWidth">thin</property>
+                    <property name="paddingLeft">3pt</property>
+                    <property name="paddingRight">3pt</property>
+                    <label id="210">
+                        <property name="fontStyle">italic</property>
+                        <property name="color">gray</property>
+                        <text-property name="text">not implemented</text-property>
+                    </label>
+                </cell>
+            </row>
+            <row id="147">
+                <cell id="148">
+                    <property name="borderLeftStyle">solid</property>
+                    <property name="borderLeftWidth">thin</property>
+                    <property name="borderRightStyle">solid</property>
+                    <property name="borderRightWidth">thin</property>
+                    <property name="paddingLeft">3pt</property>
+                    <property name="paddingRight">3pt</property>
+                </cell>
+                <cell id="149">
+                    <property name="borderLeftStyle">solid</property>
+                    <property name="borderLeftWidth">thin</property>
+                    <property name="borderRightStyle">solid</property>
+                    <property name="borderRightWidth">thin</property>
+                    <property name="paddingLeft">3pt</property>
+                    <property name="paddingRight">3pt</property>
+                    <label id="211">
+                        <text-property name="text">List Box - static list, single select, required</text-property>
+                    </label>
+                </cell>
+                <cell id="150">
+                    <property name="borderLeftStyle">solid</property>
+                    <property name="borderLeftWidth">thin</property>
+                    <property name="borderRightStyle">solid</property>
+                    <property name="borderRightWidth">thin</property>
+                    <property name="paddingLeft">3pt</property>
+                    <property name="paddingRight">3pt</property>
+                    <data id="338">
+                        <list-property name="boundDataColumns">
+                            <structure>
+                                <property name="name">IntegerParameterListBoxStaticSingleReqd</property>
+                                <expression name="expression" type="javascript">params["IntegerParameterListBoxStaticSingleReqd"]</expression>
+                                <property name="dataType">integer</property>
+                            </structure>
+                        </list-property>
+                        <property name="resultSetColumn">IntegerParameterListBoxStaticSingleReqd</property>
+                    </data>
+                </cell>
+            </row>
+            <row id="327">
+                <cell id="328">
+                    <property name="borderLeftStyle">solid</property>
+                    <property name="borderLeftWidth">thin</property>
+                    <property name="borderRightStyle">solid</property>
+                    <property name="borderRightWidth">thin</property>
+                    <property name="paddingLeft">3pt</property>
+                    <property name="paddingRight">3pt</property>
+                </cell>
+                <cell id="329">
+                    <property name="borderLeftStyle">solid</property>
+                    <property name="borderLeftWidth">thin</property>
+                    <property name="borderRightStyle">solid</property>
+                    <property name="borderRightWidth">thin</property>
+                    <property name="paddingLeft">3pt</property>
+                    <property name="paddingRight">3pt</property>
+                    <label id="335">
+                        <text-property name="text">List Box - static list, single select, not required</text-property>
+                    </label>
+                </cell>
+                <cell id="330">
+                    <property name="borderLeftStyle">solid</property>
+                    <property name="borderLeftWidth">thin</property>
+                    <property name="borderRightStyle">solid</property>
+                    <property name="borderRightWidth">thin</property>
+                    <property name="paddingLeft">3pt</property>
+                    <property name="paddingRight">3pt</property>
+                    <data id="339">
+                        <list-property name="boundDataColumns">
+                            <structure>
+                                <property name="name">IntegerParameterListBoxStaticSingleNotReqd</property>
+                                <expression name="expression" type="javascript">params["IntegerParameterListBoxStaticSingleNotReqd"]</expression>
+                                <property name="dataType">integer</property>
+                            </structure>
+                        </list-property>
+                        <property name="resultSetColumn">IntegerParameterListBoxStaticSingleNotReqd</property>
+                    </data>
+                </cell>
+            </row>
+            <row id="143">
+                <cell id="144">
+                    <property name="borderLeftStyle">solid</property>
+                    <property name="borderLeftWidth">thin</property>
+                    <property name="borderRightStyle">solid</property>
+                    <property name="borderRightWidth">thin</property>
+                    <property name="paddingLeft">3pt</property>
+                    <property name="paddingRight">3pt</property>
+                </cell>
+                <cell id="145">
+                    <property name="borderLeftStyle">solid</property>
+                    <property name="borderLeftWidth">thin</property>
+                    <property name="borderRightStyle">solid</property>
+                    <property name="borderRightWidth">thin</property>
+                    <property name="paddingLeft">3pt</property>
+                    <property name="paddingRight">3pt</property>
+                    <label id="212">
+                        <text-property name="text">List Box - static list, multiple select, required</text-property>
+                    </label>
+                </cell>
+                <cell id="146">
+                    <property name="borderLeftStyle">solid</property>
+                    <property name="borderLeftWidth">thin</property>
+                    <property name="borderRightStyle">solid</property>
+                    <property name="borderRightWidth">thin</property>
+                    <property name="paddingLeft">3pt</property>
+                    <property name="paddingRight">3pt</property>
+                    <data id="341">
+                        <list-property name="boundDataColumns">
+                            <structure>
+                                <property name="name">IntegerParameterListBoxStaticMultipleReqd</property>
+                                <expression name="expression" type="javascript">params["IntegerParameterListBoxStaticMultipleReqd"]</expression>
+                                <property name="dataType">javaObject</property>
+                            </structure>
+                        </list-property>
+                        <property name="resultSetColumn">IntegerParameterListBoxStaticMultipleReqd</property>
+                    </data>
+                </cell>
+            </row>
+            <row id="331">
+                <cell id="332">
+                    <property name="borderLeftStyle">solid</property>
+                    <property name="borderLeftWidth">thin</property>
+                    <property name="borderRightStyle">solid</property>
+                    <property name="borderRightWidth">thin</property>
+                    <property name="paddingLeft">3pt</property>
+                    <property name="paddingRight">3pt</property>
+                </cell>
+                <cell id="333">
+                    <property name="borderLeftStyle">solid</property>
+                    <property name="borderLeftWidth">thin</property>
+                    <property name="borderRightStyle">solid</property>
+                    <property name="borderRightWidth">thin</property>
+                    <property name="paddingLeft">3pt</property>
+                    <property name="paddingRight">3pt</property>
+                    <label id="336">
+                        <text-property name="text">List Box - static list, multiple select, not required</text-property>
+                    </label>
+                </cell>
+                <cell id="334">
+                    <property name="borderLeftStyle">solid</property>
+                    <property name="borderLeftWidth">thin</property>
+                    <property name="borderRightStyle">solid</property>
+                    <property name="borderRightWidth">thin</property>
+                    <property name="paddingLeft">3pt</property>
+                    <property name="paddingRight">3pt</property>
+                    <data id="342">
+                        <list-property name="boundDataColumns">
+                            <structure>
+                                <property name="name">IntegerParameterListBoxStaticMultipleNotReqd</property>
+                                <expression name="expression" type="javascript">params["IntegerParameterListBoxStaticMultipleNotReqd"]</expression>
+                                <property name="dataType">javaObject</property>
+                            </structure>
+                        </list-property>
+                        <property name="resultSetColumn">IntegerParameterListBoxStaticMultipleNotReqd</property>
+                    </data>
+                </cell>
+            </row>
+            <row id="139">
+                <cell id="140">
+                    <property name="borderLeftStyle">solid</property>
+                    <property name="borderLeftWidth">thin</property>
+                    <property name="borderRightStyle">solid</property>
+                    <property name="borderRightWidth">thin</property>
+                    <property name="paddingLeft">3pt</property>
+                    <property name="paddingRight">3pt</property>
+                </cell>
+                <cell id="141">
+                    <property name="borderLeftStyle">solid</property>
+                    <property name="borderLeftWidth">thin</property>
+                    <property name="borderRightStyle">solid</property>
+                    <property name="borderRightWidth">thin</property>
+                    <property name="paddingLeft">3pt</property>
+                    <property name="paddingRight">3pt</property>
+                    <label id="213">
+                        <text-property name="text">List Box - dynamic list, single select</text-property>
+                    </label>
+                </cell>
+                <cell id="142">
+                    <property name="borderLeftStyle">solid</property>
+                    <property name="borderLeftWidth">thin</property>
+                    <property name="borderRightStyle">solid</property>
+                    <property name="borderRightWidth">thin</property>
+                    <property name="paddingLeft">3pt</property>
+                    <property name="paddingRight">3pt</property>
+                    <label id="215">
+                        <property name="fontStyle">italic</property>
+                        <property name="color">gray</property>
+                        <text-property name="text">not implemented</text-property>
+                    </label>
+                </cell>
+            </row>
+            <row id="135">
+                <cell id="136">
+                    <property name="borderLeftStyle">solid</property>
+                    <property name="borderLeftWidth">thin</property>
+                    <property name="borderRightStyle">solid</property>
+                    <property name="borderRightWidth">thin</property>
+                    <property name="paddingLeft">3pt</property>
+                    <property name="paddingRight">3pt</property>
+                </cell>
+                <cell id="137">
+                    <property name="borderLeftStyle">solid</property>
+                    <property name="borderLeftWidth">thin</property>
+                    <property name="borderRightStyle">solid</property>
+                    <property name="borderRightWidth">thin</property>
+                    <property name="paddingLeft">3pt</property>
+                    <property name="paddingRight">3pt</property>
+                    <label id="214">
+                        <text-property name="text">List Box - dynamic list, multiple select</text-property>
+                    </label>
+                </cell>
+                <cell id="138">
+                    <property name="borderLeftStyle">solid</property>
+                    <property name="borderLeftWidth">thin</property>
+                    <property name="borderRightStyle">solid</property>
+                    <property name="borderRightWidth">thin</property>
+                    <property name="paddingLeft">3pt</property>
+                    <property name="paddingRight">3pt</property>
+                    <label id="216">
+                        <property name="fontStyle">italic</property>
+                        <property name="color">gray</property>
+                        <text-property name="text">not implemented</text-property>
+                    </label>
+                </cell>
+            </row>
+            <row id="131">
+                <property name="borderTopColor">#C0C0C0</property>
+                <property name="borderTopStyle">solid</property>
+                <property name="borderTopWidth">thin</property>
+                <cell id="132">
+                    <property name="borderLeftStyle">solid</property>
+                    <property name="borderLeftWidth">thin</property>
+                    <property name="borderRightStyle">solid</property>
+                    <property name="borderRightWidth">thin</property>
+                    <property name="paddingTop">5pt</property>
+                    <property name="paddingLeft">3pt</property>
+                    <property name="paddingRight">3pt</property>
+                    <label id="228">
+                        <text-property name="text">Float</text-property>
+                    </label>
+                </cell>
+                <cell id="133">
+                    <property name="borderLeftStyle">solid</property>
+                    <property name="borderLeftWidth">thin</property>
+                    <property name="borderRightStyle">solid</property>
+                    <property name="borderRightWidth">thin</property>
+                    <property name="paddingTop">5pt</property>
+                    <property name="paddingLeft">3pt</property>
+                    <property name="paddingRight">3pt</property>
+                    <label id="229">
+                        <text-property name="text">Textbox - required</text-property>
+                    </label>
+                </cell>
+                <cell id="134">
+                    <property name="borderLeftStyle">solid</property>
+                    <property name="borderLeftWidth">thin</property>
+                    <property name="borderRightStyle">solid</property>
+                    <property name="borderRightWidth">thin</property>
+                    <property name="paddingTop">5pt</property>
+                    <property name="paddingLeft">3pt</property>
+                    <property name="paddingRight">3pt</property>
+                    <data id="350">
+                        <list-property name="boundDataColumns">
+                            <structure>
+                                <property name="name">FloatParameterTextBoxReqd</property>
+                                <expression name="expression" type="javascript">params["FloatParameterTextBoxReqd"]</expression>
+                                <property name="dataType">float</property>
+                            </structure>
+                        </list-property>
+                        <property name="resultSetColumn">FloatParameterTextBoxReqd</property>
+                    </data>
+                </cell>
+            </row>
+            <row id="344">
+                <cell id="345">
+                    <property name="borderLeftStyle">solid</property>
+                    <property name="borderLeftWidth">thin</property>
+                    <property name="borderRightStyle">solid</property>
+                    <property name="borderRightWidth">thin</property>
+                    <property name="paddingTop">1pt</property>
+                    <property name="paddingLeft">3pt</property>
+                    <property name="paddingRight">3pt</property>
+                </cell>
+                <cell id="346">
+                    <property name="borderLeftStyle">solid</property>
+                    <property name="borderLeftWidth">thin</property>
+                    <property name="borderRightStyle">solid</property>
+                    <property name="borderRightWidth">thin</property>
+                    <property name="paddingTop">1pt</property>
+                    <property name="paddingLeft">3pt</property>
+                    <property name="paddingRight">3pt</property>
+                    <label id="348">
+                        <text-property name="text">Textbox - not required</text-property>
+                    </label>
+                </cell>
+                <cell id="347">
+                    <property name="borderLeftStyle">solid</property>
+                    <property name="borderLeftWidth">thin</property>
+                    <property name="borderRightStyle">solid</property>
+                    <property name="borderRightWidth">thin</property>
+                    <property name="paddingTop">1pt</property>
+                    <property name="paddingLeft">3pt</property>
+                    <property name="paddingRight">3pt</property>
+                    <data id="351">
+                        <list-property name="boundDataColumns">
+                            <structure>
+                                <property name="name">FloatParameterTextBoxNotReqd</property>
+                                <expression name="expression" type="javascript">params["FloatParameterTextBoxNotReqd"]</expression>
+                                <property name="dataType">float</property>
+                            </structure>
+                        </list-property>
+                        <property name="resultSetColumn">FloatParameterTextBoxNotReqd</property>
+                    </data>
+                </cell>
+            </row>
+        </grid>
     </body>
 </report>');
 insert into reporting.report_version (report_version_id, report_id, file_name, rptdesign, version_name, version_code, active, created_on) VALUES ('bbd23109-e1e9-404e-913d-32150d8fd92f', '702d5daa-e23d-4f00-b32b-67b44c06d8f6', '400-TestReport04_v1.1.rptdesign', (SELECT rptdesign FROM tmp_rptdesign), '1.1', 2, true, '2015-05-10T19:00:00');
