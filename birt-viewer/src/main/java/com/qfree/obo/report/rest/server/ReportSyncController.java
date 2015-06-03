@@ -68,7 +68,11 @@ public class ReportSyncController extends AbstractBaseController {
 	 * This endpoint can be tested with:
 	 * 
 	 *   $ mvn clean spring-boot:run
-	 *   $ curl -iH "Content-Type: application/json;v=1" -X POST http://localhost:8080/rest/reportSyncs
+	 *   $ curl -iH "Accept: application/json;v=1" -H "Content-Type: application/json" -X POST http://localhost:8080/rest/reportSyncs
+	 *   
+	 * or just:
+	 * 
+	 *   $ curl -iH "Accept: application/json;v=1" -X POST http://localhost:8080/rest/reportSyncs
 	 * 
 	 * @Transactional is used to avoid org.hibernate.LazyInitializationException
 	 * being thrown when evaluating report.getReportVersions().

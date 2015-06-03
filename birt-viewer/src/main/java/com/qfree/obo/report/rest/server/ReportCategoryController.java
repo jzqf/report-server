@@ -83,7 +83,7 @@ public class ReportCategoryController extends AbstractBaseController {
 	 * This endpoint can be tested with:
 	 * 
 	 *   $ mvn clean spring-boot:run
-	 *   $ curl -iH "Content-Type: application/json;v=1" -X POST -d \
+	 *   $ curl -iH "Accept: application/json;v=1" -H "Content-Type: application/json" -X POST -d \
 	 *   '{"abbreviation":"RCABBREV","description":"ReportCategory description",\
 	 *   "active":true, "createdOn":"1958-05-06T12:00:00.000Z"}' \
 	 *   http://localhost:8080/rest/reportCategories
@@ -91,7 +91,7 @@ public class ReportCategoryController extends AbstractBaseController {
 	 * This endpoint will throw a "403 Forbidden" error because an id for the 
 	 * ReportCategory to create is given:
 	 * 
-	 *	curl -iH "Content-Type: application/json;v=1" -X POST -d \
+	 *	curl -iH "Accept: application/json;v=1" -H "Content-Type: application/json" -X POST -d \
 	 *	'{"reportCategoryId":"71b3e8ae-bba8-45b7-a85f-12546bcc95b2",'\
 	 *	'"abbreviation":"RCABBREV","description":"ReportCategory description",'\
 	 *	'"active":true, "createdOn":"1958-05-06T12:00:00.000Z"}' \
@@ -143,7 +143,7 @@ public class ReportCategoryController extends AbstractBaseController {
 	 * This endpoint can be tested with:
 	 * 
 	 *   $ mvn clean spring-boot:run
-	 *   $ curl -iH "Content-Type: application/json;v=1" -X PUT -d \
+	 *   $ curl -iH "Accept: application/json;v=1" -H "Content-Type: application/json" -X PUT -d \
 	 *   '{"abbreviation":"QFREE-MOD","description":"Q-Free internal (modified)","active":false}' \
 	 *   http://localhost:8080/rest/reportCategories/bb2bc482-c19a-4c19-a087-e68ffc62b5a0
 	 */

@@ -96,7 +96,7 @@ public class ReportController extends AbstractBaseController {
 	 * This endpoint can be tested with:
 	 * 
 	 *   $ mvn clean spring-boot:run
-	 *   $ curl -iH "Content-Type: application/json;v=1" -X POST -d \
+	 *   $ curl -iH "Accept: application/json;v=1" -H "Content-Type: application/json" -X POST -d \
 	 *   '{"reportCategory":{"reportCategoryId":"72d7cb27-1770-4cc7-b301-44d39ccf1e76"},\
 	 *   "name":"Report name (created by POST)","number":666,"active":true}' \
 	 *   http://localhost:8080/rest/reports
@@ -157,7 +157,7 @@ public class ReportController extends AbstractBaseController {
 	 * This endpoint can be tested with:
 	 * 
 	 *   $ mvn clean spring-boot:run
-	 *   $ curl -iH "Content-Type: application/json;v=1" -X PUT -d \
+	 *   $ curl -iH "Accept: application/json;v=1" -H "Content-Type: application/json" -X PUT -d \
 	 *   '{"reportCategory":{"reportCategoryId":"72d7cb27-1770-4cc7-b301-44d39ccf1e76"},\
 	 *   "name":"Test Report #04 (modified by PUT)","number":1400,"active":false}' \
 	 *   http://localhost:8080/rest/reports/702d5daa-e23d-4f00-b32b-67b44c06d8f6

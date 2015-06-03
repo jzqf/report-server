@@ -83,7 +83,7 @@ public class RoleController extends AbstractBaseController {
 	 * This endpoint can be tested with:
 	 * 
 	 *   $ mvn clean spring-boot:run
-	 *   $ curl -iH "Content-Type: application/json;v=1" -X POST -d \
+	 *   $ curl -iH "Accept: application/json;v=1" -H "Content-Type: application/json" -X POST -d \
 	 *   '{"username":"Bozo","fullName":"Bozo the clown","encodedPassword":"asdf=","loginRole":true}' \
 	 *   http://localhost:8080/rest/roles
 	 */
@@ -190,7 +190,7 @@ public class RoleController extends AbstractBaseController {
 	 * This endpoint can be tested with:
 	 * 
 	 *   $ mvn clean spring-boot:run
-	 *   $ curl -iH "Content-Type: application/json;v=1" -X PUT -d \
+	 *   $ curl -iH "Accept: application/json;v=1" -H "Content-Type: application/json" -X PUT -d \
 	 *   '{"username":"baaa (modified)","fullName":"Mr. baaa","encodedPassword":"qwerty=","loginRole":true}' \
 	 *   http://localhost:8080/rest/roles/0db97c2a-fb78-464a-a0e7-8d25f6003c14
 	 */

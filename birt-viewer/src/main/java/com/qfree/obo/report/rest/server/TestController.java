@@ -101,6 +101,25 @@ public class TestController extends AbstractBaseController {
 		return apiVersion.getVersion();
 	}
 
+	/*
+	 * This endpoint can be tested with:
+	 * 
+	 *   $ mvn clean spring-boot:run
+	 *   $ curl -i -H "Accept: text/plain;v=1" -X POST http://localhost:8080/rest/test/api_version
+	 */
+	@PUT
+	@Path("/api_version")
+	@Produces(MediaType.TEXT_PLAIN)
+	public String acceptHeaderApiVersionPut(@HeaderParam("Accept") String acceptHeader) {
+		//		logger.info("acceptHeader = {}", acceptHeader);
+		//		System.out.println("acceptHeaderApiVersionPost: acceptHeader = " + acceptHeader);
+		RestApiVersion apiVersion = RestUtils.extractAPIVersion(acceptHeader, RestApiVersion.v4);
+		//		logger.info("apiVersion, apiVersion.getVersion() = {}, {}", apiVersion, apiVersion.getVersion());
+		//		System.out.println("acceptHeaderApiVersionPost: apiVersion, apiVersion.getVersion() = "
+		//				+ apiVersion + ", " + apiVersion.getVersion());
+		return apiVersion.getVersion();
+	}
+
 	@POST
 	@Path("/form")
 	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)

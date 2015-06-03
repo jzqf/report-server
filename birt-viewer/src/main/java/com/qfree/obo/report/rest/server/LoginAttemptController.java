@@ -70,9 +70,9 @@ public class LoginAttemptController extends AbstractBaseController {
 	 * This endpoint can be tested with:
 	 * 
 	 *   $ mvn clean spring-boot:run
-	 *   $ curl -iH "Content-Type: application/json;v=1" -X POST -d \
-	 *   '{"username":"user1","encodedPassword":"44rSFJQ9qtHWTBAvrsKd5K/p2j0="}' \
-	 *   http://localhost:8080/rest/loginAttempts
+	 *   $ curl -iH "Accept: application/json;v=1" -H "Content-Type: application/json" \
+	 *     -X POST -d '{"username":"user1","encodedPassword":"44rSFJQ9qtHWTBAvrsKd5K/p2j0="}' \
+	 *     http://localhost:8080/rest/loginAttempts
 	 */
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
@@ -82,7 +82,7 @@ public class LoginAttemptController extends AbstractBaseController {
 			@HeaderParam("Accept") final String acceptHeader,
 			@Context final UriInfo uriInfo) {
 		RestApiVersion apiVersion = RestUtils.extractAPIVersion(acceptHeader, RestApiVersion.v1);
-
+		logger.info("apiVersion = {}", apiVersion);
 		/*
 		 * Ensure that both the user name and encoded password have been 
 		 * supplied.
@@ -147,7 +147,7 @@ public class LoginAttemptController extends AbstractBaseController {
 	//	 * This endpoint can be tested with:
 	//	 * 
 	//	 *   $ mvn clean spring-boot:run
-	//	 *   $ curl -iH "Content-Type: application/json;v=1" -X PUT -d \
+	//	 *   $ curl -iH "Accept: application/json;v=1" -H "Content-Type: application/json" -X PUT -d \
 	//	 *   '{"username":"baaa (modified)","fullName":"Mr. baaa","encodedPassword":"qwerty=","loginRole":true}' \
 	//	 *   http://localhost:8080/rest/roles/0db97c2a-fb78-464a-a0e7-8d25f6003c14
 	//	 */

@@ -111,7 +111,7 @@ public class ReportVersionController extends AbstractBaseController {
 	 * This endpoint can be tested with:
 	 * 
 	 *   $ mvn clean spring-boot:run
-	 *   $ curl -iH "Content-Type: application/json;v=1" -X POST -d \
+	 *   $ curl -iH "Accept: application/json;v=1" -H "Content-Type: application/json" -X POST -d \
 	 *   '{"report":{"reportId":"702d5daa-e23d-4f00-b32b-67b44c06d8f6"},\
 	 *   "fileName":"NewReportVersionFromPOST.rptdesign",\
 	 *   "rptdesign":"Not a valid rptdesign, but this cannot be null",\
@@ -284,7 +284,7 @@ public class ReportVersionController extends AbstractBaseController {
 	 * This endpoint can be tested with:
 	 * 
 	 *   $ mvn clean spring-boot:run
-	 *   $ curl -iH "Content-Type: application/json;v=1" -X PUT -d \
+	 *   $ curl -iH "Accept: application/json;v=1" -H "Content-Type: application/json" -X PUT -d \
 	 *   '{"report":{"reportId":"702d5daa-e23d-4f00-b32b-67b44c06d8f6"},\
 	 *   "fileName":"400-TestReport04_v1.1.1.rptdesign","rptdesign":"Not a valid rptdesign, but this cannot be null",\
 	 *   "versionName":"0.6.1","versionCode":3,"active":false}' \
