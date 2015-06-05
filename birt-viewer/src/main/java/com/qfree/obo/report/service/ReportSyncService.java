@@ -23,6 +23,7 @@ import com.qfree.obo.report.db.ReportRepository;
 import com.qfree.obo.report.domain.Report;
 import com.qfree.obo.report.domain.ReportVersion;
 import com.qfree.obo.report.dto.ReportSyncResource;
+import com.qfree.obo.report.dto.ResourcePath;
 import com.qfree.obo.report.dto.RestErrorResource.RestError;
 import com.qfree.obo.report.exceptions.RestApiException;
 import com.qfree.obo.report.rest.server.RestUtils;
@@ -85,7 +86,8 @@ public class ReportSyncService {
 					* that correspond to active reports and active report versions. 
 					*/
 					List<Report> reports = null;
-					if (RestUtils.FILTER_INACTIVE_RECORDS) {
+					List<String> showAll = queryParams.get(ResourcePath.SHOWALL_QP_KEY);
+					if (RestUtils.FILTER_INACTIVE_RECORDS && !ResourcePath.showAll(Report.class, showAll)) {
 						reports = reportRepository.findByActiveTrue();
 					} else {
 						reports = reportRepository.findAll();

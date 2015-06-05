@@ -134,12 +134,10 @@ public class ReportVersionResource extends AbstractBaseResource {
 			List<ReportVersion> reportVersions = report.getReportVersions();
 			List<ReportVersionResource> reportVersionResources = new ArrayList<>(reportVersions.size());
 			for (ReportVersion reportVersion : reportVersions) {
-				/*
-				 * TODO Add a query parameter to disable filtering on *active* for ReportVersion's?
-				 * 		How about ...&nofilter=active or ... What if we want to see only
-				 * 		active Report's but unfiltered ReportVersion's (active or not)?
-				 */
-				if (reportVersion.isActive() || RestUtils.FILTER_INACTIVE_RECORDS == false) {
+				List<String> showAll = queryParams.get(ResourcePath.SHOWALL_QP_KEY);
+				if (reportVersion.isActive() ||
+						RestUtils.FILTER_INACTIVE_RECORDS == false ||
+						ResourcePath.showAll(ReportVersion.class, showAll)) {
 					reportVersionResources.add(
 							new ReportVersionResource(reportVersion, uriInfo, queryParams, apiVersion));
 				}

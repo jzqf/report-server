@@ -55,10 +55,10 @@ public abstract class AbstractCollectionResource<T extends AbstractBaseResource>
 			String baseResourceUri, String collectionPath,
 			UriInfo uriInfo, Map<String, List<String>> queryParams, RestApiVersion apiVersion) {
 		super(baseResourceUri, collectionPath, entityClass, null, uriInfo, queryParams, apiVersion);
-		//		String expandParam = ResourcePath.forEntity(entityClass).getExpandParam();
-		//		if (expand.contains(expandParam)) {
-		//			this.items = items;
-		//		}
+		//	List<String> expand = queryParams.get(ResourcePath.EXPAND_QP_KEY);
+		//	if (ResourcePath.expand(entityClass, expand)) {
+		//		this.items = items;
+		//	}
 	}
 
 }

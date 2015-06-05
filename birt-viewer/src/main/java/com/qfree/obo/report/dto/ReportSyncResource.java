@@ -75,6 +75,12 @@ public class ReportSyncResource extends AbstractBaseResource {
 	//			 */
 	//			List<String> expandElementRemoved = new ArrayList<>(expand);
 	//			expandElementRemoved.remove(expandParam);
+	//	/*
+	//	 * Make a copy of the original queryParams Map and then replace the 
+	//	 * "expand" array with expandElementRemoved.
+	//	 */
+	//	Map<String, List<String>> newQueryParams = new HashMap<>(queryParams);
+	//	newQueryParams.put(ResourcePath.EXPAND_QP_KEY, expandElementRemoved);
 	//
 	//			/*
 	//			 * Clear apiVersion since its current value is not necessarily
