@@ -74,14 +74,20 @@ public class ReportController extends AbstractBaseController {
 	//	public List<ReportResource> getList(
 	public ReportCollectionResource getList(
 			@HeaderParam("Accept") final String acceptHeader,
-			@QueryParam("expand") final List<String> expand,
+			@QueryParam(ResourcePath.EXPAND_QP_NAME) final List<String> expand,
+			@QueryParam(ResourcePath.SHOWALL_QP_NAME) final List<String> showAll,
 			@Context final UriInfo uriInfo) {
+		Map<String, List<String>> queryParams = new HashMap<>();
+		queryParams.put(ResourcePath.EXPAND_QP_KEY, expand);
+		queryParams.put(ResourcePath.SHOWALL_QP_KEY, showAll);
 		RestApiVersion apiVersion = RestUtils.extractAPIVersion(acceptHeader, RestApiVersion.v1);
 
 		List<Report> reports = null;
-		if (RestUtils.FILTER_INACTIVE_RECORDS) {
+		if (RestUtils.FILTER_INACTIVE_RECORDS && !ResourcePath.showAll(Report.class, showAll)) {
+			logger.info("***** Filtering inactive Reports *****");
 			reports = reportRepository.findByActiveTrue();
 		} else {
+			logger.info("********** NOT filtering inactive Reports **********");
 			reports = reportRepository.findAll();
 		}
 		List<ReportResource> reportResources = new ArrayList<>(reports.size());
