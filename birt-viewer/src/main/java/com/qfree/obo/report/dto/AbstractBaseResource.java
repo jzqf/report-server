@@ -33,9 +33,9 @@ public abstract class AbstractBaseResource {
 		super();
 	}
 
-	public AbstractBaseResource(Class<?> entityClass, Object id, UriInfo uriInfo, List<String> expand,
-			RestApiVersion apiVersion) {
-		this(null, null, null, entityClass, id, uriInfo, expand, apiVersion);
+	public AbstractBaseResource(Class<?> entityClass, Object id, UriInfo uriInfo,
+			Map<String, List<String>> queryParams, RestApiVersion apiVersion) {
+		this(null, null, entityClass, id, uriInfo, queryParams, apiVersion);
 	}
 
 	/**
@@ -50,11 +50,12 @@ public abstract class AbstractBaseResource {
 	 * @param apiVersion
 	 */
 	public AbstractBaseResource(
-			String baseResourceUri, String collectionPath, Map<String, List<String>> extraQueryParams,
-			Class<?> entityClass, Object id, UriInfo uriInfo, List<String> expand, RestApiVersion apiVersion) {
+			String baseResourceUri, String collectionPath,
+			Class<?> entityClass, Object id, UriInfo uriInfo, Map<String, List<String>> queryParams,
+			RestApiVersion apiVersion) {
 		super();
 		//		this.href = createHref(getFullyQualifiedContextPath(uriInfo), entityClass, id);
-		this.href = createHref(baseResourceUri, collectionPath, extraQueryParams, uriInfo, entityClass, id, expand);
+		this.href = createHref(baseResourceUri, collectionPath, uriInfo, entityClass, id,queryParams);
 		this.mediaType = createMediaType(apiVersion);
 	}
 
@@ -75,13 +76,16 @@ public abstract class AbstractBaseResource {
 	}
 
 	protected static String createHref(
-			UriInfo uriInfo, Class<?> entityClass, Object instanceId, List<String> expand) {
-		return createHref(null, null, null, uriInfo, entityClass, instanceId, expand);
+			UriInfo uriInfo, Class<?> entityClass, Object instanceId, Map<String, List<String>> queryParams) {
+		return createHref(null, null, uriInfo, entityClass, instanceId, queryParams);
 	}
 
 	protected static String createHref(
-			String baseResourceUri, String collectionPath, Map<String, List<String>> extraQueryParams,
-			UriInfo uriInfo, Class<?> entityClass, Object instanceId, List<String> expand) {
+			String baseResourceUri, String collectionPath,
+			UriInfo uriInfo, Class<?> entityClass, Object instanceId,
+			Map<String, List<String>> queryParams) {
+
+		//		List<String> expand = queryParams.get(ResourcePath.EXPAND_QP_KEY);
 
 		UriBuilder uriBuilder = null;
 		if (instanceId != null) {
@@ -121,24 +125,24 @@ public abstract class AbstractBaseResource {
 			}
 		}
 
-		if (extraQueryParams != null) {
+		if (queryParams != null) {
 			/*
 			 * Append any miscellaneous query parameters held in the Map 
-			 * "extraQueryParams". Each map key is the query parameter name, and 
+			 * "queryParams". Each map key is the query parameter name, and 
 			 * each map value is a list of query parameter values. A list is 
 			 * used because there may be multiple values for each query 
 			 * parameter.
 			 */
-			for (Map.Entry<String, List<String>> entry : extraQueryParams.entrySet()) {
+			for (Map.Entry<String, List<String>> entry : queryParams.entrySet()) {
 				uriBuilder = uriBuilder.queryParam(entry.getKey(), entry.getValue().toArray());
 			}
 		}
-		if (expand != null) {
-			/*
-			 * Append the "expand" query parameters.
-			 */
-			uriBuilder = uriBuilder.queryParam("expand", expand.toArray());
-		}
+		//		if (expand != null) {
+		//			/*
+		//			 * Append the "expand" query parameters.
+		//			 */
+		//			uriBuilder = uriBuilder.queryParam("expand", expand.toArray());
+		//		}
 		return uriBuilder.toString();
 	}
 

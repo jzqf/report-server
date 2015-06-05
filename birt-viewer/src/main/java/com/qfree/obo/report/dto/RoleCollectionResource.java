@@ -1,6 +1,7 @@
 package com.qfree.obo.report.dto;
 
 import java.util.List;
+import java.util.Map;
 
 import javax.ws.rs.core.UriInfo;
 import javax.xml.bind.annotation.XmlElement;
@@ -24,13 +25,13 @@ public class RoleCollectionResource extends AbstractCollectionResource<RoleResou
 	}
 
 	public RoleCollectionResource(List<RoleResource> items, Class<?> entityClass,
-			UriInfo uriInfo, List<String> expand, RestApiVersion apiVersion) {
+			UriInfo uriInfo, Map<String, List<String>> queryParams, RestApiVersion apiVersion) {
 
-		super(items, entityClass, uriInfo, expand, apiVersion);  // if class extends AbstractCollectionResource<RoleResource>
-		//super(entityClass, null, uriInfo, expand, apiVersion);  // if class extends AbstractBaseResource
+		super(items, entityClass, uriInfo, queryParams, apiVersion);  // if class extends AbstractCollectionResource<ReportResource>
+		//super(entityClass, null, uriInfo, queryParams, apiVersion);  // if class extends AbstractBaseResource
 
-		String expandParam = ResourcePath.forEntity(entityClass).getExpandParam();
-		if (expand.contains(expandParam)) {
+		List<String> expand = queryParams.get(ResourcePath.EXPAND_QP_KEY);
+		if (ResourcePath.expand(entityClass, expand)) {
 			this.items = items;
 		}
 	}

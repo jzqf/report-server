@@ -27,30 +27,30 @@ public class ReportVersionCollectionResource extends AbstractCollectionResource<
 	}
 
 	public ReportVersionCollectionResource(Report report, UriInfo uriInfo,
-			List<String> expand, Map<String, List<String>> extraQueryParams, RestApiVersion apiVersion) {
+			Map<String, List<String>> queryParams, RestApiVersion apiVersion) {
 		this(
-				ReportVersionResource.listFromReport(report,uriInfo, expand, extraQueryParams, apiVersion),
+				ReportVersionResource.listFromReport(report, uriInfo, queryParams, apiVersion),
 				ReportVersion.class,
 				AbstractBaseResource.createHref(uriInfo, Report.class, report.getReportId(), null),
 				ResourcePath.REPORTVERSIONS_PATH,
-				extraQueryParams, uriInfo, expand, apiVersion);
+				uriInfo, queryParams, apiVersion);
 	}
 
 	public ReportVersionCollectionResource(List<ReportVersionResource> items, Class<?> entityClass,
-			UriInfo uriInfo, List<String> expand, RestApiVersion apiVersion) {
-		this(items, entityClass, null, null, null, uriInfo, expand, apiVersion);
+			UriInfo uriInfo, Map<String, List<String>> queryParams, RestApiVersion apiVersion) {
+		this(items, entityClass, null, null, uriInfo, queryParams, apiVersion);
 	}
 
 	public ReportVersionCollectionResource(List<ReportVersionResource> items, Class<?> entityClass,
-			String baseResourceUri, String collectionPath, Map<String, List<String>> extraQueryParams,
-			UriInfo uriInfo, List<String> expand, RestApiVersion apiVersion) {
+			String baseResourceUri, String collectionPath,
+			UriInfo uriInfo, Map<String, List<String>> queryParams, RestApiVersion apiVersion) {
 
-		super(items, entityClass, baseResourceUri, collectionPath, extraQueryParams, uriInfo, expand, apiVersion);  // if class extends AbstractCollectionResource<ReportVersionResource>
+		super(items, entityClass, baseResourceUri, collectionPath, uriInfo, queryParams, apiVersion);  // if class extends AbstractCollectionResource<ReportVersionResource>
 		//super(items, entityClass, uriInfo, expand, apiVersion);  // if class extends AbstractCollectionResource<ReportVersionResource>
 		//super(entityClass, null, uriInfo, expand, apiVersion);  // if class extends AbstractBaseResource
 
-		String expandParam = ResourcePath.forEntity(entityClass).getExpandParam();
-		if (expand.contains(expandParam)) {
+		List<String> expand = queryParams.get(ResourcePath.EXPAND_QP_KEY);
+		if (ResourcePath.expand(entityClass, expand)) {
 			this.items = items;
 		}
 	}

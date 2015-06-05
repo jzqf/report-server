@@ -44,7 +44,7 @@ public class ReportSyncService {
 	}
 
 	public ReportSyncResource syncReportsWithFileSystem(ServletContext servletContext, UriInfo uriInfo,
-			List<String> expand, Map<String, List<String>> extraQueryParams, RestApiVersion apiVersion) {
+			Map<String, List<String>> queryParams, RestApiVersion apiVersion) {
 		//			throws UnsupportedEncodingException, IOException {
 
 		List<String> reportsDeleted = new ArrayList<>();

@@ -122,6 +122,30 @@ public enum ResourcePath {
     }
 
 	/**
+	 * Returns <tt>true</tt>  if the {@link List} <tt>expand</tt>contains an
+	 * element corresponding to the resource class <tt>entityClass</tt>.
+	 * 
+	 * @param entityClass
+	 * @param expand
+	 * @return
+	 */
+	public static Boolean expand(Class<?> entityClass, List<String> expand) {
+		if (expand == null) {
+			return false;
+		}
+		for (ResourcePath resourcePath : ResourcePath.values()) {
+			/*
+			 * Cannot use equals because object may be proxied by Hibernate.
+			 * Cannot use instanceof because type not fixed at compile time?
+			 */
+			if (resourcePath.entityClass.isAssignableFrom(entityClass)) {
+				return expand.contains(resourcePath.expandParam);
+			}
+		}
+		throw new IllegalArgumentException("No ResourcePath for entity class '" + entityClass.getName() + "'");
+	}
+
+	/**
 	 * Returns <tt>true</tt>  if the {@link List} <tt>showAll</tt>contains an
 	 * element corresponding to the resource class <tt>entityClass</tt>.
 	 * 

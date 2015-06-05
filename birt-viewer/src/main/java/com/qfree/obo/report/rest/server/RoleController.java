@@ -1,7 +1,9 @@
 package com.qfree.obo.report.rest.server;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import javax.ws.rs.Consumes;
@@ -65,18 +67,22 @@ public class RoleController extends AbstractBaseController {
 	//	public CollectionResource<RoleResource> getList(
 	public RoleCollectionResource getList(
 			@HeaderParam("Accept") final String acceptHeader,
-			@QueryParam("expand") final List<String> expand,
+			@QueryParam(ResourcePath.EXPAND_QP_NAME) final List<String> expand,
+			@QueryParam(ResourcePath.SHOWALL_QP_NAME) final List<String> showAll,
 			@Context final UriInfo uriInfo) {
+		Map<String, List<String>> queryParams = new HashMap<>();
+		queryParams.put(ResourcePath.EXPAND_QP_KEY, expand);
+		queryParams.put(ResourcePath.SHOWALL_QP_KEY, showAll);
 		RestApiVersion apiVersion = RestUtils.extractAPIVersion(acceptHeader, RestApiVersion.v1);
 
 		// List<Role> roles = roleRepository.findByActiveTrue();
 		List<Role> roles = roleRepository.findAll();
 		List<RoleResource> roleResources = new ArrayList<>(roles.size());
 		for (Role role : roles) {
-			roleResources.add(new RoleResource(role, uriInfo, expand, apiVersion));
+			roleResources.add(new RoleResource(role, uriInfo, queryParams, apiVersion));
 		}
 		//		return roleResources;
-		return new RoleCollectionResource(roleResources, Role.class, uriInfo, expand, apiVersion);
+		return new RoleCollectionResource(roleResources, Role.class, uriInfo, queryParams, apiVersion);
 	}
 
 	/*
@@ -93,12 +99,19 @@ public class RoleController extends AbstractBaseController {
 	public Response create(
 			RoleResource roleResource,
 			@HeaderParam("Accept") final String acceptHeader,
+			@QueryParam(ResourcePath.EXPAND_QP_NAME) final List<String> expand,
+			@QueryParam(ResourcePath.SHOWALL_QP_NAME) final List<String> showAll,
 			@Context final UriInfo uriInfo) {
+		Map<String, List<String>> queryParams = new HashMap<>();
+		queryParams.put(ResourcePath.EXPAND_QP_KEY, expand);
+		queryParams.put(ResourcePath.SHOWALL_QP_KEY, showAll);
 		RestApiVersion apiVersion = RestUtils.extractAPIVersion(acceptHeader, RestApiVersion.v1);
 
 		Role role = roleService.saveNewFromResource(roleResource);
-		List<String> expand = newExpandList(Role.class);	// Force primary resource to be "expanded"
-		RoleResource resource = new RoleResource(role, uriInfo, expand, apiVersion);
+		//	if (RestUtils.AUTO_EXPAND_PRIMARY_RESOURCES) {
+		addToExpandList(expand, Role.class);  // Force primary resource to be "expanded"
+		//	}
+		RoleResource resource = new RoleResource(role, uriInfo, queryParams, apiVersion);
 		return created(resource);
 	}
 
@@ -115,8 +128,12 @@ public class RoleController extends AbstractBaseController {
 	public RoleResource getById(
 			@PathParam("id") final UUID id,
 			@HeaderParam("Accept") final String acceptHeader,
-			@QueryParam("expand") final List<String> expand,
+			@QueryParam(ResourcePath.EXPAND_QP_NAME) final List<String> expand,
+			@QueryParam(ResourcePath.SHOWALL_QP_NAME) final List<String> showAll,
 			@Context final UriInfo uriInfo) {
+		Map<String, List<String>> queryParams = new HashMap<>();
+		queryParams.put(ResourcePath.EXPAND_QP_KEY, expand);
+		queryParams.put(ResourcePath.SHOWALL_QP_KEY, showAll);
 		RestApiVersion apiVersion = RestUtils.extractAPIVersion(acceptHeader, RestApiVersion.v1);
 
 		if (RestUtils.AUTO_EXPAND_PRIMARY_RESOURCES) {
@@ -124,7 +141,7 @@ public class RoleController extends AbstractBaseController {
 		}
 		Role role = roleRepository.findOne(id);
 		RestUtils.ifNullThen404(role, Role.class, "roleId", id.toString());
-		RoleResource roleResource = new RoleResource(role, uriInfo, expand, apiVersion);
+		RoleResource roleResource = new RoleResource(role, uriInfo, queryParams, apiVersion);
 		return roleResource;
 	}
 
@@ -157,8 +174,12 @@ public class RoleController extends AbstractBaseController {
 	public ReportCollectionResource getReportsForRole(
 			@PathParam("id") final UUID id,
 			@HeaderParam("Accept") final String acceptHeader,
-			@QueryParam("expand") final List<String> expand,
+			@QueryParam(ResourcePath.EXPAND_QP_NAME) final List<String> expand,
+			@QueryParam(ResourcePath.SHOWALL_QP_NAME) final List<String> showAll,
 			@Context final UriInfo uriInfo) {
+		Map<String, List<String>> queryParams = new HashMap<>();
+		queryParams.put(ResourcePath.EXPAND_QP_KEY, expand);
+		queryParams.put(ResourcePath.SHOWALL_QP_KEY, showAll);
 		RestApiVersion apiVersion = RestUtils.extractAPIVersion(acceptHeader, RestApiVersion.v1);
 
 		if (RestUtils.AUTO_EXPAND_PRIMARY_RESOURCES) {
@@ -173,17 +194,17 @@ public class RoleController extends AbstractBaseController {
 		 * 		active Report's but unfiltered ReportVersion's (active or not)?
 		 */
 		List<Report> reports = null;
-		if (RestUtils.FILTER_INACTIVE_RECORDS) {
+		if (RestUtils.FILTER_INACTIVE_RECORDS && !ResourcePath.showAll(Report.class, showAll)) {
 			reports = roleRepository.findActiveReportsByRoleId(role.getRoleId());
 		} else {
 			reports = roleRepository.findReportsByRoleId(role.getRoleId());
 		}
 		List<ReportResource> reportResources = new ArrayList<>(reports.size());
 		for (Report report : reports) {
-			reportResources.add(new ReportResource(report, uriInfo, expand, apiVersion));
+			reportResources.add(new ReportResource(report, uriInfo, queryParams, apiVersion));
 		}
 		//		return reportResources;
-		return new ReportCollectionResource(reportResources, Report.class, uriInfo, expand, apiVersion);
+		return new ReportCollectionResource(reportResources, Report.class, uriInfo, queryParams, apiVersion);
 	}
 
 	/*
@@ -204,26 +225,21 @@ public class RoleController extends AbstractBaseController {
 			@HeaderParam("Accept") final String acceptHeader,
 			@Context final UriInfo uriInfo) {
 		RestApiVersion apiVersion = RestUtils.extractAPIVersion(acceptHeader, RestApiVersion.v1);
-		logger.debug("apiVersion = {}", apiVersion);
-		logger.debug("roleResource = {}", roleResource);
 
 		/*
 		 * Retrieve Role entity to be updated.
 		 */
 		Role role = roleRepository.findOne(id);
 		RestUtils.ifNullThen404(role, Role.class, "roleId", id.toString());
-		logger.debug("role (to be updated) = {}", role);
 		/*
 		 * Ensure that the entity's "id" and "CreatedOn" are not changed.
 		 */
 		roleResource.setRoleId(role.getRoleId());
 		roleResource.setCreatedOn(role.getCreatedOn());
-		logger.debug("roleResource (adjusted) = {}", roleResource);
 		/*
 		 * Save updated entity.
 		 */
 		role = roleService.saveExistingFromResource(roleResource);
-		logger.debug("role (after saveOrUpdateFromResource) = {}", role);
 		return Response.status(Response.Status.OK).build();
 	}
 

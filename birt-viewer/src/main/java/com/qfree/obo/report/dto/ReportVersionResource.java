@@ -63,11 +63,13 @@ public class ReportVersionResource extends AbstractBaseResource {
 	public ReportVersionResource() {
 	}
 
-	public ReportVersionResource(ReportVersion reportVersion, UriInfo uriInfo, List<String> expand,
+	public ReportVersionResource(ReportVersion reportVersion, UriInfo uriInfo, Map<String, List<String>> queryParams,
 			RestApiVersion apiVersion) {
-		super(ReportVersion.class, reportVersion.getReportVersionId(), uriInfo, expand, apiVersion);
 
-		Map<String, List<String>> extraQueryParams = new HashMap<>();
+		super(ReportVersion.class, reportVersion.getReportVersionId(), uriInfo, queryParams, apiVersion);
+
+		List<String> expand = queryParams.get(ResourcePath.EXPAND_QP_KEY);
+
 		String expandParam = ResourcePath.forEntity(ReportVersion.class).getExpandParam();
 		if (expand.contains(expandParam)) {
 			/*
@@ -79,6 +81,12 @@ public class ReportVersionResource extends AbstractBaseResource {
 			 */
 			List<String> expandElementRemoved = new ArrayList<>(expand);
 			expandElementRemoved.remove(expandParam);
+			/*
+			 * Make a copy of the original queryParams Map and then replace the 
+			 * "expand" array with expandElementRemoved.
+			 */
+			Map<String, List<String>> newQueryParams = new HashMap<>(queryParams);
+			newQueryParams.put(ResourcePath.EXPAND_QP_KEY, expandElementRemoved);
 
 			/*
 			 * Clear apiVersion since its current value is not necessarily
@@ -89,7 +97,7 @@ public class ReportVersionResource extends AbstractBaseResource {
 
 			this.reportVersionId = reportVersion.getReportVersionId();
 			this.reportResource = new ReportResource(reportVersion.getReport(),
-					uriInfo, expandElementRemoved, apiVersion);
+					uriInfo, newQueryParams, apiVersion);
 			this.fileName = reportVersion.getFileName();
 			if (expand.contains(ResourcePath.RPTDESIGN_EXPAND_PARAM)) {
 				this.rptdesign = reportVersion.getRptdesign();
@@ -104,7 +112,7 @@ public class ReportVersionResource extends AbstractBaseResource {
 			this.createdOn = reportVersion.getCreatedOn();
 
 			this.reportParameters = new ReportParameterCollectionResource(reportVersion,
-					uriInfo, expandElementRemoved, extraQueryParams, apiVersion);
+					uriInfo, newQueryParams, apiVersion);
 			//			if (reportVersion.getReportParameters() != null) {
 			//
 			//				List<ReportParameter> reportParameters = reportVersion.getReportParameters();
@@ -120,8 +128,8 @@ public class ReportVersionResource extends AbstractBaseResource {
 		}
 	}
 
-	public static List<ReportVersionResource> listFromReport(Report report, UriInfo uriInfo, List<String> expand,
-			Map<String, List<String>> extraQueryParams, RestApiVersion apiVersion) {
+	public static List<ReportVersionResource> listFromReport(Report report, UriInfo uriInfo,
+			Map<String, List<String>> queryParams, RestApiVersion apiVersion) {
 		if (report.getReportVersions() != null) {
 			List<ReportVersion> reportVersions = report.getReportVersions();
 			List<ReportVersionResource> reportVersionResources = new ArrayList<>(reportVersions.size());
@@ -133,7 +141,7 @@ public class ReportVersionResource extends AbstractBaseResource {
 				 */
 				if (reportVersion.isActive() || RestUtils.FILTER_INACTIVE_RECORDS == false) {
 					reportVersionResources.add(
-							new ReportVersionResource(reportVersion, uriInfo, expand, apiVersion));
+							new ReportVersionResource(reportVersion, uriInfo, queryParams, apiVersion));
 				}
 			}
 			return reportVersionResources;

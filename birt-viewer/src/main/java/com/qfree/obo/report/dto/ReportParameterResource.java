@@ -2,6 +2,7 @@ package com.qfree.obo.report.dto;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -62,10 +63,12 @@ public class ReportParameterResource extends AbstractBaseResource {
 	public ReportParameterResource() {
 	}
 
-	public ReportParameterResource(ReportParameter reportParameter, UriInfo uriInfo, List<String> expand,
-			RestApiVersion apiVersion) {
+	public ReportParameterResource(ReportParameter reportParameter, UriInfo uriInfo,
+			Map<String, List<String>> queryParams, RestApiVersion apiVersion) {
 
-		super(ReportParameter.class, reportParameter.getReportParameterId(), uriInfo, expand, apiVersion);
+		super(ReportParameter.class, reportParameter.getReportParameterId(), uriInfo, queryParams, apiVersion);
+
+		List<String> expand = queryParams.get(ResourcePath.EXPAND_QP_KEY);
 
 		String expandParam = ResourcePath.forEntity(ReportParameter.class).getExpandParam();
 		if (expand.contains(expandParam)) {
@@ -78,6 +81,12 @@ public class ReportParameterResource extends AbstractBaseResource {
 			 */
 			List<String> expandElementRemoved = new ArrayList<>(expand);
 			expandElementRemoved.remove(expandParam);
+			/*
+			 * Make a copy of the original queryParams Map and then replace the 
+			 * "expand" array with expandElementRemoved.
+			 */
+			Map<String, List<String>> newQueryParams = new HashMap<>(queryParams);
+			newQueryParams.put(ResourcePath.EXPAND_QP_KEY, expandElementRemoved);
 
 			/*
 			 * Clear apiVersion since its current value is not necessarily
@@ -106,18 +115,18 @@ public class ReportParameterResource extends AbstractBaseResource {
 			this.orderIndex = reportParameter.getOrderIndex();
 			this.createdOn = reportParameter.getCreatedOn();
 			this.reportVersionResource = new ReportVersionResource(reportParameter.getReportVersion(),
-					uriInfo, expandElementRemoved, apiVersion);
+					uriInfo, newQueryParams, apiVersion);
 		}
 	}
 
 	public static List<ReportParameterResource> listFromReportVersion(ReportVersion reportVersion, UriInfo uriInfo,
-			List<String> expand, Map<String, List<String>> extraQueryParams, RestApiVersion apiVersion) {
+			Map<String, List<String>> queryParams, RestApiVersion apiVersion) {
 		if (reportVersion.getReportParameters() != null) {
 			List<ReportParameter> reportParameters = reportVersion.getReportParameters();
 			List<ReportParameterResource> reportParameterResources = new ArrayList<>(reportParameters.size());
 			for (ReportParameter reportParameter : reportParameters) {
 				reportParameterResources.add(
-						new ReportParameterResource(reportParameter, uriInfo, expand, apiVersion));
+						new ReportParameterResource(reportParameter, uriInfo, queryParams, apiVersion));
 			}
 			return reportParameterResources;
 		} else {

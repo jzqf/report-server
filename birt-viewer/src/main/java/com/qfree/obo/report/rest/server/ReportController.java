@@ -84,18 +84,16 @@ public class ReportController extends AbstractBaseController {
 
 		List<Report> reports = null;
 		if (RestUtils.FILTER_INACTIVE_RECORDS && !ResourcePath.showAll(Report.class, showAll)) {
-			logger.info("***** Filtering inactive Reports *****");
 			reports = reportRepository.findByActiveTrue();
 		} else {
-			logger.info("********** NOT filtering inactive Reports **********");
 			reports = reportRepository.findAll();
 		}
 		List<ReportResource> reportResources = new ArrayList<>(reports.size());
 		for (Report report : reports) {
-			reportResources.add(new ReportResource(report, uriInfo, expand, apiVersion));
+			reportResources.add(new ReportResource(report, uriInfo, queryParams, apiVersion));
 		}
 		//		return reportResources;
-		return new ReportCollectionResource(reportResources, Report.class, uriInfo, expand, apiVersion);
+		return new ReportCollectionResource(reportResources, Report.class, uriInfo, queryParams, apiVersion);
 	}
 
 	/*
@@ -113,18 +111,19 @@ public class ReportController extends AbstractBaseController {
 	public Response create(
 			ReportResource reportResource,
 			@HeaderParam("Accept") final String acceptHeader,
-			@QueryParam("expand") final List<String> expand,
+			@QueryParam(ResourcePath.EXPAND_QP_NAME) final List<String> expand,
+			@QueryParam(ResourcePath.SHOWALL_QP_NAME) final List<String> showAll,
 			@Context final UriInfo uriInfo) {
+		Map<String, List<String>> queryParams = new HashMap<>();
+		queryParams.put(ResourcePath.EXPAND_QP_KEY, expand);
+		queryParams.put(ResourcePath.SHOWALL_QP_KEY, showAll);
 		RestApiVersion apiVersion = RestUtils.extractAPIVersion(acceptHeader, RestApiVersion.v1);
-		logger.debug("reportResource = {}", reportResource);
 
 		Report report = reportService.saveNewFromResource(reportResource);
-		logger.debug("report = {}", report);
 		if (RestUtils.AUTO_EXPAND_PRIMARY_RESOURCES) {
 			addToExpandList(expand, Report.class);
 		}
-		ReportResource resource = new ReportResource(report, uriInfo, expand, apiVersion);
-		logger.debug("resource = {}", resource);
+		ReportResource resource = new ReportResource(report, uriInfo, queryParams, apiVersion);
 		return created(resource);
 	}
 
@@ -145,17 +144,20 @@ public class ReportController extends AbstractBaseController {
 	public ReportResource getById(
 			@PathParam("id") final UUID id,
 			@HeaderParam("Accept") final String acceptHeader,
-			@QueryParam("expand") final List<String> expand,
+			@QueryParam(ResourcePath.EXPAND_QP_NAME) final List<String> expand,
+			@QueryParam(ResourcePath.SHOWALL_QP_NAME) final List<String> showAll,
 			@Context final UriInfo uriInfo) {
+		Map<String, List<String>> queryParams = new HashMap<>();
+		queryParams.put(ResourcePath.EXPAND_QP_KEY, expand);
+		queryParams.put(ResourcePath.SHOWALL_QP_KEY, showAll);
 		RestApiVersion apiVersion = RestUtils.extractAPIVersion(acceptHeader, RestApiVersion.v1);
-		logger.debug("expand = {}", expand);
 
 		if (RestUtils.AUTO_EXPAND_PRIMARY_RESOURCES) {
 			addToExpandList(expand, Report.class);
 		}
 		Report report = reportRepository.findOne(id);
 		RestUtils.ifNullThen404(report, Report.class, "reportId", id.toString());
-		ReportResource reportResource = new ReportResource(report, uriInfo, expand, apiVersion);
+		ReportResource reportResource = new ReportResource(report, uriInfo, queryParams, apiVersion);
 		return reportResource;
 	}
 
@@ -184,13 +186,14 @@ public class ReportController extends AbstractBaseController {
 			ReportResource reportResource,
 			@PathParam("id") final UUID id,
 			@HeaderParam("Accept") final String acceptHeader,
-			@QueryParam("expand") final List<String> expand,
+			@QueryParam(ResourcePath.EXPAND_QP_NAME) final List<String> expand,
+			@QueryParam(ResourcePath.SHOWALL_QP_NAME) final List<String> showAll,
 			@Context final ServletContext servletContext,
 			@Context final UriInfo uriInfo) {
+		Map<String, List<String>> queryParams = new HashMap<>();
+		queryParams.put(ResourcePath.EXPAND_QP_KEY, expand);
+		queryParams.put(ResourcePath.SHOWALL_QP_KEY, showAll);
 		RestApiVersion apiVersion = RestUtils.extractAPIVersion(acceptHeader, RestApiVersion.v1);
-		Map<String, List<String>> extraQueryParams = new HashMap<>();
-		//		logger.debug("apiVersion = {}", apiVersion);
-		//		logger.info("reportResource = {}", reportResource);
 
 		/*
 		 * Retrieve Report entity to be updated.
@@ -215,8 +218,8 @@ public class ReportController extends AbstractBaseController {
 		 * This may create or delete files if the report's "active" attribute 
 		 * has been modified.
 		 */
-		ReportSyncResource reportSyncResource = reportSyncService.syncReportsWithFileSystem(servletContext,
-				uriInfo, expand, extraQueryParams, apiVersion);
+		ReportSyncResource reportSyncResource =
+				reportSyncService.syncReportsWithFileSystem(servletContext, uriInfo, queryParams, apiVersion);
 
 		return Response.status(Response.Status.OK).build();
 	}
@@ -239,17 +242,19 @@ public class ReportController extends AbstractBaseController {
 	public ReportVersionCollectionResource getReportVersionsByReportId(
 			@PathParam("id") final UUID id,
 			@HeaderParam("Accept") final String acceptHeader,
-			@QueryParam("expand") final List<String> expand,
+			@QueryParam(ResourcePath.EXPAND_QP_NAME) final List<String> expand,
+			@QueryParam(ResourcePath.SHOWALL_QP_NAME) final List<String> showAll,
 			@Context final UriInfo uriInfo) {
-		Map<String, List<String>> extraQueryParams = new HashMap<>();
+		Map<String, List<String>> queryParams = new HashMap<>();
+		queryParams.put(ResourcePath.EXPAND_QP_KEY, expand);
+		queryParams.put(ResourcePath.SHOWALL_QP_KEY, showAll);
 		RestApiVersion apiVersion = RestUtils.extractAPIVersion(acceptHeader, RestApiVersion.v1);
-		logger.debug("expand = {}", expand);
 
 		if (RestUtils.AUTO_EXPAND_PRIMARY_RESOURCES) {
 			addToExpandList(expand, Report.class);
 		}
 		Report report = reportRepository.findOne(id);
 		RestUtils.ifNullThen404(report, Report.class, "reportId", id.toString());
-		return new ReportVersionCollectionResource(report, uriInfo, expand, extraQueryParams, apiVersion);
+		return new ReportVersionCollectionResource(report, uriInfo, queryParams, apiVersion);
 	}
 }

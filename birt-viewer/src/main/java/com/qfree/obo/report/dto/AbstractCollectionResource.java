@@ -47,14 +47,14 @@ public abstract class AbstractCollectionResource<T extends AbstractBaseResource>
 	}
 
 	public AbstractCollectionResource(List<T> items, Class<?> entityClass,
-			UriInfo uriInfo, List<String> expand, RestApiVersion apiVersion) {
-		this(items, entityClass, null, null, null, uriInfo, expand, apiVersion);
+			UriInfo uriInfo, Map<String, List<String>> queryParams, RestApiVersion apiVersion) {
+		this(items, entityClass, null, null, uriInfo, queryParams, apiVersion);
 	}
 
 	public AbstractCollectionResource(List<T> items, Class<?> entityClass,
-			String baseResourceUri, String collectionPath, Map<String, List<String>> extraQueryParams,
-			UriInfo uriInfo, List<String> expand, RestApiVersion apiVersion) {
-		super(baseResourceUri, collectionPath, extraQueryParams, entityClass, null, uriInfo, expand, apiVersion);
+			String baseResourceUri, String collectionPath,
+			UriInfo uriInfo, Map<String, List<String>> queryParams, RestApiVersion apiVersion) {
+		super(baseResourceUri, collectionPath, entityClass, null, uriInfo, queryParams, apiVersion);
 		//		String expandParam = ResourcePath.forEntity(entityClass).getExpandParam();
 		//		if (expand.contains(expandParam)) {
 		//			this.items = items;

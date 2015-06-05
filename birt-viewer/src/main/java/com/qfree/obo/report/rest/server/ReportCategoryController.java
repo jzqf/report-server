@@ -1,7 +1,9 @@
 package com.qfree.obo.report.rest.server;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import javax.ws.rs.Consumes;
@@ -60,23 +62,27 @@ public class ReportCategoryController extends AbstractBaseController {
 	//	public List<ReportCategoryResource> getList(
 	public ReportCategoryCollectionResource getList(
 			@HeaderParam("Accept") final String acceptHeader,
-			@QueryParam("expand") final List<String> expand,
+			@QueryParam(ResourcePath.EXPAND_QP_NAME) final List<String> expand,
+			@QueryParam(ResourcePath.SHOWALL_QP_NAME) final List<String> showAll,
 			@Context final UriInfo uriInfo) {
+		Map<String, List<String>> queryParams = new HashMap<>();
+		queryParams.put(ResourcePath.EXPAND_QP_KEY, expand);
+		queryParams.put(ResourcePath.SHOWALL_QP_KEY, showAll);
 		RestApiVersion apiVersion = RestUtils.extractAPIVersion(acceptHeader, RestApiVersion.v1);
 
 		List<ReportCategory> reportCategories = null;
-		if (RestUtils.FILTER_INACTIVE_RECORDS) {
+		if (RestUtils.FILTER_INACTIVE_RECORDS && !ResourcePath.showAll(ReportCategory.class, showAll)) {
 			reportCategories = reportCategoryRepository.findByActiveTrue();
 		} else {
 			reportCategories = reportCategoryRepository.findAll();
 		}
 		List<ReportCategoryResource> reportCategoryResources = new ArrayList<>(reportCategories.size());
 		for (ReportCategory reportCategory : reportCategories) {
-			reportCategoryResources.add(new ReportCategoryResource(reportCategory, uriInfo, expand, apiVersion));
+			reportCategoryResources.add(new ReportCategoryResource(reportCategory, uriInfo, queryParams, apiVersion));
 		}
 		//		return reportCategoryResources;
-		return new ReportCategoryCollectionResource(reportCategoryResources, ReportCategory.class, uriInfo, expand,
-				apiVersion);
+		return new ReportCategoryCollectionResource(reportCategoryResources, ReportCategory.class, uriInfo,
+				queryParams, apiVersion);
 	}
 
 	/*
@@ -103,12 +109,19 @@ public class ReportCategoryController extends AbstractBaseController {
 	public Response create(
 			ReportCategoryResource reportCategoryResource,
 			@HeaderParam("Accept") final String acceptHeader,
+			@QueryParam(ResourcePath.EXPAND_QP_NAME) final List<String> expand,
+			@QueryParam(ResourcePath.SHOWALL_QP_NAME) final List<String> showAll,
 			@Context final UriInfo uriInfo) {
+		Map<String, List<String>> queryParams = new HashMap<>();
+		queryParams.put(ResourcePath.EXPAND_QP_KEY, expand);
+		queryParams.put(ResourcePath.SHOWALL_QP_KEY, showAll);
 		RestApiVersion apiVersion = RestUtils.extractAPIVersion(acceptHeader, RestApiVersion.v1);
 
 		ReportCategory reportCategory = reportCategoryService.saveNewFromResource(reportCategoryResource);
-		List<String> expand = newExpandList(ReportCategory.class);	// Force primary resource to be "expanded"
-		ReportCategoryResource resource = new ReportCategoryResource(reportCategory, uriInfo, expand, apiVersion);
+		//	if (RestUtils.AUTO_EXPAND_PRIMARY_RESOURCES) {
+		addToExpandList(expand, ReportCategory.class);  // Force primary resource to be "expanded"
+		//	}
+		ReportCategoryResource resource = new ReportCategoryResource(reportCategory, uriInfo, queryParams, apiVersion);
 		return created(resource);
 	}
 
@@ -125,8 +138,12 @@ public class ReportCategoryController extends AbstractBaseController {
 	public ReportCategoryResource getById(
 			@PathParam("id") final UUID id,
 			@HeaderParam("Accept") final String acceptHeader,
-			@QueryParam("expand") final List<String> expand,
+			@QueryParam(ResourcePath.EXPAND_QP_NAME) final List<String> expand,
+			@QueryParam(ResourcePath.SHOWALL_QP_NAME) final List<String> showAll,
 			@Context final UriInfo uriInfo) {
+		Map<String, List<String>> queryParams = new HashMap<>();
+		queryParams.put(ResourcePath.EXPAND_QP_KEY, expand);
+		queryParams.put(ResourcePath.SHOWALL_QP_KEY, showAll);
 		RestApiVersion apiVersion = RestUtils.extractAPIVersion(acceptHeader, RestApiVersion.v1);
 
 		if (RestUtils.AUTO_EXPAND_PRIMARY_RESOURCES) {
@@ -135,7 +152,7 @@ public class ReportCategoryController extends AbstractBaseController {
 		ReportCategory reportCategory = reportCategoryRepository.findOne(id);
 		RestUtils.ifNullThen404(reportCategory, ReportCategory.class, "reportCategoryId", id.toString());
 		ReportCategoryResource reportCategoryResource =
-				new ReportCategoryResource(reportCategory, uriInfo, expand, apiVersion);
+				new ReportCategoryResource(reportCategory, uriInfo, queryParams, apiVersion);
 		return reportCategoryResource;
 	}
 
@@ -155,28 +172,28 @@ public class ReportCategoryController extends AbstractBaseController {
 			ReportCategoryResource reportCategoryResource,
 			@PathParam("id") final UUID id,
 			@HeaderParam("Accept") final String acceptHeader,
+			@QueryParam(ResourcePath.EXPAND_QP_NAME) final List<String> expand,
+			@QueryParam(ResourcePath.SHOWALL_QP_NAME) final List<String> showAll,
 			@Context final UriInfo uriInfo) {
+		Map<String, List<String>> queryParams = new HashMap<>();
+		queryParams.put(ResourcePath.EXPAND_QP_KEY, expand);
+		queryParams.put(ResourcePath.SHOWALL_QP_KEY, showAll);
 		RestApiVersion apiVersion = RestUtils.extractAPIVersion(acceptHeader, RestApiVersion.v1);
-		logger.debug("apiVersion = {}", apiVersion);
-		logger.debug("reportCategoryResource = {}", reportCategoryResource);
 
 		/*
 		 * Retrieve ReportCategory entity to be updated.
 		 */
 		ReportCategory reportCategory = reportCategoryRepository.findOne(id);
 		RestUtils.ifNullThen404(reportCategory, ReportCategory.class, "reportCategoryId", id.toString());
-		logger.debug("reportCategory (to be updated) = {}", reportCategory);
 		/*
 		 * Ensure that the entity's "id" and "CreatedOn" are not changed.
 		 */
 		reportCategoryResource.setReportCategoryId(reportCategory.getReportCategoryId());
 		reportCategoryResource.setCreatedOn(reportCategory.getCreatedOn());
-		logger.debug("reportCategoryResource (adjusted) = {}", reportCategoryResource);
 		/*
 		 * Save updated entity.
 		 */
 		reportCategory = reportCategoryService.saveExistingFromResource(reportCategoryResource);
-		logger.debug("reportCategory (after saveOrUpdateFromResource) = {}", reportCategory);
 		return Response.status(Response.Status.OK).build();
 	}
 

@@ -88,22 +88,26 @@ public class ReportVersionController extends AbstractBaseController {
 	//	public List<ReportVersionResource> getList(
 	public ReportVersionCollectionResource getList(
 			@HeaderParam("Accept") final String acceptHeader,
-			@QueryParam("expand") final List<String> expand,
+			@QueryParam(ResourcePath.EXPAND_QP_NAME) final List<String> expand,
+			@QueryParam(ResourcePath.SHOWALL_QP_NAME) final List<String> showAll,
 			@Context final UriInfo uriInfo) {
+		Map<String, List<String>> queryParams = new HashMap<>();
+		queryParams.put(ResourcePath.EXPAND_QP_KEY, expand);
+		queryParams.put(ResourcePath.SHOWALL_QP_KEY, showAll);
 		RestApiVersion apiVersion = RestUtils.extractAPIVersion(acceptHeader, RestApiVersion.v1);
 
 		List<ReportVersion> reportVersions = null;
-		if (RestUtils.FILTER_INACTIVE_RECORDS) {
+		if (RestUtils.FILTER_INACTIVE_RECORDS && !ResourcePath.showAll(ReportVersion.class, showAll)) {
 			reportVersions = reportVersionRepository.findByActiveTrue();
 		} else {
 			reportVersions = reportVersionRepository.findAll();
 		}
 		List<ReportVersionResource> reportVersionResources = new ArrayList<>(reportVersions.size());
 		for (ReportVersion reportVersion : reportVersions) {
-			reportVersionResources.add(new ReportVersionResource(reportVersion, uriInfo, expand, apiVersion));
+			reportVersionResources.add(new ReportVersionResource(reportVersion, uriInfo, queryParams, apiVersion));
 		}
 		//		return reportVersionResources;
-		return new ReportVersionCollectionResource(reportVersionResources, ReportVersion.class, uriInfo, expand,
+		return new ReportVersionCollectionResource(reportVersionResources, ReportVersion.class, uriInfo, queryParams,
 				apiVersion);
 	}
 
@@ -129,9 +133,13 @@ public class ReportVersionController extends AbstractBaseController {
 	public Response createByPost(
 			ReportVersionResource reportVersionResource,
 			@HeaderParam("Accept") final String acceptHeader,
-			@QueryParam("expand") final List<String> expand,
+			@QueryParam(ResourcePath.EXPAND_QP_NAME) final List<String> expand,
+			@QueryParam(ResourcePath.SHOWALL_QP_NAME) final List<String> showAll,
 			@Context final ServletContext servletContext,
 			@Context final UriInfo uriInfo) {
+		Map<String, List<String>> queryParams = new HashMap<>();
+		queryParams.put(ResourcePath.EXPAND_QP_KEY, expand);
+		queryParams.put(ResourcePath.SHOWALL_QP_KEY, showAll);
 		RestApiVersion apiVersion = RestUtils.extractAPIVersion(acceptHeader, RestApiVersion.v1);
 
 		ReportVersion reportVersion = reportVersionService.saveNewFromResource(reportVersionResource);
@@ -139,7 +147,7 @@ public class ReportVersionController extends AbstractBaseController {
 			addToExpandList(expand, ReportVersion.class);
 		}
 		ReportVersionResource newReportVersionResource =
-				new ReportVersionResource(reportVersion, uriInfo, expand, apiVersion);
+				new ReportVersionResource(reportVersion, uriInfo, queryParams, apiVersion);
 
 		/*
 		 * Write uploaded rptdesign file to the file system of the report 
@@ -170,10 +178,14 @@ public class ReportVersionController extends AbstractBaseController {
 			@FormDataParam("file") InputStream uploadedInputStream,
 			@FormDataParam("file") FormDataContentDisposition fileDetail,
 			@HeaderParam("Accept") final String acceptHeader,
-			@QueryParam("expand") final List<String> expand,
+			@QueryParam(ResourcePath.EXPAND_QP_NAME) final List<String> expand,
+			@QueryParam(ResourcePath.SHOWALL_QP_NAME) final List<String> showAll,
 			@Context final ServletContext servletContext,
 			@Context final ServletConfig servletConfig,
 			@Context final UriInfo uriInfo) {
+		Map<String, List<String>> queryParams = new HashMap<>();
+		queryParams.put(ResourcePath.EXPAND_QP_KEY, expand);
+		queryParams.put(ResourcePath.SHOWALL_QP_KEY, showAll);
 		RestApiVersion apiVersion = RestUtils.extractAPIVersion(acceptHeader, RestApiVersion.v1);
 
 		logger.debug("servletContext.getContextPath() = {}", servletContext.getContextPath());
@@ -227,7 +239,7 @@ public class ReportVersionController extends AbstractBaseController {
 			if (RestUtils.AUTO_EXPAND_PRIMARY_RESOURCES) {
 				addToExpandList(expand, ReportVersion.class);
 			}
-			reportVersionResource = new ReportVersionResource(reportVersion, uriInfo, expand, apiVersion);
+			reportVersionResource = new ReportVersionResource(reportVersion, uriInfo, queryParams, apiVersion);
 			logger.info("reportVersionResource = {}", reportVersionResource);
 
 			/*
@@ -265,10 +277,13 @@ public class ReportVersionController extends AbstractBaseController {
 	public ReportVersionResource getById(
 			@PathParam("id") final UUID id,
 			@HeaderParam("Accept") final String acceptHeader,
-			@QueryParam("expand") final List<String> expand,
+			@QueryParam(ResourcePath.EXPAND_QP_NAME) final List<String> expand,
+			@QueryParam(ResourcePath.SHOWALL_QP_NAME) final List<String> showAll,
 			@Context final UriInfo uriInfo) {
+		Map<String, List<String>> queryParams = new HashMap<>();
+		queryParams.put(ResourcePath.EXPAND_QP_KEY, expand);
+		queryParams.put(ResourcePath.SHOWALL_QP_KEY, showAll);
 		RestApiVersion apiVersion = RestUtils.extractAPIVersion(acceptHeader, RestApiVersion.v1);
-		logger.debug("expand = {}", expand);
 
 		if (RestUtils.AUTO_EXPAND_PRIMARY_RESOURCES) {
 			addToExpandList(expand, ReportVersion.class);
@@ -276,7 +291,7 @@ public class ReportVersionController extends AbstractBaseController {
 		ReportVersion reportVersion = reportVersionRepository.findOne(id);
 		RestUtils.ifNullThen404(reportVersion, ReportVersion.class, "reportVersionId", id.toString());
 		ReportVersionResource reportVersionResource = new ReportVersionResource(reportVersion,
-				uriInfo, expand, apiVersion);
+				uriInfo, queryParams, apiVersion);
 		return reportVersionResource;
 	}
 
@@ -314,11 +329,14 @@ public class ReportVersionController extends AbstractBaseController {
 			ReportVersionResource reportVersionResource,
 			@PathParam("id") final UUID id,
 			@HeaderParam("Accept") final String acceptHeader,
-			@QueryParam("expand") final List<String> expand,
+			@QueryParam(ResourcePath.EXPAND_QP_NAME) final List<String> expand,
+			@QueryParam(ResourcePath.SHOWALL_QP_NAME) final List<String> showAll,
 			@Context final ServletContext servletContext,
 			@Context final UriInfo uriInfo) {
+		Map<String, List<String>> queryParams = new HashMap<>();
+		queryParams.put(ResourcePath.EXPAND_QP_KEY, expand);
+		queryParams.put(ResourcePath.SHOWALL_QP_KEY, showAll);
 		RestApiVersion apiVersion = RestUtils.extractAPIVersion(acceptHeader, RestApiVersion.v1);
-		Map<String, List<String>> extraQueryParams = new HashMap<>();
 
 		/*
 		 * Retrieve ReportVersion entity to be updated.
@@ -340,7 +358,7 @@ public class ReportVersionController extends AbstractBaseController {
 		 * the "rptdesign" definitions stored in the report server's database.
 		 */
 		ReportSyncResource reportSyncResource = reportSyncService.syncReportsWithFileSystem(servletContext,
-				uriInfo, expand, extraQueryParams, apiVersion);
+				uriInfo, queryParams, apiVersion);
 
 		return Response.status(Response.Status.OK).build();
 	}
@@ -363,17 +381,19 @@ public class ReportVersionController extends AbstractBaseController {
 	public ReportParameterCollectionResource getReportParametersByReportVersionId(
 			@PathParam("id") final UUID id,
 			@HeaderParam("Accept") final String acceptHeader,
-			@QueryParam("expand") final List<String> expand,
+			@QueryParam(ResourcePath.EXPAND_QP_NAME) final List<String> expand,
+			@QueryParam(ResourcePath.SHOWALL_QP_NAME) final List<String> showAll,
 			@Context final UriInfo uriInfo) {
-		Map<String, List<String>> extraQueryParams = new HashMap<>();
+		Map<String, List<String>> queryParams = new HashMap<>();
+		queryParams.put(ResourcePath.EXPAND_QP_KEY, expand);
+		queryParams.put(ResourcePath.SHOWALL_QP_KEY, showAll);
 		RestApiVersion apiVersion = RestUtils.extractAPIVersion(acceptHeader, RestApiVersion.v1);
-		logger.debug("expand = {}", expand);
 
 		if (RestUtils.AUTO_EXPAND_PRIMARY_RESOURCES) {
 			addToExpandList(expand, Report.class);
 		}
 		ReportVersion reportVersion = reportVersionRepository.findOne(id);
 		RestUtils.ifNullThen404(reportVersion, ReportVersion.class, "reportVersionId", id.toString());
-		return new ReportParameterCollectionResource(reportVersion, uriInfo, expand, extraQueryParams, apiVersion);
+		return new ReportParameterCollectionResource(reportVersion, uriInfo, queryParams, apiVersion);
 	}
 }

@@ -53,11 +53,13 @@ public class ReportResource extends AbstractBaseResource {
 	public ReportResource() {
 	}
 
-	public ReportResource(Report report, UriInfo uriInfo, List<String> expand, RestApiVersion apiVersion) {
+	public ReportResource(Report report, UriInfo uriInfo, Map<String, List<String>> queryParams,
+			RestApiVersion apiVersion) {
 
-		super(Report.class, report.getReportId(), uriInfo, expand, apiVersion);
+		super(Report.class, report.getReportId(), uriInfo, queryParams, apiVersion);
 
-		Map<String, List<String>> extraQueryParams = new HashMap<>();
+		List<String> expand = queryParams.get(ResourcePath.EXPAND_QP_KEY);
+
 		String expandParam = ResourcePath.forEntity(Report.class).getExpandParam();
 		if (expand.contains(expandParam)) {
 			/*
@@ -69,6 +71,12 @@ public class ReportResource extends AbstractBaseResource {
 			 */
 			List<String> expandElementRemoved = new ArrayList<>(expand);
 			expandElementRemoved.remove(expandParam);
+			/*
+			 * Make a copy of the original queryParams Map and then replace the 
+			 * "expand" array with expandElementRemoved.
+			 */
+			Map<String, List<String>> newQueryParams = new HashMap<>(queryParams);
+			newQueryParams.put(ResourcePath.EXPAND_QP_KEY, expandElementRemoved);
 
 			/*
 			 * Set the API version to null for any/all constructors for 
@@ -84,7 +92,7 @@ public class ReportResource extends AbstractBaseResource {
 
 			this.reportId = report.getReportId();
 			this.reportCategoryResource = new ReportCategoryResource(report.getReportCategory(),
-					uriInfo, expandElementRemoved, apiVersion);
+					uriInfo, newQueryParams, apiVersion);
 			this.name = report.getName();
 			this.number = report.getNumber();
 			this.active = report.isActive();
@@ -94,7 +102,7 @@ public class ReportResource extends AbstractBaseResource {
 			logger.info("report.getReportVersions() = {}", report.getReportVersions());
 
 			this.reportVersions = new ReportVersionCollectionResource(report,
-					uriInfo, expandElementRemoved, extraQueryParams, apiVersion);
+					uriInfo, newQueryParams, apiVersion);
 
 			//		this.roleReports = report.getRoleReports();
 		}

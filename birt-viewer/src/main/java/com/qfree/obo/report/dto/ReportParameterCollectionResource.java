@@ -27,39 +27,38 @@ public class ReportParameterCollectionResource extends AbstractCollectionResourc
 	}
 
 	public ReportParameterCollectionResource(ReportVersion reportVersion, UriInfo uriInfo,
-			List<String> expand, Map<String, List<String>> extraQueryParams, RestApiVersion apiVersion) {
+			Map<String, List<String>> queryParams, RestApiVersion apiVersion) {
 		this(
-				ReportParameterResource.listFromReportVersion(reportVersion,
-						uriInfo, expand, extraQueryParams, apiVersion),
+				ReportParameterResource.listFromReportVersion(reportVersion, uriInfo, queryParams, apiVersion),
 				ReportParameter.class,
 				AbstractBaseResource.createHref(uriInfo, ReportVersion.class, reportVersion.getReportVersionId(), null),
 				ResourcePath.REPORTPARAMETERS_PATH,
-				extraQueryParams, uriInfo, expand, apiVersion);
+				uriInfo, queryParams, apiVersion);
 	}
 
 	public ReportParameterCollectionResource(List<ReportParameterResource> items, Class<?> entityClass,
-			UriInfo uriInfo, List<String> expand, RestApiVersion apiVersion) {
+			UriInfo uriInfo, Map<String, List<String>> queryParams, RestApiVersion apiVersion) {
 		//
 		//		super(items, entityClass, uriInfo, expand, apiVersion);  // if class extends AbstractCollectionResource<ReportParameterResource>
 		//		//super(entityClass, null, uriInfo, expand, apiVersion);  // if class extends AbstractBaseResource
 		//
-		//		String expandParam = ResourcePath.forEntity(entityClass).getExpandParam();
-		//		if (expand.contains(expandParam)) {
+		//		List<String> expand = queryParams.get(ResourcePath.EXPAND_QP_KEY);
+		//		if (ResourcePath.expand(entityClass, expand)) {
 		//			this.items = items;
 		//		}
-		this(items, entityClass, null, null, null, uriInfo, expand, apiVersion);
+		this(items, entityClass, null, null, uriInfo, queryParams, apiVersion);
 	}
 
 	public ReportParameterCollectionResource(List<ReportParameterResource> items, Class<?> entityClass,
-			String baseResourceUri, String collectionPath, Map<String, List<String>> extraQueryParams,
-			UriInfo uriInfo, List<String> expand, RestApiVersion apiVersion) {
+			String baseResourceUri, String collectionPath,
+			UriInfo uriInfo, Map<String, List<String>> queryParams, RestApiVersion apiVersion) {
 
-		super(items, entityClass, baseResourceUri, collectionPath, extraQueryParams, uriInfo, expand, apiVersion);  // if class extends AbstractCollectionResource<ReportVersionResource>
+		super(items, entityClass, baseResourceUri, collectionPath, uriInfo, queryParams, apiVersion);  // if class extends AbstractCollectionResource<ReportVersionResource>
 		//super(items, entityClass, uriInfo, expand, apiVersion);  // if class extends AbstractCollectionResource<ReportVersionResource>
 		//super(entityClass, null, uriInfo, expand, apiVersion);  // if class extends AbstractBaseResource
 
-		String expandParam = ResourcePath.forEntity(entityClass).getExpandParam();
-		if (expand.contains(expandParam)) {
+		List<String> expand = queryParams.get(ResourcePath.EXPAND_QP_KEY);
+		if (ResourcePath.expand(entityClass, expand)) {
 			this.items = items;
 		}
 	}

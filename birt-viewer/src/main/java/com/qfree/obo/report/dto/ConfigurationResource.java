@@ -2,7 +2,9 @@ package com.qfree.obo.report.dto;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import javax.ws.rs.core.UriInfo;
@@ -40,10 +42,12 @@ public class ConfigurationResource extends AbstractBaseResource {
 	public ConfigurationResource() {
 	}
 
-	public ConfigurationResource(Configuration configuration, UriInfo uriInfo, List<String> expand,
-			RestApiVersion apiVersion) {
+	public ConfigurationResource(Configuration configuration, UriInfo uriInfo,
+			Map<String, List<String>> queryParams, RestApiVersion apiVersion) {
 
-		super(Configuration.class, configuration.getConfigurationId(), uriInfo, expand, apiVersion);
+		super(Configuration.class, configuration.getConfigurationId(), uriInfo, queryParams, apiVersion);
+
+		List<String> expand = queryParams.get(ResourcePath.EXPAND_QP_KEY);
 
 		String expandParam = ResourcePath.forEntity(Configuration.class).getExpandParam();
 		if (expand.contains(expandParam)) {
@@ -56,6 +60,12 @@ public class ConfigurationResource extends AbstractBaseResource {
 			 */
 			List<String> expandElementRemoved = new ArrayList<>(expand);
 			expandElementRemoved.remove(expandParam);
+			/*
+			 * Make a copy of the original queryParams Map and then replace the 
+			 * "expand" array with expandElementRemoved.
+			 */
+			Map<String, List<String>> newQueryParams = new HashMap<>(queryParams);
+			newQueryParams.put(ResourcePath.EXPAND_QP_KEY, expandElementRemoved);
 
 			/*
 			 * Clear apiVersion since its current value is not necessarily

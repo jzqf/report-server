@@ -23,6 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.qfree.obo.report.db.ReportRepository;
 import com.qfree.obo.report.dto.ReportSyncResource;
+import com.qfree.obo.report.dto.ResourcePath;
 import com.qfree.obo.report.rest.server.RestUtils.RestApiVersion;
 import com.qfree.obo.report.service.ReportSyncService;
 import com.qfree.obo.report.util.ReportUtils;
@@ -58,7 +59,12 @@ public class ReportSyncController extends AbstractBaseController {
 	@Produces(MediaType.TEXT_PLAIN)
 	public int getList(
 			@HeaderParam("Accept") final String acceptHeader,
+			@QueryParam(ResourcePath.EXPAND_QP_NAME) final List<String> expand,
+			@QueryParam(ResourcePath.SHOWALL_QP_NAME) final List<String> showAll,
 			@Context final UriInfo uriInfo) {
+		Map<String, List<String>> queryParams = new HashMap<>();
+		queryParams.put(ResourcePath.EXPAND_QP_KEY, expand);
+		queryParams.put(ResourcePath.SHOWALL_QP_KEY, showAll);
 		RestApiVersion apiVersion = RestUtils.extractAPIVersion(acceptHeader, RestApiVersion.v1);
 
 		return ReportUtils.reportSyncSemaphore.availablePermits();
@@ -83,13 +89,15 @@ public class ReportSyncController extends AbstractBaseController {
 	@Produces(MediaType.APPLICATION_JSON)
 	public ReportSyncResource syncReportsWithFileSystem(
 			@HeaderParam("Accept") final String acceptHeader,
-			@QueryParam("expand") final List<String> expand,
+			@QueryParam(ResourcePath.EXPAND_QP_NAME) final List<String> expand,
+			@QueryParam(ResourcePath.SHOWALL_QP_NAME) final List<String> showAll,
 			@Context final ServletContext servletContext,
 			@Context final UriInfo uriInfo) {
+		Map<String, List<String>> queryParams = new HashMap<>();
+		queryParams.put(ResourcePath.EXPAND_QP_KEY, expand);
+		queryParams.put(ResourcePath.SHOWALL_QP_KEY, showAll);
 		RestApiVersion apiVersion = RestUtils.extractAPIVersion(acceptHeader, RestApiVersion.v1);
-		Map<String, List<String>> extraQueryParams = new HashMap<>();
 
-		return reportSyncService.syncReportsWithFileSystem(servletContext,
-				uriInfo, expand, extraQueryParams, apiVersion);
+		return reportSyncService.syncReportsWithFileSystem(servletContext, uriInfo, queryParams, apiVersion);
 	}
 }

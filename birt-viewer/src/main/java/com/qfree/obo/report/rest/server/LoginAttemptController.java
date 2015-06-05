@@ -1,12 +1,15 @@
 package com.qfree.obo.report.rest.server;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.HeaderParam;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.UriInfo;
@@ -18,6 +21,7 @@ import org.springframework.stereotype.Component;
 
 import com.qfree.obo.report.db.RoleRepository;
 import com.qfree.obo.report.domain.Role;
+import com.qfree.obo.report.dto.ResourcePath;
 import com.qfree.obo.report.dto.RestErrorResource.RestError;
 import com.qfree.obo.report.dto.RoleResource;
 import com.qfree.obo.report.exceptions.RestApiException;
@@ -80,7 +84,12 @@ public class LoginAttemptController extends AbstractBaseController {
 	public RoleResource authenticate(
 			RoleResource roleResource,
 			@HeaderParam("Accept") final String acceptHeader,
+			@QueryParam(ResourcePath.EXPAND_QP_NAME) final List<String> expand,
+			@QueryParam(ResourcePath.SHOWALL_QP_NAME) final List<String> showAll,
 			@Context final UriInfo uriInfo) {
+		Map<String, List<String>> queryParams = new HashMap<>();
+		queryParams.put(ResourcePath.EXPAND_QP_KEY, expand);
+		queryParams.put(ResourcePath.SHOWALL_QP_KEY, showAll);
 		RestApiVersion apiVersion = RestUtils.extractAPIVersion(acceptHeader, RestApiVersion.v1);
 		logger.info("apiVersion = {}", apiVersion);
 		/*
@@ -97,8 +106,10 @@ public class LoginAttemptController extends AbstractBaseController {
 				logger.debug("role = {}", role);
 				if (role.getEncodedPassword().equals(roleResource.getEncodedPassword())) {
 
-					List<String> expand = newExpandList(Role.class);  // Force primary resource to be "expanded"
-					RoleResource resource = new RoleResource(role, uriInfo, expand, apiVersion);
+					//	if (RestUtils.AUTO_EXPAND_PRIMARY_RESOURCES) {
+					addToExpandList(expand, Role.class);  // Force primary resource to be "expanded"
+					//	}
+					RoleResource resource = new RoleResource(role, uriInfo, queryParams, apiVersion);
 					return resource;
 
 				} else {
