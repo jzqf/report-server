@@ -57,10 +57,10 @@ public class Widget implements Serializable {
 	private String description;
 
 	@Column(name = "multiple_select", nullable = false)
-	private boolean multipleSelect;
+	private Boolean multipleSelect;
 
 	@Column(name = "active", nullable = false)
-	private boolean active;
+	private Boolean active;
 
 	@OneToMany(targetEntity = ReportParameter.class, mappedBy = "widget")
 	private List<ReportParameter> reportParameters;
@@ -72,19 +72,23 @@ public class Widget implements Serializable {
 	private Widget() {
 	}
 
-	public Widget(String description, String name, boolean multipleSelect) {
+	public Widget(String description, String name, Boolean multipleSelect) {
 		this(description, name, multipleSelect, true, DateUtils.nowUtc());
 	}
 
-	public Widget(String description, String name, boolean multipleSelect, boolean active) {
+	public Widget(String description, String name, Boolean multipleSelect, Boolean active) {
 		this(description, name, multipleSelect, active, DateUtils.nowUtc());
 	}
 
-	public Widget(String description, String name, boolean multipleSelect, boolean active, Date createdOn) {
+	public Widget(String description, String name, Boolean multipleSelect, Boolean active, Date createdOn) {
 		this.description = description;
 		this.name = name;
 		this.multipleSelect = multipleSelect;
-		this.active = active;
+		if (active != null) {
+			this.active = active;
+		} else {
+			this.active = true;
+		}
 		if (createdOn != null) {
 			this.createdOn = createdOn;
 		} else {
@@ -112,19 +116,19 @@ public class Widget implements Serializable {
 		this.name = name;
 	}
 
-	public boolean isMultipleSelect() {
+	public Boolean isMultipleSelect() {
 		return multipleSelect;
 	}
 
-	public void setMultipleSelect(boolean multipleSelect) {
+	public void setMultipleSelect(Boolean multipleSelect) {
 		this.multipleSelect = multipleSelect;
 	}
 
-	public boolean isActive() {
+	public Boolean isActive() {
 		return active;
 	}
 
-	public void setActive(boolean active) {
+	public void setActive(Boolean active) {
 		this.active = active;
 	}
 

@@ -55,7 +55,7 @@ public class ReportCategory implements Serializable {
 	private String description;
 
 	@Column(name = "active", nullable = false)
-	private boolean active;
+	private Boolean active;
 
 	@OneToMany(targetEntity = Report.class, mappedBy = "reportCategory")
 	private List<Report> reports;
@@ -71,11 +71,11 @@ public class ReportCategory implements Serializable {
 		this(null, description, abbreviation, true, DateUtils.nowUtc());
 	}
 
-	public ReportCategory(String description, String abbreviation, boolean active) {
+	public ReportCategory(String description, String abbreviation, Boolean active) {
 		this(null, description, abbreviation, active, DateUtils.nowUtc());
 	}
 
-	public ReportCategory(String description, String abbreviation, boolean active, Date createdOn) {
+	public ReportCategory(String description, String abbreviation, Boolean active, Date createdOn) {
 		this(null, description, abbreviation, active, createdOn);
 	}
 
@@ -85,14 +85,19 @@ public class ReportCategory implements Serializable {
 				reportCategoryResource.getDescription(),
 				reportCategoryResource.getAbbreviation(),
 				reportCategoryResource.isActive(),
+				//				(reportCategoryResource.isActive() != null) ? reportCategoryResource.isActive() : true,
 				reportCategoryResource.getCreatedOn());
 	}
 
-	public ReportCategory(UUID reportCategoryId, String description, String abbreviation, boolean active, Date createdOn) {
+	public ReportCategory(UUID reportCategoryId, String description, String abbreviation, Boolean active, Date createdOn) {
 		this.reportCategoryId = reportCategoryId;
 		this.description = description;
 		this.abbreviation = abbreviation;
-		this.active = active;
+		if (active != null) {
+			this.active = active;
+		} else {
+			this.active = true;
+		}
 		if (createdOn != null) {
 			this.createdOn = createdOn;
 		} else {
@@ -120,11 +125,11 @@ public class ReportCategory implements Serializable {
 		this.abbreviation = abbreviation;
 	}
 
-	public boolean isActive() {
+	public Boolean isActive() {
 		return active;
 	}
 
-	public void setActive(boolean active) {
+	public void setActive(Boolean active) {
 		this.active = active;
 	}
 

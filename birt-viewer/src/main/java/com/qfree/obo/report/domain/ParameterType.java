@@ -66,7 +66,7 @@ public class ParameterType implements Serializable {
 	private List<ReportParameter> reportParameters;
 
 	@Column(name = "active", nullable = false)
-	private boolean active;
+	private Boolean active;
 
 	@Column(name = "created_on", nullable = false)
 	private Date createdOn;
@@ -78,14 +78,18 @@ public class ParameterType implements Serializable {
 		this(description, abbreviation, true, DateUtils.nowUtc());
 	}
 
-	public ParameterType(String description, String abbreviation, boolean active) {
+	public ParameterType(String description, String abbreviation, Boolean active) {
 		this(description, abbreviation, active, DateUtils.nowUtc());
 	}
 
-	public ParameterType(String description, String abbreviation, boolean active, Date createdOn) {
+	public ParameterType(String description, String abbreviation, Boolean active, Date createdOn) {
 		this.description = description;
 		this.abbreviation = abbreviation;
-		this.active = active;
+		if (active != null) {
+			this.active = active;
+		} else {
+			this.active = true;
+		}
 		if (createdOn != null) {
 			this.createdOn = createdOn;
 		} else {
@@ -121,11 +125,11 @@ public class ParameterType implements Serializable {
 		this.reportParameters = reportParameters;
 	}
 
-	public boolean isActive() {
+	public Boolean isActive() {
 		return active;
 	}
 
-	public void setActive(boolean active) {
+	public void setActive(Boolean active) {
 		this.active = active;
 	}
 

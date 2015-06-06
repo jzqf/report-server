@@ -109,10 +109,10 @@ public class DocumentFormat implements Serializable {
 	 * of [job].
 	 */
 	@Column(name = "binary_data", nullable = false)
-	private boolean binaryData;
+	private Boolean binaryData;
 
 	@Column(name = "active", nullable = false)
-	private boolean active;
+	private Boolean active;
 
 	//	@OneToMany(targetEntity = Subscription.class, mappedBy = "documentFormat")
 	//	private List<Subscription> subscriptions;
@@ -124,23 +124,27 @@ public class DocumentFormat implements Serializable {
 	private DocumentFormat() {
 	}
 
-	public DocumentFormat(String name, String fileExtension, String mediaType, String birtFormat, boolean binary) {
+	public DocumentFormat(String name, String fileExtension, String mediaType, String birtFormat, Boolean binary) {
 		this(name, fileExtension, mediaType, birtFormat, binary, true, DateUtils.nowUtc());
 	}
 
-	public DocumentFormat(String name, String fileExtension, String mediaType, String birtFormat, boolean binary,
-			boolean active) {
+	public DocumentFormat(String name, String fileExtension, String mediaType, String birtFormat, Boolean binary,
+			Boolean active) {
 		this(name, fileExtension, mediaType, birtFormat, binary, active, DateUtils.nowUtc());
 	}
 
-	public DocumentFormat(String name, String fileExtension, String mediaType, String birtFormat, boolean binary,
-			boolean active, Date createdOn) {
+	public DocumentFormat(String name, String fileExtension, String mediaType, String birtFormat, Boolean binary,
+			Boolean active, Date createdOn) {
 		this.name = name;
 		this.fileExtension = fileExtension;
 		this.mediaType = mediaType;
 		this.birtFormat = birtFormat;
 		this.binaryData = binary;
-		this.active = active;
+		if (active != null) {
+			this.active = active;
+		} else {
+			this.active = true;
+		}
 		if (createdOn != null) {
 			this.createdOn = createdOn;
 		} else {
@@ -184,19 +188,19 @@ public class DocumentFormat implements Serializable {
 		this.birtFormat = birtFormat;
 	}
 
-	public boolean isBinaryData() {
+	public Boolean isBinaryData() {
 		return binaryData;
 	}
 
-	public void setBinaryData(boolean binary) {
+	public void setBinaryData(Boolean binary) {
 		this.binaryData = binary;
 	}
 
-	public boolean isActive() {
+	public Boolean isActive() {
 		return active;
 	}
 
-	public void setActive(boolean active) {
+	public void setActive(Boolean active) {
 		this.active = active;
 	}
 

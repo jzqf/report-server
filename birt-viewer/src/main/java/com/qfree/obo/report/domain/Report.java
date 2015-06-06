@@ -120,7 +120,7 @@ public class Report implements Serializable {
 	//	private String rptdesign;
 
 	@Column(name = "active", nullable = false)
-	private boolean active;
+	private Boolean active;
 
 	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name = "created_on", nullable = false)
@@ -129,11 +129,11 @@ public class Report implements Serializable {
 	private Report() {
 	}
 
-	public Report(ReportCategory reportCategory, String name, Integer number, boolean active) {
+	public Report(ReportCategory reportCategory, String name, Integer number, Boolean active) {
 		this(reportCategory, name, number, active, DateUtils.nowUtc());
 	}
 
-	public Report(ReportCategory reportCategory, String name, Integer number, boolean active, Date createdOn) {
+	public Report(ReportCategory reportCategory, String name, Integer number, Boolean active, Date createdOn) {
 		this(null, reportCategory, name, number, active, createdOn);
 	}
 
@@ -147,13 +147,17 @@ public class Report implements Serializable {
 				reportResource.getCreatedOn());
 	}
 
-	public Report(UUID reportId, ReportCategory reportCategory, String name, Integer number, boolean active,
+	public Report(UUID reportId, ReportCategory reportCategory, String name, Integer number, Boolean active,
 			Date createdOn) {
 		this.reportId = reportId;
 		this.reportCategory = reportCategory;
 		this.name = name;
 		this.number = number;
-		this.active = active;
+		if (active != null) {
+			this.active = active;
+		} else {
+			this.active = true;
+		}
 		if (createdOn != null) {
 			this.createdOn = createdOn;
 		} else {
@@ -181,11 +185,11 @@ public class Report implements Serializable {
 		this.number = number;
 	}
 
-	public boolean isActive() {
+	public Boolean isActive() {
 		return active;
 	}
 
-	public void setActive(boolean active) {
+	public void setActive(Boolean active) {
 		this.active = active;
 	}
 

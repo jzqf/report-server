@@ -134,7 +134,7 @@ public class ReportVersion implements Serializable {
 	private Integer versionCode;
 
 	@Column(name = "active", nullable = false)
-	private boolean active;
+	private Boolean active;
 
 	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name = "created_on", nullable = false)
@@ -149,13 +149,13 @@ public class ReportVersion implements Serializable {
 			String rptdesign,
 			String versionName,
 			Integer versionCode,
-			boolean active,
+			Boolean active,
 			Date createdOn) {
 		this(null, report, fileName, rptdesign, versionName, versionCode, active, createdOn);
 	}
 
 	public ReportVersion(Report report, String fileName, String rptdesign, String versionName, Integer versionCode,
-			boolean active) {
+			Boolean active) {
 		this(null, report, fileName, rptdesign, versionName, versionCode, active, DateUtils.nowUtc());
 	}
 
@@ -172,14 +172,18 @@ public class ReportVersion implements Serializable {
 	}
 
 	public ReportVersion(UUID reportVersionId, Report report, String fileName, String rptdesign,
-			String versionName, Integer versionCode, boolean active, Date createdOn) {
+			String versionName, Integer versionCode, Boolean active, Date createdOn) {
 		this.reportVersionId = reportVersionId;
 		this.report = report;
 		this.fileName = fileName;
 		this.rptdesign = rptdesign;
 		this.versionName = versionName;
 		this.versionCode = versionCode;
-		this.active = active;
+		if (active != null) {
+			this.active = active;
+		} else {
+			this.active = true;
+		}
 		if (createdOn != null) {
 			this.createdOn = createdOn;
 		} else {
@@ -255,11 +259,11 @@ public class ReportVersion implements Serializable {
 		this.versionCode = versionCode;
 	}
 
-	public boolean isActive() {
+	public Boolean isActive() {
 		return active;
 	}
 
-	public void setActive(boolean active) {
+	public void setActive(Boolean active) {
 		this.active = active;
 	}
 
