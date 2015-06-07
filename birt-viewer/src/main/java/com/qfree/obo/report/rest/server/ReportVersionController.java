@@ -40,6 +40,7 @@ import com.qfree.obo.report.db.ReportVersionRepository;
 import com.qfree.obo.report.domain.Report;
 import com.qfree.obo.report.domain.ReportVersion;
 import com.qfree.obo.report.dto.ReportParameterCollectionResource;
+import com.qfree.obo.report.dto.ReportResource;
 import com.qfree.obo.report.dto.ReportSyncResource;
 import com.qfree.obo.report.dto.ReportVersionCollectionResource;
 import com.qfree.obo.report.dto.ReportVersionResource;
@@ -142,6 +143,25 @@ public class ReportVersionController extends AbstractBaseController {
 		queryParams.put(ResourcePath.SHOWALL_QP_KEY, showAll);
 		RestApiVersion apiVersion = RestUtils.extractAPIVersion(acceptHeader, RestApiVersion.v1);
 
+		/*
+		 * If no value for versionCode was provided, we compute a value for 
+		 * it. To do this, we first need to ensure that a value of reportId was
+		 * submitted.
+		 */
+		if (reportVersionResource.getVersionCode() == null) {
+			ReportResource reportResource = reportVersionResource.getReportResource();
+			UUID reportId = reportResource.getReportId();
+			if (reportId != null) {
+				Report report = reportRepository.findOne(reportId);
+				RestUtils.ifNullThen404(report, Report.class, "reportId", reportId.toString());
+				reportVersionResource.setVersionCode(reportVersionService.nextVersionCode(report));
+				logger.info("value computed for versionCode = {}", reportVersionResource.getVersionCode());
+			} else {
+				throw new RestApiException(RestError.FORBIDDEN_REPORTVERSION_REPORT_NULL, ReportVersion.class,
+						"reportId");
+			}
+		}
+
 		ReportVersion reportVersion = reportVersionService.saveNewFromResource(reportVersionResource);
 		if (RestUtils.AUTO_EXPAND_PRIMARY_RESOURCES) {
 			addToExpandList(expand, ReportVersion.class);
@@ -188,23 +208,27 @@ public class ReportVersionController extends AbstractBaseController {
 		queryParams.put(ResourcePath.SHOWALL_QP_KEY, showAll);
 		RestApiVersion apiVersion = RestUtils.extractAPIVersion(acceptHeader, RestApiVersion.v1);
 
-		logger.debug("servletContext.getContextPath() = {}", servletContext.getContextPath());
-		logger.debug("servletContext.getRealPath(\"\") = {}", servletContext.getRealPath(""));
-		logger.debug("servletContext.getRealPath(\"/\") = {}", servletContext.getRealPath("/"));
+		logger.info("reportName = {}", reportName);
+		logger.info("versionName = {}", versionName);
+		logger.info("versionCode = {}", versionCode);
+
+		logger.info("servletContext.getContextPath() = {}", servletContext.getContextPath());
+		logger.info("servletContext.getRealPath(\"\") = {}", servletContext.getRealPath(""));
+		logger.info("servletContext.getRealPath(\"/\") = {}", servletContext.getRealPath("/"));
 
 		Enumeration<String> servletContextinitParamEnum = servletContext.getInitParameterNames();
 		while (servletContextinitParamEnum.hasMoreElements()) {
 			String servletContextInitParamName = servletContextinitParamEnum.nextElement();
-			logger.debug("servletContextInitParamName = {}", servletContextInitParamName);
+			logger.info("servletContextInitParamName = {}", servletContextInitParamName);
 		}
 		logger.info("BIRT_VIEWER_WORKING_FOLDER = {}", servletContext.getInitParameter("BIRT_VIEWER_WORKING_FOLDER"));
 
 		Enumeration<String> servletConfigInitParamEnum = servletConfig.getInitParameterNames();
 		while (servletConfigInitParamEnum.hasMoreElements()) {
 			String servletConfigInitParamName = servletConfigInitParamEnum.nextElement();
-			logger.debug("servletConfigInitParamName = {}", servletConfigInitParamName);
+			logger.info("servletConfigInitParamName = {}", servletConfigInitParamName);
 		}
-		logger.debug("javax.ws.rs.Application = {}", servletConfig.getInitParameter("javax.ws.rs.Application"));
+		logger.info("javax.ws.rs.Application = {}", servletConfig.getInitParameter("javax.ws.rs.Application"));
 
 		ReportVersionResource reportVersionResource = null;
 		try {
@@ -219,10 +243,8 @@ public class ReportVersionController extends AbstractBaseController {
 				}
 			}
 			String rptdesign = rptdesignStringBuilder.toString();
-
-			RestUtils.ifAttrNullOrBlankThen403(versionName, ReportVersion.class, "versionName");
-			RestUtils.ifAttrNullOrBlankThen403(versionCode, ReportVersion.class, "versionCode");
 			RestUtils.ifAttrNullOrBlankThen403(rptdesign, ReportVersion.class, "rptdesign");
+			RestUtils.ifAttrNullOrBlankThen403(versionName, ReportVersion.class, "versionName");
 
 			RestUtils.ifNotValidXmlThen403(rptdesign,
 					String.format("The uploaded document '%s' is not valid XML", fileDetail.getFileName()),
@@ -231,6 +253,16 @@ public class ReportVersionController extends AbstractBaseController {
 			Report report = reportRepository.findByName(reportName);
 			RestUtils.ifNullThen404(report, Report.class, "name", reportName);
 			logger.info("report = {}", report);
+
+			/*
+			 * If no value for versionCode was provided, we compute a value for 
+			 * it.
+			 */
+			if (versionCode == null) {
+				versionCode = reportVersionService.nextVersionCode(report);
+				logger.info("value computed for versionCode = {}", versionCode);
+			}
+			RestUtils.ifAttrNullOrBlankThen403(versionCode, ReportVersion.class, "versionCode");
 
 			ReportVersion reportVersion = new ReportVersion(report, fileDetail.getFileName(),
 					rptdesignStringBuilder.toString(), versionName, versionCode, true);

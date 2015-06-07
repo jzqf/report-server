@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import com.qfree.obo.report.domain.Report;
 import com.qfree.obo.report.domain.ReportVersion;
 
 /**
@@ -28,5 +29,8 @@ public interface ReportVersionRepository extends JpaRepository<ReportVersion, UU
 	//	@Query("SELECT rv FROM ReportVersion rv INNER JOIN rv.report r WHERE r.reportId = :reportId AND rv.active=true")
 	@Query("SELECT rv FROM Report r INNER JOIN r.reportVersions rv WHERE r.reportId = :reportId AND rv.active=true")
 	public List<ReportVersion> findActiveByReportId(@Param("reportId") UUID reportId);
+
+	@Query("SELECT MAX(rv.versionCode) FROM Report r INNER JOIN r.reportVersions rv WHERE r = :report")
+	public Integer maxVersionCodeForReport(@Param("report") Report report);
 
 }

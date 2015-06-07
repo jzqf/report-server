@@ -25,7 +25,6 @@ public class ReportVersionService {
 	private static final Logger logger = LoggerFactory.getLogger(ReportVersionService.class);
 
 	private final ReportVersionRepository reportVersionRepository;
-
 	private final ReportRepository reportRepository;
 
 	@Autowired
@@ -92,8 +91,32 @@ public class ReportVersionService {
 		return reportVersion;
 	}
 
-	//	@Transactional
-	//	public String test() {
-	//		return "This was returned from test()!";
-	//	}
+	/**
+	 * Returns the a value to assign to the "versionCode" field of the next
+	 * Report Version for a specified Report. This will be the maximum value
+	 * of "versionCode" for all Report Versions linked to the specified Report,
+	 * incremented by one.
+	 * 
+	 * @param report
+	 * @return
+	 */
+	@Transactional
+	public Integer nextVersionCode(Report report) {
+		return reportVersionRepository.maxVersionCodeForReport(report) + 1;
+	}
+
+	/**
+	 * Returns the a value to assign to the "versionCode" field of the next
+	 * Report Version for a specified Report. This will be the maximum value
+	 * of "versionCode" for all Report Versions linked to the specified Report,
+	 * incremented by one.
+	 * 
+	 * @param report
+	 * @return
+	 */
+	@Transactional
+	public Integer nextVersionCode(UUID reportId) {
+		Report report = reportRepository.findOne(reportId);
+		return nextVersionCode(report);
+	}
 }

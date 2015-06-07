@@ -102,6 +102,16 @@ public class ReportVersionRepositoryTests {
 
 	@Test
 	@Transactional
+	public void maxVersionCodeForReport() {
+		UUID uuidOfReport04 = UUID.fromString("702d5daa-e23d-4f00-b32b-67b44c06d8f6");
+		Report report04 = reportRepository.findOne(uuidOfReport04);
+		assertThat(report04, is(not(nullValue())));
+		assertThat(report04.getReportId().toString(), is(equalTo(uuidOfReport04.toString())));
+		assertThat(reportVersionRepository.maxVersionCodeForReport(report04), is(2));
+	}
+
+	@Test
+	@Transactional
 	public void saveNew() {
 		/*
 		 * ReportVersion attributes for creating a new ReportVersion.
