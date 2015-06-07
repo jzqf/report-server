@@ -169,11 +169,7 @@ public class ReportParameter implements Serializable {
 		this.required = required;
 		this.multivalued = multivalued;
 		this.orderIndex = orderIndex;
-		if (createdOn != null) {
-			this.createdOn = createdOn;
-		} else {
-			this.createdOn = DateUtils.nowUtc();
-		}
+		this.createdOn = (createdOn != null) ? createdOn : DateUtils.nowUtc();
 	}
 
 	public UUID getReportParameterId() {

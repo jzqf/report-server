@@ -135,11 +135,7 @@ public class Role implements Serializable {
 		this.username = username;
 		this.fullName = fullName;
 		this.encodedPassword = encodedPassword;
-		if (createdOn != null) {
-			this.createdOn = createdOn;
-		} else {
-			this.createdOn = DateUtils.nowUtc();
-		}
+		this.createdOn = (createdOn != null) ? createdOn : DateUtils.nowUtc();
 	}
 
 	public UUID getRoleId() {

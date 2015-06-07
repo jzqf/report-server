@@ -185,11 +185,7 @@ public class Configuration implements Serializable {
 		this.paramName = paramName;
 		this.role = role;
 		this.paramType = paramType;
-		if (createdOn != null) {
-			this.createdOn = createdOn;
-		} else {
-			this.createdOn = DateUtils.nowUtc();
-		}
+		this.createdOn = (createdOn != null) ? createdOn : DateUtils.nowUtc();
 	}
 
 	public UUID getConfigurationId() {

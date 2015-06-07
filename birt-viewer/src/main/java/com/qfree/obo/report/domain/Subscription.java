@@ -152,11 +152,7 @@ public class Subscription implements Serializable {
 		this.runOnceAt = runOnceAt;
 		this.email = email;
 		this.description = description;
-		if (createdOn != null) {
-			this.createdOn = createdOn;
-		} else {
-			this.createdOn = DateUtils.nowUtc();
-		}
+		this.createdOn = (createdOn != null) ? createdOn : DateUtils.nowUtc();
 	}
 
 	public UUID getSubscriptionId() {

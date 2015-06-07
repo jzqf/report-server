@@ -128,11 +128,7 @@ public class SubscriptionParameterValue implements Serializable {
 		this.subscription = subscription;
 		this.reportParameter = reportParameter;
 		this.stringValue = stringValue;
-		if (createdOn != null) {
-			this.createdOn = createdOn;
-		} else {
-			this.createdOn = DateUtils.nowUtc();
-		}
+		this.createdOn = (createdOn != null) ? createdOn : DateUtils.nowUtc();
 	}
 
 	public Subscription getSubscription() {

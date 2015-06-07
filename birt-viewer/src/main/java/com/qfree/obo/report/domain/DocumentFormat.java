@@ -140,16 +140,8 @@ public class DocumentFormat implements Serializable {
 		this.mediaType = mediaType;
 		this.birtFormat = birtFormat;
 		this.binaryData = binary;
-		if (active != null) {
-			this.active = active;
-		} else {
-			this.active = true;
-		}
-		if (createdOn != null) {
-			this.createdOn = createdOn;
-		} else {
-			this.createdOn = DateUtils.nowUtc();
-		}
+		this.active = (active != null) ? active : true;
+		this.createdOn = (createdOn != null) ? createdOn : DateUtils.nowUtc();
 	}
 
 	public UUID getDocumentFormatId() {

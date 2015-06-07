@@ -171,11 +171,7 @@ public class Job implements Serializable {
 		this.fileName = fileName;
 		this.document = document;
 		this.encoded = encoded;
-		if (createdOn != null) {
-			this.createdOn = createdOn;
-		} else {
-			this.createdOn = DateUtils.nowUtc();
-		}
+		this.createdOn = (createdOn != null) ? createdOn : DateUtils.nowUtc();
 	}
 
 	public Long getJobId() {

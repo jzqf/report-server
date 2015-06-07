@@ -106,11 +106,7 @@ public class JobParameterValue implements Serializable {
 		this.job = job;
 		this.reportParameter = reportParameter;
 		this.stringValue = stringValue;
-		if (createdOn != null) {
-			this.createdOn = createdOn;
-		} else {
-			this.createdOn = DateUtils.nowUtc();
-		}
+		this.createdOn = (createdOn != null) ? createdOn : DateUtils.nowUtc();
 	}
 
 	public Job getJob() {

@@ -86,11 +86,7 @@ public class RoleReport implements Serializable {
 	public RoleReport(Role role, Report report, Date createdOn) {
 		this.role = role;
 		this.report = report;
-		if (createdOn != null) {
-			this.createdOn = createdOn;
-		} else {
-			this.createdOn = DateUtils.nowUtc();
-		}
+		this.createdOn = (createdOn != null) ? createdOn : DateUtils.nowUtc();
 	}
 
 	public UUID getRoleRoleId() {

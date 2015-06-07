@@ -179,16 +179,8 @@ public class ReportVersion implements Serializable {
 		this.rptdesign = rptdesign;
 		this.versionName = versionName;
 		this.versionCode = versionCode;
-		if (active != null) {
-			this.active = active;
-		} else {
-			this.active = true;
-		}
-		if (createdOn != null) {
-			this.createdOn = createdOn;
-		} else {
-			this.createdOn = DateUtils.nowUtc();
-		}
+		this.active = (active != null) ? active : true;
+		this.createdOn = (createdOn != null) ? createdOn : DateUtils.nowUtc();
 	}
 
 	public UUID getReportVersionId() {

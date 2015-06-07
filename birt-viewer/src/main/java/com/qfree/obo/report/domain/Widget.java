@@ -84,16 +84,8 @@ public class Widget implements Serializable {
 		this.description = description;
 		this.name = name;
 		this.multipleSelect = multipleSelect;
-		if (active != null) {
-			this.active = active;
-		} else {
-			this.active = true;
-		}
-		if (createdOn != null) {
-			this.createdOn = createdOn;
-		} else {
-			this.createdOn = DateUtils.nowUtc();
-		}
+		this.active = (active != null) ? active : true;
+		this.createdOn = (createdOn != null) ? createdOn : DateUtils.nowUtc();
 	}
 
 	public UUID getWidgetId() {
