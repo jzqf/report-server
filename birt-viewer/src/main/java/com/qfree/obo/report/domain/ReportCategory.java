@@ -18,6 +18,7 @@ import javax.validation.constraints.NotNull;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;
+import org.hibernate.validator.constraints.NotBlank;
 
 import com.qfree.obo.report.dto.ReportCategoryResource;
 import com.qfree.obo.report.util.DateUtils;
@@ -48,18 +49,22 @@ public class ReportCategory implements Serializable {
 			columnDefinition = "uuid DEFAULT uuid_generate_v4()")
 	private UUID reportCategoryId;
 
+	@NotBlank
 	@Column(name = "abbreviation", nullable = false, length = 32)
 	private String abbreviation;
 
+	@NotBlank
 	@Column(name = "description", nullable = false, length = 32)
 	private String description;
 
+	@NotNull
 	@Column(name = "active", nullable = false)
 	private Boolean active;
 
 	@OneToMany(targetEntity = Report.class, mappedBy = "reportCategory")
 	private List<Report> reports;
 
+	@NotNull
 	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name = "created_on", nullable = false)
 	private Date createdOn;

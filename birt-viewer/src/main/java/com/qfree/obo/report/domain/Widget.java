@@ -18,6 +18,7 @@ import javax.validation.constraints.NotNull;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;
+import org.hibernate.validator.constraints.NotBlank;
 
 import com.qfree.obo.report.util.DateUtils;
 
@@ -50,21 +51,26 @@ public class Widget implements Serializable {
 			columnDefinition = "uuid DEFAULT uuid_generate_v4()")
 	private UUID widgetId;
 
+	@NotBlank
 	@Column(name = "name", nullable = false, length = 32)
 	private String name;
 
+	@NotBlank
 	@Column(name = "description", nullable = false, length = 80)
 	private String description;
 
+	@NotNull
 	@Column(name = "multiple_select", nullable = false)
 	private Boolean multipleSelect;
 
+	@NotNull
 	@Column(name = "active", nullable = false)
 	private Boolean active;
 
 	@OneToMany(targetEntity = ReportParameter.class, mappedBy = "widget")
 	private List<ReportParameter> reportParameters;
 
+	@NotNull
 	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name = "created_on", nullable = false)
 	private Date createdOn;

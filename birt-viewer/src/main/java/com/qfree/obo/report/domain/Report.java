@@ -18,10 +18,12 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.validation.constraints.NotNull;
 
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;
+import org.hibernate.validator.constraints.NotBlank;
 
 import com.qfree.obo.report.dto.ReportResource;
 import com.qfree.obo.report.util.DateUtils;
@@ -44,6 +46,7 @@ public class Report implements Serializable {
 	//	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	//	@Column(name = "report_id", unique = true, nullable = false)
 	//	private Long reportId;
+	@NotNull
 	@Type(type = "uuid-custom")
 	//	@Type(type = "pg-uuid")
 	@GeneratedValue(generator = "uuid2")
@@ -59,14 +62,17 @@ public class Report implements Serializable {
 	 * PostgreSQL column definition includes "DEFAULT uuid_generate_v4()", which
 	 * is not what is wanted.
 	 */
+	@NotNull
 	@JoinColumn(name = "report_category_id", nullable = false,
 			foreignKey = @ForeignKey(name = "fk_report_reportcategory"),
 			columnDefinition = "uuid")
 	private ReportCategory reportCategory;
 
+	@NotBlank
 	@Column(name = "name", nullable = false, length = 80)
 	private String name;
 
+	@NotNull
 	@Column(name = "number", nullable = false)
 	private Integer number;
 
@@ -116,12 +122,15 @@ public class Report implements Serializable {
 	//	 * testing with the embedded H2 database unless we temporarily set 
 	//	 * columnDefinition = "clob".
 	//	 */
+	//  @NotBlank
 	//	@Column(name = "rptdesign", nullable = false, columnDefinition = "text")
 	//	private String rptdesign;
 
+	@NotNull
 	@Column(name = "active", nullable = false)
 	private Boolean active;
 
+	@NotNull
 	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name = "created_on", nullable = false)
 	private Date createdOn;

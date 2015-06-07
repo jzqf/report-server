@@ -121,10 +121,12 @@ public class Configuration implements Serializable {
 			columnDefinition = "uuid")
 	private Role role;
 
+	@NotNull
 	@Column(name = "param_name", nullable = false, length = 64)
 	@Enumerated(EnumType.STRING)
 	private ParamName paramName;
 
+	@NotNull
 	@Column(name = "param_type", nullable = false, length = 16)
 	@Enumerated(EnumType.STRING)
 	private ParamType paramType;
@@ -165,6 +167,7 @@ public class Configuration implements Serializable {
 	@Column(name = "time_value", nullable = true)
 	private Date timeValue;
 
+	@NotNull
 	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name = "created_on", nullable = false)
 	private Date createdOn;

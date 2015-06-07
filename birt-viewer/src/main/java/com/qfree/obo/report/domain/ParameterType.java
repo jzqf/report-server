@@ -16,6 +16,7 @@ import javax.validation.constraints.NotNull;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;
+import org.hibernate.validator.constraints.NotBlank;
 
 import com.qfree.obo.report.util.DateUtils;
 
@@ -56,18 +57,22 @@ public class ParameterType implements Serializable {
 			columnDefinition = "uuid DEFAULT uuid_generate_v4()")
 	private UUID parameterTypeId;
 
+	@NotBlank
 	@Column(name = "abbreviation", nullable = false, length = 32)
 	private String abbreviation;
 
+	@NotBlank
 	@Column(name = "description", nullable = false, length = 32)
 	private String description;
 
 	@OneToMany(targetEntity = ReportParameter.class, mappedBy = "parameterType")
 	private List<ReportParameter> reportParameters;
 
+	@NotNull
 	@Column(name = "active", nullable = false)
 	private Boolean active;
 
+	@NotNull
 	@Column(name = "created_on", nullable = false)
 	private Date createdOn;
 

@@ -23,6 +23,7 @@ import javax.validation.constraints.NotNull;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;
+import org.hibernate.validator.constraints.NotBlank;
 
 import com.qfree.obo.report.util.DateUtils;
 
@@ -60,9 +61,11 @@ public class ReportParameter implements Serializable {
 	 * in a URL when requesting a report. It is used to provide one or more
 	 * values for the parameter. 
 	 */
+	@NotBlank
 	@Column(name = "name", nullable = false, length = 32)
 	private String name;
 
+	@NotBlank
 	@Column(name = "description", nullable = false, length = 80)
 	private String description;
 
@@ -72,12 +75,15 @@ public class ReportParameter implements Serializable {
 	 * is checked, the widget for entering a value should be disabled to 
 	 * indicate that no value can be entered.
 	 */
+	@NotNull
 	@Column(name = "required", nullable = false)
 	private Boolean required;
 
+	@NotNull
 	@Column(name = "multivalued", nullable = false)
 	private Boolean multivalued;
 
+	@NotNull
 	@Column(name = "order_index", nullable = false)
 	private Integer orderIndex;
 
@@ -88,6 +94,7 @@ public class ReportParameter implements Serializable {
 	 * PostgreSQL column definition includes "DEFAULT uuid_generate_v4()", which
 	 * is not what is wanted.
 	 */
+	@NotNull
 	@JoinColumn(name = "report_version_id", nullable = false,
 			foreignKey = @ForeignKey(name = "fk_reportparameter_report"),
 			columnDefinition = "uuid")
@@ -104,6 +111,7 @@ public class ReportParameter implements Serializable {
 	 * PostgreSQL column definition includes "DEFAULT uuid_generate_v4()", which
 	 * is not what is wanted.
 	 */
+	@NotNull
 	@JoinColumn(name = "parameter_type_id", nullable = false,
 			foreignKey = @ForeignKey(name = "fk_reportparameter_parametertype"),
 			columnDefinition = "uuid")
@@ -116,6 +124,7 @@ public class ReportParameter implements Serializable {
 	 * PostgreSQL column definition includes "DEFAULT uuid_generate_v4()", which
 	 * is not what is wanted.
 	 */
+	@NotNull
 	@JoinColumn(name = "widget_id", nullable = false,
 			foreignKey = @ForeignKey(name = "fk_reportparameter_widget"),
 			columnDefinition = "uuid")
@@ -145,6 +154,7 @@ public class ReportParameter implements Serializable {
 	@OneToMany(mappedBy = "reportParameter", cascade = CascadeType.ALL)
 	private List<JobParameterValue> jobParameterValues;
 
+	@NotNull
 	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name = "created_on", nullable = false)
 	private Date createdOn;

@@ -18,6 +18,7 @@ import javax.validation.constraints.NotNull;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;
+import org.hibernate.validator.constraints.NotBlank;
 
 import com.qfree.obo.report.util.DateUtils;
 
@@ -65,6 +66,7 @@ public class DocumentFormat implements Serializable {
 	 *   ...
 	 * <pre>
 	 */
+	@NotBlank
 	@Column(name = "name", nullable = false, length = 32)
 	private String name;
 
@@ -79,6 +81,7 @@ public class DocumentFormat implements Serializable {
 	 *   ...
 	 * <pre>
 	 */
+	@NotBlank
 	@Column(name = "file_extension", nullable = false, length = 12)
 	private String fileExtension;
 
@@ -93,6 +96,7 @@ public class DocumentFormat implements Serializable {
 	 *   ...
 	 * <pre>
 	 */
+	@NotBlank
 	@Column(name = "media_type", nullable = false, length = 100)
 	private String mediaType;
 
@@ -100,6 +104,7 @@ public class DocumentFormat implements Serializable {
 	 * The value assigned to the BIRT "__format" URL query parameter in order
 	 * to request that a report be delivered in the specified format.
 	 */
+	@NotBlank
 	@Column(name = "birt_format", nullable = false, length = 12)
 	private String birtFormat;
 
@@ -108,15 +113,18 @@ public class DocumentFormat implements Serializable {
 	 * must be Base64 encoded in order to store it in the "document" text column
 	 * of [job].
 	 */
+	@NotNull
 	@Column(name = "binary_data", nullable = false)
 	private Boolean binaryData;
 
+	@NotNull
 	@Column(name = "active", nullable = false)
 	private Boolean active;
 
 	//	@OneToMany(targetEntity = Subscription.class, mappedBy = "documentFormat")
 	//	private List<Subscription> subscriptions;
 
+	@NotNull
 	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name = "created_on", nullable = false)
 	private Date createdOn;

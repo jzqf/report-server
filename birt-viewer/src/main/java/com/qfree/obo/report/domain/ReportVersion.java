@@ -63,6 +63,7 @@ public class ReportVersion implements Serializable {
 	 * PostgreSQL column definition includes "DEFAULT uuid_generate_v4()", which
 	 * is not what is wanted.
 	 */
+	@NotNull
 	@JoinColumn(name = "report_id", nullable = false,
 			foreignKey = @ForeignKey(name = "fk_reportversion_report"),
 			columnDefinition = "uuid")
@@ -133,9 +134,11 @@ public class ReportVersion implements Serializable {
 	@Column(name = "version_code", nullable = false)
 	private Integer versionCode;
 
+	@NotNull
 	@Column(name = "active", nullable = false)
 	private Boolean active;
 
+	@NotNull
 	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name = "created_on", nullable = false)
 	private Date createdOn;

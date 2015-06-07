@@ -1,5 +1,6 @@
 package com.qfree.obo.report.exceptions;
 
+import javax.validation.ConstraintViolationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
@@ -31,17 +32,36 @@ public class GenericExceptionMapper implements ExceptionMapper<Throwable> {
 
 		logger.error("An exception was thrown. Exception = ", ex);
 
-		RestErrorResource restErrorResource = new RestErrorResource(RestError.INTERNAL_SERVER_ERROR,
-				ex.getMessage(), ex);
+		/*
+		 * Work through the chain of exceptions to reach the "root" cause.
+		 */
+		Throwable cause = ex.getCause();
+		Throwable rootCause = cause;
+		while (cause != null) {
+			rootCause = cause;
+			logger.debug("cause.getMessage() = {}", cause.getMessage());
+			logger.debug("cause.getClass() = {}", cause.getClass());
+			cause = cause.getCause();
+		}
 
-		return Response.status(RestError.INTERNAL_SERVER_ERROR.getResponseStatus().getStatusCode()).
+		/*
+		 * If we recognize the root cause of the exception, we return a 
+		 * RestErrorResource that is customized for it; otherwise, we return
+		 * a generic "500.0" error code.
+		 */
+		RestErrorResource restErrorResource = null;
+		RestError restError = null;
+		if ((rootCause != null) && (rootCause.getClass().equals(ConstraintViolationException.class))) {
+			restError = RestError.FORBIDDEN_VALIDATION_ERROR;
+			restErrorResource = new RestErrorResource(restError, rootCause.getMessage(), ex);
+		} else {
+			restError = RestError.INTERNAL_SERVER_ERROR;
+			restErrorResource = new RestErrorResource(restError, ex.getMessage(), ex);
+		}
+
+		return Response.status(restError.getResponseStatus().getStatusCode()).
 				entity(restErrorResource).
 				type(MediaType.APPLICATION_JSON_TYPE).
 				build();
-
-		//return Response.status(404).
-		//		entity(ex.getMessage()).
-		//		type("text/plain").
-		//		build();
 	}
 }

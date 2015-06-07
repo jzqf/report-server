@@ -19,6 +19,8 @@ import com.qfree.obo.report.exceptions.GenericExceptionMapper;
 public class JAXRSConfiguration extends ResourceConfig {
 	public JAXRSConfiguration() {
 
+		//property(ServerProperties.BV_SEND_ERROR_IN_RESPONSE, true);
+
 		/*
 		 * This is for Java API for JSON Processing (JSON-P), so it doesn't do 
 		 * anything for JSON generated via MOXy.

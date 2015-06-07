@@ -166,6 +166,8 @@ public class RestErrorResource {
 		FORBIDDEN_XML_NOT_VALID(Response.Status.FORBIDDEN, "403.6", "The XML is not well formed", null),
 		FORBIDDEN_ATTRIBUTE_NULL_OR_BLANK(Response.Status.FORBIDDEN, "403.7",
 				"An attribute is null or blank when it should not be", null),
+		FORBIDDEN_VALIDATION_ERROR(Response.Status.FORBIDDEN, "403.8",
+				"An attribute violates a validation constraint", null),
 		/**
 		 * {@code 404 Not Found}.
 		 * @see <a href="http://tools.ietf.org/html/rfc2616#section-10.4.5">HTTP/1.1</a>

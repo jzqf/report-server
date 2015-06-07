@@ -58,6 +58,7 @@ public class SubscriptionParameterValue implements Serializable {
 	 * PostgreSQL column definition includes "DEFAULT uuid_generate_v4()", which
 	 * is not what is wanted.
 	 */
+	@NotNull
 	@JoinColumn(name = "subscription_id", nullable = false,
 			foreignKey = @ForeignKey(name = "fk_subscriptionparametervalue_subscription"),
 			columnDefinition = "uuid")
@@ -70,6 +71,7 @@ public class SubscriptionParameterValue implements Serializable {
 	 * PostgreSQL column definition includes "DEFAULT uuid_generate_v4()", which
 	 * is not what is wanted.
 	 */
+	@NotNull
 	@JoinColumn(name = "report_parameter_id", nullable = false,
 			foreignKey = @ForeignKey(name = "fk_subscriptionparametervalue_reportparameter"),
 			columnDefinition = "uuid")
@@ -112,6 +114,7 @@ public class SubscriptionParameterValue implements Serializable {
 	@Column(name = "days_relative", nullable = true)
 	private Integer daysRelative;
 
+	@NotNull
 	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name = "created_on", nullable = false)
 	private Date createdOn;

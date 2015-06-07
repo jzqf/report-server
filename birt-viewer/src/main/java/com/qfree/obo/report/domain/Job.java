@@ -17,6 +17,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.validation.constraints.NotNull;
 
 import com.qfree.obo.report.util.DateUtils;
 
@@ -36,6 +37,7 @@ public class Job implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
+	//@NotNull <-- No, this should not be used
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "job_id", unique = true, nullable = false)
 	private Long jobId;
@@ -58,6 +60,7 @@ public class Job implements Serializable {
 	//			foreignKey = @ForeignKey(name = "fk_job_report"),
 	//			columnDefinition = "uuid")
 	//	private Report report;
+	@NotNull
 	@JoinColumn(name = "report_version_id", nullable = false,
 			foreignKey = @ForeignKey(name = "fk_job_report"),
 			columnDefinition = "uuid")
@@ -70,6 +73,7 @@ public class Job implements Serializable {
 	 * PostgreSQL column definition includes "DEFAULT uuid_generate_v4()", which
 	 * is not what is wanted.
 	 */
+	@NotNull
 	@JoinColumn(name = "role_id", nullable = false,
 			foreignKey = @ForeignKey(name = "fk_job_role"),
 			columnDefinition = "uuid")
@@ -87,6 +91,7 @@ public class Job implements Serializable {
 	 * 
 	 * TODO How to determine documentFormat for a report run manually (not from a Subscription)?
 	 */
+	@NotNull
 	@JoinColumn(name = "document_format_id", nullable = false,
 			foreignKey = @ForeignKey(name = "fk_job_documentformat"),
 			columnDefinition = "uuid")
@@ -146,6 +151,7 @@ public class Job implements Serializable {
 	@Column(name = "encoded", nullable = true)
 	private Boolean encoded;
 
+	@NotNull
 	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name = "created_on", nullable = false)
 	private Date createdOn;
