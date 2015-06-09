@@ -132,7 +132,7 @@ public class RoleControllerTests {
 		 * Retrieve the RoleResource via HTTP GET.
 		 */
 		response = webTarget.path(path)
-				.queryParam("expand", ResourcePath.ROLE_EXPAND_PARAM)
+				.queryParam(ResourcePath.EXPAND_QP_NAME, ResourcePath.ROLE_EXPAND_PARAM)
 				.request()
 				.header("Accept", MediaType.APPLICATION_JSON + ";v=" + defaultVersionGet)
 				.get();
@@ -340,7 +340,7 @@ public class RoleControllerTests {
 		 * Retrieve the RoleResource that was updated via HTTP GET.
 		 */
 		response = webTarget.path(path)
-				.queryParam("expand", ResourcePath.ROLE_EXPAND_PARAM)
+				.queryParam(ResourcePath.EXPAND_QP_NAME, ResourcePath.ROLE_EXPAND_PARAM)
 				.request()
 				.header("Accept", MediaType.APPLICATION_JSON + ";v=" + defaultVersionGet)
 				.get();
@@ -422,7 +422,9 @@ public class RoleControllerTests {
 		 * Retrieve the RoleResource via HTTP GET.
 		 */
 		response = webTarget.path(path)
-				.queryParam("expand", ResourcePath.REPORT_EXPAND_PARAM, ResourcePath.REPORTVERSION_EXPAND_PARAM)
+				.queryParam(ResourcePath.EXPAND_QP_NAME,
+						ResourcePath.REPORT_EXPAND_PARAM,
+						ResourcePath.REPORTVERSION_EXPAND_PARAM)
 				.request()
 				.header("Accept", MediaType.APPLICATION_JSON + ";v=" + defaultApiVersion)
 				.get();
@@ -430,7 +432,6 @@ public class RoleControllerTests {
 		ReportCollectionResource reportCollectionResource = response.readEntity(ReportCollectionResource.class);
 		logger.debug("reportCollectionResource = {}", reportCollectionResource);
 		assertThat(reportCollectionResource, is(not(nullValue())));
-		System.out.println("\n\n\n\nroleCollectionResource = " + reportCollectionResource);
 		assertThat(reportCollectionResource.getItems(), is(not(nullValue())));
 		/*
 		 * Note:	This will change after I enable inheritance of report access
@@ -462,7 +463,6 @@ public class RoleControllerTests {
 		reportCollectionResource = response.readEntity(ReportCollectionResource.class);
 		logger.debug("reportCollectionResource = {}", reportCollectionResource);
 		assertThat(reportCollectionResource, is(not(nullValue())));
-		System.out.println("\n\n\n\nroleCollectionResource = " + reportCollectionResource);
 		assertThat(reportCollectionResource.getItems(), is(not(nullValue())));
 		/*
 		 * Note:	This will change after I enable inheritance of report access

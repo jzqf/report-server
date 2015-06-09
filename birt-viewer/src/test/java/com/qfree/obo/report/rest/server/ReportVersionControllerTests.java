@@ -176,7 +176,7 @@ public class ReportVersionControllerTests {
 				// .path(ResourcePath.REPORTS_PATH)
 				.path(ResourcePath.forEntity(ReportVersion.class).getPath())
 				// See comments above why these query parameters are necessary here:
-				.queryParam("expand",
+				.queryParam(ResourcePath.EXPAND_QP_NAME,
 						ResourcePath.REPORTVERSION_EXPAND_PARAM,
 						ResourcePath.RPTDESIGN_EXPAND_PARAM,
 						ResourcePath.REPORT_EXPAND_PARAM,
@@ -378,7 +378,7 @@ public class ReportVersionControllerTests {
 		 */
 		response = webTarget.path(path)
 				// See comments above why these query parameters are necessary here:
-				.queryParam("expand",
+				.queryParam(ResourcePath.EXPAND_QP_NAME,
 						ResourcePath.REPORTVERSION_EXPAND_PARAM,
 						ResourcePath.REPORT_EXPAND_PARAM,
 						ResourcePath.REPORTPARAMETER_EXPAND_PARAM)
@@ -579,7 +579,7 @@ public class ReportVersionControllerTests {
 				 * hurt to uncomment this line here now, but it is not 
 				 * currently necessary to do this.
 				 */
-				// .queryParam("expand", "reportVersion", "report")
+				// .queryParam(ResourcePath.EXPAND_QP_NAME, "reportVersion", "report")
 				.request()
 				.header("Accept", MediaType.APPLICATION_JSON + ";v=" + defaultVersionPut)
 				.put(Entity.entity(reportVersionResource, MediaType.APPLICATION_JSON_TYPE));
@@ -602,7 +602,7 @@ public class ReportVersionControllerTests {
 		 */
 		response = webTarget.path(path)
 				// See comments above why these query parameters are necessary here:
-				.queryParam("expand",
+				.queryParam(ResourcePath.EXPAND_QP_NAME,
 						ResourcePath.REPORTVERSION_EXPAND_PARAM,
 						ResourcePath.RPTDESIGN_EXPAND_PARAM,
 						ResourcePath.REPORT_EXPAND_PARAM,

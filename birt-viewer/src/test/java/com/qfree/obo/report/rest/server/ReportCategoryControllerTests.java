@@ -234,7 +234,7 @@ public class ReportCategoryControllerTests {
 		 * Retrieve the ReportCategoryResource that was updated via HTTP GET.
 		 */
 		response = webTarget.path(path)
-				.queryParam("expand", ResourcePath.REPORTCATEGORY_EXPAND_PARAM)
+				.queryParam(ResourcePath.EXPAND_QP_NAME, ResourcePath.REPORTCATEGORY_EXPAND_PARAM)
 				.request()
 				.header("Accept", MediaType.APPLICATION_JSON + ";v=" + defaultVersionGet)
 				.get();

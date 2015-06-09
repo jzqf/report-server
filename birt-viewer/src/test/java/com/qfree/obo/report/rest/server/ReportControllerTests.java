@@ -156,7 +156,8 @@ public class ReportControllerTests {
 				// .path(ResourcePath.REPORTS_PATH)
 				.path(ResourcePath.forEntity(Report.class).getPath())
 				// See comments above why these query parameters are necessary here:
-				.queryParam("expand", ResourcePath.REPORT_EXPAND_PARAM,
+				.queryParam(ResourcePath.EXPAND_QP_NAME,
+						ResourcePath.REPORT_EXPAND_PARAM,
 						ResourcePath.REPORTCATEGORY_EXPAND_PARAM)
 				.request()
 				.header("Accept", MediaType.APPLICATION_JSON + ";v=" + defaultVersionPost)
@@ -332,7 +333,8 @@ public class ReportControllerTests {
 		 */
 		response = webTarget.path(path)
 				// See comments above why these query parameters are necessary here:
-				.queryParam("expand", ResourcePath.REPORT_EXPAND_PARAM,
+				.queryParam(ResourcePath.EXPAND_QP_NAME,
+						ResourcePath.REPORT_EXPAND_PARAM,
 						ResourcePath.REPORTCATEGORY_EXPAND_PARAM,
 						ResourcePath.REPORTVERSION_EXPAND_PARAM)
 				.request()
@@ -495,7 +497,7 @@ public class ReportControllerTests {
 				 * hurt to uncomment this line here now, but it is not 
 				 * currently necessary to do this.
 				 */
-				// .queryParam("expand", "report", "reportCategory")
+				// .queryParam(ResourcePath.EXPAND_QP_NAME, "report", "reportCategory")
 				.request()
 				.header("Accept", MediaType.APPLICATION_JSON + ";v=" + defaultVersionPut)
 				.put(Entity.entity(reportResource, MediaType.APPLICATION_JSON_TYPE));
@@ -518,7 +520,8 @@ public class ReportControllerTests {
 		 */
 		response = webTarget.path(path)
 				// See comments above why these query parameters are necessary here:
-				.queryParam("expand", ResourcePath.REPORT_EXPAND_PARAM,
+				.queryParam(ResourcePath.EXPAND_QP_NAME,
+						ResourcePath.REPORT_EXPAND_PARAM,
 						ResourcePath.REPORTCATEGORY_EXPAND_PARAM)
 				.request()
 				.header("Accept", MediaType.APPLICATION_JSON + ";v=" + defaultVersionGet)

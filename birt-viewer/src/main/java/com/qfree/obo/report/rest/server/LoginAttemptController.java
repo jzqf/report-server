@@ -57,7 +57,7 @@ public class LoginAttemptController extends AbstractBaseController {
 	//	@Produces(MediaType.APPLICATION_JSON)
 	//	public List<RoleResource> getList(
 	//			@HeaderParam("Accept") final String acceptHeader,
-	//			@QueryParam("expand") final List<String> expand,
+	//			@QueryParam(ResourcePath.EXPAND_QP_NAME) final List<String> expand,
 	//			@Context final UriInfo uriInfo) {
 	//		RestApiVersion apiVersion = RestUtils.extractAPIVersion(acceptHeader, RestApiVersion.v1);
 	//
@@ -140,7 +140,7 @@ public class LoginAttemptController extends AbstractBaseController {
 	//	public RoleResource getById(
 	//			@PathParam("id") final UUID id,
 	//			@HeaderParam("Accept") final String acceptHeader,
-	//			@QueryParam("expand") final List<String> expand,
+	//			@QueryParam(ResourcePath.EXPAND_QP_NAME) final List<String> expand,
 	//			@Context final UriInfo uriInfo) {
 	//		RestApiVersion apiVersion = RestUtils.extractAPIVersion(acceptHeader, RestApiVersion.v1);
 	//

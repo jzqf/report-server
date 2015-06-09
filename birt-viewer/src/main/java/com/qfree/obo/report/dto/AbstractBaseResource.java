@@ -141,7 +141,7 @@ public abstract class AbstractBaseResource {
 		//			/*
 		//			 * Append the "expand" query parameters.
 		//			 */
-		//			uriBuilder = uriBuilder.queryParam("expand", expand.toArray());
+		//			uriBuilder = uriBuilder.queryParam(ResourcePath.EXPAND_QP_NAME, expand.toArray());
 		//		}
 		return uriBuilder.toString();
 	}
