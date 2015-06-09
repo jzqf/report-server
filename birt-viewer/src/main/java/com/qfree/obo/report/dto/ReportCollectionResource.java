@@ -44,4 +44,17 @@ public class ReportCollectionResource extends AbstractCollectionResource<ReportR
 		this.items = items;
 	}
 
+	@Override
+	public String toString() {
+		StringBuilder builder = new StringBuilder();
+		builder.append("ReportCollectionResource [href=");
+		builder.append(href);
+		builder.append(", mediaType=");
+		builder.append(mediaType);
+		builder.append(", items=");
+		builder.append(items);
+		builder.append("]");
+		return builder.toString();
+	}
+
 }

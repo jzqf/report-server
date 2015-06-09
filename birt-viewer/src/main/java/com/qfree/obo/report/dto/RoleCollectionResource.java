@@ -44,4 +44,17 @@ public class RoleCollectionResource extends AbstractCollectionResource<RoleResou
 		this.items = items;
 	}
 
+	@Override
+	public String toString() {
+		StringBuilder builder = new StringBuilder();
+		builder.append("RoleCollectionResource [href=");
+		builder.append(href);
+		builder.append(", mediaType=");
+		builder.append(mediaType);
+		builder.append(", items=");
+		builder.append(items);
+		builder.append("]");
+		return builder.toString();
+	}
+
 }

@@ -381,6 +381,14 @@ public class ReportVersionController extends AbstractBaseController {
 		reportVersionResource.setReportVersionId(reportVersion.getReportVersionId());
 		reportVersionResource.setCreatedOn(reportVersion.getCreatedOn());
 		/*
+		 * If a version "code" (integer) was not specified in 
+		 * reportVersionResource, we use the current value stored in 
+		 * reportVersion.
+		 */
+		if (reportVersionResource.getVersionCode() == null) {
+			reportVersionResource.setVersionCode(reportVersion.getVersionCode());
+		}
+		/*
 		 * Save updated entity.
 		 */
 		reportVersion = reportVersionService.saveExistingFromResource(reportVersionResource);
