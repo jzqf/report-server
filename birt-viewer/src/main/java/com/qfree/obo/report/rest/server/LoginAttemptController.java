@@ -29,8 +29,7 @@ import com.qfree.obo.report.rest.server.RestUtils.RestApiVersion;
 import com.qfree.obo.report.service.RoleService;
 
 @Component
-@Path("loginAttempts")
-//@Path(ResourcePath.ROLES_PATH)
+@Path(ResourcePath.LOGINATTEMPTS_PATH)
 public class LoginAttemptController extends AbstractBaseController {
 
 	private static final Logger logger = LoggerFactory.getLogger(LoginAttemptController.class);

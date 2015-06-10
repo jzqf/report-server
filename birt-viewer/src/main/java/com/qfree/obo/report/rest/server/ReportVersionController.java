@@ -300,7 +300,7 @@ public class ReportVersionController extends AbstractBaseController {
 	 * 
 	 * @Transactional is used to avoid org.hibernate.LazyInitializationException
 	 * being thrown when evaluating ReportVersion.getReportParameters(), as well
-	 * as potentially other lazy-evaluated attributes..
+	 * as potentially other lazy-evaluated attributes.
 	 */
 	@Transactional
 	@Path("/{id}")

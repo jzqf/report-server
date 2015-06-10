@@ -52,6 +52,8 @@ public enum ResourcePath {
 	public static final String REPORTS_PATH = ResourcePath.PATH_SEPARATOR + "reports";
 	public static final String ROLES_PATH = ResourcePath.PATH_SEPARATOR + "roles";
 
+	public static final String LOGINATTEMPTS_PATH = ResourcePath.PATH_SEPARATOR + "loginAttempts";
+
 	/*
 	 * This is the name of "expand" query parameter used for all HTTP requests. 
 	 */
