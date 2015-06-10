@@ -1,7 +1,9 @@
 package com.qfree.obo.report.rest.server;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import javax.ws.rs.Consumes;
@@ -22,9 +24,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.qfree.obo.report.db.RoleRepository;
+import com.qfree.obo.report.domain.Report;
 import com.qfree.obo.report.domain.Role;
+import com.qfree.obo.report.dto.ReportCollectionResource;
+import com.qfree.obo.report.dto.ReportResource;
 import com.qfree.obo.report.dto.ResourcePath;
 import com.qfree.obo.report.dto.RoleCollectionResource;
 import com.qfree.obo.report.dto.RoleResource;
@@ -61,25 +67,29 @@ public class RoleController extends AbstractBaseController {
 	//	public CollectionResource<RoleResource> getList(
 	public RoleCollectionResource getList(
 			@HeaderParam("Accept") final String acceptHeader,
-			@QueryParam("expand") final List<String> expand,
+			@QueryParam(ResourcePath.EXPAND_QP_NAME) final List<String> expand,
+			@QueryParam(ResourcePath.SHOWALL_QP_NAME) final List<String> showAll,
 			@Context final UriInfo uriInfo) {
+		Map<String, List<String>> queryParams = new HashMap<>();
+		queryParams.put(ResourcePath.EXPAND_QP_KEY, expand);
+		queryParams.put(ResourcePath.SHOWALL_QP_KEY, showAll);
 		RestApiVersion apiVersion = RestUtils.extractAPIVersion(acceptHeader, RestApiVersion.v1);
 
 		// List<Role> roles = roleRepository.findByActiveTrue();
 		List<Role> roles = roleRepository.findAll();
 		List<RoleResource> roleResources = new ArrayList<>(roles.size());
 		for (Role role : roles) {
-			roleResources.add(new RoleResource(role, uriInfo, expand, apiVersion));
+			roleResources.add(new RoleResource(role, uriInfo, queryParams, apiVersion));
 		}
 		//		return roleResources;
-		return new RoleCollectionResource(roleResources, Role.class, uriInfo, expand, apiVersion);
+		return new RoleCollectionResource(roleResources, Role.class, uriInfo, queryParams, apiVersion);
 	}
 
 	/*
 	 * This endpoint can be tested with:
 	 * 
 	 *   $ mvn clean spring-boot:run
-	 *   $ curl -iH "Content-Type: application/json;v=1" -X POST -d \
+	 *   $ curl -iH "Accept: application/json;v=1" -H "Content-Type: application/json" -X POST -d \
 	 *   '{"username":"Bozo","fullName":"Bozo the clown","encodedPassword":"asdf=","loginRole":true}' \
 	 *   http://localhost:8080/rest/roles
 	 */
@@ -89,12 +99,19 @@ public class RoleController extends AbstractBaseController {
 	public Response create(
 			RoleResource roleResource,
 			@HeaderParam("Accept") final String acceptHeader,
+			@QueryParam(ResourcePath.EXPAND_QP_NAME) final List<String> expand,
+			@QueryParam(ResourcePath.SHOWALL_QP_NAME) final List<String> showAll,
 			@Context final UriInfo uriInfo) {
+		Map<String, List<String>> queryParams = new HashMap<>();
+		queryParams.put(ResourcePath.EXPAND_QP_KEY, expand);
+		queryParams.put(ResourcePath.SHOWALL_QP_KEY, showAll);
 		RestApiVersion apiVersion = RestUtils.extractAPIVersion(acceptHeader, RestApiVersion.v1);
 
 		Role role = roleService.saveNewFromResource(roleResource);
-		List<String> expand = newExpandList(Role.class);	// Force primary resource to be "expanded"
-		RoleResource resource = new RoleResource(role, uriInfo, expand, apiVersion);
+		//	if (RestUtils.AUTO_EXPAND_PRIMARY_RESOURCES) {
+		addToExpandList(expand, Role.class);  // Force primary resource to be "expanded"
+		//	}
+		RoleResource resource = new RoleResource(role, uriInfo, queryParams, apiVersion);
 		return created(resource);
 	}
 
@@ -103,7 +120,7 @@ public class RoleController extends AbstractBaseController {
 	 * 
 	 *   $ mvn clean spring-boot:run
 	 *   $ curl -i -H "Accept: application/json;v=1" -X GET \
-	 *   http://localhost:8080/rest/roles/0db97c2a-fb78-464a-a0e7-8d25f6003c14
+	 *   http://localhost:8080/rest/roles/b85fd129-17d9-40e7-ac11-7541040f8627
 	 */
 	@Path("/{id}")
 	@GET
@@ -111,22 +128,90 @@ public class RoleController extends AbstractBaseController {
 	public RoleResource getById(
 			@PathParam("id") final UUID id,
 			@HeaderParam("Accept") final String acceptHeader,
-			@QueryParam("expand") final List<String> expand,
+			@QueryParam(ResourcePath.EXPAND_QP_NAME) final List<String> expand,
+			@QueryParam(ResourcePath.SHOWALL_QP_NAME) final List<String> showAll,
 			@Context final UriInfo uriInfo) {
+		Map<String, List<String>> queryParams = new HashMap<>();
+		queryParams.put(ResourcePath.EXPAND_QP_KEY, expand);
+		queryParams.put(ResourcePath.SHOWALL_QP_KEY, showAll);
 		RestApiVersion apiVersion = RestUtils.extractAPIVersion(acceptHeader, RestApiVersion.v1);
 
-		addToExpandList(expand, Role.class);	// Force primary resource to be "expanded"
+		if (RestUtils.AUTO_EXPAND_PRIMARY_RESOURCES) {
+			addToExpandList(expand, Role.class);
+		}
 		Role role = roleRepository.findOne(id);
 		RestUtils.ifNullThen404(role, Role.class, "roleId", id.toString());
-		RoleResource roleResource = new RoleResource(role, uriInfo, expand, apiVersion);
+		RoleResource roleResource = new RoleResource(role, uriInfo, queryParams, apiVersion);
 		return roleResource;
+	}
+
+	/*
+	 * This endpoint can be tested with (note that "&" is escaped here as "\&"
+	 * so it will not be treated specially by the bash shell):
+	 * 
+	 *   $ mvn clean spring-boot:run
+	 *   $ curl -i -H "Accept: application/json;v=1" -X GET \
+	 *   http://localhost:8080/rest/roles/b85fd129-17d9-40e7-ac11-7541040f8627/reports\
+	 *   ?expand=reports\&expand=reportVersions\&expand=rptdesign
+	 * 
+	 * @Transactional is used to avoid org.hibernate.LazyInitializationException
+	 * being thrown when evaluating report.getReportVersions().
+	 */
+	/**
+	 * Return all Report instances that the Role with a specified id has access
+	 * to. Each Report will have zero or more ReportVersions 
+	 * 
+	 * @param id
+	 * @param acceptHeader
+	 * @param expand
+	 * @param uriInfo
+	 * @return
+	 */
+	@Transactional
+	@Path("/{id}/reports")
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	public ReportCollectionResource getReportsForRole(
+			@PathParam("id") final UUID id,
+			@HeaderParam("Accept") final String acceptHeader,
+			@QueryParam(ResourcePath.EXPAND_QP_NAME) final List<String> expand,
+			@QueryParam(ResourcePath.SHOWALL_QP_NAME) final List<String> showAll,
+			@Context final UriInfo uriInfo) {
+		Map<String, List<String>> queryParams = new HashMap<>();
+		queryParams.put(ResourcePath.EXPAND_QP_KEY, expand);
+		queryParams.put(ResourcePath.SHOWALL_QP_KEY, showAll);
+		RestApiVersion apiVersion = RestUtils.extractAPIVersion(acceptHeader, RestApiVersion.v1);
+
+		if (RestUtils.AUTO_EXPAND_PRIMARY_RESOURCES) {
+			addToExpandList(expand, Role.class);
+		}
+		Role role = roleRepository.findOne(id);
+		RestUtils.ifNullThen404(role, Role.class, "roleId", id.toString());
+
+		/*
+		 * TODO Add a query parameter to disable filtering on *active* for Report's?
+		 * 		How about ...&nofilter=active or ... What if we want to see only
+		 * 		active Report's but unfiltered ReportVersion's (active or not)?
+		 */
+		List<Report> reports = null;
+		if (RestUtils.FILTER_INACTIVE_RECORDS && !ResourcePath.showAll(Report.class, showAll)) {
+			reports = roleRepository.findActiveReportsByRoleId(role.getRoleId());
+		} else {
+			reports = roleRepository.findReportsByRoleId(role.getRoleId());
+		}
+		List<ReportResource> reportResources = new ArrayList<>(reports.size());
+		for (Report report : reports) {
+			reportResources.add(new ReportResource(report, uriInfo, queryParams, apiVersion));
+		}
+		//		return reportResources;
+		return new ReportCollectionResource(reportResources, Report.class, uriInfo, queryParams, apiVersion);
 	}
 
 	/*
 	 * This endpoint can be tested with:
 	 * 
 	 *   $ mvn clean spring-boot:run
-	 *   $ curl -iH "Content-Type: application/json;v=1" -X PUT -d \
+	 *   $ curl -iH "Accept: application/json;v=1" -H "Content-Type: application/json" -X PUT -d \
 	 *   '{"username":"baaa (modified)","fullName":"Mr. baaa","encodedPassword":"qwerty=","loginRole":true}' \
 	 *   http://localhost:8080/rest/roles/0db97c2a-fb78-464a-a0e7-8d25f6003c14
 	 */
@@ -140,26 +225,21 @@ public class RoleController extends AbstractBaseController {
 			@HeaderParam("Accept") final String acceptHeader,
 			@Context final UriInfo uriInfo) {
 		RestApiVersion apiVersion = RestUtils.extractAPIVersion(acceptHeader, RestApiVersion.v1);
-		logger.debug("apiVersion = {}", apiVersion);
-		logger.debug("roleResource = {}", roleResource);
 
 		/*
 		 * Retrieve Role entity to be updated.
 		 */
 		Role role = roleRepository.findOne(id);
 		RestUtils.ifNullThen404(role, Role.class, "roleId", id.toString());
-		logger.debug("role (to be updated) = {}", role);
 		/*
 		 * Ensure that the entity's "id" and "CreatedOn" are not changed.
 		 */
 		roleResource.setRoleId(role.getRoleId());
 		roleResource.setCreatedOn(role.getCreatedOn());
-		logger.debug("roleResource (adjusted) = {}", roleResource);
 		/*
 		 * Save updated entity.
 		 */
 		role = roleService.saveExistingFromResource(roleResource);
-		logger.debug("role (after saveOrUpdateFromResource) = {}", role);
 		return Response.status(Response.Status.OK).build();
 	}
 

@@ -16,8 +16,10 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.UniqueConstraint;
+import javax.validation.constraints.NotNull;
 
 import org.hibernate.annotations.TypeDef;
+import org.hibernate.validator.constraints.NotBlank;
 
 import com.qfree.obo.report.util.DateUtils;
 
@@ -62,6 +64,7 @@ public class JobParameterValue implements Serializable {
 	 * PostgreSQL column definition includes "DEFAULT uuid_generate_v4()", which
 	 * is not what is wanted.
 	 */
+	@NotNull
 	@JoinColumn(name = "job_id", nullable = false,
 			foreignKey = @ForeignKey(name = "fk_jobparametervalue_job"))
 	//			columnDefinition = "uuid")
@@ -74,6 +77,7 @@ public class JobParameterValue implements Serializable {
 	 * PostgreSQL column definition includes "DEFAULT uuid_generate_v4()", which
 	 * is not what is wanted.
 	 */
+	@NotNull
 	@JoinColumn(name = "report_parameter_id", nullable = false,
 			foreignKey = @ForeignKey(name = "fk_jobparametervalue_reportparameter"))
 	//			columnDefinition = "uuid")
@@ -88,9 +92,11 @@ public class JobParameterValue implements Serializable {
 	 * 
 	 * The value is stored as text, regardless of its native data type.
 	 */
+	@NotBlank
 	@Column(name = "string_value", nullable = false, length = 80)
 	private String stringValue;
 
+	@NotNull
 	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name = "created_on", nullable = false)
 	private Date createdOn;
@@ -106,11 +112,7 @@ public class JobParameterValue implements Serializable {
 		this.job = job;
 		this.reportParameter = reportParameter;
 		this.stringValue = stringValue;
-		if (createdOn != null) {
-			this.createdOn = createdOn;
-		} else {
-			this.createdOn = DateUtils.nowUtc();
-		}
+		this.createdOn = (createdOn != null) ? createdOn : DateUtils.nowUtc();
 	}
 
 	public Job getJob() {

@@ -20,6 +20,7 @@ import javax.validation.constraints.NotNull;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;
+import org.hibernate.validator.constraints.NotBlank;
 
 import com.qfree.obo.report.dto.RoleResource;
 import com.qfree.obo.report.util.DateUtils;
@@ -48,9 +49,11 @@ public class Role implements Serializable {
 			columnDefinition = "uuid DEFAULT uuid_generate_v4()")
 	private UUID roleId;
 
+	@NotNull
 	@Column(name = "login_role", nullable = false)
 	private boolean loginRole;
 
+	@NotBlank
 	@Column(name = "username", nullable = false, length = 32)
 	private String username;
 
@@ -60,6 +63,7 @@ public class Role implements Serializable {
 	/**
 	 * Base64 encoding of SHA-1 digest of salted password.
 	 */
+	@NotBlank
 	@Column(name = "encoded_password", nullable = false, length = 32)
 	private String encodedPassword;
 
@@ -104,6 +108,7 @@ public class Role implements Serializable {
 	@OneToMany(mappedBy = "role", cascade = CascadeType.ALL)
 	private List<Configuration> configurations;
 
+	@NotNull
 	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name = "created_on", nullable = false)
 	private Date createdOn;
@@ -135,11 +140,7 @@ public class Role implements Serializable {
 		this.username = username;
 		this.fullName = fullName;
 		this.encodedPassword = encodedPassword;
-		if (createdOn != null) {
-			this.createdOn = createdOn;
-		} else {
-			this.createdOn = DateUtils.nowUtc();
-		}
+		this.createdOn = (createdOn != null) ? createdOn : DateUtils.nowUtc();
 	}
 
 	public UUID getRoleId() {

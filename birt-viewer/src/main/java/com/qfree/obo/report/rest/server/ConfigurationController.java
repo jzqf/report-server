@@ -1,7 +1,9 @@
 package com.qfree.obo.report.rest.server;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import javax.ws.rs.GET;
@@ -49,17 +51,21 @@ public class ConfigurationController extends AbstractBaseController {
 	//	public List<ConfigurationResource> getList(
 	public ConfigurationCollectionResource getList(
 			@HeaderParam("Accept") final String acceptHeader,
-			@QueryParam("expand") final List<String> expand,
+			@QueryParam(ResourcePath.EXPAND_QP_NAME) final List<String> expand,
+			@QueryParam(ResourcePath.SHOWALL_QP_NAME) final List<String> showAll,
 			@Context final UriInfo uriInfo) {
+		Map<String, List<String>> queryParams = new HashMap<>();
+		queryParams.put(ResourcePath.EXPAND_QP_KEY, expand);
+		queryParams.put(ResourcePath.SHOWALL_QP_KEY, showAll);
 		RestApiVersion apiVersion = RestUtils.extractAPIVersion(acceptHeader, RestApiVersion.v1);
 
 		List<Configuration> configurations = configurationRepository.findAll();
 		List<ConfigurationResource> configurationResources = new ArrayList<>(configurations.size());
 		for (Configuration configuration : configurations) {
-			configurationResources.add(new ConfigurationResource(configuration, uriInfo, expand, apiVersion));
+			configurationResources.add(new ConfigurationResource(configuration, uriInfo, queryParams, apiVersion));
 		}
 		//		return configurationResources;
-		return new ConfigurationCollectionResource(configurationResources, Configuration.class, uriInfo, expand,
+		return new ConfigurationCollectionResource(configurationResources, Configuration.class, uriInfo, queryParams,
 				apiVersion);
 	}
 
@@ -69,15 +75,21 @@ public class ConfigurationController extends AbstractBaseController {
 	public ConfigurationResource getById(
 			@PathParam("id") final UUID id,
 			@HeaderParam("Accept") final String acceptHeader,
-			@QueryParam("expand") final List<String> expand,
+			@QueryParam(ResourcePath.EXPAND_QP_NAME) final List<String> expand,
+			@QueryParam(ResourcePath.SHOWALL_QP_NAME) final List<String> showAll,
 			@Context final UriInfo uriInfo) {
+		Map<String, List<String>> queryParams = new HashMap<>();
+		queryParams.put(ResourcePath.EXPAND_QP_KEY, expand);
+		queryParams.put(ResourcePath.SHOWALL_QP_KEY, showAll);
 		RestApiVersion apiVersion = RestUtils.extractAPIVersion(acceptHeader, RestApiVersion.v1);
 
-		addToExpandList(expand, Configuration.class);	// Force primary resource to be "expanded"
+		if (RestUtils.AUTO_EXPAND_PRIMARY_RESOURCES) {
+			addToExpandList(expand, Configuration.class);
+		}
 		Configuration configuration = configurationRepository.findOne(id);
 		RestUtils.ifNullThen404(configuration, Configuration.class, "configurationId", id.toString());
 		ConfigurationResource configurationResource =
-				new ConfigurationResource(configuration, uriInfo, expand, apiVersion);
+				new ConfigurationResource(configuration, uriInfo, queryParams, apiVersion);
 		return configurationResource;
 	}
 

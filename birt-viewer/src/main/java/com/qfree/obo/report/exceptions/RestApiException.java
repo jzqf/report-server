@@ -20,6 +20,25 @@ public class RestApiException extends WebApplicationException {
 
 	private static final Logger logger = LoggerFactory.getLogger(RestApiException.class);
 
+	public RestApiException(RestError restError) {
+		super(Response.status(restError.getResponseStatus())
+				.entity(new RestErrorResource(restError, restError.getErrorMessage()))
+				.build());
+		logger.error(toSplunkString("restError", restError));
+		logger.error("stackTrace for '{}' exception:\n{}", restError, stackTraceToString(this));
+	}
+
+	public RestApiException(
+			RestError restError,
+			Throwable cause) {
+		super(Response.status(restError.getResponseStatus())
+				.entity(new RestErrorResource(restError, restError.getErrorMessage(), cause))
+				.build());
+		logger.error(toSplunkString("restError", restError));
+		logger.error("stackTrace for '{}' exception:\n{}", restError, stackTraceToString(this));
+		logger.error("cause:\n{}", stackTraceToString(cause));
+	}
+
 	public RestApiException(
 			RestError restError,
 			Class<?> referenceClass) {

@@ -161,6 +161,13 @@ public class RestErrorResource {
 						+ "the id from the resource instance must be null because "
 						+ "it will be generated for the new entity by the Entity Manager",
 				null),
+		FORBIDDEN_REPORTVERSION_REPORT_NULL(Response.Status.FORBIDDEN, "403.5",
+				"reportId is null for a report version being saved", null),
+		FORBIDDEN_XML_NOT_VALID(Response.Status.FORBIDDEN, "403.6", "The XML is not well formed", null),
+		FORBIDDEN_ATTRIBUTE_NULL_OR_BLANK(Response.Status.FORBIDDEN, "403.7",
+				"An attribute is null or blank when it should not be", null),
+		FORBIDDEN_VALIDATION_ERROR(Response.Status.FORBIDDEN, "403.8",
+				"An attribute violates a validation constraint", null),
 		/**
 		 * {@code 404 Not Found}.
 		 * @see <a href="http://tools.ietf.org/html/rfc2616#section-10.4.5">HTTP/1.1</a>
@@ -276,6 +283,20 @@ public class RestErrorResource {
 		 * @see <a href="http://tools.ietf.org/html/rfc2616#section-10.5.1">HTTP/1.1</a>
 		 */
 		INTERNAL_SERVER_ERROR(Response.Status.INTERNAL_SERVER_ERROR, "500.0", null, null),
+		INTERNAL_SERVER_ERROR_REPORT_FOLDER_MISSING(Response.Status.INTERNAL_SERVER_ERROR, "500.1",
+				"BIRT Viewer working folder cannot be accessed", null),
+		INTERNAL_SERVER_ERROR_RPTDESIGN_SYNC(Response.Status.INTERNAL_SERVER_ERROR, "500.2",
+				"Error syncing rptdesign files between file system and database", null),
+		INTERNAL_SERVER_ERROR_RPTDESIGN_SYNC_NO_PERMIT(
+				Response.Status.INTERNAL_SERVER_ERROR,
+				"500.3",
+				"Unable to acquire semaphore permit for synchronizing rptdesign files between file system and database",
+				null),
+		INTERNAL_SERVER_ERROR_RPTDESIGN_SYNC_INTERRUPT(
+				Response.Status.INTERNAL_SERVER_ERROR,
+				"500.4",
+				"InterruptedException thrown while waiting to acquire semaphore permit.",
+				null),
 		/**
 		 * {@code 501 Not Implemented}.
 		 * @see <a href="http://tools.ietf.org/html/rfc2616#section-10.5.2">HTTP/1.1</a>
@@ -387,9 +408,24 @@ public class RestErrorResource {
 	@XmlElement
 	private String moreInfoUrl;
 	@XmlTransient
-	private Throwable throwable;	// @XmlTransient means this will not be serialized to JSON
+	//	@XmlElement
+	private Throwable cause;	// @XmlTransient means this will not be serialized to JSON
 
 	public RestErrorResource() {
+	}
+
+	public RestErrorResource(
+			RestError restError,
+			String errorMessage) {
+		this(
+				restError.getResponseStatus(),
+				restError.getErrorCode(),
+				errorMessage,
+				null,
+				null,
+				null,
+				restError.getMoreInfoUrl(),
+				null);
 	}
 
 	public RestErrorResource(
@@ -507,7 +543,7 @@ public class RestErrorResource {
 		this.attrName = attrName;
 		this.attrValue = attrValue;
 		this.moreInfoUrl = moreInfoUrl;
-		this.throwable = throwable;
+		this.cause = throwable;
 	}
 
 	public int getHttpStatus() {
@@ -566,12 +602,12 @@ public class RestErrorResource {
 		this.moreInfoUrl = moreInfoUrl;
 	}
 
-	public Throwable getThrowable() {
-		return throwable;
+	public Throwable getCause() {
+		return cause;
 	}
 
-	public void setThrowable(Throwable throwable) {
-		this.throwable = throwable;
+	public void setCause(Throwable throwable) {
+		this.cause = throwable;
 	}
 
 }

@@ -51,6 +51,15 @@ public class TestController extends AbstractBaseController {
 		return "/test endpoint: API version " + apiVersion.getVersion();
 	}
 
+	/*
+	 * This endpoint can be tested with:
+	 * 
+	 *   $ mvn clean spring-boot:run
+	 *   $ curl -i -H "Accept: text/plain;v=1" -X GET http://localhost:8080/rest/test/api_version
+	 * 
+	 * @Transactional is used to avoid org.hibernate.LazyInitializationException
+	 * being thrown when evaluating ...
+	 */
 	/**
 	 * ReST endpoint that can be used to confirm that the API version is being
 	 * specified correctly by a client.
@@ -73,6 +82,12 @@ public class TestController extends AbstractBaseController {
 		return apiVersion.getVersion();
 	}
 
+	/*
+	 * This endpoint can be tested with:
+	 * 
+	 *   $ mvn clean spring-boot:run
+	 *   $ curl -i -H "Accept: text/plain;v=1" -X POST http://localhost:8080/rest/test/api_version
+	 */
 	@POST
 	@Path("/api_version")
 	@Produces(MediaType.TEXT_PLAIN)
@@ -80,6 +95,25 @@ public class TestController extends AbstractBaseController {
 		//		logger.info("acceptHeader = {}", acceptHeader);
 		//		System.out.println("acceptHeaderApiVersionPost: acceptHeader = " + acceptHeader);
 		RestApiVersion apiVersion = RestUtils.extractAPIVersion(acceptHeader, RestApiVersion.v3);
+		//		logger.info("apiVersion, apiVersion.getVersion() = {}, {}", apiVersion, apiVersion.getVersion());
+		//		System.out.println("acceptHeaderApiVersionPost: apiVersion, apiVersion.getVersion() = "
+		//				+ apiVersion + ", " + apiVersion.getVersion());
+		return apiVersion.getVersion();
+	}
+
+	/*
+	 * This endpoint can be tested with:
+	 * 
+	 *   $ mvn clean spring-boot:run
+	 *   $ curl -i -H "Accept: text/plain;v=1" -X POST http://localhost:8080/rest/test/api_version
+	 */
+	@PUT
+	@Path("/api_version")
+	@Produces(MediaType.TEXT_PLAIN)
+	public String acceptHeaderApiVersionPut(@HeaderParam("Accept") String acceptHeader) {
+		//		logger.info("acceptHeader = {}", acceptHeader);
+		//		System.out.println("acceptHeaderApiVersionPost: acceptHeader = " + acceptHeader);
+		RestApiVersion apiVersion = RestUtils.extractAPIVersion(acceptHeader, RestApiVersion.v4);
 		//		logger.info("apiVersion, apiVersion.getVersion() = {}, {}", apiVersion, apiVersion.getVersion());
 		//		System.out.println("acceptHeaderApiVersionPost: apiVersion, apiVersion.getVersion() = "
 		//				+ apiVersion + ", " + apiVersion.getVersion());

@@ -1,8 +1,9 @@
 package com.qfree.obo.report.db;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
+import static org.hamcrest.Matchers.nullValue;
+import static org.junit.Assert.assertThat;
 
 import java.util.List;
 import java.util.UUID;
@@ -37,14 +38,14 @@ public class ReportCategoryRepositoryTests {
 	@Test
 	@Transactional
 	public void count() {
-		assertEquals(4, reportCategoryRepository.count());
+		assertThat(reportCategoryRepository.count(), is(4L));
 	}
 
 	@Test
 	@Transactional
 	public void findAll() {
 		List<ReportCategory> reportCategories = reportCategoryRepository.findAll();
-		assertEquals(4, reportCategories.size());
+		assertThat(reportCategories.size(), is(4));
 	}
 
 	@Test
@@ -71,22 +72,22 @@ public class ReportCategoryRepositoryTests {
 		List<ReportCategory> reportCategories;
 
 		reportCategories = reportCategoryRepository.findByDescriptionLikeOrAbbreviationLike("Accoun%", "");
-		assertEquals(1, reportCategories.size());
+		assertThat(reportCategories.size(), is(1));
 		assertReportCategory(0, reportCategories.get(0));
 
 		reportCategories = reportCategoryRepository.findByDescriptionLikeOrAbbreviationLike("", "%FREE");
-		assertEquals(1, reportCategories.size());
+		assertThat(reportCategories.size(), is(1));
 		assertReportCategory(1, reportCategories.get(0));
 
 		reportCategories = reportCategoryRepository.findByDescriptionLikeOrAbbreviationLike("Accoun%", "%FREE");
-		assertEquals(2, reportCategories.size());
+		assertThat(reportCategories.size(), is(2));
 	}
 
 	@Test
 	@Transactional
 	public void findByActiveIsTrue() {
 		List<ReportCategory> reportCategories = reportCategoryRepository.findByActiveIsTrue();
-		assertEquals(2, reportCategories.size());
+		assertThat(reportCategories.size(), is(2));
 	}
 
 	@Test
@@ -105,12 +106,12 @@ public class ReportCategoryRepositoryTests {
 	@Test
 	@Transactional
 	public void save_newReportCategory() {
-		assertEquals(4, reportCategoryRepository.count());
+		assertThat(reportCategoryRepository.count(), is(4L));
 		//		ReportCategory reportCategory = new ReportCategory(
 		//				UUID.fromString("b9a6301b-07ac-48d2-8de6-1fc6330c0cb0"), "Image processing", "OCR", true);
 		ReportCategory reportCategory = new ReportCategory("Image processing", "OCR", true);
 		ReportCategory saved = reportCategoryRepository.save(reportCategory);
-		assertEquals(5, reportCategoryRepository.count());
+		assertThat(reportCategoryRepository.count(), is(5L));
 		assertReportCategory(4, saved);
 		assertReportCategory(4, reportCategoryRepository
 				.findOne(saved.getReportCategoryId()));
@@ -119,26 +120,26 @@ public class ReportCategoryRepositoryTests {
 	@Test
 	@Transactional
 	public void save_existingReportCategory() {
-		assertEquals(4, reportCategoryRepository.count());
+		assertThat(reportCategoryRepository.count(), is(4L));
 		ReportCategory found = reportCategoryRepository
 				.findOne(UUID.fromString("bb2bc482-c19a-4c19-a087-e68ffc62b5a0"));
 		assertReportCategory(1, found);
 		ReportCategory saved = reportCategoryRepository.save(found);
-		assertEquals(4, reportCategoryRepository.count());
+		assertThat(reportCategoryRepository.count(), is(4L));
 	}
 
 	@Test
 	@Ignore
 	@Transactional
 	public void delete() {
-		assertEquals(4, reportCategoryRepository.count());
-		assertEquals(15, reportRepository.count());
+		assertThat(reportCategoryRepository.count(), is(4L));
+		assertThat(reportRepository.count(), is(15L));
 		UUID uuidOfTrafficeCategory = UUID.fromString("72d7cb27-1770-4cc7-b301-44d39ccf1e76");
-		assertNotNull(reportCategoryRepository.findOne(uuidOfTrafficeCategory));
+		assertThat(reportCategoryRepository.findOne(uuidOfTrafficeCategory), is(not(nullValue())));
 		reportCategoryRepository.delete(uuidOfTrafficeCategory);
-		assertEquals(3, reportCategoryRepository.count());
-		assertEquals(4, reportRepository.count());	// only for cascade=CascadeType.REMOVE in ReportCategory
-		assertNull(reportCategoryRepository.findOne(uuidOfTrafficeCategory));
+		assertThat(reportCategoryRepository.count(), is(3L));
+		assertThat(reportRepository.count(), is(4L));	// only for cascade=CascadeType.REMOVE in ReportCategory
+		assertThat(reportCategoryRepository.findOne(uuidOfTrafficeCategory), is(nullValue()));
 	}
 
 	/**
@@ -149,13 +150,13 @@ public class ReportCategoryRepositoryTests {
 	 * @param reportCategory
 	 */
 	private static void assertReportCategory(int expectedReportCategoryIndex, ReportCategory reportCategory) {
-		assertNotNull(reportCategory);
+		assertThat(reportCategory, is(not(nullValue())));
 		ReportCategory expected = REPORT_CATEGORIES[expectedReportCategoryIndex];
 		//		ReportCategory expected = REPORT_CATEGORIES.get(expectedReportCategoryIndex);
-		//		assertEquals(expected.getReportCategoryId(), reportCategory.getReportCategoryId());
-		assertEquals(expected.getDescription(), reportCategory.getDescription());
-		assertEquals(expected.getAbbreviation(), reportCategory.getAbbreviation());
-		assertEquals(expected.isActive(), reportCategory.isActive());
+		//		assertThat(reportCategory.getReportCategoryId(), is(expected.getReportCategoryId()));
+		assertThat(reportCategory.getDescription(), is(expected.getDescription()));
+		assertThat(reportCategory.getAbbreviation(), is(expected.getAbbreviation()));
+		assertThat(reportCategory.isActive(), is(expected.isActive()));
 	}
 
 	private static ReportCategory[] REPORT_CATEGORIES = new ReportCategory[5];

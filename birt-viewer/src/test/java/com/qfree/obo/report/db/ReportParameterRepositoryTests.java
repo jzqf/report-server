@@ -5,7 +5,6 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 
 import java.util.List;
@@ -49,14 +48,14 @@ public class ReportParameterRepositoryTests {
 	@Test
 	@Transactional
 	public void count() {
-		assertEquals(6, reportParameterRepository.count());
+		assertThat(reportParameterRepository.count(), is(equalTo(13L)));
 	}
 
 	@Test
 	@Transactional
 	public void findAll() {
 		List<ReportParameter> reportParameters = reportParameterRepository.findAll();
-		assertEquals(6, reportParameters.size());
+		assertThat(reportParameters.size(), is(equalTo(13)));
 		//		for (ReportParameter reportParameter : reportParameters) {
 		//			logger.info("reportParameter = {}", reportParameter);
 		//		}
@@ -66,7 +65,9 @@ public class ReportParameterRepositoryTests {
 	@Transactional
 	public void save_newReportParameter() {
 
-		assertEquals(6, reportParameterRepository.count());
+		long currentNumParams = 13;
+
+		assertThat(reportParameterRepository.count(), is(equalTo(currentNumParams)));
 
 		UUID uuidOfReport04 = UUID.fromString("702d5daa-e23d-4f00-b32b-67b44c06d8f6");
 		Report report04 = reportRepository.findOne(uuidOfReport04);
@@ -109,7 +110,7 @@ public class ReportParameterRepositoryTests {
 		//		logger.info("After save: unsavedReportParameter.getReportParameterId() = {}",
 		//				unsavedReportParameter.getReportParameterId());
 
-		assertEquals(7, reportParameterRepository.count());
+		assertThat(reportParameterRepository.count(), is(equalTo(currentNumParams + 1)));
 
 		/*
 		 * Check that max(orderIndex) has been incremented for report04.

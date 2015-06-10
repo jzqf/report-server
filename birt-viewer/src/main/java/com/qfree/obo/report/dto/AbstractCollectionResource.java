@@ -1,6 +1,7 @@
 package com.qfree.obo.report.dto;
 
 import java.util.List;
+import java.util.Map;
 
 import javax.ws.rs.core.UriInfo;
 import javax.xml.bind.annotation.XmlElement;
@@ -45,13 +46,19 @@ public abstract class AbstractCollectionResource<T extends AbstractBaseResource>
 	public AbstractCollectionResource() {
 	}
 
-	public AbstractCollectionResource(List<T> items, Class<?> entityClass, UriInfo uriInfo,
-			List<String> expand, RestApiVersion apiVersion) {
-		super(entityClass, null, uriInfo, expand, apiVersion);
-		//		String expandParam = ResourcePath.forEntity(entityClass).getExpandParam();
-		//		if (expand.contains(expandParam)) {
-		//			this.items = items;
-		//		}
+	public AbstractCollectionResource(List<T> items, Class<?> entityClass,
+			UriInfo uriInfo, Map<String, List<String>> queryParams, RestApiVersion apiVersion) {
+		this(items, entityClass, null, null, uriInfo, queryParams, apiVersion);
+	}
+
+	public AbstractCollectionResource(List<T> items, Class<?> entityClass,
+			String baseResourceUri, String collectionPath,
+			UriInfo uriInfo, Map<String, List<String>> queryParams, RestApiVersion apiVersion) {
+		super(baseResourceUri, collectionPath, entityClass, null, uriInfo, queryParams, apiVersion);
+		//	List<String> expand = queryParams.get(ResourcePath.EXPAND_QP_KEY);
+		//	if (ResourcePath.expand(entityClass, expand)) {
+		//		this.items = items;
+		//	}
 	}
 
 }

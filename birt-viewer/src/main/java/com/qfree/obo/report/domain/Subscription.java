@@ -17,10 +17,12 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.validation.constraints.NotNull;
 
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;
+import org.hibernate.validator.constraints.NotBlank;
 
 import com.qfree.obo.report.util.DateUtils;
 
@@ -55,6 +57,7 @@ public class Subscription implements Serializable {
 	 * PostgreSQL column definition includes "DEFAULT uuid_generate_v4()", which
 	 * is not what is wanted.
 	 */
+	@NotNull
 	@JoinColumn(name = "role_id", nullable = false,
 			foreignKey = @ForeignKey(name = "fk_subscription_role"),
 			columnDefinition = "uuid")
@@ -67,10 +70,12 @@ public class Subscription implements Serializable {
 	 * PostgreSQL column definition includes "DEFAULT uuid_generate_v4()", which
 	 * is not what is wanted.
 	 */
+	//	@NotNull
 	//	@JoinColumn(name = "report_id", nullable = false,
 	//			foreignKey = @ForeignKey(name = "fk_subscription_report"),
 	//			columnDefinition = "uuid")
 	//	private Report report;
+	@NotNull
 	@JoinColumn(name = "report_version_id", nullable = false,
 			foreignKey = @ForeignKey(name = "fk_subscription_reportversion"),
 			columnDefinition = "uuid")
@@ -83,6 +88,7 @@ public class Subscription implements Serializable {
 	 * PostgreSQL column definition includes "DEFAULT uuid_generate_v4()", which
 	 * is not what is wanted.
 	 */
+	@NotNull
 	@JoinColumn(name = "document_format_id", nullable = false,
 			foreignKey = @ForeignKey(name = "fk_subscription_documentformat"),
 			columnDefinition = "uuid")
@@ -118,6 +124,7 @@ public class Subscription implements Serializable {
 	 * subscription to be set up that delivers reports to other than a role's
 	 * primary e-mail address store with the Role entity.
 	 */
+	@NotBlank
 	@Column(name = "email", nullable = false, length = 80)
 	private String email;
 
@@ -129,6 +136,7 @@ public class Subscription implements Serializable {
 	@Column(name = "description", nullable = true, length = 80)
 	private String description;
 
+	@NotNull
 	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name = "created_on", nullable = false)
 	private Date createdOn;
@@ -152,11 +160,7 @@ public class Subscription implements Serializable {
 		this.runOnceAt = runOnceAt;
 		this.email = email;
 		this.description = description;
-		if (createdOn != null) {
-			this.createdOn = createdOn;
-		} else {
-			this.createdOn = DateUtils.nowUtc();
-		}
+		this.createdOn = (createdOn != null) ? createdOn : DateUtils.nowUtc();
 	}
 
 	public UUID getSubscriptionId() {

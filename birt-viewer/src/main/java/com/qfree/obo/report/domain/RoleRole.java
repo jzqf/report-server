@@ -15,6 +15,7 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.UniqueConstraint;
+import javax.validation.constraints.NotNull;
 
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Type;
@@ -53,6 +54,7 @@ public class RoleRole implements Serializable {
 	 * PostgreSQL column definition includes "DEFAULT uuid_generate_v4()", which
 	 * is not what is wanted.
 	 */
+	@NotNull
 	@JoinColumn(name = "parent_role_id", nullable = false,
 			foreignKey = @ForeignKey(name = "fk_rolerole_parentrole"),
 			columnDefinition = "uuid")
@@ -65,11 +67,13 @@ public class RoleRole implements Serializable {
 	 * PostgreSQL column definition includes "DEFAULT uuid_generate_v4()", which
 	 * is not what is wanted.
 	 */
+	@NotNull
 	@JoinColumn(name = "child_role_id", nullable = false,
 			foreignKey = @ForeignKey(name = "fk_rolerole_childrole"),
 			columnDefinition = "uuid")
 	private Role childRole;
 
+	@NotNull
 	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name = "created_on", nullable = false)
 	private Date createdOn;
@@ -84,11 +88,7 @@ public class RoleRole implements Serializable {
 	public RoleRole(Role parentRole, Role childRole, Date createdOn) {
 		this.parentRole = parentRole;
 		this.childRole = childRole;
-		if (createdOn != null) {
-			this.createdOn = createdOn;
-		} else {
-			this.createdOn = DateUtils.nowUtc();
-		}
+		this.createdOn = (createdOn != null) ? createdOn : DateUtils.nowUtc();
 	}
 
 	public UUID getRoleRoleId() {

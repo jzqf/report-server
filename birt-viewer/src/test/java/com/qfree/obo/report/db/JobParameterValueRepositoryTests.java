@@ -6,7 +6,6 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 
 import java.util.ArrayList;
@@ -62,22 +61,22 @@ public class JobParameterValueRepositoryTests {
 	@Test
 	@Transactional
 	public void count() {
-		assertEquals(0, jobParameterValueRepository.count());
+		assertThat(jobParameterValueRepository.count(), is(0L));
 	}
 
 	@Test
 	@Transactional
 	public void findAll() {
 		List<JobParameterValue> jobParameterValues = jobParameterValueRepository.findAll();
-		assertEquals(0, jobParameterValues.size());
+		assertThat(jobParameterValues.size(), is(0));
 	}
 
 	@Test
 	@Transactional
 	public void save_newJobParameterValue_singlevalued() {
 
-		assertEquals(2, jobRepository.count());
-		assertEquals(0, jobParameterValueRepository.count());
+		assertThat(jobRepository.count(), is(2L));
+		assertThat(jobParameterValueRepository.count(), is(0L));
 
 		UUID uuidOfReport04 = UUID.fromString("702d5daa-e23d-4f00-b32b-67b44c06d8f6");
 		Report report04 = reportRepository.findOne(uuidOfReport04);
@@ -142,8 +141,8 @@ public class JobParameterValueRepositoryTests {
 		//		logger.info("savedJob.getjobId() = {}", savedJob.getJobId());
 		//		logger.info("After save: unsavedJob.getJobId() = {}", unsavedJob.getJobId());
 
-		assertEquals(3, jobRepository.count());
-		assertEquals(3, jobParameterValueRepository.count());
+		assertThat(jobRepository.count(), is(3L));
+		assertThat(jobParameterValueRepository.count(), is(3L));
 
 		//TODO Need to write a LOT more tests
 	}
@@ -152,7 +151,7 @@ public class JobParameterValueRepositoryTests {
 	@Transactional
 	public void save_newJobParameterValue_multivalued() {
 
-		assertEquals(2, jobRepository.count());
+		assertThat(jobRepository.count(), is(2L));
 
 		UUID uuidOfReport04 = UUID.fromString("702d5daa-e23d-4f00-b32b-67b44c06d8f6");
 		Report report04 = reportRepository.findOne(uuidOfReport04);
@@ -178,7 +177,7 @@ public class JobParameterValueRepositoryTests {
 		//		logger.info("savedJob.getjobId() = {}", savedJob.getJobId());
 		//		logger.info("After save: unsavedJob.getJobId() = {}", unsavedJob.getJobId());
 
-		assertEquals(3, jobRepository.count());
+		assertThat(jobRepository.count(), is(3L));
 
 		Long uuidFromSavedJob = savedJob.getJobId();
 		Job foundJob = jobRepository.findOne(uuidFromSavedJob);

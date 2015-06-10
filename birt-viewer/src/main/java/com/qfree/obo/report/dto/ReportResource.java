@@ -2,7 +2,9 @@ package com.qfree.obo.report.dto;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import javax.ws.rs.core.UriInfo;
@@ -14,7 +16,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.qfree.obo.report.domain.Report;
-import com.qfree.obo.report.domain.ReportVersion;
 import com.qfree.obo.report.rest.server.RestUtils.RestApiVersion;
 
 @XmlRootElement
@@ -52,9 +53,12 @@ public class ReportResource extends AbstractBaseResource {
 	public ReportResource() {
 	}
 
-	public ReportResource(Report report, UriInfo uriInfo, List<String> expand, RestApiVersion apiVersion) {
+	public ReportResource(Report report, UriInfo uriInfo, Map<String, List<String>> queryParams,
+			RestApiVersion apiVersion) {
 
-		super(Report.class, report.getReportId(), uriInfo, expand, apiVersion);
+		super(Report.class, report.getReportId(), uriInfo, queryParams, apiVersion);
+
+		List<String> expand = queryParams.get(ResourcePath.EXPAND_QP_KEY);
 
 		String expandParam = ResourcePath.forEntity(Report.class).getExpandParam();
 		if (expand.contains(expandParam)) {
@@ -67,13 +71,12 @@ public class ReportResource extends AbstractBaseResource {
 			 */
 			List<String> expandElementRemoved = new ArrayList<>(expand);
 			expandElementRemoved.remove(expandParam);
-
 			/*
-			 * Clear apiVersion since its current valsue is not necessarily
-			 * applicable to any resources associated with fields of this class. 
-			 * See ReportResource for a more detailed explanation.
+			 * Make a copy of the original queryParams Map and then replace the 
+			 * "expand" array with expandElementRemoved.
 			 */
-			apiVersion = null;
+			Map<String, List<String>> newQueryParams = new HashMap<>(queryParams);
+			newQueryParams.put(ResourcePath.EXPAND_QP_KEY, expandElementRemoved);
 
 			/*
 			 * Set the API version to null for any/all constructors for 
@@ -89,24 +92,17 @@ public class ReportResource extends AbstractBaseResource {
 
 			this.reportId = report.getReportId();
 			this.reportCategoryResource = new ReportCategoryResource(report.getReportCategory(),
-					uriInfo, expandElementRemoved, apiVersion);
+					uriInfo, newQueryParams, apiVersion);
 			this.name = report.getName();
 			this.number = report.getNumber();
 			this.active = report.isActive();
 			this.createdOn = report.getCreatedOn();
 
-			if (report.getReportVersions() != null) {
+			logger.info("report = {}", report);
+			logger.info("report.getReportVersions() = {}", report.getReportVersions());
 
-				List<ReportVersion> reportVersions = report.getReportVersions();
-				List<ReportVersionResource> reportVersionResources = new ArrayList<>(reportVersions.size());
-				for (ReportVersion reportVersion : reportVersions) {
-					reportVersionResources.add(
-							new ReportVersionResource(reportVersion, uriInfo, expandElementRemoved, apiVersion));
-				}
-				//this.reportVersions = reportVersionResources;
-				this.reportVersions = new ReportVersionCollectionResource(reportVersionResources, ReportVersion.class,
-						uriInfo, expand, apiVersion);
-			}
+			this.reportVersions = new ReportVersionCollectionResource(report,
+					uriInfo, newQueryParams, apiVersion);
 
 			//		this.roleReports = report.getRoleReports();
 		}

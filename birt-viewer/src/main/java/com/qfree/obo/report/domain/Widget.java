@@ -18,6 +18,7 @@ import javax.validation.constraints.NotNull;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;
+import org.hibernate.validator.constraints.NotBlank;
 
 import com.qfree.obo.report.util.DateUtils;
 
@@ -50,21 +51,26 @@ public class Widget implements Serializable {
 			columnDefinition = "uuid DEFAULT uuid_generate_v4()")
 	private UUID widgetId;
 
+	@NotBlank
 	@Column(name = "name", nullable = false, length = 32)
 	private String name;
 
+	@NotBlank
 	@Column(name = "description", nullable = false, length = 80)
 	private String description;
 
+	@NotNull
 	@Column(name = "multiple_select", nullable = false)
-	private boolean multipleSelect;
+	private Boolean multipleSelect;
 
+	@NotNull
 	@Column(name = "active", nullable = false)
-	private boolean active;
+	private Boolean active;
 
 	@OneToMany(targetEntity = ReportParameter.class, mappedBy = "widget")
 	private List<ReportParameter> reportParameters;
 
+	@NotNull
 	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name = "created_on", nullable = false)
 	private Date createdOn;
@@ -72,24 +78,20 @@ public class Widget implements Serializable {
 	private Widget() {
 	}
 
-	public Widget(String description, String name, boolean multipleSelect) {
+	public Widget(String description, String name, Boolean multipleSelect) {
 		this(description, name, multipleSelect, true, DateUtils.nowUtc());
 	}
 
-	public Widget(String description, String name, boolean multipleSelect, boolean active) {
+	public Widget(String description, String name, Boolean multipleSelect, Boolean active) {
 		this(description, name, multipleSelect, active, DateUtils.nowUtc());
 	}
 
-	public Widget(String description, String name, boolean multipleSelect, boolean active, Date createdOn) {
+	public Widget(String description, String name, Boolean multipleSelect, Boolean active, Date createdOn) {
 		this.description = description;
 		this.name = name;
 		this.multipleSelect = multipleSelect;
-		this.active = active;
-		if (createdOn != null) {
-			this.createdOn = createdOn;
-		} else {
-			this.createdOn = DateUtils.nowUtc();
-		}
+		this.active = (active != null) ? active : true;
+		this.createdOn = (createdOn != null) ? createdOn : DateUtils.nowUtc();
 	}
 
 	public UUID getWidgetId() {
@@ -112,19 +114,19 @@ public class Widget implements Serializable {
 		this.name = name;
 	}
 
-	public boolean isMultipleSelect() {
+	public Boolean isMultipleSelect() {
 		return multipleSelect;
 	}
 
-	public void setMultipleSelect(boolean multipleSelect) {
+	public void setMultipleSelect(Boolean multipleSelect) {
 		this.multipleSelect = multipleSelect;
 	}
 
-	public boolean isActive() {
+	public Boolean isActive() {
 		return active;
 	}
 
-	public void setActive(boolean active) {
+	public void setActive(Boolean active) {
 		this.active = active;
 	}
 

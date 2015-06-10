@@ -23,7 +23,9 @@ import javax.validation.constraints.NotNull;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;
+import org.hibernate.validator.constraints.NotBlank;
 
+import com.qfree.obo.report.dto.ReportVersionResource;
 import com.qfree.obo.report.util.DateUtils;
 
 /**
@@ -61,6 +63,7 @@ public class ReportVersion implements Serializable {
 	 * PostgreSQL column definition includes "DEFAULT uuid_generate_v4()", which
 	 * is not what is wanted.
 	 */
+	@NotNull
 	@JoinColumn(name = "report_id", nullable = false,
 			foreignKey = @ForeignKey(name = "fk_reportversion_report"),
 			columnDefinition = "uuid")
@@ -68,23 +71,31 @@ public class ReportVersion implements Serializable {
 
 	/*
 	 * cascade = CascadeType.ALL:
-	 *     Deleting a Report will delete all of its ReportParameter's.
+	 *     Deleting a ReportVersion will delete all of its ReportParameter's.
 	 */
 	@OneToMany(mappedBy = "reportVersion", cascade = CascadeType.ALL)
 	private List<ReportParameter> reportParameters;
 	/*
 	 * cascade = CascadeType.ALL:
-	 *     Deleting a Report will delete all of its Subscription's.
+	 *     Deleting a ReportVersion will delete all of its Subscription's.
 	 */
 	@OneToMany(mappedBy = "reportVersion", cascade = CascadeType.ALL)
 	private List<Subscription> reportSubscriptions;
 
 	/*
 	 * cascade = CascadeType.ALL:
-	 *     Deleting a Report will delete all of its Job's.
+	 *     Deleting a ReportVersion will delete all of its Job's.
 	 */
 	@OneToMany(mappedBy = "reportVersion", cascade = CascadeType.ALL)
 	private List<Job> jobs;
+
+	/**
+	 * The name of the file as uploaded from disk or written to disk. This must
+	 * be preserved because some reports may refer to other reports by name.
+	 */
+	@NotBlank
+	@Column(name = "file_name", nullable = false, length = 80)
+	private String fileName;
 
 	// Works for H2, but not PostgreSQL:
 	//	@Column(name = "rptdesign", nullable = false, columnDefinition = "clob")
@@ -100,6 +111,7 @@ public class ReportVersion implements Serializable {
 	 * 
 	 *   .../resources/db/h2/schema.sql
 	 */
+	@NotBlank
 	@Column(name = "rptdesign", nullable = false, columnDefinition = "text")
 	private String rptdesign;
 
@@ -107,8 +119,9 @@ public class ReportVersion implements Serializable {
 	 * A string value that represents the release version of the report as it 
 	 * should be shown to users. The value is a string so that you can describe
 	 * the report version as a <major>.<minor>.<point> string, or in any other
-	 * form
+	 * chosen format.
 	 */
+	@NotBlank
 	@Column(name = "version_name", nullable = false, length = 16)
 	private String versionName;
 
@@ -117,12 +130,15 @@ public class ReportVersion implements Serializable {
 	 * relative to other versions for the same Report. The value is an integer 
 	 * so that it can be used for ordering in a UI or for other numerical uses.
 	 */
+	@NotNull
 	@Column(name = "version_code", nullable = false)
 	private Integer versionCode;
 
+	@NotNull
 	@Column(name = "active", nullable = false)
-	private boolean active;
+	private Boolean active;
 
+	@NotNull
 	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name = "created_on", nullable = false)
 	private Date createdOn;
@@ -130,22 +146,44 @@ public class ReportVersion implements Serializable {
 	public ReportVersion() {
 	}
 
-	public ReportVersion(Report report, String rptdesign, String versionName, Integer versionCode, boolean active) {
-		this(report, rptdesign, versionName, versionCode, active, DateUtils.nowUtc());
+	public ReportVersion(
+			Report report,
+			String fileName,
+			String rptdesign,
+			String versionName,
+			Integer versionCode,
+			Boolean active,
+			Date createdOn) {
+		this(null, report, fileName, rptdesign, versionName, versionCode, active, createdOn);
 	}
 
-	public ReportVersion(Report report, String rptdesign, String versionName, Integer versionCode, boolean active,
-			Date createdOn) {
+	public ReportVersion(Report report, String fileName, String rptdesign, String versionName, Integer versionCode,
+			Boolean active) {
+		this(null, report, fileName, rptdesign, versionName, versionCode, active, DateUtils.nowUtc());
+	}
+
+	public ReportVersion(ReportVersionResource reportVersionResource, Report report) {
+		this(
+				reportVersionResource.getReportVersionId(),
+				report,
+				reportVersionResource.getFileName(),
+				reportVersionResource.getRptdesign(),
+				reportVersionResource.getVersionName(),
+				reportVersionResource.getVersionCode(),
+				reportVersionResource.isActive(),
+				reportVersionResource.getCreatedOn());
+	}
+
+	public ReportVersion(UUID reportVersionId, Report report, String fileName, String rptdesign,
+			String versionName, Integer versionCode, Boolean active, Date createdOn) {
+		this.reportVersionId = reportVersionId;
 		this.report = report;
+		this.fileName = fileName;
 		this.rptdesign = rptdesign;
 		this.versionName = versionName;
 		this.versionCode = versionCode;
-		this.active = active;
-		if (createdOn != null) {
-			this.createdOn = createdOn;
-		} else {
-			this.createdOn = DateUtils.nowUtc();
-		}
+		this.active = (active != null) ? active : true;
+		this.createdOn = (createdOn != null) ? createdOn : DateUtils.nowUtc();
 	}
 
 	public UUID getReportVersionId() {
@@ -184,6 +222,14 @@ public class ReportVersion implements Serializable {
 		this.jobs = jobs;
 	}
 
+	public String getFileName() {
+		return fileName;
+	}
+
+	public void setFileName(String fileName) {
+		this.fileName = fileName;
+	}
+
 	public String getRptdesign() {
 		return rptdesign;
 	}
@@ -208,16 +254,20 @@ public class ReportVersion implements Serializable {
 		this.versionCode = versionCode;
 	}
 
-	public boolean isActive() {
+	public Boolean isActive() {
 		return active;
 	}
 
-	public void setActive(boolean active) {
+	public void setActive(Boolean active) {
 		this.active = active;
 	}
 
 	public Date getCreatedOn() {
 		return createdOn;
+	}
+
+	public void setCreatedOn(Date createdOn) {
+		this.createdOn = createdOn;
 	}
 
 	@Override
@@ -227,6 +277,8 @@ public class ReportVersion implements Serializable {
 		builder.append(reportVersionId);
 		builder.append(", report=");
 		builder.append(report);
+		builder.append(", fileName=");
+		builder.append(fileName);
 		builder.append(", rptdesign=");
 		builder.append("<" + ((rptdesign != null) ? rptdesign.length() : 0) + " bytes>");
 		builder.append(", versionName=");

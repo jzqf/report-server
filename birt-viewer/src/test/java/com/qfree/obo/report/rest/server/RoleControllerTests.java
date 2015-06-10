@@ -1,6 +1,7 @@
 package com.qfree.obo.report.rest.server;
 
 import static org.hamcrest.Matchers.greaterThan;
+import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.lessThan;
 import static org.hamcrest.Matchers.not;
@@ -8,6 +9,7 @@ import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertThat;
 
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
@@ -19,6 +21,8 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 
+import org.hamcrest.collection.IsCollectionWithSize;
+import org.hamcrest.core.IsCollectionContaining;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -36,7 +40,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.qfree.obo.report.ApplicationConfig;
 import com.qfree.obo.report.db.RoleRepository;
+import com.qfree.obo.report.domain.Report;
 import com.qfree.obo.report.domain.Role;
+import com.qfree.obo.report.dto.ReportCollectionResource;
+import com.qfree.obo.report.dto.ReportResource;
 import com.qfree.obo.report.dto.ResourcePath;
 import com.qfree.obo.report.dto.RestErrorResource;
 import com.qfree.obo.report.dto.RestErrorResource.RestError;
@@ -125,6 +132,7 @@ public class RoleControllerTests {
 		 * Retrieve the RoleResource via HTTP GET.
 		 */
 		response = webTarget.path(path)
+				.queryParam(ResourcePath.EXPAND_QP_NAME, ResourcePath.ROLE_EXPAND_PARAM)
 				.request()
 				.header("Accept", MediaType.APPLICATION_JSON + ";v=" + defaultVersionGet)
 				.get();
@@ -332,6 +340,7 @@ public class RoleControllerTests {
 		 * Retrieve the RoleResource that was updated via HTTP GET.
 		 */
 		response = webTarget.path(path)
+				.queryParam(ResourcePath.EXPAND_QP_NAME, ResourcePath.ROLE_EXPAND_PARAM)
 				.request()
 				.header("Accept", MediaType.APPLICATION_JSON + ";v=" + defaultVersionGet)
 				.get();
@@ -367,6 +376,139 @@ public class RoleControllerTests {
 		assertThat(role.getEncodedPassword(), is(newEncodedPassword));
 		assertThat(role.isLoginRole(), is(newLoginRole));
 		assertThat(DateUtils.entityTimestampToNormalDate(role.getCreatedOn()), is(currentCreatedOn));
+	}
+
+	@Test
+	//	@DirtiesContext
+	@Transactional
+	public void testGetReportsForRole() {
+		/* 
+		 * This is the default version for the endpoint 
+		 * ResourcePath.ROLES_PATH/{id}/ResourcePath.REPORTS_PATH using HTTP GET.
+		 */
+		String defaultApiVersion = "1";
+
+		/*
+		 * Details of the Role (from test-data.sql) for which Reports will be 
+		 * fetched.
+		 */
+		UUID uuidOfRole_aabb = UUID.fromString("ee56f34d-dbb4-41c1-9d30-ce29cf973820");
+		String currentUsername = "aabb";
+
+		UUID uuidOfReport03 = UUID.fromString("fe718314-5b39-40e7-aed2-279354c04a9d");	// active=false
+		UUID uuidOfReport04 = UUID.fromString("702d5daa-e23d-4f00-b32b-67b44c06d8f6");	// active=true
+//	List<UUID> activeReportUuids = new ArrayList<>();
+//	activeReportUuids.add(uuidOfReport04);
+//	List<UUID> allReportUuids = new ArrayList<>();
+//	allReportUuids.add(uuidOfReport03);
+//	allReportUuids.add(uuidOfReport04);
+		
+		Role role_aabb = roleRepository.findOne(uuidOfRole_aabb);
+		assertThat(role_aabb, is(not(nullValue())));
+		assertThat(role_aabb.getUsername(), is(currentUsername));
+
+		Response response;
+		String path;
+
+		path = Paths
+				.get(
+						ResourcePath.forEntity(Role.class).getPath(),
+						uuidOfRole_aabb.toString(),
+						ResourcePath.forEntity(Report.class).getPath())
+				.toString();
+		logger.debug("path = {}", path);
+
+		/*
+		 * Retrieve the RoleResource via HTTP GET.
+		 */
+		response = webTarget.path(path)
+				.queryParam(ResourcePath.EXPAND_QP_NAME,
+						ResourcePath.REPORT_EXPAND_PARAM,
+						ResourcePath.REPORTVERSION_EXPAND_PARAM)
+				.request()
+				.header("Accept", MediaType.APPLICATION_JSON + ";v=" + defaultApiVersion)
+				.get();
+		assertThat(response.getStatus(), is(Response.Status.OK.getStatusCode()));
+		ReportCollectionResource reportCollectionResource = response.readEntity(ReportCollectionResource.class);
+		logger.debug("reportCollectionResource = {}", reportCollectionResource);
+		assertThat(reportCollectionResource, is(not(nullValue())));
+		assertThat(reportCollectionResource.getItems(), is(not(nullValue())));
+		/*
+		 * Note:	This will change after I enable inheritance of report access
+		 * 			for roles:
+		 */
+		assertThat(reportCollectionResource.getItems(), IsCollectionWithSize.hasSize(1));
+		assertThat(reportCollectionResource.getItems(), hasSize(1));
+		List<UUID> activeReportUuidsFromEndpoint = new ArrayList<>(reportCollectionResource.getItems().size());
+		for (ReportResource reportResource : reportCollectionResource.getItems()) {
+			activeReportUuidsFromEndpoint.add(reportResource.getReportId());
+		}
+		assertThat(activeReportUuidsFromEndpoint, IsCollectionContaining.hasItems(uuidOfReport04));
+
+		/*
+		 * Repeat, but this time turn off filtering on "active" for both Reports
+		 * and ReportVersions.
+		 */
+		response = webTarget.path(path)
+				.queryParam(ResourcePath.EXPAND_QP_NAME,
+						ResourcePath.REPORT_EXPAND_PARAM,
+						ResourcePath.REPORTVERSION_EXPAND_PARAM)
+				.queryParam(ResourcePath.SHOWALL_QP_NAME,
+						ResourcePath.REPORT_SHOWALL_PARAM,
+						ResourcePath.REPORTVERSION_SHOWALL_PARAM)
+				.request()
+				.header("Accept", MediaType.APPLICATION_JSON + ";v=" + defaultApiVersion)
+				.get();
+		assertThat(response.getStatus(), is(Response.Status.OK.getStatusCode()));
+		reportCollectionResource = response.readEntity(ReportCollectionResource.class);
+		logger.debug("reportCollectionResource = {}", reportCollectionResource);
+		assertThat(reportCollectionResource, is(not(nullValue())));
+		assertThat(reportCollectionResource.getItems(), is(not(nullValue())));
+		/*
+		 * Note:	This will change after I enable inheritance of report access
+		 * 			for roles:
+		 */
+		assertThat(reportCollectionResource.getItems(), IsCollectionWithSize.hasSize(2));
+		assertThat(reportCollectionResource.getItems(), hasSize(2));
+		List<UUID> allReportUuidsFromEndpoint = new ArrayList<>(reportCollectionResource.getItems().size());
+		for (ReportResource reportResource : reportCollectionResource.getItems()) {
+			allReportUuidsFromEndpoint.add(reportResource.getReportId());
+		}
+		assertThat(allReportUuidsFromEndpoint, IsCollectionContaining.hasItems(uuidOfReport03, uuidOfReport04));
+
+		/*
+		 * Attempt to fetch a list of reports for a Role using an id that does 
+		 * not exist. This should throw a "404" exception.
+		 */
+		UUID uuidOfNonExistentRole = UUID.fromString("6c328253-0000-0000-0000-ef38197931b0");
+
+		path = Paths
+				.get(
+						ResourcePath.forEntity(Role.class).getPath(),
+						uuidOfNonExistentRole.toString(),
+						ResourcePath.forEntity(Report.class).getPath())
+				.toString();
+
+		/*
+		 * Attempt to retrieve the list of reports via HTTP GET.
+		 */
+		response = webTarget.path(path)
+				.request()
+				.header("Accept", MediaType.APPLICATION_JSON + ";v=" + defaultApiVersion)
+				.get();
+		assertThat(response.getStatus(), is(Response.Status.NOT_FOUND.getStatusCode()));
+		/*
+		 * If an error occurs, then a RestErrorResource is returned as the 
+		 * entity, not a RoleResource.
+		 */
+		RestErrorResource restErrorResource = response.readEntity(RestErrorResource.class);
+		logger.debug("restErrorResource = {}", restErrorResource);
+		assertThat(restErrorResource, is(not(nullValue())));
+		assertThat(restErrorResource.getHttpStatus(), is(404));
+		assertThat(restErrorResource.getHttpStatus(),
+				is(RestError.NOT_FOUND_RESOUCE.getResponseStatus().getStatusCode()));
+		assertThat(restErrorResource.getErrorCode(), is(RestError.NOT_FOUND_RESOUCE.getErrorCode()));
+
 	}
 
 }

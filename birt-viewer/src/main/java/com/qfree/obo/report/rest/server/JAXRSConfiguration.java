@@ -6,6 +6,7 @@ import java.util.Map;
 import javax.ws.rs.ApplicationPath;
 import javax.ws.rs.ext.ContextResolver;
 
+import org.glassfish.jersey.media.multipart.MultiPartFeature;
 import org.glassfish.jersey.moxy.json.MoxyJsonConfig;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.server.spring.scope.RequestContextFilter;
@@ -17,6 +18,8 @@ import com.qfree.obo.report.exceptions.GenericExceptionMapper;
 @ApplicationPath("/rest")
 public class JAXRSConfiguration extends ResourceConfig {
 	public JAXRSConfiguration() {
+
+		//property(ServerProperties.BV_SEND_ERROR_IN_RESPONSE, true);
 
 		/*
 		 * This is for Java API for JSON Processing (JSON-P), so it doesn't do 
@@ -38,6 +41,17 @@ public class JAXRSConfiguration extends ResourceConfig {
 		register(createMoxyJsonResolver());
 
 		/*
+		 * This is needed for multipart support, e.g., file uploads. It is
+		 * provided by the Maven dependency:
+		 * 		<dependency>
+		 * 			<groupId>org.glassfish.jersey.media</groupId>
+		 * 			<artifactId>jersey-media-multipart</artifactId>
+		 * 			<version>${jersey.version}</version>
+		 * 		</dependency>
+		 */
+		register(MultiPartFeature.class);
+
+		/*
 		 * This is a Spring filter to provide a bridge between JAX-RS and Spring
 		 * request attributes.
 		 */
@@ -55,6 +69,8 @@ public class JAXRSConfiguration extends ResourceConfig {
 		register(LoginAttemptController.class);
 		register(ReportController.class);
 		register(ReportCategoryController.class);
+		register(ReportSyncController.class);
+		register(ReportVersionController.class);
 		register(RoleController.class);
 		register(TestController.class);
 		/*

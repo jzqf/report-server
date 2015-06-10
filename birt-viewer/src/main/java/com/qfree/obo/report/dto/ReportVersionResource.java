@@ -2,10 +2,14 @@ package com.qfree.obo.report.dto;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import javax.ws.rs.core.UriInfo;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
@@ -13,10 +17,13 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.qfree.obo.report.domain.Report;
 import com.qfree.obo.report.domain.ReportVersion;
+import com.qfree.obo.report.rest.server.RestUtils;
 import com.qfree.obo.report.rest.server.RestUtils.RestApiVersion;
 
 @XmlRootElement
+@XmlAccessorType(XmlAccessType.FIELD)
 public class ReportVersionResource extends AbstractBaseResource {
 
 	private static final Logger logger = LoggerFactory.getLogger(ReportVersionResource.class);
@@ -29,6 +36,11 @@ public class ReportVersionResource extends AbstractBaseResource {
 	private ReportResource reportResource;
 
 	@XmlElement
+	private String fileName;
+
+	@XmlElement
+	// Do not serialize this field - needs @XmlAccessorType(XmlAccessType.FIELD);
+	//@XmlTransient
 	private String rptdesign;
 
 	@XmlElement
@@ -44,13 +56,19 @@ public class ReportVersionResource extends AbstractBaseResource {
 	@XmlJavaTypeAdapter(DateAdapter.class)
 	private Date createdOn;
 
+	@XmlElement(name = "reportParameters")
+	//	private List<ReportParameterResource> reportParameters;
+	private ReportParameterCollectionResource reportParameters;
+
 	public ReportVersionResource() {
 	}
 
-	public ReportVersionResource(ReportVersion reportVersion, UriInfo uriInfo, List<String> expand,
+	public ReportVersionResource(ReportVersion reportVersion, UriInfo uriInfo, Map<String, List<String>> queryParams,
 			RestApiVersion apiVersion) {
 
-		super(ReportVersion.class, reportVersion.getReportVersionId(), uriInfo, expand, apiVersion);
+		super(ReportVersion.class, reportVersion.getReportVersionId(), uriInfo, queryParams, apiVersion);
+
+		List<String> expand = queryParams.get(ResourcePath.EXPAND_QP_KEY);
 
 		String expandParam = ResourcePath.forEntity(ReportVersion.class).getExpandParam();
 		if (expand.contains(expandParam)) {
@@ -63,9 +81,15 @@ public class ReportVersionResource extends AbstractBaseResource {
 			 */
 			List<String> expandElementRemoved = new ArrayList<>(expand);
 			expandElementRemoved.remove(expandParam);
+			/*
+			 * Make a copy of the original queryParams Map and then replace the 
+			 * "expand" array with expandElementRemoved.
+			 */
+			Map<String, List<String>> newQueryParams = new HashMap<>(queryParams);
+			newQueryParams.put(ResourcePath.EXPAND_QP_KEY, expandElementRemoved);
 
 			/*
-			 * Clear apiVersion since its current valsue is not necessarily
+			 * Clear apiVersion since its current value is not necessarily
 			 * applicable to any resources associated with fields of this class. 
 			 * See ReportResource for a more detailed explanation.
 			 */
@@ -73,12 +97,54 @@ public class ReportVersionResource extends AbstractBaseResource {
 
 			this.reportVersionId = reportVersion.getReportVersionId();
 			this.reportResource = new ReportResource(reportVersion.getReport(),
-					uriInfo, expandElementRemoved, apiVersion);
-			this.rptdesign = reportVersion.getRptdesign();
+					uriInfo, newQueryParams, apiVersion);
+			this.fileName = reportVersion.getFileName();
+			if (expand.contains(ResourcePath.RPTDESIGN_EXPAND_PARAM)) {
+				this.rptdesign = reportVersion.getRptdesign();
+				expandElementRemoved.remove(ResourcePath.RPTDESIGN_EXPAND_PARAM);  // probably not necessary
+			} else {
+				this.rptdesign = String.format("<%s bytes>",
+						(reportVersion.getRptdesign() != null) ? reportVersion.getRptdesign().length() : 0);
+			}
 			this.versionName = reportVersion.getVersionName();
 			this.versionCode = reportVersion.getVersionCode();
 			this.active = reportVersion.isActive();
 			this.createdOn = reportVersion.getCreatedOn();
+
+			this.reportParameters = new ReportParameterCollectionResource(reportVersion,
+					uriInfo, newQueryParams, apiVersion);
+			//			if (reportVersion.getReportParameters() != null) {
+			//
+			//				List<ReportParameter> reportParameters = reportVersion.getReportParameters();
+			//				List<ReportParameterResource> reportParameterResources = new ArrayList<>(reportParameters.size());
+			//				for (ReportParameter reportParameter : reportParameters) {
+			//					reportParameterResources.add(
+			//							new ReportParameterResource(reportParameter, uriInfo, expandElementRemoved, apiVersion));
+			//				}
+			//				//this.reportParameters = reportParameterResources;
+			//				this.reportParameters = new ReportParameterCollectionResource(reportParameterResources,
+			//						ReportParameter.class, uriInfo, expand, apiVersion);
+			//			}
+		}
+	}
+
+	public static List<ReportVersionResource> listFromReport(Report report, UriInfo uriInfo,
+			Map<String, List<String>> queryParams, RestApiVersion apiVersion) {
+		if (report.getReportVersions() != null) {
+			List<ReportVersion> reportVersions = report.getReportVersions();
+			List<ReportVersionResource> reportVersionResources = new ArrayList<>(reportVersions.size());
+			for (ReportVersion reportVersion : reportVersions) {
+				List<String> showAll = queryParams.get(ResourcePath.SHOWALL_QP_KEY);
+				if (reportVersion.isActive() ||
+						RestUtils.FILTER_INACTIVE_RECORDS == false ||
+						ResourcePath.showAll(ReportVersion.class, showAll)) {
+					reportVersionResources.add(
+							new ReportVersionResource(reportVersion, uriInfo, queryParams, apiVersion));
+				}
+			}
+			return reportVersionResources;
+		} else {
+			return null;
 		}
 	}
 
@@ -96,6 +162,14 @@ public class ReportVersionResource extends AbstractBaseResource {
 
 	public void setReportResource(ReportResource reportResource) {
 		this.reportResource = reportResource;
+	}
+
+	public String getFileName() {
+		return fileName;
+	}
+
+	public void setFileName(String fileName) {
+		this.fileName = fileName;
 	}
 
 	public String getRptdesign() {
@@ -138,6 +212,14 @@ public class ReportVersionResource extends AbstractBaseResource {
 		this.createdOn = createdOn;
 	}
 
+	public ReportParameterCollectionResource getReportParameters() {
+		return reportParameters;
+	}
+
+	public void setReportParameters(ReportParameterCollectionResource reportParameters) {
+		this.reportParameters = reportParameters;
+	}
+
 	@Override
 	public String toString() {
 		StringBuilder builder = new StringBuilder();
@@ -146,7 +228,8 @@ public class ReportVersionResource extends AbstractBaseResource {
 		builder.append(", reportResource=");
 		builder.append(reportResource);
 		builder.append(", rptdesign=");
-		builder.append("<" + ((rptdesign != null) ? rptdesign.length() : 0) + " bytes>");
+		builder.append(rptdesign);
+		//		builder.append("<" + ((rptdesign != null) ? rptdesign.length() : 0) + " bytes>");
 		builder.append(", versionName=");
 		builder.append(versionName);
 		builder.append(", versionCode=");

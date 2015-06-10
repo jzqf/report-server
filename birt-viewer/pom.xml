@@ -141,11 +141,6 @@
 			<artifactId>jersey-client</artifactId>
 			<version>${jersey.version}</version>
 		</dependency>
-		<!-- <dependency>
-			<groupId>org.glassfish.jersey.connectors</groupId>
-			<artifactId>jersey-apache-connector</artifactId>
-			<version>${jersey.version}</version>
-		</dependency> -->
 		
 		<!-- MOXy: JSON provider for JAX-RS. This library provides POJO- and
 		     JAXB-based binding support. This featue is auto-discovered by
@@ -176,6 +171,20 @@
 		<dependency>
 			<groupId>org.glassfish.jersey.containers</groupId>
 			<artifactId>jersey-container-servlet</artifactId>
+			<!-- <version>${jersey.version}</version> -->
+		</dependency>
+
+		<!-- Needed for multipart support, e.g., file uploads -->
+		<dependency>
+			<groupId>org.glassfish.jersey.media</groupId>
+			<artifactId>jersey-media-multipart</artifactId>
+			<version>${jersey.version}</version>
+		</dependency>
+		
+		<!-- Bean Validation support  -->
+		<dependency>
+			<groupId>org.glassfish.jersey.ext</groupId>
+			<artifactId>jersey-bean-validation</artifactId>
 			<!-- <version>${jersey.version}</version> -->
 		</dependency>
 

@@ -16,6 +16,7 @@ import javax.validation.constraints.NotNull;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;
+import org.hibernate.validator.constraints.NotBlank;
 
 import com.qfree.obo.report.util.DateUtils;
 
@@ -56,18 +57,22 @@ public class ParameterType implements Serializable {
 			columnDefinition = "uuid DEFAULT uuid_generate_v4()")
 	private UUID parameterTypeId;
 
+	@NotBlank
 	@Column(name = "abbreviation", nullable = false, length = 32)
 	private String abbreviation;
 
+	@NotBlank
 	@Column(name = "description", nullable = false, length = 32)
 	private String description;
 
 	@OneToMany(targetEntity = ReportParameter.class, mappedBy = "parameterType")
 	private List<ReportParameter> reportParameters;
 
+	@NotNull
 	@Column(name = "active", nullable = false)
-	private boolean active;
+	private Boolean active;
 
+	@NotNull
 	@Column(name = "created_on", nullable = false)
 	private Date createdOn;
 
@@ -78,19 +83,15 @@ public class ParameterType implements Serializable {
 		this(description, abbreviation, true, DateUtils.nowUtc());
 	}
 
-	public ParameterType(String description, String abbreviation, boolean active) {
+	public ParameterType(String description, String abbreviation, Boolean active) {
 		this(description, abbreviation, active, DateUtils.nowUtc());
 	}
 
-	public ParameterType(String description, String abbreviation, boolean active, Date createdOn) {
+	public ParameterType(String description, String abbreviation, Boolean active, Date createdOn) {
 		this.description = description;
 		this.abbreviation = abbreviation;
-		this.active = active;
-		if (createdOn != null) {
-			this.createdOn = createdOn;
-		} else {
-			this.createdOn = DateUtils.nowUtc();
-		}
+		this.active = (active != null) ? active : true;
+		this.createdOn = (createdOn != null) ? createdOn : DateUtils.nowUtc();
 	}
 
 	public UUID getParameterTypeId() {
@@ -121,11 +122,11 @@ public class ParameterType implements Serializable {
 		this.reportParameters = reportParameters;
 	}
 
-	public boolean isActive() {
+	public Boolean isActive() {
 		return active;
 	}
 
-	public void setActive(boolean active) {
+	public void setActive(Boolean active) {
 		this.active = active;
 	}
 

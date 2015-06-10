@@ -20,6 +20,7 @@ import javax.validation.constraints.NotNull;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;
+import org.hibernate.validator.constraints.NotBlank;
 
 import com.qfree.obo.report.util.DateUtils;
 
@@ -61,6 +62,7 @@ public class RoleParameterValue implements Serializable {
 	 * PostgreSQL column definition includes "DEFAULT uuid_generate_v4()", which
 	 * is not what is wanted.
 	 */
+	@NotNull
 	@JoinColumn(name = "role_id", nullable = false,
 			foreignKey = @ForeignKey(name = "fk_roleparametervalue_role"),
 			columnDefinition = "uuid")
@@ -73,6 +75,7 @@ public class RoleParameterValue implements Serializable {
 	 * PostgreSQL column definition includes "DEFAULT uuid_generate_v4()", which
 	 * is not what is wanted.
 	 */
+	@NotNull
 	@JoinColumn(name = "report_parameter_id", nullable = false,
 			foreignKey = @ForeignKey(name = "fk_roleparametervalue_reportparameter"),
 			columnDefinition = "uuid")
@@ -88,9 +91,11 @@ public class RoleParameterValue implements Serializable {
 	 * 
 	 * The value is stored as text, regardless of its native data type.
 	 */
+	@NotBlank
 	@Column(name = "string_value", nullable = false, length = 80)
 	private String stringValue;
 
+	@NotNull
 	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name = "created_on", nullable = false)
 	private Date createdOn;
@@ -106,11 +111,7 @@ public class RoleParameterValue implements Serializable {
 		this.role = role;
 		this.reportParameter = reportParameter;
 		this.stringValue = stringValue;
-		if (createdOn != null) {
-			this.createdOn = createdOn;
-		} else {
-			this.createdOn = DateUtils.nowUtc();
-		}
+		this.createdOn = (createdOn != null) ? createdOn : DateUtils.nowUtc();
 	}
 
 	public Role getRole() {

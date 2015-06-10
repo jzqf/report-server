@@ -2,7 +2,9 @@ package com.qfree.obo.report.dto;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import javax.ws.rs.core.UriInfo;
@@ -45,11 +47,12 @@ public class ReportCategoryResource extends AbstractBaseResource {
 	public ReportCategoryResource() {
 	}
 
-	public ReportCategoryResource(ReportCategory reportCategory, UriInfo uriInfo, List<String> expand,
-			RestApiVersion apiVersion) {
+	public ReportCategoryResource(ReportCategory reportCategory, UriInfo uriInfo,
+			Map<String, List<String>> queryParams, RestApiVersion apiVersion) {
 
-		super(ReportCategory.class, reportCategory.getReportCategoryId(), uriInfo, expand, apiVersion);
-		logger.debug("After super(ReportCategory.class, ...  this = {}", this);
+		super(ReportCategory.class, reportCategory.getReportCategoryId(), uriInfo, queryParams, apiVersion);
+
+		List<String> expand = queryParams.get(ResourcePath.EXPAND_QP_KEY);
 
 		String expandParam = ResourcePath.forEntity(ReportCategory.class).getExpandParam();
 		if (expand.contains(expandParam)) {
@@ -62,6 +65,12 @@ public class ReportCategoryResource extends AbstractBaseResource {
 			 */
 			List<String> expandElementRemoved = new ArrayList<>(expand);
 			expandElementRemoved.remove(expandParam);
+			/*
+			 * Make a copy of the original queryParams Map and then replace the 
+			 * "expand" array with expandElementRemoved.
+			 */
+			Map<String, List<String>> newQueryParams = new HashMap<>(queryParams);
+			newQueryParams.put(ResourcePath.EXPAND_QP_KEY, expandElementRemoved);
 
 			/*
 			 * Clear apiVersion since its current value is not necessarily
@@ -135,6 +144,8 @@ public class ReportCategoryResource extends AbstractBaseResource {
 		builder.append(createdOn);
 		builder.append(", href=");
 		builder.append(href);
+		builder.append(", mediaType=");
+		builder.append(mediaType);
 		builder.append("]");
 		return builder.toString();
 	}

@@ -32,11 +32,11 @@
 		
 		<div>
 			<span>
-			<input type=button onClick="location.href='<%= request.getContextPath( ) + "/run?__report=test_rs_config.rptdesign" %>'" 
+			<input type=button onClick="location.href='<%= request.getContextPath( ) + "/run?__report=test/test_rs_config.rptdesign" %>'" 
 				value='Check report server configuration'>
 			</span>
 			<span>
-			<input type=button onClick="location.href='<%= request.getContextPath( ) + "/run?__report=test_db_config.rptdesign" %>'" 
+			<input type=button onClick="location.href='<%= request.getContextPath( ) + "/run?__report=test/test_db_config.rptdesign" %>'" 
 				value='Check database connectivity'>
 			</span>
 		</div>
@@ -45,14 +45,14 @@
 			<!-- Content area -->
 			<p>Reports:</p>
 			<p>
-				<a href="<%= request.getContextPath( ) + "/frameset?__report=test_db_config.rptdesign" %>">Report #1</a>
+				<a href="<%= request.getContextPath( ) + "/frameset?__report=test/test_db_config.rptdesign" %>">Report #1</a>
 				<br>
-				<a href="<%= request.getContextPath( ) + "/frameset?__report=test_db_config.rptdesign" %>">Report #2</a>
+				<a href="<%= request.getContextPath( ) + "/frameset?__report=test/test_db_config.rptdesign" %>">Report #2</a>
 				<br>
-				<a href="<%= request.getContextPath( ) + "/frameset?__report=test_db_config.rptdesign" %>">Report #3</a>
+				<a href="<%= request.getContextPath( ) + "/frameset?__report=test/test_db_config.rptdesign" %>">Report #3</a>
 				<br>
 				<br>
-				<a href="<%= request.getContextPath( ) + "/frameset?__report=dvdrental.rptdesign" %>">dvdrental.rptdesign</a>
+				<a href="<%= request.getContextPath( ) + "/frameset?__report=old/dvdrental.rptdesign" %>">dvdrental.rptdesign</a>
 			</p>
 		</div>
 

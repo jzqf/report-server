@@ -42,14 +42,14 @@
 		<div style="padding-right: 10px; padding-left: 10px; padding-bottom: 10px; padding-top: 10px" >
 			<span style="padding: 10px">
 			<iframe id="dashboardElement_r1c1_id" name="dashboardElement_r1c1" 
-				src="/report-server/preview?__report=dvdrental.rptdesign&rp_max_length=50&rp_film_category=1&rp_film_category=3"
+				src="/report-server/preview?__report=old/dvdrental.rptdesign&rp_max_length=50&rp_film_category=1&rp_film_category=3"
 				width="800" height="800" frameborder="0" scrolling="no">
 				<p>Your browser does not support iframes.</p>
 			</iframe>
 			</span>
 			<span style="padding: 10px">
 			<iframe id="dashboardElement_r1c2_id" name="dashboardElement_r1c2" 
-				src="/report-server/preview?__report=dvdrental.rptdesign&rp_max_length=50&rp_film_category=4"
+				src="/report-server/preview?__report=old/dvdrental.rptdesign&rp_max_length=50&rp_film_category=4"
 				width="800" height="800" frameborder="0" scrolling="no">
 				<p>Your browser does not support iframes.</p>
 			</iframe>

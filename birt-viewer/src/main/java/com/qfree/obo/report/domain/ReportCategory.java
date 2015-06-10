@@ -18,6 +18,7 @@ import javax.validation.constraints.NotNull;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;
+import org.hibernate.validator.constraints.NotBlank;
 
 import com.qfree.obo.report.dto.ReportCategoryResource;
 import com.qfree.obo.report.util.DateUtils;
@@ -48,18 +49,22 @@ public class ReportCategory implements Serializable {
 			columnDefinition = "uuid DEFAULT uuid_generate_v4()")
 	private UUID reportCategoryId;
 
+	@NotBlank
 	@Column(name = "abbreviation", nullable = false, length = 32)
 	private String abbreviation;
 
+	@NotBlank
 	@Column(name = "description", nullable = false, length = 32)
 	private String description;
 
+	@NotNull
 	@Column(name = "active", nullable = false)
-	private boolean active;
+	private Boolean active;
 
 	@OneToMany(targetEntity = Report.class, mappedBy = "reportCategory")
 	private List<Report> reports;
 
+	@NotNull
 	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name = "created_on", nullable = false)
 	private Date createdOn;
@@ -71,11 +76,11 @@ public class ReportCategory implements Serializable {
 		this(null, description, abbreviation, true, DateUtils.nowUtc());
 	}
 
-	public ReportCategory(String description, String abbreviation, boolean active) {
+	public ReportCategory(String description, String abbreviation, Boolean active) {
 		this(null, description, abbreviation, active, DateUtils.nowUtc());
 	}
 
-	public ReportCategory(String description, String abbreviation, boolean active, Date createdOn) {
+	public ReportCategory(String description, String abbreviation, Boolean active, Date createdOn) {
 		this(null, description, abbreviation, active, createdOn);
 	}
 
@@ -85,19 +90,16 @@ public class ReportCategory implements Serializable {
 				reportCategoryResource.getDescription(),
 				reportCategoryResource.getAbbreviation(),
 				reportCategoryResource.isActive(),
+				//				(reportCategoryResource.isActive() != null) ? reportCategoryResource.isActive() : true,
 				reportCategoryResource.getCreatedOn());
 	}
 
-	public ReportCategory(UUID reportCategoryId, String description, String abbreviation, boolean active, Date createdOn) {
+	public ReportCategory(UUID reportCategoryId, String description, String abbreviation, Boolean active, Date createdOn) {
 		this.reportCategoryId = reportCategoryId;
 		this.description = description;
 		this.abbreviation = abbreviation;
-		this.active = active;
-		if (createdOn != null) {
-			this.createdOn = createdOn;
-		} else {
-			this.createdOn = DateUtils.nowUtc();
-		}
+		this.active = (active != null) ? active : true;
+		this.createdOn = (createdOn != null) ? createdOn : DateUtils.nowUtc();
 	}
 
 	public UUID getReportCategoryId() {
@@ -120,11 +122,11 @@ public class ReportCategory implements Serializable {
 		this.abbreviation = abbreviation;
 	}
 
-	public boolean isActive() {
+	public Boolean isActive() {
 		return active;
 	}
 
-	public void setActive(boolean active) {
+	public void setActive(Boolean active) {
 		this.active = active;
 	}
 
