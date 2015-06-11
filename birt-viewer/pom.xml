@@ -45,7 +45,8 @@
 	</issueManagement>
 
 	<properties>
-		<birt-runtime.version>4.4.1</birt-runtime.version>
+		<birt-runtime.version>4.4.2</birt-runtime.version>
+		<birt-runtime.viewservlets.version>4.4.1</birt-runtime.viewservlets.version>
 		<!-- <servlet-api.version>3.1.0</servlet-api.version> -->
 		<!-- <hibernate.version>4.3.8.Final</hibernate.version> -->
 		<tomcat7.maven.plugin.version>2.2</tomcat7.maven.plugin.version>
@@ -105,7 +106,7 @@
 		<dependency>
 			<groupId>org.eclipse.birt.runtime</groupId>
 			<artifactId>viewservlets</artifactId>
-			<version>${birt-runtime.version}</version>
+			<version>${birt-runtime.viewservlets.version}</version>
 			<exclusions>
 				<exclusion>
 					<groupId>commons-logging</groupId>

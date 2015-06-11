@@ -90,7 +90,7 @@ public class RoleController extends AbstractBaseController {
 	 * 
 	 *   $ mvn clean spring-boot:run
 	 *   $ curl -iH "Accept: application/json;v=1" -H "Content-Type: application/json" -X POST -d \
-	 *   '{"username":"Bozo","fullName":"Bozo the clown","encodedPassword":"asdf=","loginRole":true}' \
+	 *   '{"username":"bozoc,"fullName":"Bozo the clown","encodedPassword":"asdf=","loginRole":true}' \
 	 *   http://localhost:8080/rest/roles
 	 */
 	@POST
@@ -167,10 +167,10 @@ public class RoleController extends AbstractBaseController {
 	 * @param uriInfo
 	 * @return
 	 */
-	@Transactional
 	@Path("/{id}/reports")
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
+	@Transactional
 	public ReportCollectionResource getReportsForRole(
 			@PathParam("id") final UUID id,
 			@HeaderParam("Accept") final String acceptHeader,
