@@ -30,4 +30,41 @@ public interface RoleRepository extends JpaRepository<Role, UUID>, RoleRepositor
 	@Query("SELECT r FROM RoleReport rr INNER JOIN rr.report r WHERE rr.role.roleId = :roleId AND r.active=true")
 	public List<Report> findActiveReportsByRoleId(@Param("roleId") UUID roleId);
 
+	//TODO SET UPER LIMIT ON NUMBER OF ITERATIONS?????????????????????????????????????????????????????????????????????????????????????????????????????????
+	@Query(
+			value =
+			"SELECT CAST(r.report_id AS varchar) FROM report r INNER JOIN role_report rr ON rr.report_id=r.report_id WHERE rr.role_id=CAST(:roleId AS uuid)",
+			nativeQuery = true)
+	public List<String> findReportsByRoleIdRecursive(@Param("roleId") String roleId);
+	//	@Query(value =
+	//			"SELECT r.* FROM report r INNER JOIN role_report rr ON rr.report_id=r.report_id WHERE rr.role_id=CAST(:roleId AS uuid)",
+	//			nativeQuery = true)
+	//	public List<Report> findReportsByRoleIdRecursive(@Param("roleId") String roleId);
+
+	//	@Query(value =
+	//			"WITH RECURSIVE ancestor(level, role_id, username) AS (" +
+	//
+	//					"SELECT 0 AS level, role.role_id, role.username " +
+	//					"FROM role " +
+	//					"WHERE role.username=:roleId " +
+	//
+	//					"UNION ALL " +
+	//
+	//					"SELECT level+1, role.role_id, role.username " +
+	//					"FROM ancestor " +
+	//					"INNER JOIN role_role link ON link.child_role_id=ancestor.role_id " +
+	//					"INNER JOIN role ON role.role_id=link.parent_role_id " +
+	//
+	//					") " +
+	//					//"SELECT DISTINCT report.* FROM role_report " +
+	//					"SELECT DISTINCT CAST(report.report_id AS varchar) FROM role_report " +
+	//					"INNER JOIN ancestor ON ancestor.role_id=role_report.role_id " +
+	//					"INNER JOIN report ON report.report_id=role_report.report_id " +
+	//					"ORDER BY report.number",
+	//			nativeQuery = true)
+	//	//	public List<String> findReportsByRoleIdRecursive();
+	//	public List<String> findReportsByRoleIdRecursive(@Param("roleId") UUID roleId);
+	//	//	public List<Report> findReportsByRoleIdRecursive();
+	//	//	public List<Report> findReportsByRoleIdRecursive(@Param("roleId") UUID roleId);
+
 }

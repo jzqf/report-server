@@ -159,11 +159,14 @@ public class RoleController extends AbstractBaseController {
 	 */
 	/**
 	 * Return all Report instances that the Role with a specified id has access
-	 * to. Each Report will have zero or more ReportVersions 
+	 * to. This does NOT include transitive access rights that are associated 
+	 * with ancestor (parents, grandparents, ...) roles. Each Report will have 
+	 * zero or more ReportVersions.
 	 * 
 	 * @param id
 	 * @param acceptHeader
 	 * @param expand
+	 * @param showAll
 	 * @param uriInfo
 	 * @return
 	 */
@@ -199,6 +202,37 @@ public class RoleController extends AbstractBaseController {
 		} else {
 			reports = roleRepository.findReportsByRoleId(role.getRoleId());
 		}
+
+		if (reports != null) {
+			logger.info("Number of reports = {}", reports.size());
+			for (Report report : reports) {
+				logger.info("report = {}", report.getName());
+			}
+		} else {
+			logger.info("reports = {}", reports);
+		}
+
+		//		List<String> reportUuids = roleRepository.findReportsByRoleIdRecursive(role.getRoleId().toString());
+		//		if (reportUuids != null) {
+		//			logger.info("Number of reportUuids (recursive) = {}", reportUuids.size());
+		//			for (String reportUuid : reportUuids) {
+		//				logger.info("reportUuid (recursive) = {}", reportUuid);
+		//			}
+		//		} else {
+		//			logger.info("reportUuid = {}", reportUuids);
+		//		}
+
+		//		reports = roleRepository.findReportsByRoleIdRecursive(role.getRoleId().toString());
+		//		if (reports != null) {
+		//			logger.info("Number of reports (recursive) = {}", reports.size());
+		//			for (Report report : reports) {
+		//				logger.info("report (recursive) = {}", report.getName());
+		//			}
+		//		} else {
+		//			logger.info("reports = {}", reports);
+		//		}
+
+
 		List<ReportResource> reportResources = new ArrayList<>(reports.size());
 		for (Report report : reports) {
 			reportResources.add(new ReportResource(report, uriInfo, queryParams, apiVersion));

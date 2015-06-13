@@ -81,7 +81,11 @@ public class UuidCustomType extends AbstractSingleColumnStandardBasicType<UUID> 
 		//		}
 
 		logger.info("dialect = {}", dialect);
-		if (dialect != null && dialect.equals("org.hibernate.dialect.PostgreSQLDialect")) {
+		/*
+		 * org.hibernate.dialect.PostgreSQLDialect is deprecated!
+		 */
+		//if (dialect != null && dialect.equals("org.hibernate.dialect.PostgreSQLDialect")) {
+		if (dialect != null && dialect.equals("org.hibernate.dialect.PostgreSQL9Dialect")) {
 			SQL_DESCRIPTOR = PostgresUUIDType.PostgresUUIDSqlTypeDescriptor.INSTANCE;
 		} else if (dialect.equals("org.hibernate.dialect.H2Dialect")) {
 			SQL_DESCRIPTOR = VarcharTypeDescriptor.INSTANCE;
