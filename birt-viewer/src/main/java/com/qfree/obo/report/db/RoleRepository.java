@@ -9,6 +9,7 @@ import org.springframework.data.repository.query.Param;
 
 import com.qfree.obo.report.domain.Report;
 import com.qfree.obo.report.domain.Role;
+import com.qfree.obo.report.domain.RoleRole;
 
 /**
  * Repository interface for {@link Role} persistence.
@@ -30,7 +31,6 @@ public interface RoleRepository extends JpaRepository<Role, UUID>, RoleRepositor
 	@Query("SELECT r FROM RoleReport rr INNER JOIN rr.report r WHERE rr.role.roleId = :roleId AND r.active=true")
 	public List<Report> findActiveReportsByRoleId(@Param("roleId") UUID roleId);
 
-	//TODO SET UPER LIMIT ON NUMBER OF ITERATIONS?????????????????????????????????????????????????????????????????????????????????????????????????????????
 	//	@Query(
 	//			value =
 	//			"SELECT CAST(r.report_id AS varchar) FROM report r INNER JOIN role_report rr ON rr.report_id=r.report_id WHERE rr.role_id=CAST(:roleId AS uuid)",
@@ -45,34 +45,23 @@ public interface RoleRepository extends JpaRepository<Role, UUID>, RoleRepositor
 	//			"SELECT r.* FROM report r INNER JOIN role_report rr ON rr.report_id=r.report_id WHERE rr.role_id=CAST(:roleId AS uuid)",
 	//			nativeQuery = true)
 	//	public List<Report> findReportsByRoleIdRecursive(@Param("roleId") String roleId);
-	//	@Query(value =
-	//			"WITH RECURSIVE ancestor(level, role_id, username) AS (" +
-	//
-	//					// CTE anchor member:
-	//					"SELECT 0 AS level, role.role_id, role.username " +
-	//					"FROM role " +
-	//					//"WHERE role.role_id=:roleId " +
-	//					"WHERE role.role_id=CAST(:roleId AS uuid) " +
-	//
-	//					"UNION ALL " +
-	//
-	//					// CTE recursive member:
-	//					"SELECT level+1, role.role_id, role.username " +
-	//					"FROM ancestor " +
-	//					"INNER JOIN role_role link ON link.child_role_id=ancestor.role_id " +
-	//					"INNER JOIN role ON role.role_id=link.parent_role_id " +
-	//
-	//					") " +
-	//					//"SELECT DISTINCT report.* FROM role_report " +
-	//					"SELECT DISTINCT CAST(report.report_id AS varchar) AS report_id, report.number FROM role_report " +
-	//					"INNER JOIN ancestor ON ancestor.role_id=role_report.role_id " +
-	//					"INNER JOIN report ON report.report_id=role_report.report_id " +
-	//					"ORDER BY report.number",
-	//			nativeQuery = true)
-	//	public List<NativeQueryReportResult> findReportsByRoleIdRecursive(@Param("roleId") String roleId);
-	//	//public List<String> findReportsByRoleIdRecursive(@Param("roleId") String roleId);
-	//	//public List<String> findReportsByRoleIdRecursive(@Param("roleId") UUID roleId);
-	//	//public List<Report> findReportsByRoleIdRecursive(@Param("roleId") UUID roleId);
+	/**
+	 * Returns a list of {@link Report}s that a specified {@link Role} has 
+	 * access to. 
+	 * 
+	 * <p>A maximum of 10 levels of {@link RoleRole} relations will be followed. 
+	 * This is to avoid endless recursion for the case where a circular loop is 
+	 * created, e.g., a parent of a {@link Role} is set to be a child of that 
+	 * {@link Role}. The UI should protect the user from such 
+	 * situations, but in case this protection is not provided, this will 
+	 * provide a last line of defense.
+	 * 
+	 * @param roleId		String representation of the {@link Role} for which
+	 * 						reports will be returned.
+	 * @param activeOnly	If {@code true}, only {@link Report}s that have 
+	 * 						{@code active=true} will be returned
+	 * @return
+	 */
 	@Query(value =
 			"WITH RECURSIVE ancestor(level, role_id, username) AS (" +
 
@@ -91,6 +80,7 @@ public interface RoleRepository extends JpaRepository<Role, UUID>, RoleRepositor
 					"FROM ancestor " +
 					"INNER JOIN role_role link ON link.child_role_id=ancestor.role_id " +
 					"INNER JOIN role ON role.role_id=link.parent_role_id " +
+					"WHERE level<10 " +
 
 					") " +
 
@@ -118,6 +108,7 @@ public interface RoleRepository extends JpaRepository<Role, UUID>, RoleRepositor
 					") DT " +
 					"ORDER BY DT.number",
 			nativeQuery = true)
-	public List<String> findReportsByRoleIdRecursive(@Param("roleId") String roleId,
+	public List<String> findReportsByRoleIdRecursive(
+			@Param("roleId") String roleId,
 			@Param("activeOnly") Boolean activeOnly);
 }
