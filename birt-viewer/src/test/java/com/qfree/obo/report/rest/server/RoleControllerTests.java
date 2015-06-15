@@ -42,6 +42,7 @@ import com.qfree.obo.report.ApplicationConfig;
 import com.qfree.obo.report.db.RoleRepository;
 import com.qfree.obo.report.domain.Report;
 import com.qfree.obo.report.domain.Role;
+import com.qfree.obo.report.domain.UuidCustomType;
 import com.qfree.obo.report.dto.ReportCollectionResource;
 import com.qfree.obo.report.dto.ReportResource;
 import com.qfree.obo.report.dto.ResourcePath;
@@ -395,6 +396,8 @@ public class RoleControllerTests {
 		UUID uuidOfRole_aabb = UUID.fromString("ee56f34d-dbb4-41c1-9d30-ce29cf973820");
 		String currentUsername = "aabb";
 
+		UUID uuidOfReport01 = UUID.fromString("d65f3d9c-f67d-4beb-9936-9dfa19aa1407");	// active=true
+		UUID uuidOfReport02 = UUID.fromString("c7f1d394-9814-4ede-bb01-2700187d79ca");	// active=true
 		UUID uuidOfReport03 = UUID.fromString("fe718314-5b39-40e7-aed2-279354c04a9d");	// active=false
 		UUID uuidOfReport04 = UUID.fromString("702d5daa-e23d-4f00-b32b-67b44c06d8f6");	// active=true
 //	List<UUID> activeReportUuids = new ArrayList<>();
@@ -434,16 +437,51 @@ public class RoleControllerTests {
 		assertThat(reportCollectionResource, is(not(nullValue())));
 		assertThat(reportCollectionResource.getItems(), is(not(nullValue())));
 		/*
-		 * Note:	This will change after I enable inheritance of report access
-		 * 			for roles:
+		 * Note:	Since the H2 database does not support recursive CTE 
+		 * 			expressions, the REST endpoint being tested here does not
+		 * 			consider inheritance of report access for roles. This means
+		 * 			that the tests here must be different for H2 and PostgreSQL.
 		 */
-		assertThat(reportCollectionResource.getItems(), IsCollectionWithSize.hasSize(1));
-		assertThat(reportCollectionResource.getItems(), hasSize(1));
-		List<UUID> activeReportUuidsFromEndpoint = new ArrayList<>(reportCollectionResource.getItems().size());
-		for (ReportResource reportResource : reportCollectionResource.getItems()) {
-			activeReportUuidsFromEndpoint.add(reportResource.getReportId());
+		if (UuidCustomType.DB_VENDOR.equals(UuidCustomType.POSTGRESQL_VENDOR)) {
+			/*
+			 * With Role inheritance included, there are 4 Report's that are
+			 * "enabled" for Role "aabb":
+			 * 
+			 * 		"Report name #01"
+			 * 		"Report name #02"
+			 * 		"Report name #03"  (inactive)
+			 * 		"Report name #04"
+			 * 
+			 * However, report "Report name #03" is not active,so that leave 3
+			 * "active" Report's.
+			 * 
+			 * With recursive CTE expression:
+			 */
+			assertThat(reportCollectionResource.getItems(), IsCollectionWithSize.hasSize(3));
+			assertThat(reportCollectionResource.getItems(), hasSize(3));
+			List<UUID> activeReportUuidsFromEndpoint = new ArrayList<>(reportCollectionResource.getItems().size());
+			for (ReportResource reportResource : reportCollectionResource.getItems()) {
+				activeReportUuidsFromEndpoint.add(reportResource.getReportId());
+			}
+			assertThat(activeReportUuidsFromEndpoint,
+					IsCollectionContaining.hasItems(uuidOfReport01, uuidOfReport02, uuidOfReport04));
+		} else {
+			/*
+			 * Without considering Role inheritance, there should only be a single
+			 * *active* Report returned, "Report name #04". "Report name #03" is
+			 * also linked to the Role with id uuidOfRole_aabb, but it is not 
+			 * active.
+			 * 
+			 * Without recursive CTE expression:
+			 */
+			assertThat(reportCollectionResource.getItems(), IsCollectionWithSize.hasSize(1));
+			assertThat(reportCollectionResource.getItems(), hasSize(1));
+			List<UUID> activeReportUuidsFromEndpoint = new ArrayList<>(reportCollectionResource.getItems().size());
+			for (ReportResource reportResource : reportCollectionResource.getItems()) {
+				activeReportUuidsFromEndpoint.add(reportResource.getReportId());
+			}
+			assertThat(activeReportUuidsFromEndpoint, IsCollectionContaining.hasItems(uuidOfReport04));
 		}
-		assertThat(activeReportUuidsFromEndpoint, IsCollectionContaining.hasItems(uuidOfReport04));
 
 		/*
 		 * Repeat, but this time turn off filtering on "active" for both Reports
@@ -464,17 +502,30 @@ public class RoleControllerTests {
 		logger.debug("reportCollectionResource = {}", reportCollectionResource);
 		assertThat(reportCollectionResource, is(not(nullValue())));
 		assertThat(reportCollectionResource.getItems(), is(not(nullValue())));
-		/*
-		 * Note:	This will change after I enable inheritance of report access
-		 * 			for roles:
-		 */
-		assertThat(reportCollectionResource.getItems(), IsCollectionWithSize.hasSize(2));
-		assertThat(reportCollectionResource.getItems(), hasSize(2));
-		List<UUID> allReportUuidsFromEndpoint = new ArrayList<>(reportCollectionResource.getItems().size());
-		for (ReportResource reportResource : reportCollectionResource.getItems()) {
-			allReportUuidsFromEndpoint.add(reportResource.getReportId());
+		if (UuidCustomType.DB_VENDOR.equals(UuidCustomType.POSTGRESQL_VENDOR)) {
+			/*
+			 * With recursive CTE expression:
+			 */
+			assertThat(reportCollectionResource.getItems(), IsCollectionWithSize.hasSize(4));
+			assertThat(reportCollectionResource.getItems(), hasSize(4));
+			List<UUID> allReportUuidsFromEndpoint = new ArrayList<>(reportCollectionResource.getItems().size());
+			for (ReportResource reportResource : reportCollectionResource.getItems()) {
+				allReportUuidsFromEndpoint.add(reportResource.getReportId());
+			}
+			assertThat(allReportUuidsFromEndpoint,
+					IsCollectionContaining.hasItems(uuidOfReport01, uuidOfReport02, uuidOfReport03, uuidOfReport04));
+		} else {
+			/*
+			 * Without recursive CTE expression:
+			 */
+			assertThat(reportCollectionResource.getItems(), IsCollectionWithSize.hasSize(2));
+			assertThat(reportCollectionResource.getItems(), hasSize(2));
+			List<UUID> allReportUuidsFromEndpoint = new ArrayList<>(reportCollectionResource.getItems().size());
+			for (ReportResource reportResource : reportCollectionResource.getItems()) {
+				allReportUuidsFromEndpoint.add(reportResource.getReportId());
+			}
+			assertThat(allReportUuidsFromEndpoint, IsCollectionContaining.hasItems(uuidOfReport03, uuidOfReport04));
 		}
-		assertThat(allReportUuidsFromEndpoint, IsCollectionContaining.hasItems(uuidOfReport03, uuidOfReport04));
 
 		/*
 		 * Attempt to fetch a list of reports for a Role using an id that does 

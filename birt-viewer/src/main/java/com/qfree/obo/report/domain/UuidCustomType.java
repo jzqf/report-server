@@ -35,30 +35,36 @@ public class UuidCustomType extends AbstractSingleColumnStandardBasicType<UUID> 
 
 	private static final Logger logger = LoggerFactory.getLogger(UuidCustomType.class);
 
+	public static final String DB_VENDOR;
+	public static final String H2_VENDOR = "H2";
+	public static final String POSTGRESQL_VENDOR = "POSTGRESQL";
+
 	private static final SqlTypeDescriptor SQL_DESCRIPTOR;
 	private static final JavaTypeDescriptor<UUID> TYPE_DESCRIPTOR;
 
 	static {
 
 		Properties properties = new Properties();
+		String vendor = null;
 		String dialect = null;
-		//		boolean runningTests = true;
 		try (InputStream in = UuidCustomType.class.getResourceAsStream("/config.properties")) {
 			/*
-			 * "in" will be null if the file "test-env.properties" is not found 
-			 * at the root of the classpath. This file is located in this project
-			 * here:
-			 *     /src/test/resources/test-env.properties
-			 * It will be placed on the classpath if we run a class from Eclipse
-			 * that is stored in the src/test/java/ tree.  Testing shows that 
-			 * this covers both cases:
+			 * If we are running tests, this will load:
+			 *     /src/test/resources/config.properties
+			 * Maven will ensure that this file will be placed on the classpath 
+			 * if we run a class from Eclipse that is stored in the 
+			 * src/test/java/ tree.  This seems to cover all cases:
 			 * 
-			 *     Run As > JUnit Test         (for a JUnit test class)
-			 *     Run As > Java Application   (for a Java class with a "main" method)
+			 *     Run As > JUnit Test			(for a JUnit test class)
+			 *     Run As > Java Application	(for a Java class with a "main" method)
+			 *     $ mvn clean test				(from a bash shell outside Eclipse)
+			 * 
+			 * If we are *not* running tests, "getResourceAsStream" will load:
+			 *     /src/main/resources/config.properties
 			 */
-			//			runningTests = (in == null) ? false : true;
 			if (in != null) {
 				properties.load(in);
+				vendor = properties.getProperty("spring.database.vendor");
 				dialect = properties.getProperty("hibernate.dialect");
 			}
 		} catch (IOException e) {
@@ -68,23 +74,20 @@ public class UuidCustomType extends AbstractSingleColumnStandardBasicType<UUID> 
 			} catch (IOException e1) {
 				e1.printStackTrace();
 			}
-			//			runningTests = false;
 		}
 
-		//runningTests = false;	// to *force* @Type(type = "pg-uuid")	
-
-		//		logger.info("runningTests = {}", runningTests);
-		//		if (runningTests) {
-		//			SQL_DESCRIPTOR = VarcharTypeDescriptor.INSTANCE;	// for H2 database
-		//		} else {
-		//			SQL_DESCRIPTOR = PostgresUUIDType.PostgresUUIDSqlTypeDescriptor.INSTANCE;
-		//		}
+		/*
+		 * This can be used elsewhere in the application to customize code that
+		 * is dependent on whether we are using an H2 or POSTGRESQL dataase.
+		 */
+		DB_VENDOR = vendor;
 
 		logger.info("dialect = {}", dialect);
 		/*
 		 * org.hibernate.dialect.PostgreSQLDialect is deprecated!
 		 */
 		//if (dialect != null && dialect.equals("org.hibernate.dialect.PostgreSQLDialect")) {
+		//if (dialect != null && dialect.equals("com.qfree.obo.report.domain.UuidCustomPostgreSQL9Dialect")) {
 		if (dialect != null && dialect.equals("org.hibernate.dialect.PostgreSQL9Dialect")) {
 			SQL_DESCRIPTOR = PostgresUUIDType.PostgresUUIDSqlTypeDescriptor.INSTANCE;
 		} else if (dialect.equals("org.hibernate.dialect.H2Dialect")) {

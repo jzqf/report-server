@@ -31,25 +31,32 @@ public interface RoleRepository extends JpaRepository<Role, UUID>, RoleRepositor
 	public List<Report> findActiveReportsByRoleId(@Param("roleId") UUID roleId);
 
 	//TODO SET UPER LIMIT ON NUMBER OF ITERATIONS?????????????????????????????????????????????????????????????????????????????????????????????????????????
-	@Query(
-			value =
-			"SELECT CAST(r.report_id AS varchar) FROM report r INNER JOIN role_report rr ON rr.report_id=r.report_id WHERE rr.role_id=CAST(:roleId AS uuid)",
-			nativeQuery = true)
-	public List<String> findReportsByRoleIdRecursive(@Param("roleId") String roleId);
+	//	@Query(
+	//			value =
+	//			"SELECT CAST(r.report_id AS varchar) FROM report r INNER JOIN role_report rr ON rr.report_id=r.report_id WHERE rr.role_id=CAST(:roleId AS uuid)",
+	//			nativeQuery = true)
+	//	public List<String> findReportsByRoleIdRecursive(@Param("roleId") String roleId);
+	//	@Query(
+	//			value =
+	//			"SELECT r.report_id FROM report r INNER JOIN role_report rr ON rr.report_id=r.report_id WHERE rr.role_id=CAST(:roleId AS uuid)",
+	//			nativeQuery = true)
+	//	public List<UUID> findReportsByRoleIdRecursive(@Param("roleId") String roleId);
 	//	@Query(value =
 	//			"SELECT r.* FROM report r INNER JOIN role_report rr ON rr.report_id=r.report_id WHERE rr.role_id=CAST(:roleId AS uuid)",
 	//			nativeQuery = true)
 	//	public List<Report> findReportsByRoleIdRecursive(@Param("roleId") String roleId);
-
 	//	@Query(value =
 	//			"WITH RECURSIVE ancestor(level, role_id, username) AS (" +
 	//
+	//					// CTE anchor member:
 	//					"SELECT 0 AS level, role.role_id, role.username " +
 	//					"FROM role " +
-	//					"WHERE role.username=:roleId " +
+	//					//"WHERE role.role_id=:roleId " +
+	//					"WHERE role.role_id=CAST(:roleId AS uuid) " +
 	//
 	//					"UNION ALL " +
 	//
+	//					// CTE recursive member:
 	//					"SELECT level+1, role.role_id, role.username " +
 	//					"FROM ancestor " +
 	//					"INNER JOIN role_role link ON link.child_role_id=ancestor.role_id " +
@@ -57,14 +64,60 @@ public interface RoleRepository extends JpaRepository<Role, UUID>, RoleRepositor
 	//
 	//					") " +
 	//					//"SELECT DISTINCT report.* FROM role_report " +
-	//					"SELECT DISTINCT CAST(report.report_id AS varchar) FROM role_report " +
+	//					"SELECT DISTINCT CAST(report.report_id AS varchar) AS report_id, report.number FROM role_report " +
 	//					"INNER JOIN ancestor ON ancestor.role_id=role_report.role_id " +
 	//					"INNER JOIN report ON report.report_id=role_report.report_id " +
 	//					"ORDER BY report.number",
 	//			nativeQuery = true)
-	//	//	public List<String> findReportsByRoleIdRecursive();
-	//	public List<String> findReportsByRoleIdRecursive(@Param("roleId") UUID roleId);
-	//	//	public List<Report> findReportsByRoleIdRecursive();
-	//	//	public List<Report> findReportsByRoleIdRecursive(@Param("roleId") UUID roleId);
+	//	public List<NativeQueryReportResult> findReportsByRoleIdRecursive(@Param("roleId") String roleId);
+	//	//public List<String> findReportsByRoleIdRecursive(@Param("roleId") String roleId);
+	//	//public List<String> findReportsByRoleIdRecursive(@Param("roleId") UUID roleId);
+	//	//public List<Report> findReportsByRoleIdRecursive(@Param("roleId") UUID roleId);
+	@Query(value =
+			"WITH RECURSIVE ancestor(level, role_id, username) AS (" +
 
+					// CTE anchor member:
+
+					"SELECT 0 AS level, role.role_id, role.username " +
+					"FROM role " +
+					//"WHERE role.role_id=:roleId " +
+					"WHERE role.role_id=CAST(:roleId AS uuid) " +
+
+					"UNION ALL " +
+
+					// CTE recursive member:
+
+					"SELECT level+1, role.role_id, role.username " +
+					"FROM ancestor " +
+					"INNER JOIN role_role link ON link.child_role_id=ancestor.role_id " +
+					"INNER JOIN role ON role.role_id=link.parent_role_id " +
+
+					") " +
+
+					// Statement using the CTE:
+
+					/* Here, we do a select on a derived table. The reason for this
+					 * approach is that we want to order the results by report.number,
+					 * but since I need to eliminate duplicate rows with DISTINCT
+					 * (these duplicates occur because [role_report] junction records
+					 * may link both a [role] and one of its ancestor [role] records to
+					 * the same [report]), the SELECT list must include the column that
+					 * we order on, in this case report.number. But I only want to 
+					 * return a list of report_id's; hence, I perform a select on the
+					 * derived table (that takes care of the DISTINCT business for us)
+					 * to create the derived table, and then I can order by DT.number 
+					 * without including it in the SELECT list because this outer 
+					 * SELECT does not use DISTINCT.
+					 */
+					"SELECT DT.report_id FROM " +
+					"(" +
+					"    SELECT DISTINCT CAST(report.report_id AS varchar), report.number FROM role_report " +
+					"    INNER JOIN ancestor ON ancestor.role_id=role_report.role_id " +
+					"    INNER JOIN report ON report.report_id=role_report.report_id " +
+					"    WHERE (report.active=true OR :activeOnly=false)" +
+					") DT " +
+					"ORDER BY DT.number",
+			nativeQuery = true)
+	public List<String> findReportsByRoleIdRecursive(@Param("roleId") String roleId,
+			@Param("activeOnly") Boolean activeOnly);
 }
