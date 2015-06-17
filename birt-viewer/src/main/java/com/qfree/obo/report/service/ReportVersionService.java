@@ -102,7 +102,9 @@ public class ReportVersionService {
 	 */
 	@Transactional
 	public Integer nextVersionCode(Report report) {
-		return reportVersionRepository.maxVersionCodeForReport(report) + 1;
+		Integer maxVersionCode = reportVersionRepository.maxVersionCodeForReport(report);
+		return (maxVersionCode != null ? maxVersionCode : 0) + 1;
+		//		return reportVersionRepository.maxVersionCodeForReport(report) + 1;
 	}
 
 	/**

@@ -155,7 +155,6 @@ public class ReportVersionController extends AbstractBaseController {
 				Report report = reportRepository.findOne(reportId);
 				RestUtils.ifNullThen404(report, Report.class, "reportId", reportId.toString());
 				reportVersionResource.setVersionCode(reportVersionService.nextVersionCode(report));
-				logger.info("value computed for versionCode = {}", reportVersionResource.getVersionCode());
 			} else {
 				throw new RestApiException(RestError.FORBIDDEN_REPORTVERSION_REPORT_NULL, ReportVersion.class,
 						"reportId");
