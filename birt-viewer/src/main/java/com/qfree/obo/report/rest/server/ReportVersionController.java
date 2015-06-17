@@ -412,7 +412,23 @@ public class ReportVersionController extends AbstractBaseController {
 		reportVersionResource.setReportVersionId(reportVersion.getReportVersionId());
 		reportVersionResource.setCreatedOn(reportVersion.getCreatedOn());
 		/*
-		 * If a version "code" (integer) was not specified in 
+		 * If the "rptdesign" XML report definition was not specified in 
+		 * reportVersionResource, we use the current value stored in 
+		 * reportVersion.
+		 */
+		if (reportVersionResource.getRptdesign() == null) {
+			reportVersionResource.setRptdesign(reportVersion.getRptdesign());
+		}
+		/*
+		 * If the "fileName" was not specified in 
+		 * reportVersionResource, we use the current value stored in 
+		 * reportVersion.
+		 */
+		if (reportVersionResource.getFileName() == null) {
+			reportVersionResource.setFileName(reportVersion.getFileName());
+		}
+		/*
+		 * If the "versionCode" (integer) was not specified in 
 		 * reportVersionResource, we use the current value stored in 
 		 * reportVersion.
 		 */
