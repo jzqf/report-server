@@ -26,9 +26,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.qfree.obo.report.db.ReportRepository;
 import com.qfree.obo.report.db.RoleRepository;
 import com.qfree.obo.report.domain.Report;
 import com.qfree.obo.report.domain.Role;
+import com.qfree.obo.report.domain.UuidCustomType;
 import com.qfree.obo.report.dto.ReportCollectionResource;
 import com.qfree.obo.report.dto.ReportResource;
 import com.qfree.obo.report.dto.ResourcePath;
@@ -45,13 +47,16 @@ public class RoleController extends AbstractBaseController {
 
 	private final RoleRepository roleRepository;
 	private final RoleService roleService;
+	private final ReportRepository reportRepository;
 
 	@Autowired
 	public RoleController(
 			RoleRepository roleRepository,
-			RoleService roleService) {
+			RoleService roleService,
+			ReportRepository reportRepository) {
 		this.roleRepository = roleRepository;
 		this.roleService = roleService;
+		this.reportRepository = reportRepository;
 	}
 
 	/*
@@ -90,7 +95,7 @@ public class RoleController extends AbstractBaseController {
 	 * 
 	 *   $ mvn clean spring-boot:run
 	 *   $ curl -iH "Accept: application/json;v=1" -H "Content-Type: application/json" -X POST -d \
-	 *   '{"username":"Bozo","fullName":"Bozo the clown","encodedPassword":"asdf=","loginRole":true}' \
+	 *   '{"username":"bozoc,"fullName":"Bozo the clown","encodedPassword":"asdf=","loginRole":true}' \
 	 *   http://localhost:8080/rest/roles
 	 */
 	@POST
@@ -159,18 +164,21 @@ public class RoleController extends AbstractBaseController {
 	 */
 	/**
 	 * Return all Report instances that the Role with a specified id has access
-	 * to. Each Report will have zero or more ReportVersions 
+	 * to. This does NOT include transitive access rights that are associated 
+	 * with ancestor (parents, grandparents, ...) roles. Each Report will have 
+	 * zero or more ReportVersions.
 	 * 
 	 * @param id
 	 * @param acceptHeader
 	 * @param expand
+	 * @param showAll
 	 * @param uriInfo
 	 * @return
 	 */
-	@Transactional
 	@Path("/{id}/reports")
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
+	@Transactional
 	public ReportCollectionResource getReportsForRole(
 			@PathParam("id") final UUID id,
 			@HeaderParam("Accept") final String acceptHeader,
@@ -188,17 +196,79 @@ public class RoleController extends AbstractBaseController {
 		Role role = roleRepository.findOne(id);
 		RestUtils.ifNullThen404(role, Role.class, "roleId", id.toString());
 
+		List<Report> reports = new ArrayList<>(0);
 		/*
-		 * TODO Add a query parameter to disable filtering on *active* for Report's?
-		 * 		How about ...&nofilter=active or ... What if we want to see only
-		 * 		active Report's but unfiltered ReportVersion's (active or not)?
+		 * The H2 database does not support recursive CTE expressions, so it is 
+		 * necessary to run different code if the database is not PostgreSQL.
+		 * This only affects integration tests, because only PostreSQL is used
+		 * in production. 
 		 */
-		List<Report> reports = null;
-		if (RestUtils.FILTER_INACTIVE_RECORDS && !ResourcePath.showAll(Report.class, showAll)) {
-			reports = roleRepository.findActiveReportsByRoleId(role.getRoleId());
+		if (UuidCustomType.DB_VENDOR.equals(UuidCustomType.POSTGRESQL_VENDOR)) {
+
+			/*
+			 * roleRepository.findReportsByRoleIdRecursive(...) is a Spring Data
+			 * JPA repository method that uses a *native* SQL query. It appears 
+			 * that Hibernate has a problem treating the UUID data type for this
+			 * environment, whether objects of that type appear in the SELECT
+			 * result set or if an object of that type is used as a named 
+			 * parameter in the query. To get around this limitation, this 
+			 * repository method is specially written to deal with String
+			 * representations of the UUID data type, instead of the UUID type
+			 * itself. The chosen implementation:
+			 * 
+			 *   1. Takes as its first parameter, the String representation of
+			 *   	the Role for which to locate Report's.
+			 *   
+			 *   2.	Returns a list of Report id's for the Report's to be 
+			 *   	returned, but this id's are represented as String objects, 
+			 *   	not as UUID objects.
+			 * 
+			 * As a result of this treatment, there are two extra steps required
+			 * to create the list of Report's to return:
+			 * 
+			 *   1. Create a list of UUID objects from the list of UUID Strings.
+			 *   
+			 *   2.	Use Spring Data's provided "findAll" repository method to 
+			 *   	return a list of Report's given the list of UUID's.
+			 */
+			List<String> stringUuids = null;
+			if (RestUtils.FILTER_INACTIVE_RECORDS && !ResourcePath.showAll(Report.class, showAll)) {
+				stringUuids = roleRepository.findReportsByRoleIdRecursive(role.getRoleId().toString(), true);
+			} else {
+				stringUuids = roleRepository.findReportsByRoleIdRecursive(role.getRoleId().toString(), false);
+			}
+			if (stringUuids != null && stringUuids.size() > 0) {
+				logger.debug("Number of stringUuids (recursive) = {}", stringUuids.size());
+				/*
+				 * Create List of UUID's of the Report's that the endpoint will return.
+				 */
+				List<UUID> uuids = new ArrayList<>(stringUuids.size());
+				for (String stringUuid : stringUuids) {
+					logger.debug("stringUuid (recursive) = {}", stringUuid);
+					uuids.add(UUID.fromString(stringUuid));
+				}
+				reports = reportRepository.findAll(uuids);
+			}
+
 		} else {
-			reports = roleRepository.findReportsByRoleId(role.getRoleId());
+			/*
+			 * This code returns only those Reports associated with RoleReport
+			 * entities that are *directly* linked to the Role role. This does *not*
+			 * include Reports associated with RoleReport entities that are linked 
+			 * to ancestors (parents, gransparents, ...) of Role role.
+			 */
+			if (RestUtils.FILTER_INACTIVE_RECORDS && !ResourcePath.showAll(Report.class, showAll)) {
+				reports = roleRepository.findActiveReportsByRoleId(role.getRoleId());
+			} else {
+				reports = roleRepository.findReportsByRoleId(role.getRoleId());
+			}
 		}
+
+		logger.debug("Number of reports = {}", reports.size());
+			for (Report report : reports) {
+			logger.debug("report = {}", report.getName());
+			}
+
 		List<ReportResource> reportResources = new ArrayList<>(reports.size());
 		for (Report report : reports) {
 			reportResources.add(new ReportResource(report, uriInfo, queryParams, apiVersion));

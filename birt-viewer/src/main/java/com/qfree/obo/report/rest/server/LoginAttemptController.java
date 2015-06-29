@@ -90,7 +90,7 @@ public class LoginAttemptController extends AbstractBaseController {
 		queryParams.put(ResourcePath.EXPAND_QP_KEY, expand);
 		queryParams.put(ResourcePath.SHOWALL_QP_KEY, showAll);
 		RestApiVersion apiVersion = RestUtils.extractAPIVersion(acceptHeader, RestApiVersion.v1);
-		logger.info("apiVersion = {}", apiVersion);
+		logger.debug("apiVersion = {}", apiVersion);
 		/*
 		 * Ensure that both the user name and encoded password have been 
 		 * supplied.

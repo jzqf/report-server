@@ -83,9 +83,9 @@ public class ReportVersionController extends AbstractBaseController {
 	 * @Transactional is used to avoid org.hibernate.LazyInitializationException
 	 * being thrown when evaluating ReportVersion.getReportParameters().
 	 */
-	@Transactional
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
+	@Transactional
 	//	public List<ReportVersionResource> getList(
 	public ReportVersionCollectionResource getList(
 			@HeaderParam("Accept") final String acceptHeader,
@@ -118,19 +118,19 @@ public class ReportVersionController extends AbstractBaseController {
 	 *   $ mvn clean spring-boot:run
 	 *   $ curl -iH "Accept: application/json;v=1" -H "Content-Type: application/json" -X POST -d \
 	 *   '{"report":{"reportId":"702d5daa-e23d-4f00-b32b-67b44c06d8f6"},\
-	 *   "fileName":"NewReportVersionFromPOST.rptdesign",\
-	 *   "rptdesign":"Not a valid rptdesign, but this cannot be null",\
-	 *   "versionName":"3.9","versionCode":17,"active":true}' \
+	 *   "fileName":"400-SomeReport_v3.9.rptdesign",\
+	 *   "rptdesign":"<?xml version=\"1.0\" encoding=\"UTF-8\"?><report></report>",\
+	 *   "versionName":"3.9","versionCode":7,"active":true}' \
 	 *   http://localhost:8080/rest/reportVersions
 	 * 
 	 * @Transactional is used to avoid org.hibernate.LazyInitializationException
 	 * being thrown when evaluating ReportVersion.getReportVersions(), as well
 	 * as potentially other lazy-evaluated attributes..
 	 */
-	@Transactional
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
+	@Transactional
 	public Response createByPost(
 			ReportVersionResource reportVersionResource,
 			@HeaderParam("Accept") final String acceptHeader,
@@ -155,12 +155,19 @@ public class ReportVersionController extends AbstractBaseController {
 				Report report = reportRepository.findOne(reportId);
 				RestUtils.ifNullThen404(report, Report.class, "reportId", reportId.toString());
 				reportVersionResource.setVersionCode(reportVersionService.nextVersionCode(report));
-				logger.info("value computed for versionCode = {}", reportVersionResource.getVersionCode());
 			} else {
 				throw new RestApiException(RestError.FORBIDDEN_REPORTVERSION_REPORT_NULL, ReportVersion.class,
 						"reportId");
 			}
 		}
+
+		RestUtils.ifAttrNullOrBlankThen403(reportVersionResource.getRptdesign(), ReportVersion.class, "rptdesign");
+		RestUtils.ifAttrNullOrBlankThen403(reportVersionResource.getFileName(), ReportVersion.class, "fileName");
+		RestUtils.ifAttrNullOrBlankThen403(reportVersionResource.getVersionName(), ReportVersion.class, "versionName");
+
+		RestUtils.ifNotValidXmlThen403(reportVersionResource.getRptdesign(),
+				String.format("The report definition '%s' is not valid XML", reportVersionResource.getFileName()),
+				ReportVersion.class, "rptdesign", null);
 
 		ReportVersion reportVersion = reportVersionService.saveNewFromResource(reportVersionResource);
 		if (RestUtils.AUTO_EXPAND_PRIMARY_RESOURCES) {
@@ -186,17 +193,32 @@ public class ReportVersionController extends AbstractBaseController {
 	 *   
 	 *   2. Open the following URL in a web browser:
 	 *   
-	 *         http://localhost:8080/report_upload.html
+	 *         http://localhost:8080/upload_report.html
+	 *   
+	 *   3: Specify the following:
+	 *   
+	 *         Report id:        702d5daa-e23d-4f00-b32b-67b44c06d8f6   
+	 *             *or*
+	 *         Report name:      Test Report #04
+	 *         
+	 *         Version name:     3.9.5
+	 *         .rptdesign file:  (select one from the file system)
+	 * 
+	 * Only *one* of reportId and reportName need be defined, as long as a 
+	 * they can be used to locate a parent Report. If both are defined, reportId
+	 * will be used.
 	 */
 	@POST
 	@Consumes(MediaType.MULTIPART_FORM_DATA)
 	@Produces(MediaType.APPLICATION_JSON)
+	@Transactional
 	public Response createByUpload(
+			@FormDataParam("reportId") UUID reportId,
 			@FormDataParam("reportName") String reportName,
 			@FormDataParam("versionName") String versionName,
 			@FormDataParam("versionCode") Integer versionCode,
-			@FormDataParam("file") InputStream uploadedInputStream,
-			@FormDataParam("file") FormDataContentDisposition fileDetail,
+			@FormDataParam("rptdesignfile") InputStream uploadedInputStream,
+			@FormDataParam("rptdesignfile") FormDataContentDisposition fileDetail,
 			@HeaderParam("Accept") final String acceptHeader,
 			@QueryParam(ResourcePath.EXPAND_QP_NAME) final List<String> expand,
 			@QueryParam(ResourcePath.SHOWALL_QP_NAME) final List<String> showAll,
@@ -208,27 +230,30 @@ public class ReportVersionController extends AbstractBaseController {
 		queryParams.put(ResourcePath.SHOWALL_QP_KEY, showAll);
 		RestApiVersion apiVersion = RestUtils.extractAPIVersion(acceptHeader, RestApiVersion.v1);
 
-		logger.info("reportName = {}", reportName);
+		logger.info("reportId    = {}", reportId);
+		logger.info("reportName  = {}", reportName);
 		logger.info("versionName = {}", versionName);
 		logger.info("versionCode = {}", versionCode);
 
-		logger.info("servletContext.getContextPath() = {}", servletContext.getContextPath());
-		logger.info("servletContext.getRealPath(\"\") = {}", servletContext.getRealPath(""));
-		logger.info("servletContext.getRealPath(\"/\") = {}", servletContext.getRealPath("/"));
+		logger.debug("servletContext.getContextPath() = {}", servletContext.getContextPath());
+		logger.debug("servletContext.getRealPath(\"\") = {}", servletContext.getRealPath(""));
+		logger.debug("servletContext.getRealPath(\"/\") = {}", servletContext.getRealPath("/"));
 
 		Enumeration<String> servletContextinitParamEnum = servletContext.getInitParameterNames();
 		while (servletContextinitParamEnum.hasMoreElements()) {
 			String servletContextInitParamName = servletContextinitParamEnum.nextElement();
-			logger.info("servletContextInitParamName = {}", servletContextInitParamName);
+			logger.debug("servletContextInitParamName = {}", servletContextInitParamName);
 		}
-		logger.info("BIRT_VIEWER_WORKING_FOLDER = {}", servletContext.getInitParameter("BIRT_VIEWER_WORKING_FOLDER"));
+		logger.debug("BIRT_VIEWER_WORKING_FOLDER = {}", servletContext.getInitParameter("BIRT_VIEWER_WORKING_FOLDER"));
 
 		Enumeration<String> servletConfigInitParamEnum = servletConfig.getInitParameterNames();
 		while (servletConfigInitParamEnum.hasMoreElements()) {
 			String servletConfigInitParamName = servletConfigInitParamEnum.nextElement();
-			logger.info("servletConfigInitParamName = {}", servletConfigInitParamName);
+			logger.debug("servletConfigInitParamName = {}", servletConfigInitParamName);
 		}
-		logger.info("javax.ws.rs.Application = {}", servletConfig.getInitParameter("javax.ws.rs.Application"));
+		logger.debug("javax.ws.rs.Application = {}", servletConfig.getInitParameter("javax.ws.rs.Application"));
+
+		RestUtils.ifAttrNullOrBlankThen403(uploadedInputStream, ReportVersion.class, "rptdesignfile");
 
 		ReportVersionResource reportVersionResource = null;
 		try {
@@ -250,8 +275,14 @@ public class ReportVersionController extends AbstractBaseController {
 					String.format("The uploaded document '%s' is not valid XML", fileDetail.getFileName()),
 					ReportVersion.class, "rptdesign", null);
 
-			Report report = reportRepository.findByName(reportName);
-			RestUtils.ifNullThen404(report, Report.class, "name", reportName);
+			Report report = null;
+			if (reportId != null) {
+				report = reportRepository.findOne(reportId);
+				RestUtils.ifNullThen404(report, Report.class, "reportId", reportId.toString());
+			} else {
+				report = reportRepository.findByName(reportName);
+				RestUtils.ifNullThen404(report, Report.class, "reportName", reportName);
+			}
 			logger.info("report = {}", report);
 
 			/*
@@ -302,10 +333,10 @@ public class ReportVersionController extends AbstractBaseController {
 	 * being thrown when evaluating ReportVersion.getReportParameters(), as well
 	 * as potentially other lazy-evaluated attributes.
 	 */
-	@Transactional
 	@Path("/{id}")
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
+	@Transactional
 	public ReportVersionResource getById(
 			@PathParam("id") final UUID id,
 			@HeaderParam("Accept") final String acceptHeader,
@@ -352,11 +383,11 @@ public class ReportVersionController extends AbstractBaseController {
 	 * lazy-evaluated attributes. It is not actually needed as this comment is
 	 * being written.
 	 */
-	@Transactional
 	@Path("/{id}")
 	@PUT
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
+	@Transactional
 	public Response updateById(
 			ReportVersionResource reportVersionResource,
 			@PathParam("id") final UUID id,
@@ -381,7 +412,23 @@ public class ReportVersionController extends AbstractBaseController {
 		reportVersionResource.setReportVersionId(reportVersion.getReportVersionId());
 		reportVersionResource.setCreatedOn(reportVersion.getCreatedOn());
 		/*
-		 * If a version "code" (integer) was not specified in 
+		 * If the "rptdesign" XML report definition was not specified in 
+		 * reportVersionResource, we use the current value stored in 
+		 * reportVersion.
+		 */
+		if (reportVersionResource.getRptdesign() == null) {
+			reportVersionResource.setRptdesign(reportVersion.getRptdesign());
+		}
+		/*
+		 * If the "fileName" was not specified in 
+		 * reportVersionResource, we use the current value stored in 
+		 * reportVersion.
+		 */
+		if (reportVersionResource.getFileName() == null) {
+			reportVersionResource.setFileName(reportVersion.getFileName());
+		}
+		/*
+		 * If the "versionCode" (integer) was not specified in 
 		 * reportVersionResource, we use the current value stored in 
 		 * reportVersion.
 		 */
@@ -414,10 +461,10 @@ public class ReportVersionController extends AbstractBaseController {
 	 * @Transactional is used to avoid org.hibernate.LazyInitializationException
 	 * being thrown when evaluating report.get...()?
 	 */
-	@Transactional
 	@Path("/{id}" + ResourcePath.REPORTPARAMETERS_PATH)
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
+	@Transactional
 	public ReportParameterCollectionResource getReportParametersByReportVersionId(
 			@PathParam("id") final UUID id,
 			@HeaderParam("Accept") final String acceptHeader,

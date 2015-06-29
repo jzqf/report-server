@@ -202,6 +202,7 @@ CREATE TABLE report_version (
     report_version_id uuid DEFAULT public.uuid_generate_v4() NOT NULL,
     active boolean NOT NULL,
     created_on timestamp without time zone NOT NULL,
+    file_name character varying(80) NOT NULL,
     rptdesign text NOT NULL,
     version_code integer NOT NULL,
     version_name character varying(16) NOT NULL,

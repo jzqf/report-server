@@ -24,6 +24,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.qfree.obo.report.db.ReportCategoryRepository;
 import com.qfree.obo.report.domain.ReportCategory;
@@ -106,6 +107,7 @@ public class ReportCategoryController extends AbstractBaseController {
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
+	@Transactional
 	public Response create(
 			ReportCategoryResource reportCategoryResource,
 			@HeaderParam("Accept") final String acceptHeader,
@@ -168,6 +170,7 @@ public class ReportCategoryController extends AbstractBaseController {
 	@PUT
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
+	@Transactional
 	public Response updateById(
 			ReportCategoryResource reportCategoryResource,
 			@PathParam("id") final UUID id,

@@ -98,8 +98,8 @@ public class ReportResource extends AbstractBaseResource {
 			this.active = report.isActive();
 			this.createdOn = report.getCreatedOn();
 
-			logger.info("report = {}", report);
-			logger.info("report.getReportVersions() = {}", report.getReportVersions());
+			logger.debug("report = {}", report);
+			logger.debug("report.getReportVersions() = {}", report.getReportVersions());
 
 			this.reportVersions = new ReportVersionCollectionResource(report,
 					uriInfo, newQueryParams, apiVersion);

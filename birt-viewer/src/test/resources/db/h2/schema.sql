@@ -152,6 +152,7 @@ CREATE TABLE reporting.report_version (
     report_version_id uuid NOT NULL,
     active boolean NOT NULL,
     created_on timestamp NOT NULL,
+    file_name character varying(80) NOT NULL,
     rptdesign text NOT NULL,
     version_code integer NOT NULL,
     version_name character varying(16) NOT NULL,

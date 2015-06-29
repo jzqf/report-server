@@ -8,46 +8,59 @@
 
 <h2>Report Upload Test</h2>  
 <form action="rest/reportVersions" method="post" enctype="multipart/form-data">  
-<table width="500px">
+<table style="width:500px;">
+<tr>
+	<td colspan="2" style="text-align: center;color: gray;">
+		Only one of "Report id" or "Report name" is required in order to uniquely specify a parent report:
+	</td>
 <tr>
 	<td valign="top">
-		<label for="reportName">Report name *</label>
+		<label for="reportId">Report id (UUID)</label>
 	</td>
 	<td valign="top">
-		<input  type="text" name="reportName" maxlength="80" size="30">
+		<input  type="text" name="reportId" maxlength="80" size="32">
 	</td>
 </tr>
 <tr>
 	<td valign="top">
-		<label for="versionName">Version name *</label>
+		<label for="reportName">Report name</label>
 	</td>
 	<td valign="top">
-		<input  type="text" name="versionName" maxlength="16" size="30">
+		<input  type="text" name="reportName" maxlength="80" size="32">
+	</td>
+</tr>
+<tr style="height: 20px;">
+	<td colspan="2">&nbsp;</td>
+<tr>
+<tr>
+	<td valign="top">
+		<label for="versionName">Version name, e.g., "2.4.1"</label>
+	</td>
+	<td valign="top">
+		<input  type="text" name="versionName" maxlength="16" size="32">
 	</td>
 </tr>
 <!-- 
 <tr>
 	<td valign="top">
-		<label for="versionCode">Version code *</label>
+		<label for="versionCode">Version code</label>
 	</td>
 	<td valign="top">
-		<input  type="text" name="versionCode" maxlength="3" size="30">
+		<input  type="text" name="versionCode" maxlength="3" size="32">
 	</td>
 </tr>
 -->
 <tr>
 	<td valign="top">
-		<label for="file">Select a report .rptdesign file *</label>
+		<label for="rptdesignfile">Select a report .rptdesign file</label>
 	</td>
 	<td valign="top">
-		<input type="file" name="file" size="45" />
+		<input type="file" name="rptdesignfile" size="45" />
 	</td>
 </tr>
-<tr>
-	<td style="text-align:center">
-		<input type="submit" value="Upload File" />
-	</td>
-	<td valign="top">
+<tr style="height: 60px;">
+	<td colspan="2" style="text-align:center">
+		<input type="submit" value="Create new report version" />
 	</td>
 </tr>
 </table>
