@@ -76,6 +76,10 @@ public class Report implements Serializable {
 	@Column(name = "number", nullable = false)
 	private Integer number;
 
+	@NotNull
+	@Column(name = "sort_order", nullable = false)
+	private Integer sortOrder;
+
 	/*
 	 * cascade = CascadeType.ALL:
 	 *     Deleting a Report will delete all of its ReportVersion's.
@@ -138,12 +142,13 @@ public class Report implements Serializable {
 	private Report() {
 	}
 
-	public Report(ReportCategory reportCategory, String name, Integer number, Boolean active) {
-		this(reportCategory, name, number, active, DateUtils.nowUtc());
+	public Report(ReportCategory reportCategory, String name, Integer number, Integer sortOrder, Boolean active) {
+		this(reportCategory, name, number, sortOrder, active, DateUtils.nowUtc());
 	}
 
-	public Report(ReportCategory reportCategory, String name, Integer number, Boolean active, Date createdOn) {
-		this(null, reportCategory, name, number, active, createdOn);
+	public Report(ReportCategory reportCategory, String name, Integer number, Integer sortOrder, Boolean active,
+			Date createdOn) {
+		this(null, reportCategory, name, number, sortOrder, active, createdOn);
 	}
 
 	public Report(ReportResource reportResource, ReportCategory reportCategory) {
@@ -152,16 +157,18 @@ public class Report implements Serializable {
 				reportCategory,
 				reportResource.getName(),
 				reportResource.getNumber(),
+				reportResource.getSortOrder(),
 				reportResource.isActive(),
 				reportResource.getCreatedOn());
 	}
 
-	public Report(UUID reportId, ReportCategory reportCategory, String name, Integer number, Boolean active,
-			Date createdOn) {
+	public Report(UUID reportId, ReportCategory reportCategory, String name, Integer number, Integer sortOrder,
+			Boolean active, Date createdOn) {
 		this.reportId = reportId;
 		this.reportCategory = reportCategory;
 		this.name = name;
 		this.number = number;
+		this.sortOrder = (sortOrder != null) ? sortOrder : number;
 		this.active = (active != null) ? active : true;
 		this.createdOn = (createdOn != null) ? createdOn : DateUtils.nowUtc();
 	}
@@ -184,6 +191,14 @@ public class Report implements Serializable {
 
 	public void setNumber(Integer number) {
 		this.number = number;
+	}
+
+	public Integer getSortOrder() {
+		return sortOrder;
+	}
+
+	public void setSortOrder(Integer sortOrder) {
+		this.sortOrder = sortOrder;
 	}
 
 	public Boolean isActive() {

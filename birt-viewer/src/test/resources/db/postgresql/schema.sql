@@ -162,6 +162,7 @@ CREATE TABLE report (
     created_on timestamp without time zone NOT NULL,
     name character varying(80) NOT NULL,
     number integer NOT NULL,
+    sort_order integer NOT NULL,
     report_category_id uuid NOT NULL
 );
 

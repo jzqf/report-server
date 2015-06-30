@@ -39,16 +39,16 @@ OLDPATH="$PATH"    # in case I want to restore this path below
 PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 export PATH
 
-LOGFILE=$(dirname $0)/errors
+LOGFILE=$(dirname $0)/logfile
 PROGRAM=$(basename $0)
 VERSION=1.0
 USAGE="$PROGRAM [OPTIONS]"
 
 # Defaults (to simplify running this script manually):
-DBUSER=report_server_appxxx  # name of role to create that will be used by report server application to connect to the report server database
+DBUSER=report_server_app  # name of role to create that will be used by report server application to connect to the report server database
 #DBSERVER=localhost       # PostgreSQL server to log into
 #DBPORT=5432              # TCP port on which the PostgreSQL server is listening
-DBNAME=report_server_dbxxx   # database name that will be created and initialized
+DBNAME=report_server_db   # database name that will be created and initialized
 
 # This script should be run as OS user "postgres", but it may also be run as 
 # other OS users if only the "-h" or "-l" or "-v" options are used. Setting the

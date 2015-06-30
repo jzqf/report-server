@@ -116,6 +116,7 @@ public class ReportControllerTests {
 		 */
 		String newName = "Report created from testCreateByPost()";
 		Integer newNumber = 999;
+		//	Integer newSortOrder = 999;
 		Boolean newActive = true;
 		Date newCreatedOn = null;	// this will be filled in when the Report is created
 		/*
@@ -133,6 +134,7 @@ public class ReportControllerTests {
 		reportResource.setReportCategoryResource(newReportCategoryResource);
 		reportResource.setName(newName);
 		reportResource.setNumber(newNumber);
+		//	reportResource.setSortOrder(newSortOrder);
 		//	private List<ReportVersion> reportVersions;
 		//	private List<RoleReport> roleReports;
 		reportResource.setActive(newActive);
@@ -182,6 +184,7 @@ public class ReportControllerTests {
 				is(uuidOfQfreeInternalReportCategory));
 		assertThat(responseEntity.getName(), is(newName));
 		assertThat(responseEntity.getNumber(), is(newNumber));
+		assertThat(responseEntity.getSortOrder(), is(newNumber));
 		assertThat(responseEntity.isActive(), is(newActive));
 		assertThat(responseEntity.getHref(), is(not(nullValue())));
 		assertThat(responseEntity.getMediaType(), is(not(nullValue())));
@@ -294,6 +297,7 @@ public class ReportControllerTests {
 		assertThat(report.getReportCategory(), is(reportCategory));
 		assertThat(report.getName(), is(name));
 		assertThat(report.getNumber(), is(number));
+		assertThat(report.getSortOrder(), is(number));
 		assertThat(report.isActive(), is(active));
 		assertThat(DateUtils.entityTimestampToNormalDate(report.getCreatedOn()), is(createdOn));
 		assertThat(report.getReportVersions(), is(not(nullValue())));
@@ -345,6 +349,7 @@ public class ReportControllerTests {
 		assertThat(reportResource, is(not(nullValue())));
 		assertThat(reportResource.getName(), is(name));
 		assertThat(reportResource.getNumber(), is(number));
+		assertThat(reportResource.getSortOrder(), is(number));
 		assertThat(reportResource.isActive(), is(active));
 		assertThat(DateUtils.entityTimestampToNormalDate(reportResource.getCreatedOn()), is(createdOn));
 		ReportCategoryResource reportCategoryResource = reportResource.getReportCategoryResource();
@@ -438,6 +443,7 @@ public class ReportControllerTests {
 		ReportCategory currentReportCategory = reportCategoryRepository.findOne(currentReportCategoryUuid);
 		String currentName = "Report name #04";
 		Integer currentNumber = 400;
+		Integer currentSortOrder = 400;
 		boolean currentActive = true;
 		Date currentCreatedOn = DateUtils.dateUtcFromIso8601String("2014-03-25T12:15:00.000Z");
 
@@ -445,6 +451,7 @@ public class ReportControllerTests {
 		assertThat(report.getReportCategory(), is(currentReportCategory));
 		assertThat(report.getName(), is(currentName));
 		assertThat(report.getNumber(), is(currentNumber));
+		assertThat(report.getSortOrder(), is(currentSortOrder));
 		assertThat(report.isActive(), is(currentActive));
 		assertThat(DateUtils.entityTimestampToNormalDate(report.getCreatedOn()), is(currentCreatedOn));
 
@@ -455,6 +462,7 @@ public class ReportControllerTests {
 		ReportCategory newReportCategory = reportCategoryRepository.findOne(newReportCategoryUuid);
 		String newName = "Report name #04 (modfifed by PUT)";
 		Integer newNumber = 999;
+		Integer newSortOrder = 1234;
 		boolean newActive = false;
 
 		/*
@@ -474,6 +482,7 @@ public class ReportControllerTests {
 		reportResource.setReportCategoryResource(newReportCategoryResource);
 		reportResource.setName(newName);
 		reportResource.setNumber(newNumber);
+		reportResource.setSortOrder(newSortOrder);
 		reportResource.setActive(newActive);
 		logger.debug("reportResource = {}", reportResource);
 
@@ -533,6 +542,7 @@ public class ReportControllerTests {
 		assertThat(resource.getReportCategoryResource().getReportCategoryId(), is(newReportCategoryUuid));
 		assertThat(resource.getName(), is(newName));
 		assertThat(resource.getNumber(), is(newNumber));
+		assertThat(resource.getSortOrder(), is(newSortOrder));
 		assertThat(resource.isActive(), is(newActive));
 		assertThat(DateUtils.entityTimestampToNormalDate(resource.getCreatedOn()), is(currentCreatedOn));
 
@@ -556,6 +566,7 @@ public class ReportControllerTests {
 		assertThat(report.getReportCategory(), is(newReportCategory));
 		assertThat(report.getName(), is(newName));
 		assertThat(report.getNumber(), is(newNumber));
+		assertThat(report.getSortOrder(), is(newSortOrder));
 		assertThat(report.isActive(), is(newActive));
 		assertThat(DateUtils.entityTimestampToNormalDate(report.getCreatedOn()), is(currentCreatedOn));
 	}

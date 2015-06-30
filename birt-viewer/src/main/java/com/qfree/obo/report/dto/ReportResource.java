@@ -36,6 +36,9 @@ public class ReportResource extends AbstractBaseResource {
 	@XmlElement
 	private Integer number;
 
+	@XmlElement
+	private Integer sortOrder;
+
 	@XmlElement(name = "reportVersions")
 	//	private List<ReportVersionResource> reportVersions;
 	private ReportVersionCollectionResource reportVersions;
@@ -95,6 +98,7 @@ public class ReportResource extends AbstractBaseResource {
 					uriInfo, newQueryParams, apiVersion);
 			this.name = report.getName();
 			this.number = report.getNumber();
+			this.sortOrder = report.getSortOrder();
 			this.active = report.isActive();
 			this.createdOn = report.getCreatedOn();
 
@@ -150,6 +154,14 @@ public class ReportResource extends AbstractBaseResource {
 
 	public Integer getNumber() {
 		return number;
+	}
+
+	public Integer getSortOrder() {
+		return sortOrder;
+	}
+
+	public void setSortOrder(Integer sortOrder) {
+		this.sortOrder = sortOrder;
 	}
 
 	public void setNumber(Integer number) {

@@ -167,7 +167,7 @@ public class ReportController extends AbstractBaseController {
 	 *   $ mvn clean spring-boot:run
 	 *   $ curl -iH "Accept: application/json;v=1" -H "Content-Type: application/json" -X PUT -d \
 	 *   '{"reportCategory":{"reportCategoryId":"72d7cb27-1770-4cc7-b301-44d39ccf1e76"},\
-	 *   "name":"Test Report #04 (modified by PUT)","number":1400,"active":false}' \
+	 *   "name":"Test Report #04 (modified by PUT)","number":1400,"sortOrder":1400,"active":false}' \
 	 *   http://localhost:8080/rest/reports/702d5daa-e23d-4f00-b32b-67b44c06d8f6
 	 *   
 	 * This updates the report with UUID 702d5daa-e23d-4f00-b32b-67b44c06d8f6
@@ -176,6 +176,7 @@ public class ReportController extends AbstractBaseController {
 	 * report category:	"Q-Free internal"	-> "Traffic"
 	 * name:			"Test Report #04"	-> "Test Report #04 (modified by PUT)"
 	 * number:			400					-> 1400
+	 * sortOrder:		400					-> 1400
 	 * active:			true				-> false
 	 */
 	@Path("/{id}")
@@ -206,6 +207,15 @@ public class ReportController extends AbstractBaseController {
 		 */
 		reportResource.setReportId(report.getReportId());
 		reportResource.setCreatedOn(report.getCreatedOn());
+
+		/*
+		 * If the "sortOrder" was not specified in 
+		 * reportResource, we use the current value stored in 
+		 * reportVersion.
+		 */
+		if (reportResource.getSortOrder() == null) {
+			reportResource.setSortOrder(report.getSortOrder());
+		}
 
 		/*
 		 * Save updated entity.
