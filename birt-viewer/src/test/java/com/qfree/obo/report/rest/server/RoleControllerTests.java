@@ -307,10 +307,10 @@ public class RoleControllerTests {
 		/*
 		 * New details that will be used to update the Role.
 		 */
-		String newUsername="aaaa (modified by PUT)";
-		String newFullName="Full Name set by PUY";
+		String newUsername = "aaaa (modified by PUT)";
+		String newFullName = "Full Name set by PUY";
 		String newEncodedPassword = "8sV4cDCNyH9DLlkS1N5vjjInIbo=";  // Base64(SHA-1("newpassword"))
-		Boolean newLoginRole=true;
+		Boolean newLoginRole = true;
 
 		Role role = roleRepository.findOne(uuidOfRole);
 		assertThat(role, is(not(nullValue())));
@@ -400,12 +400,12 @@ public class RoleControllerTests {
 		UUID uuidOfReport02 = UUID.fromString("c7f1d394-9814-4ede-bb01-2700187d79ca");	// active=true
 		UUID uuidOfReport03 = UUID.fromString("fe718314-5b39-40e7-aed2-279354c04a9d");	// active=false
 		UUID uuidOfReport04 = UUID.fromString("702d5daa-e23d-4f00-b32b-67b44c06d8f6");	// active=true
-//	List<UUID> activeReportUuids = new ArrayList<>();
-//	activeReportUuids.add(uuidOfReport04);
-//	List<UUID> allReportUuids = new ArrayList<>();
-//	allReportUuids.add(uuidOfReport03);
-//	allReportUuids.add(uuidOfReport04);
-		
+		//	List<UUID> activeReportUuids = new ArrayList<>();
+		//	activeReportUuids.add(uuidOfReport04);
+		//	List<UUID> allReportUuids = new ArrayList<>();
+		//	allReportUuids.add(uuidOfReport03);
+		//	allReportUuids.add(uuidOfReport04);
+
 		Role role_aabb = roleRepository.findOne(uuidOfRole_aabb);
 		assertThat(role_aabb, is(not(nullValue())));
 		assertThat(role_aabb.getUsername(), is(currentUsername));
@@ -457,8 +457,13 @@ public class RoleControllerTests {
 			 * 
 			 * With recursive CTE expression:
 			 */
-			assertThat(reportCollectionResource.getItems(), IsCollectionWithSize.hasSize(3));
-			assertThat(reportCollectionResource.getItems(), hasSize(3));
+			if (RoleController.returnAllReportsForEachRole == false) {
+				assertThat(reportCollectionResource.getItems(), IsCollectionWithSize.hasSize(3));
+				assertThat(reportCollectionResource.getItems(), hasSize(3));
+			} else {
+				assertThat(reportCollectionResource.getItems(), IsCollectionWithSize.hasSize(4));
+				assertThat(reportCollectionResource.getItems(), hasSize(4));
+			}
 			List<UUID> activeReportUuidsFromEndpoint = new ArrayList<>(reportCollectionResource.getItems().size());
 			for (ReportResource reportResource : reportCollectionResource.getItems()) {
 				activeReportUuidsFromEndpoint.add(reportResource.getReportId());
@@ -474,8 +479,13 @@ public class RoleControllerTests {
 			 * 
 			 * Without recursive CTE expression:
 			 */
-			assertThat(reportCollectionResource.getItems(), IsCollectionWithSize.hasSize(1));
-			assertThat(reportCollectionResource.getItems(), hasSize(1));
+			if (RoleController.returnAllReportsForEachRole == false) {
+				assertThat(reportCollectionResource.getItems(), IsCollectionWithSize.hasSize(1));
+				assertThat(reportCollectionResource.getItems(), hasSize(1));
+			} else {
+				assertThat(reportCollectionResource.getItems(), IsCollectionWithSize.hasSize(4));
+				assertThat(reportCollectionResource.getItems(), hasSize(4));
+			}
 			List<UUID> activeReportUuidsFromEndpoint = new ArrayList<>(reportCollectionResource.getItems().size());
 			for (ReportResource reportResource : reportCollectionResource.getItems()) {
 				activeReportUuidsFromEndpoint.add(reportResource.getReportId());
@@ -506,8 +516,13 @@ public class RoleControllerTests {
 			/*
 			 * With recursive CTE expression:
 			 */
-			assertThat(reportCollectionResource.getItems(), IsCollectionWithSize.hasSize(4));
-			assertThat(reportCollectionResource.getItems(), hasSize(4));
+			if (RoleController.returnAllReportsForEachRole == false) {
+				assertThat(reportCollectionResource.getItems(), IsCollectionWithSize.hasSize(4));
+				assertThat(reportCollectionResource.getItems(), hasSize(4));
+			} else {
+				assertThat(reportCollectionResource.getItems(), IsCollectionWithSize.hasSize(6));
+				assertThat(reportCollectionResource.getItems(), hasSize(6));
+			}
 			List<UUID> allReportUuidsFromEndpoint = new ArrayList<>(reportCollectionResource.getItems().size());
 			for (ReportResource reportResource : reportCollectionResource.getItems()) {
 				allReportUuidsFromEndpoint.add(reportResource.getReportId());
@@ -518,8 +533,13 @@ public class RoleControllerTests {
 			/*
 			 * Without recursive CTE expression:
 			 */
-			assertThat(reportCollectionResource.getItems(), IsCollectionWithSize.hasSize(2));
-			assertThat(reportCollectionResource.getItems(), hasSize(2));
+			if (RoleController.returnAllReportsForEachRole == false) {
+				assertThat(reportCollectionResource.getItems(), IsCollectionWithSize.hasSize(2));
+				assertThat(reportCollectionResource.getItems(), hasSize(2));
+			} else {
+				assertThat(reportCollectionResource.getItems(), IsCollectionWithSize.hasSize(6));
+				assertThat(reportCollectionResource.getItems(), hasSize(6));
+			}
 			List<UUID> allReportUuidsFromEndpoint = new ArrayList<>(reportCollectionResource.getItems().size());
 			for (ReportResource reportResource : reportCollectionResource.getItems()) {
 				allReportUuidsFromEndpoint.add(reportResource.getReportId());

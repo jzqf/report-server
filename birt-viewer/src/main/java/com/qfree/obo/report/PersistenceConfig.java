@@ -34,9 +34,9 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 //@PropertySources({
 //		@PropertySource("classpath:config.properties")
 //})
-public class PersistenceConfigTestEnv {
+public class PersistenceConfig {
 
-	private static final Logger logger = LoggerFactory.getLogger(PersistenceConfigTestEnv.class);
+	private static final Logger logger = LoggerFactory.getLogger(PersistenceConfig.class);
 
 	/*
 	 * The injected "env" object here will contain key/value pairs for each 
@@ -196,10 +196,6 @@ public class PersistenceConfigTestEnv {
 	//		//		factory.setSessionTimeout(10, TimeUnit.MINUTES);
 	//		//		factory.addErrorPages(new ErrorPage(HttpStatus.NOT_FOUND, "/notfound.html"));
 	//		return factory;
-	//	}
-
-	//	public static void main(String[] args) {
-	//		SpringApplication.run(PersistenceConfigTestEnv.class, args);
 	//	}
 
 }

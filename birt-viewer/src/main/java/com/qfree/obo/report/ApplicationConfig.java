@@ -11,12 +11,15 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.aop.AopAutoConfiguration;
 import org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.ImportResource;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
+
+import com.qfree.obo.report.service.StartupService;
 
 /**
  * The main/root class for Java-based configuration for the root Spring
@@ -86,7 +89,7 @@ import org.springframework.core.env.Environment;
 		com.qfree.obo.report.rest.server.ComponentScanPackageMarker.class,
 		com.qfree.obo.report.service.ComponentScanPackageMarker.class,
 })
-@Import({ PersistenceConfigTestEnv.class })
+@Import({ PersistenceConfig.class })
 @ImportResource("classpath:spring/root-context.xml")
 //@ImportResource("/WEB-INF/spring/root-context.xml")
 @PropertySource("classpath:config.properties")
@@ -195,6 +198,11 @@ public class ApplicationConfig {
 	//	//		return new ServletRegistrationBean(new org.eclipse.birt.report.servlet.ViewerServlet(),
 	//	//				"/report-server/frameset");
 	//	//	}
+
+	@Bean
+	public StartupService startupService() {
+		return new StartupService();
+	}
 
 	public static void main(String[] args) {
 		SpringApplication.run(ApplicationConfig.class, args);
