@@ -12,7 +12,7 @@
 
 	<!-- <groupId>com.qfree.obo</groupId> -->
 	<artifactId>birt-viewer</artifactId>
-	<version>0.5-SNAPSHOT</version>
+	<version>0.5-RELEASE</version>
 	<packaging>war</packaging>
 	<name>OBO Report Viewer</name>
 	<description>Web project for displaying OBO reports that integrates the BIRT Viewer and that can be deployed in a servlet container such as Tomcat</description>
