@@ -1,0 +1,482 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<groupId>com.qfree.obo</groupId>
+		<artifactId>reporting-master</artifactId>
+		<version>1</version>
+	</parent>
+
+	<!-- <groupId>com.qfree.obo</groupId> -->
+	<artifactId>birt-viewer</artifactId>
+	<version>0.5-RELEASE</version>
+	<packaging>war</packaging>
+	<name>OBO Report Viewer</name>
+	<description>Web project for displaying OBO reports that integrates the BIRT Viewer and that can be deployed in a servlet container such as Tomcat</description>
+	<inceptionYear>2015</inceptionYear>
+	<organization>
+		<name>Q-Free ASA</name>
+		<url>http://www.q-free.com</url>
+	</organization>
+	<developers>
+		<developer>
+			<id>jeffreyz</id>
+			<name>Jeffrey Zelt</name>
+			<email>Jeffrey.Zelt@q-free.com</email>
+			<url>https://mysite.q-free.com/Person.aspx?accountname=Q-FREE%2ECOM%5CJeffreyZ</url>
+			<organization>Q-Free ASA</organization>
+			<organizationUrl>http://www.q-free.com</organizationUrl>
+			<roles>
+				<role>architect</role>
+				<role>developer</role>
+			</roles>
+			<timezone>+1</timezone>
+			<properties>
+				<skype>jeffreyz.q-free.com</skype>
+			</properties>
+		</developer>
+	</developers>
+	<issueManagement>
+		<system>JIRA</system>
+		<url>https://issues.q-free.com:8443/browse/QF15203</url>
+	</issueManagement>
+
+	<properties>
+		<birt-runtime.version>4.4.2</birt-runtime.version>
+		<birt-runtime.viewservlets.version>4.4.1</birt-runtime.viewservlets.version>
+		<!-- <servlet-api.version>3.1.0</servlet-api.version> -->
+		<!-- <hibernate.version>4.3.8.Final</hibernate.version> -->
+		<tomcat7.maven.plugin.version>2.2</tomcat7.maven.plugin.version>
+		<!--
+		  The following versions must agree with the properties defined with the
+		  same name in:
+		  
+		  http://central.maven.org/maven2/org/springframework/boot/spring-boot-dependencies/1.2.3.RELEASE/spring-boot-dependencies-1.2.3.RELEASE.pom
+		  
+		  where "1.2.3.RELEASE" should be replaced with whatever version of 
+		  Spring Boot you are using. It seems that Spring Boot has very strict
+		  requirements on attribute versions, and if you don'yt get them right,
+		  strange exceptions will be thrown with no useful explanation to debug
+		  the problem. This version of Spring Boot is defined by the property 
+		  "spring-boot.version" in reporting-master/pom.xml.
+		  
+		  The procedure for updating the version of Spring Boot used by this 
+		  application is:
+		  
+			1. Update "spring-boot.version" in reporting-master/pom.xml.
+			
+			2. Browse through the URL above, but for the new Spring Boot version
+			   number. Ensure that all version numbers defined by properties in
+			   that POM file agree with the corresponding version numbers used 
+			   in both this POM file as well as in reporting-master/pom.xml 
+			   ("hamcrest.version", ...).
+			   
+			3. Browse through the POM file for the "spring-boot-starter-parent"
+			   artifact, which for version 1.2.3.RELEASE is:
+			   
+			   http://central.maven.org/maven2/org/springframework/boot/spring-boot-starter-parent/1.2.3.RELEASE/spring-boot-starter-parent-1.2.3.RELEASE.pom
+
+			   Copy the two blocks of content to replace the corresponding 
+			   blocks in reporting-master/pom.xml that I have marked with 
+			   comments that explain they were copied from that POM file.
+		-->
+		<jersey.version>2.14</jersey.version>
+		
+		<!-- The main class to start by executing java -jar -->
+		<start-class>com.qfree.obo.report.ApplicationConfig</start-class>
+	</properties>
+	
+	<dependencies>
+
+		<dependency>
+			<groupId>org.eclipse.birt.runtime</groupId>
+			<artifactId>org.eclipse.birt.runtime</artifactId>
+			<version>${birt-runtime.version}</version>
+			<exclusions>
+				<exclusion>
+					<groupId>commons-logging</groupId>
+					<artifactId>commons-logging</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		
+		<dependency>
+			<groupId>org.eclipse.birt.runtime</groupId>
+			<artifactId>viewservlets</artifactId>
+			<version>${birt-runtime.viewservlets.version}</version>
+			<exclusions>
+				<exclusion>
+					<groupId>commons-logging</groupId>
+					<artifactId>commons-logging</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+
+		<dependency>
+			<groupId>axis</groupId>
+			<!-- <groupId>org.apache.axis</groupId> DOES NOT WORK-->
+			<artifactId>axis</artifactId>
+			<version>1.4</version>
+			<exclusions>
+				<exclusion>
+					<groupId>commons-logging</groupId>
+					<artifactId>commons-logging</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+			
+		<!-- Servlet API -->
+		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>javax.servlet-api</artifactId>
+			<!-- <version>${servlet-api.version}</version> -->
+			<scope>provided</scope>
+		</dependency>
+		
+		<!-- JAX-RS client (javax.ws.rs.client.Client, ...) -->
+		<dependency>
+			<groupId>org.glassfish.jersey.core</groupId>
+			<artifactId>jersey-client</artifactId>
+			<version>${jersey.version}</version>
+		</dependency>
+		
+		<!-- MOXy: JSON provider for JAX-RS. This library provides POJO- and
+		     JAXB-based binding support. This featue is auto-discovered by
+		     Jersey as long as this jar is on the classpath.  -->
+		<dependency>
+			<groupId>org.glassfish.jersey.media</groupId>
+			<artifactId>jersey-media-moxy</artifactId>
+			<version>${jersey.version}</version>
+		</dependency>
+		
+		<!-- Java API for JSON Processing (javax.json.JsonArray, ...) -->
+		<dependency>
+			<groupId>org.glassfish</groupId>
+			<artifactId>javax.json</artifactId>
+			<version>1.0.4</version>
+		</dependency>
+		
+		<!-- Binding between JAX-RS and the Java API for JSON Processing.
+			 Needed for: org.glassfish.jersey.jsonp.JsonProcessingFeature
+		-->
+		<dependency>
+			<groupId>org.glassfish.jersey.media</groupId>
+			<artifactId>jersey-media-json-processing</artifactId>
+			<version>${jersey.version}</version>
+		</dependency>
+		
+		<!-- JAX-RS server -->
+		<dependency>
+			<groupId>org.glassfish.jersey.containers</groupId>
+			<artifactId>jersey-container-servlet</artifactId>
+			<!-- <version>${jersey.version}</version> -->
+		</dependency>
+
+		<!-- Needed for multipart support, e.g., file uploads -->
+		<dependency>
+			<groupId>org.glassfish.jersey.media</groupId>
+			<artifactId>jersey-media-multipart</artifactId>
+			<version>${jersey.version}</version>
+		</dependency>
+		
+		<!-- Bean Validation support  -->
+		<dependency>
+			<groupId>org.glassfish.jersey.ext</groupId>
+			<artifactId>jersey-bean-validation</artifactId>
+			<!-- <version>${jersey.version}</version> -->
+		</dependency>
+
+		<!-- JAX-RS - Spring integration.
+			 The jersey-spring3.jar has its own dependencies on Spring libraries
+			 (see: 
+			 https://jersey.java.net/project-info/2.16/jersey/project/jersey-spring3/dependencies.html),
+			 so in order to specify a different version here, ${spring.version},
+			 it is necessary to exclude those libraries manually here.
+		-->
+		<dependency>
+			<groupId>org.glassfish.jersey.ext</groupId>
+			<artifactId>jersey-spring3</artifactId>
+			<!-- <version>${jersey.version}</version> -->
+			<exclusions>
+				<exclusion>
+					<groupId>org.springframework</groupId>
+					<artifactId>spring-core</artifactId>
+				</exclusion>			
+				<exclusion>
+					<groupId>org.springframework</groupId>
+					<artifactId>spring-web</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.springframework</groupId>
+					<artifactId>spring-beans</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+
+		<!-- <dependency>
+			<groupId>org.glassfish.jersey.test-framework.providers</groupId>
+			<artifactId>jersey-test-framework-provider-grizzly2</artifactId>
+			<version>${jersey.version}</version>
+		</dependency> -->
+		<!-- <dependency>
+			<groupId>org.glassfish.jersey.test-framework.providers</groupId>
+			<artifactId>jersey-test-framework-provider-jetty</artifactId>
+			<version>${jersey.version}</version>
+		</dependency> -->
+		<!-- <dependency>
+			<groupId>org.glassfish.jersey.test-framework.providers</groupId>
+			<artifactId>jersey-test-framework-provider-inmemory</artifactId>
+			<version>${jersey.version}</version>
+		</dependency> -->
+
+		
+		<!-- Spring: -->
+		
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-core</artifactId>
+			<!-- <version>${spring.version}</version> -->
+			<exclusions>
+				<exclusion>
+					<groupId>commons-logging</groupId>
+					<artifactId>commons-logging</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-context</artifactId>
+			<!-- <version>${spring.version}</version> -->
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-web</artifactId>
+			<!-- <version>${spring.version}</version> -->
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-jdbc</artifactId>
+			<!-- <version>${spring.version}</version> -->
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-tx</artifactId>
+			<!-- <version>${spring.version}</version> -->
+		</dependency>
+		
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-orm</artifactId>
+			<!-- <version>${spring.version}</version> -->
+		</dependency>
+
+		<!-- Spring Data JPA -->
+		<dependency>
+			<groupId>org.springframework.data</groupId>
+			<artifactId>spring-data-jpa</artifactId>
+			<!-- <version>${spring.data.jpa.version}</version> -->
+		</dependency>
+
+		<!-- Spring Boot -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-jersey</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-tomcat</artifactId>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-actuator</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-test</artifactId>
+			<scope>test</scope>
+		</dependency>
+
+		<!-- Testing -->
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-test</artifactId>
+			<!-- <version>${spring.version}</version> -->
+			<scope>test</scope>
+		</dependency>
+
+
+		<!-- Hibernate 4 -->
+		<dependency>
+			<groupId>org.hibernate</groupId>
+			<artifactId>hibernate-entitymanager</artifactId>
+			<!-- <version>${hibernate.version}</version> -->
+		</dependency>
+		
+		<!-- Apache Commons DBCP 2.x -->
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-dbcp2</artifactId>
+			<!-- <version>2.1</version> -->
+			<!-- <scope>provided</scope> -->
+			<exclusions>
+				<exclusion>
+					<groupId>commons-logging</groupId>
+					<artifactId>commons-logging</artifactId>
+				 </exclusion>
+			</exclusions>
+		</dependency>
+		
+		<!-- PostgreSQL JDBC driver -->
+		<dependency>
+			<groupId>org.postgresql</groupId>
+			<artifactId>postgresql</artifactId>
+			<version>9.4-1201-jdbc41</version>
+		</dependency>
+		
+		<!-- H2 JDBC driver. Used for testing with embedded DB. -->
+		<dependency>
+			<groupId>com.h2database</groupId>
+			<artifactId>h2</artifactId>
+			<!-- <version>1.4.186</version> -->
+		</dependency>
+		
+		<!-- Replace with LocalDate, LocalTime, ... when we move to Java 8 -->
+		<dependency>
+			<groupId>joda-time</groupId>
+			<artifactId>joda-time</artifactId>
+			<!-- <version>2.7</version> -->
+		</dependency>
+
+	</dependencies>
+
+	<build>
+	
+		<!-- "finalName" sets the context root of the deployed web application.
+			Otherwise, the web app will be deployed at /<artifactId>-<version> -->
+		<finalName>report-server</finalName>
+		
+		<plugins>
+
+			<!-- The Maven Compiler Plugin is used to compile the sources of your
+				 project. This <plugin> element is used here to set the JVM source
+				 and target compliance level, as well as to set other parameters
+				 used by this plug-in. -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+			</plugin>
+
+			<!-- The Tomcat7 Maven Plugin provides goals so that we can deploy the app 
+				 to my local private Tomcat7 instance using "mvn tomcat7:[re]deploy.
+				 The <url> element *must* be ".../manager/text", *not* .../manager/html
+				 The name "myTomcat" in the <server> element must match the same name in:
+					 /home/jeffreyz/.m2/settings.xml -->
+			<plugin>
+				<groupId>org.apache.tomcat.maven</groupId>
+				<artifactId>tomcat7-maven-plugin</artifactId>
+				<version>${tomcat7.maven.plugin.version}</version>
+				<configuration>
+					<url>http://localhost:8081/manager/text</url>
+					<server>myTomcat</server>
+					<path>/${project.build.finalName}</path>
+				</configuration>
+			</plugin>
+			
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-war-plugin</artifactId>
+				<version>2.6</version>
+				<configuration>
+					<!-- When the WAR file birt-viewer-${project.version}.war is 
+						 generated, this tells this plugin to also create a JAR 
+						 artifact named birt-viewer-${project.version}-classes.jar.
+						 This enables another Maven project to create a dependency 
+						 on the Java code in this project (since it does not work 
+						 to make a dependency on a WAR file). This JAR file is 
+						 currently used as a dependency in the "birt-reports" 
+						 project. This is needed so that BIRT POJO data sources 
+						 will be able to execute code from this project to create 
+						 a data set in that project.  -->
+					<attachClasses>true</attachClasses>
+					<packagingExcludes>
+						<!-- "rptdesign" files are created in the "reports"
+							 directory whenever integration tests are run or the
+							 file system is synchronized with the report 
+							 database. We don't want such files packaged and 
+							 distributed a WAR file -->
+						reports/*.rptdesign,
+						reports/old/
+					</packagingExcludes>
+				</configuration>
+			</plugin>
+
+			<plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+			</plugin>
+
+			<!-- <plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<version>2.18.1</version>
+				<configuration>
+					<classpathDependencyExcludes>
+						<classpathDependencyExcludes>org.glassfish.jersey.ext:jersey-spring3</classpathDependencyExcludes>
+					</classpathDependencyExcludes>
+				</configuration>
+			</plugin> -->
+
+			<!-- <plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+				<version>2.5</version>
+				<executions>
+					<execution>
+						<id>make-a-jar</id>
+						<phase>compile</phase>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin> -->
+			
+			<!-- 
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-shade-plugin</artifactId>
+				<version>2.3</version>
+				<configuration>
+					<finalName>${project.artifactId}-${project.version}-tmp</finalName>
+					<artifactSet>
+						<excludes>
+							<exclude>org.eclipse.birt.runtime</exclude>
+							<exclude>org.eclipse.birt.runtime.*</exclude>
+							<exclude>axis</exclude>
+							<exclude>javax.servlet</exclude>
+							<exclude>junit</exclude>
+						</excludes>
+					</artifactSet>				
+				</configuration>
+				<executions>
+					<execution>
+					<phase>package</phase>
+					<goals>
+						<goal>shade</goal>
+					</goals>
+					</execution>
+				</executions>
+			</plugin>
+			-->
+			
+		</plugins>
+	</build>
+</project>

@@ -1,0 +1,20 @@
+target/
+bin/
+*.orig
+*~
+
+# Eclipse project files
+.settings/
+.project
+.classpath
+.springBeans
+
+# Intellij IDEA
+*.iml
+
+# Netbeans project files
+nb-configuration.xml
+nbactions.xml
+
+#local.properties
+#.gitignore  Do *not* ignore
