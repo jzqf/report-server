@@ -9,8 +9,11 @@ import javax.annotation.PostConstruct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.core.env.Environment;
 
 //@Component  <- not needed because bean is explicitly created in ApplicationConfig.java
+@PropertySource("classpath:config.properties")
 public class StartupService {
 
 	private static final Logger logger = LoggerFactory.getLogger(StartupService.class);
@@ -21,10 +24,20 @@ public class StartupService {
 	//	@Autowired
 	//	ServletContext servletContext;
 
+	/*
+	 * The injected "env" object here will contain key/value pairs for each 
+	 * property in the properties files specified above in the @PropertySource
+	 * annotation above.
+	 */
+	@Autowired
+	private Environment env;
+
 	@PostConstruct
 	public void initialize() {
 		//logger.info("Synchronizing reports in the file system with the database...");
 		//		logger.info("servletContext = {}", servletContext);
+
+		logger.info("startup.syncreports = {}", env.getProperty("startup.syncreports"));
 
 		//try {
 		//	String path1 = new File(".").getCanonicalPath();
