@@ -206,7 +206,7 @@ public class ReportSyncService {
 							 * no longer be viewed.
 							 */
 							if (reportVersion.isActive()) {
-								logger.info("report version to write = {}", reportVersion);
+								logger.info("Writing report version = {}", reportVersion);
 								logger.debug("report version = \"{}\", number of bytes = {}",
 										reportVersion.getReportVersionId(), reportVersion.getRptdesign().length());
 								/*

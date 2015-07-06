@@ -12,6 +12,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
 
+import com.qfree.obo.report.dto.ReportSyncResource;
+
 //@Component  <- not needed because bean is explicitly created in ApplicationConfig.java
 @PropertySource("classpath:config.properties")
 public class StartupService {
@@ -38,27 +40,33 @@ public class StartupService {
 		//		logger.info("servletContext = {}", servletContext);
 
 		logger.info("startup.syncreports = {}", env.getProperty("startup.syncreports"));
+		if (env.getProperty("startup.syncreports").equals("true")) {
 
-		//try {
-		//	String path1 = new File(".").getCanonicalPath();
-		//	logger.info("path1 = {}", path1);  // /home/jeffreyz/Applications/java/apache-tomcat/apache-tomcat-8.0.17/bin
-		//} catch (IOException e) {
-		//	// TODO Auto-generated catch block
-		//	e.printStackTrace();
-		//}
-		//String path2 = System.getProperty("user.dir");
-		//logger.info("path2 = {}", path2);  // /home/jeffreyz/Applications/java/apache-tomcat/apache-tomcat-8.0.17/bin
-		String classesPath = this.getClass().getClassLoader().getResource("").getPath();
-		logger.info("classesPath = {}", classesPath);  // /home/jeffreyz/Applications/java/apache-tomcat/apache-tomcat-8.0.17/webapps/report-server/WEB-INF/classes/
-		Path absoluteContextPath;
-		try {
-			absoluteContextPath = Paths.get(classesPath).resolve("..").resolve("..").toRealPath();
-			logger.info("absoluteContextPath = {}", absoluteContextPath);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			//try {
+			//	String path1 = new File(".").getCanonicalPath();
+			//	logger.info("path1 = {}", path1);  // /home/jeffreyz/Applications/java/apache-tomcat/apache-tomcat-8.0.17/bin
+			//} catch (IOException e) {
+			//	// TODO Auto-generated catch block
+			//	e.printStackTrace();
+			//}
+			//String path2 = System.getProperty("user.dir");
+			//logger.info("path2 = {}", path2);  // /home/jeffreyz/Applications/java/apache-tomcat/apache-tomcat-8.0.17/bin
+
+			String classesPath = this.getClass().getClassLoader().getResource("").getPath();
+			logger.info("classesPath = {}", classesPath);  // /home/jeffreyz/Applications/java/apache-tomcat/apache-tomcat-8.0.17/webapps/report-server/WEB-INF/classes/
+			Path absoluteContextPath;
+			try {
+				absoluteContextPath = Paths.get(classesPath).resolve("..").resolve("..").toRealPath();
+				logger.info("absoluteContextPath = {}", absoluteContextPath);
+				Boolean showInactiveReports = false;
+				ReportSyncResource reportSyncResource = reportSyncService.syncReportsWithFileSystem(
+						absoluteContextPath, showInactiveReports);
+			} catch (IOException e) {
+				logger.error(
+						"Exception thrown during startup. To avoid this, set startup.syncreports=false in config.properties",
+						e);
+			}
 		}
-
 		//		/* 
 		//		 * This is the default version for the endpoint to which the request is
 		//		 * sent.
