@@ -20,6 +20,9 @@ import com.qfree.obo.report.domain.Role;
  */
 public interface ConfigurationRepository extends JpaRepository<Configuration, UUID> {
 
+	@Query("SELECT c FROM Configuration c WHERE c.paramName='DB_VERSION' AND c.role IS NULL")
+	Configuration dbversion();
+
 	@Query("SELECT c FROM Configuration c WHERE c.paramName=:paramName AND c.role IS NULL")
 	Configuration findByParamName(@Param("paramName") ParamName paramName);
 

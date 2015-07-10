@@ -176,12 +176,12 @@ shift $(($OPTIND - 1))
 #echo "DBNAME   = $DBNAME"
 #echo "DBUSER   = $DBUSER"
 
-CONFIG_PARAM_NAME="db version"
+CONFIG_PARAM_NAME="DB_VERSION"
 
 # If there is currently no global (role_id=null) [configuration] record for 
-# 'db version', it is created here. This should only be necessary for the
+# 'DB_VERSION', it is created here. This should only be necessary for the
 # first upgrade for the MassDot project delivered to Open Roads Consulting, 
-# because aree future installs will create a 'db version' global configuration
+# because aree future installs will create a 'DB_VERSION' global configuration
 # record that is set to the appropriate value. Therefore, it is OK to delete
 # this block of code after we deliver the first upgrade to Open Roads for the
 # MassDot project.
