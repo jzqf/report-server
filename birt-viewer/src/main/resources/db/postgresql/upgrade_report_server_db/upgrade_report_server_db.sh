@@ -83,7 +83,7 @@ SYNOPSIS
     %s
 
 DESCRIPTION
-    Updates an existing report server database.
+    Upgrades an existing report server database.
 
 OPTIONS
     -h    Prints a help message and then quits.
@@ -101,7 +101,8 @@ OPTIONS
           on.
 
     -d database
-          Specifies the name of the report server database that will be updated.
+          Specifies the name of the report server database that will be 
+          upgraded.
 
     -U user
           Specifies the PostgreSQL role name to use for connecting to the report
@@ -227,7 +228,7 @@ fi
 
 # This is the path to the directory where the SQL upgrade scripts must be found.
 # If this path does not start with "/", i.e., it is a relative path, then the
-# must be in the *same* same directory where this upgrade  shell script is 
+# must be in the *same* same directory where this upgrade shell script is 
 # located.
 SQL_UPGRADE_DIR="db_version_upgrade_deltas"
 
@@ -254,14 +255,27 @@ if [ -d "$SQL_UPGRADE_DIR" ]; then
 		#
 		# In this simple example with three upgrade scripts, $current_db_version
 		# will be equal to 4.
-		num_upgrade_scripts=$(echo "$ls_output" | wc -l)
+		# 
+		# It is necessary to test if "$ls_output" is an empty string here
+		# because "echo"ing an empty string returns a newline, which "wc" will
+		# interpret as one line. This will lead to an incorrect result because
+		# $num_upgrade_scripts should be zero if $ls_output holds an empty 
+		# string. In fact, if there are no SQL upgrade scripts, we will not even
+		# each this point because the "ls" command above will return a non-zero
+		# exit status.
+		if [ -z "$ls_output" ]; then
+			num_upgrade_scripts=0
+		else		
+			num_upgrade_scripts=$(echo | wc -l)
+		fi
 		current_db_version=$(( $num_upgrade_scripts + 1 ))
 		#echo "num_upgrade_scripts = $num_upgrade_scripts"
 		#echo "current_db_version = $current_db_version"
 				
-		# Skip upgrades that are for DB versions earlier than the current 
-		# DB version, i.e., only execute upgrade scripts that will *increase* 
-		# the version number of the database.
+		# Execute each SQL upgrade script to bring the DB version up to version
+		# $current_db_version. But it is necessary to skip upgrades that are for
+		# DB versions earlier than the current DB version, i.e., only execute 
+		# upgrade scripts that will *increase* the database version number.
 		for i in $(seq $(($dbversion+1)) $current_db_version);
 		do
 			if [ -r "$SQL_UPGRADE_DIR/upgrade_report_server_db_to_v$i.sql" ]; then
@@ -277,19 +291,16 @@ if [ -d "$SQL_UPGRADE_DIR" ]; then
 			fi
 		done
 	else
-		log_error "There are no SQL upgrade scripts available. The database was not updated."
+		log_error "There are no SQL upgrade scripts available. The database was not upgraded."
 	fi
 else
-	log_error "There must be a '$SQL_UPGRADE_DIR' directory in the directory where this script is located. The database was not updated."
+	log_error "There must be a '$SQL_UPGRADE_DIR' directory in the directory where this script is located. The database was not upgraded."
 fi
 
-
-# ??????????????????????????????????????????????????????????????????????????????
-# Test if report server is running. If so, attempt to synchronize reports (or just try to and ignore errors if server not running?)
-# Or, make part of the upgrade procedure to first shutdown the application, even if the application itself will not be upgraded. 
-# Then the reports will be synced when the application is restarted.
-# ??????????????????????????????????????????????????????????????????????????????
-
+# If the DB upgrade modifies or introduces new reports, or report versions, it
+# will be necessary to re-synchronize the file system with the reports stored in
+# the database. The easiest way to do this is to restart the application running
+# on Tomcat (or perhaps another application server).
 
 #set +x
 exit 0
