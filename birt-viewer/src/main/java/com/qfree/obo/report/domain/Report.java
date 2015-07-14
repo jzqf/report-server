@@ -115,17 +115,6 @@ public class Report implements Serializable {
 	//	@OneToMany(mappedBy = "report", cascade = CascadeType.ALL)
 	//	private List<Job> jobs;
 
-	//	// Works for H2, but not PostgreSQL:
-	//	//	@Column(name = "rptdesign", nullable = false, columnDefinition = "clob")
-	//	/* This works for PostgreSQL but not for H2. With H2, it seems that if you 
-	//	 * create a column of type "text", then the column that is created is  
-	//	 * actually given the H2 type "clob". This means that validating the schema 
-	//	 * via hbm2ddl.auto=validate will fail because Hibernate expects a column of 
-	//	 * type "text" but it sees, instead, a column of type "clob". This causes
-	//	 * the validation to fail. Hence, the schema cannotbe validated during unit
-	//	 * testing with the embedded H2 database unless we temporarily set 
-	//	 * columnDefinition = "clob".
-	//	 */
 	//  @NotBlank
 	//	@Column(name = "rptdesign", nullable = false, columnDefinition = "text")
 	//	private String rptdesign;

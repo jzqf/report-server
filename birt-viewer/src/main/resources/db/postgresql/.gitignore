@@ -1,2 +1,2 @@
-/logfile
-/upgrade_report_server_db/logfile
+install_report_server/logfile
+/upgrade_report_server/logfile
