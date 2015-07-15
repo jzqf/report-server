@@ -46,4 +46,10 @@ INSERT INTO reporting.role (role_id, username, login_role, encoded_password, ful
 INSERT INTO reporting.role (role_id, username, login_role, encoded_password, full_name, created_on) VALUES ('46e477dc-085f-4714-a24f-742428579fcc', 'user4', true , 'oddYTarKRzjUma1wgohrARFyddg=', 'User Number 4', '2015-05-07T09:14:09');
 
 
+-- Create a global configuration record that contains the current database 
+-- version. This will get updated at the database is upgraded over time. This
+-- version number will be updated whenever the data model changes *or* Q-Free
+-- supplied content changes (records are created, updated or deleted).
+INSERT INTO reporting.configuration (param_name, role_id, param_type, integer_value, string_value , created_on) VALUES ('DB_VERSION', null, 'INTEGER', 1, '1', current_timestamp AT TIME ZONE 'UTC');
+
 COMMIT;
