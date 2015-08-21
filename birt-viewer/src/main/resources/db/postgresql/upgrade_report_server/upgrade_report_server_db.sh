@@ -3,12 +3,21 @@
 # Upgrade a report server database to the most recent version.
 #
 # Usage:
-#   ./upgrade_report_server_db.sh [hlv]] 
+#   ./upgrade_report_server_db.sh [-h] [-l] [-v] 
 #                                [-s server] [-p port] [-d database] [-U user]
 #
 #   This should be executed from a directory where the OS user has 
 #   the permission to write, because the script writes errors and other messages
 #   to a log file named "logfile" in the script's directory.
+#
+#   Unless a different role (user) is specified with the -U option, this will 
+#   attempt to connect to the report server database using the role 
+#   "report_server_app", which is the role used by the report server application
+#   itself to connect to the report server application. To simplify execution
+#   of this script, the PostgreSQL password for this user can be placed in the
+#   .pgpass file of the OS user's account from which this script is executed; 
+#   otherwise, the user will be prompted for this password each time this script
+#   is run.
 #
 # Prerequisites:
 #
