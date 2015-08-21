@@ -65,7 +65,13 @@ public class Configuration implements Serializable {
 		 * data created by .../test-data.sql. This allows it to be used for unit
 		 * tests related to configuration parameters that have not been set.
 		 */
-		TEST_NOTSET(ParamType.STRING);
+		TEST_NOTSET(ParamType.STRING),
+
+		/*
+		 * Holds the report server database version. This is used when upgrading
+		 * the database to ensure that the appropriate upgrade scripts are run.
+		 */
+		DB_VERSION(ParamType.INTEGER);
 	
 		private ParamType paramType;
 	
