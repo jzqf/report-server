@@ -8,13 +8,16 @@ import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.UriInfo;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.qfree.obo.report.apps.ParametersTask;
 import com.qfree.obo.report.domain.Configuration.ParamName;
 import com.qfree.obo.report.rest.server.RestUtils.RestApiVersion;
 import com.qfree.obo.report.service.ConfigurationService;
@@ -202,5 +205,22 @@ public class TestController extends AbstractBaseController {
 
 	//TODO USE @PUT TO accept a JSON object, e.g., a new Configuration and then later a new Role?
 	//		Insert into DB and then RETURN A JSON object?????????????????
+
+	@GET
+	@Path("/parse_report_params")
+	@Produces(MediaType.TEXT_PLAIN)
+	public String parseReportParamsTest(
+			@HeaderParam("Accept") final String acceptHeader,
+			@Context final UriInfo uriInfo) {
+		RestApiVersion apiVersion = RestUtils.extractAPIVersion(acceptHeader, RestApiVersion.v1);
+
+		try {
+			ParametersTask.executeReport();
+		} catch (Exception e) {
+			logger.error("Parsing the report parameters failed with the following exception:", e);
+		}
+
+		return "Please work!!!";
+	}
 
 }
