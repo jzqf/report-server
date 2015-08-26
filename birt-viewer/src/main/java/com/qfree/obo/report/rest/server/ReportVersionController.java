@@ -176,6 +176,9 @@ public class ReportVersionController extends AbstractBaseController {
 		ReportVersionResource newReportVersionResource =
 				new ReportVersionResource(reportVersion, uriInfo, queryParams, apiVersion);
 
+		//TODO Parse report parameters here and persist details in DB here?
+		//XXXXXXXXXXXX reportParams = reportParameterService.createParameters(reportVersion.getRptdesign());
+
 		/*
 		 * Write uploaded rptdesign file to the file system of the report 
 		 * server, overwriting a file with the same name if one exists.
@@ -304,6 +307,8 @@ public class ReportVersionController extends AbstractBaseController {
 			}
 			reportVersionResource = new ReportVersionResource(reportVersion, uriInfo, queryParams, apiVersion);
 			logger.info("reportVersionResource = {}", reportVersionResource);
+
+			//TODO Parse report parameters here and persist details in DB here?
 
 			/*
 			 * Write uploaded rptdesign file to the file system of the report 

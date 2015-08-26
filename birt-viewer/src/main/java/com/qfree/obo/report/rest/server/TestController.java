@@ -1,5 +1,10 @@
 package com.qfree.obo.report.rest.server;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.List;
+
 import javax.ws.rs.Consumes;
 import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
@@ -17,7 +22,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.qfree.obo.report.apps.ParametersTask;
+import com.qfree.obo.report.apps.ParseReportParameters;
 import com.qfree.obo.report.domain.Configuration.ParamName;
 import com.qfree.obo.report.rest.server.RestUtils.RestApiVersion;
 import com.qfree.obo.report.service.ConfigurationService;
@@ -215,7 +220,26 @@ public class TestController extends AbstractBaseController {
 		RestApiVersion apiVersion = RestUtils.extractAPIVersion(acceptHeader, RestApiVersion.v1);
 
 		try {
-			ParametersTask.executeReport();
+
+			/*
+			 * Load rptdesign file into a String.
+			 */
+			//java.nio.file.Path rptdesignPath = Paths
+			//		.get("/home/jeffreyz/git/obo-birt-reports/birt-reports/tests/400-TestReport04_v1.1.rptdesign");
+			java.nio.file.Path rptdesignPath = Paths.get("/home/jeffreyz/Desktop/cascade_v3.2.23.rptdesign");
+			//java.nio.file.Path rptdesignPath = Paths.get("/home/jeffreyz/Desktop/cascade_v3.2.6.rptdesign");
+			List<String> rptdesignLines = null;
+			try {
+				rptdesignLines = Files.readAllLines(rptdesignPath);// assumes UTF-8 encoding
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			String rptdesignXml = String.join("\n", rptdesignLines);
+			//logger.info("rptdesignXml = \n{}", rptdesignXml);
+
+			ParseReportParameters.parseReportParams(rptdesignXml);
+
 		} catch (Exception e) {
 			logger.error("Parsing the report parameters failed with the following exception:", e);
 		}
