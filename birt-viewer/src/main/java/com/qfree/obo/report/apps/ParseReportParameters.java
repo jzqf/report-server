@@ -11,6 +11,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
@@ -40,7 +41,13 @@ public class ParseReportParameters {
 	public static Map<String, Map<String, Serializable>> parseReportParams(String rptdesignXml)
 			throws EngineException, IOException {
 
-		Map<String, Map<String, Serializable>> paramDetails = new HashMap<>();
+		/*
+		 * A LinkedHashMap is used here so that the order of the parameters 
+		 * insterted into this map is preserved, i.e., iteration over the 
+		 * entries in this map will always preserve the order that the entries
+		 * were originally inserted into the map. 
+		 */
+		Map<String, Map<String, Serializable>> paramDetails = new LinkedHashMap<>();
 
 		IReportEngine engine = null;
 		EngineConfig config = null;
@@ -80,7 +87,9 @@ public class ParseReportParameters {
 		//				"/home/jeffreyz/git/obo-birt-reports/birt-reports/tests/400-TestReport04_v1.1.rptdesign");
 		//design = engine.openReportDesign("/home/jeffreyz/Desktop/cascade_v3.2.23.rptdesign");
 
-		//Create Parameter Definition Task and retrieve parameter definitions
+		/*
+		 * Create an engine task for obtaining report parameter definitions.
+		 */
 		IGetParameterDefinitionTask task = engine.createGetParameterDefinitionTask(design);
 		Collection<IParameterDefnBase> params = (Collection<IParameterDefnBase>) task.getParameterDefns(true);
 
@@ -92,30 +101,27 @@ public class ParseReportParameters {
 			if (param instanceof IParameterGroupDefn) {
 
 				IParameterGroupDefn group = (IParameterGroupDefn) param;
-				logger.info("*** Parameter group: {} ***", group.getName());
 
 				/*
-				 *  Iterate over the parameter group contents.
+				 *  Iterate over each parameter in the parameter group.
 				 */
-				////for (Iterator i2 = group.getContents().iterator(); i2.hasNext();) {
-				////	IScalarParameterDefn scalar = (IScalarParameterDefn) i2.next();
-				//for (Iterator<IScalarParameterDefn> i2 = group.getContents().iterator(); i2.hasNext();) {
-				//	IScalarParameterDefn scalar = i2.next();
-				//	logger.info("\t{}", scalar.getName());
-				//	//Get details about the parameter.
-				//	paramDetails.put(scalar.getName(), loadParameterDetails(task, scalar, design, group));
-				//}
 				for (IScalarParameterDefn scalar : (ArrayList<IScalarParameterDefn>) group.getContents()) {
-					logger.info("Group scalar parameter: {}", scalar.getName());
-					//Get details about the parameter.
+					logger.info("Scalar parameter '{}' from group '{}'", scalar.getName(), group.getName());
+					/*
+					 * Get details about the parameter as a Map and then insert
+					 * that Map into the paramDetails Map
+					 */
 					paramDetails.put(scalar.getName(), loadParameterDetails(task, scalar, design, group));
 				}
 
 			} else {
 
 				IScalarParameterDefn scalar = (IScalarParameterDefn) param;
-				logger.info("Scalar parameter: {}", scalar.getName());
-				// Get details about the parameter.
+				logger.info("Scalar parameter '{}'", scalar.getName());
+				/*
+				 * Get details about the parameter as a Map and then insert
+				 * that Map into the paramDetails Map
+				 */
 				paramDetails.put(scalar.getName(), loadParameterDetails(task, scalar, design, null));
 
 			}
@@ -131,21 +137,93 @@ public class ParseReportParameters {
 		return paramDetails;
 	}
 
-	//Function to load parameter details in a map.
-	private static HashMap<String, Serializable> loadParameterDetails(IGetParameterDefinitionTask task,
-			IScalarParameterDefn scalar, IReportRunnable report, IParameterGroupDefn group) {
+	/**
+	 * Returns a {@link Map<String, Serializable>} containing details for each
+	 * parameter of a report.
+	 * 
+	 * @param task
+	 * @param scalarParameter
+	 * @param report
+	 * @param parameterGroup
+	 * @return
+	 */
+	private static Map<String, Serializable> loadParameterDetails(IGetParameterDefinitionTask task,
+			IScalarParameterDefn scalarParameter, IReportRunnable report, IParameterGroupDefn parameterGroup) {
 
-		HashMap<String, Serializable> parameter = new HashMap<>();
+		Map<String, Serializable> parameter = new HashMap<>();
 
-		parameter.put("Parameter Group", group == null ? "Default" : group.getName());
-		parameter.put("Name", scalar.getName());
-		parameter.put("Help Text", scalar.getHelpText());
-		parameter.put("Display Name", scalar.getDisplayName());
-		//this is a format code such as  > for UPPERCASE
-		parameter.put("Display Format", scalar.getDisplayFormat());
+		parameter.put("GroupName", parameterGroup == null ? null : parameterGroup.getName());
+		parameter.put("GroupPromptText", parameterGroup == null ? null : parameterGroup.getPromptText());
+		/*
+		 * Possible values for "GroupParameterType" are:
+		 * 
+		 *     IParameterDefnBase.SCALAR_PARAMETER = 0
+		 *     IParameterDefnBase.FILTER_PARAMETER = 1
+		 *     IParameterDefnBase.LIST_PARAMETER = 2
+		 *     IParameterDefnBase.TABLE_PARAMETER = 3
+		 *     IParameterDefnBase.PARAMETER_GROUP = 4
+		 *     IParameterDefnBase.CASCADING_PARAMETER_GROUP = 5
+		 * 
+		 * Some of these values will never appear here since these constants
+		 * are also used in other contexts. For example, see 
+		 * scalarParameter.getParameterType() below.
+		 */
+		parameter.put("GroupParameterType", parameterGroup == null ? null : parameterGroup.getParameterType());
 
-		parameter.put("Hidden", scalar.isHidden() ? "Yes" : "No");
-		parameter.put("Required", scalar.isRequired() ? "Yes" : "No");
+		parameter.put("Name", scalarParameter.getName());
+		/*
+		 * The locale-specific display name for the parameter. The locale used 
+		 * is the locale in the getParameterDefinition task.
+		 */
+		parameter.put("DisplayName", scalarParameter.getDisplayName());
+		/*
+		 * Possible values for "ControlType" are:
+		 * 
+		 *     IScalarParameterDefn.TEXT_BOX     = 0  (default)
+		 *     IScalarParameterDefn.LIST_BOX     = 1
+		 *     IScalarParameterDefn.RADIO_BUTTON = 2
+		 *     IScalarParameterDefn.CHECK_BOX    = 3
+		 */
+		parameter.put("ControlType", scalarParameter.getControlType());
+		/*
+		 * Possible values for "DataType" are:
+		 * 
+		 *     IParameterDefn.TYPE_ANY       = 0
+		 *     IParameterDefn.TYPE_STRING    = 1
+		 *     IParameterDefn.TYPE_FLOAT     = 2
+		 *     IParameterDefn.TYPE_DECIMAL   = 3
+		 *     IParameterDefn.TYPE_DATE_TIME = 4
+		 *     IParameterDefn.TYPE_BOOLEAN   = 5
+		 *     IParameterDefn.TYPE_INTEGER   = 6
+		 *     IParameterDefn.TYPE_DATE      = 7
+		 *     IParameterDefn.TYPE_TIME      = 8
+		 */
+		parameter.put("DataType", scalarParameter.getDataType());
+		parameter.put("DefaultValue", scalarParameter.getDefaultValue());
+		logger.debug("scalarParameter.getDefaultValue() = {}, class = {}",
+				scalarParameter.getDefaultValue(), scalarParameter.getDefaultValue().getClass().getSimpleName());
+		parameter.put("PromptText", scalarParameter.getPromptText());
+		/*
+		 * The locale-specific help text. The locale used is the locale in the 
+		 * getParameterDefinition task.
+		 */
+		parameter.put("HelpText", scalarParameter.getHelpText());
+		/*
+		 * There are the formatting instructions for the parameter value within 
+		 * the parameter prompt UI. It does not influence the value passed to
+		 * the report .
+		 */
+		parameter.put("DisplayFormat", scalarParameter.getDisplayFormat());
+		/*
+		 * Possible values for "Alignment" are:
+		 * 
+		 *     IScalarParameterDefn.AUTO   = 0  (default)
+		 *     IScalarParameterDefn.LEFT   = 1
+		 *     IScalarParameterDefn.CENTER = 2
+		 *     IScalarParameterDefn.RIGHT  = 3
+		 */
+		parameter.put("Alignment", scalarParameter.getAlignment());
+		parameter.put("Hidden", scalarParameter.isHidden());
 		/*
 		 * allowBlank() and allowNull() are deprecated, so they are commented 
 		 * out here. When isRequired() returns true, then both of these will 
@@ -153,82 +231,89 @@ public class ParseReportParameters {
 		 * will return true. Hence, allowBlank() and allowNull() are no longer 
 		 * needed.
 		 */
-		//	parameter.put("Allow Blank (deprecated)", scalar.allowBlank() ? "Yes" : "No");
-		//	parameter.put("Allow Null (deprecated)", scalar.allowNull() ? "Yes" : "No");
-		parameter.put("Conceal Entry", scalar.isValueConcealed() ? "Yes" : "No");// e.g., for passwords, etc.
+		//	parameter.put("AllowBlank (deprecated)", scalar.allowBlank());
+		//	parameter.put("AllowNull (deprecated)", scalar.allowNull());
+		parameter.put("Required", scalarParameter.isRequired());
+		/*
+		 * Possible values for "ParameterType" are:
+		 * 
+		 *     IParameterDefnBase.SCALAR_0
+		 *     IParameterDefnBase.FILTER_PARAMETER = 1
+		 *     IParameterDefnBase.LIST_PARAMETER = 2
+		 *     IParameterDefnBase.TABLE_PARAMETER = 3
+		 *     IParameterDefnBase.PARAMETER_GROUP = 4
+		 *     IParameterDefnBase.CASCADING_PARAMETER_GROUP = 5
+		 * 
+		 * Some of these values will never appear here since these constants
+		 * are also used in other contexts. For example, see 
+		 * parameterGroup.getParameterType() above.
+		 */
+		parameter.put("ParameterType", scalarParameter.getParameterType());
+		parameter.put("TypeName", scalarParameter.getTypeName());
+		/*
+		 * "simple", "multi-value" or "ad-hoc"
+		 */
+		parameter.put("ScalarParameterType", scalarParameter.getScalarParameterType());
+		/*
+		 * isValueConcealed() should be true for passwords, possibly for  bank 
+		 * account numbers, ...
+		 */
+		parameter.put("ValueConcealed", scalarParameter.isValueConcealed());
+		/*
+		 * Applies only to parameters with a selection list. Specifies whether 
+		 * the user can enter a value different from values in a selection list. 
+		 * Usually, a parameter with allowNewValue=true is displayed as a 
+		 * combo-box, while a parameter with allowNewValue=false is displayed 
+		 * as a list. This is only a UI directve. The BIRT engine does not 
+		 * validate whether the value passed in is in the list.
+		 */
+		parameter.put("AllowNewValues", scalarParameter.allowNewValues());
+		/*
+		 * Specifies whether the UI should display the selection list in a fixed
+		 * order. Only applies to parameters with a selection list.
+		 */
+		parameter.put("DisplayInFixedOrder", scalarParameter.displayInFixedOrder());
+		/*
+		 * The number of values that a picklist could have. Not clear what this 
+		 * could be used for.
+		 */
+		parameter.put("AutoSuggestThreshold", scalarParameter.getAutoSuggestThreshold());
+		/*
+		 * This might specify the data type of items *displayed* in the 
+		 * selection list. If so, possible values will be:
+		 * 
+		 *     IParameterDefn.TYPE_ANY       = 0
+		 *     IParameterDefn.TYPE_STRING    = 1
+		 *     IParameterDefn.TYPE_FLOAT     = 2
+		 *     IParameterDefn.TYPE_DECIMAL   = 3
+		 *     IParameterDefn.TYPE_DATE_TIME = 4
+		 *     IParameterDefn.TYPE_BOOLEAN   = 5
+		 *     IParameterDefn.TYPE_INTEGER   = 6
+		 *     IParameterDefn.TYPE_DATE      = 7
+		 *     IParameterDefn.TYPE_TIME      = 8
+		 * 
+		 * If this is the case, then this data type can be different that the
+		 * data type for the parameter (scalarParameter.getDataType()) because
+		 * selecting an item in the selection list will assign an associated
+		 * item to the parameter which might be of different type than the 
+		 * selected displayed value.
+		 */
+		parameter.put("SelectionListType", scalarParameter.getSelectionListType());
 
 		/*
-		 * These seem to always be null, even for cascading parameters, so there 
-		 * is no point including them:
+		 * Get the design element handle that the design engine creates when 
+		 * opening the report. From this, we obtain a ScalarParameterHandle
+		 * that corresponds to the current parameter being processed. This 
+		 * is used to extract more information about the parameter
 		 */
-		//parameter.put("Prompt Text (scalar)", scalar.getPromptText());
-		//if (group != null) {
-		//	parameter.put("Help Text (group)", group.getHelpText());
-		//	parameter.put("Display Name (group)", group.getDisplayName());
-		//	parameter.put("Prompt Text (group)", group.getPromptText());
-		//}
-
-		switch (scalar.getControlType()) {
-		case IScalarParameterDefn.TEXT_BOX:
-			parameter.put("Type", "Text Box");
-			break;
-		case IScalarParameterDefn.LIST_BOX:
-			parameter.put("Type", "List Box");
-			break;
-		case IScalarParameterDefn.RADIO_BUTTON:
-			parameter.put("Type", "List Box");
-			break;
-		case IScalarParameterDefn.CHECK_BOX:
-			parameter.put("Type", "List Box");
-			break;
-		default:
-			parameter.put("Type", "Text Box");
-			break;
-		}
-
-		switch (scalar.getDataType()) {
-		case IScalarParameterDefn.TYPE_STRING:
-			parameter.put("Data Type", "String");
-			break;
-		case IScalarParameterDefn.TYPE_FLOAT:
-			parameter.put("Data Type", "Float");
-			break;
-		case IScalarParameterDefn.TYPE_DECIMAL:
-			parameter.put("Data Type", "Decimal");
-			break;
-		case IScalarParameterDefn.TYPE_DATE_TIME:
-			parameter.put("Data Type", "Date Time");
-			break;
-		case IScalarParameterDefn.TYPE_BOOLEAN:
-			parameter.put("Data Type", "Boolean");
-			break;
-		default:
-			parameter.put("Data Type", "Any");
-			break;
-		}
-
-		//Get report design and find default value, prompt text and data set expression using the DE API
 		ReportDesignHandle reportHandle = (ReportDesignHandle) report.getDesignHandle();
-		ScalarParameterHandle parameterHandle = (ScalarParameterHandle) reportHandle.findParameter(scalar.getName());
+		ScalarParameterHandle parameterHandle = (ScalarParameterHandle) reportHandle.findParameter(scalarParameter.getName());
+
 		/*
-		 * ScalarParameterHandle.getDefaultValue()
-		 * is deprecated. Since version 2.5 it has been replaced by:
-		 *     AbstractScalarParameterHandleImpl.getDefaultValueList()
-		 * which returns a List, not a String. A List is not serializable and
-		 * therefore cannot be put in "parameter".
+		 * This is an expression on the data row from the dynamic list data set 
+		 * that returns the value for the choice.
 		 */
-		parameter.put("Default Value", parameterHandle.getDefaultValue());
-		List defaultValues = parameterHandle.getDefaultValueList();
-		if (defaultValues != null) {
-			//List<String> defaultValues = parameterHandle.getDefaultValueList();
-			for (int i = 0; i < defaultValues.size(); i++) {
-				parameter.put("  *** Default Value " + i, defaultValues.get(i).toString());//TODO Should I enter null here if blank, or blank if null?
-			}
-		} else {
-			parameter.put("  *** Default Value 0", "");//TODO Should I enter blank or null here?
-		}
-		parameter.put("Prompt Text", parameterHandle.getPromptText());
-		parameter.put("Data Set Expression", parameterHandle.getValueExpr());
+		parameter.put("ValueExpr", parameterHandle.getValueExpr());
 
 		/*
 		 * Get selection list, if any. 
@@ -236,34 +321,88 @@ public class ParseReportParameters {
 		 * Text boxes cannot have selection lists, so we only try to get a 
 		 * selection list if we are *not* dealing with a text box.
 		 */
-		if (scalar.getControlType() != IScalarParameterDefn.TEXT_BOX) {
+		if (scalarParameter.getControlType() != IScalarParameterDefn.TEXT_BOX) {
 			if (parameterHandle.getContainer() instanceof CascadingParameterGroupHandle) {
 
 				/*
-				 * Get selection list for a cascading parameter.
+				 * Get selection list for a cascading parameter. We use the
+				 * default values for each of the lists that are earlier in
+				 * the cascade group.
 				 */
-				int index = parameterHandle.getContainerSlotHandle().findPosn(parameterHandle);
-				Object[] keyValue = new Object[index];
-				for (int i = 0; i < index; i++) {
+				int positionInSlot = parameterHandle.getContainerSlotHandle().findPosn(parameterHandle);
+				logger.debug("Parameter '{}': positionInSlot = {}", parameterHandle.getName(), positionInSlot);
+				Object[] groupKeyValues = new Object[positionInSlot];
+				for (int i = 0; i < positionInSlot; i++) {
+					/*
+					 * Place the default value for the parameter associated with
+					 * index "i" in the array "groupKeyValues".
+					 */
 					ScalarParameterHandle handle = (ScalarParameterHandle) ((CascadingParameterGroupHandle) parameterHandle
 							.getContainer()).getParameters().get(i);
-					//Use parameter default values
-					keyValue[i] = handle.getDefaultValue();
+					/*
+					 * ScalarParameterHandle.getDefaultValue()
+					 * is deprecated. Since version 2.5 it has been replaced by:
+					 *     org.eclipse.birt.report.model.api.AbstractScalarParameterHandleImpl.getDefaultValueList()
+					 * which returns a List. We use the first value in the list
+					 * as the default value here.
+					 */
+					//groupKeyValues[i] = handle.getDefaultValue();//<-- deprecated
+					List defaultValues = handle.getDefaultValueList();
+					/*
+					 * the ".toString()" here is necessary:
+					 */
+					groupKeyValues[i] = defaultValues == null ? "" : defaultValues.get(0).toString();
+
+					logger.debug("i = {}, handle.getDefaultValueList().get(0) = {}, class = {}", i,
+							handle.getDefaultValueList().get(0),
+							handle.getDefaultValueList().get(0).getClass().getSimpleName());
+					logger.debug("i = {}, handle.getDefaultValueList().get(0).toString() = {}, class = {}", i,
+							handle.getDefaultValueList().get(0).toString(),
+							handle.getDefaultValueList().get(0).toString().getClass().getSimpleName());
+					logger.debug("groupKeyValues[{}] = {}, class = {}", i,
+							groupKeyValues[i], groupKeyValues[i].getClass().getSimpleName());
 				}
-				String groupName = parameterHandle.getContainer().getName();
+				String parameterGroupName = parameterHandle.getContainer().getName();
 				//task.evaluateQuery(groupName); <-- Deprecated. Apparently, it has no use.
 
+				/*
+				 * getSelectionListForCascadingGroup(parameterGroupName, groupKeyValues)
+				 * returns the selection list for the current parameter being
+				 * processed, which is a member of a cascading parameter group
+				 * of lists, i.e., it is one of the lists in the group of lists
+				 * that make up the cascading group of lists. 
+				 * 
+				 * The first argument here, parameterGroupName, identifies the
+				 * cascading parameter group of lists.
+				 * 
+				 * The second argument here, groupKeyValues, is an array of
+				 * values that has two purposes:
+				 *   1. Each value in the array provides the value selected 
+				 *      for from each selection list from the cascade group
+				 *      that comes earlier than the parameter being processed
+				 *      here. The first value (index 0) is for the first list
+				 *      in the group, etc.
+				 *   2. Indirectly, it identifies the current parameter being
+				 *      processed because the the selection list returned will
+				 *      be for the next list in the cascade group, i.e.,
+				 *      number positionInSlot (using a zero-based index).
+				 */
 				Collection<IParameterSelectionChoice> selectionList = (Collection<IParameterSelectionChoice>) task
-						.getSelectionListForCascadingGroup(groupName, keyValue);
+						.getSelectionListForCascadingGroup(parameterGroupName, groupKeyValues);
+				/*
+				 * dynamicList must be a HashMap, not a Map, because it is 
+				 * inserted into the the "parameter"object below which is of 
+				 * type Map<String, Serializable>. A HashMap is Serializable,
+				 * but a Map is not.
+				 */
 				HashMap<Object, String> dynamicList = new HashMap<>();
 
 				for (IParameterSelectionChoice sI : selectionList) {
 					Object value = sI.getValue();
 					Object label = sI.getLabel();
-					//logger.info(label + "--{}", value);
 					dynamicList.put(value, (String) label);
 				}
-				parameter.put("Selection List", dynamicList);
+				parameter.put("SelectionList", dynamicList);
 
 			} else {
 
@@ -271,20 +410,27 @@ public class ParseReportParameters {
 				 * Get selection list for a non-cascading parameter.
 				 */
 				Collection<IParameterSelectionChoice> selectionList = (Collection<IParameterSelectionChoice>) task
-						.getSelectionList(scalar.getName());
+						.getSelectionList(scalarParameter.getName());
 
 				if (selectionList != null) {
+					/*
+					 * dynamicList must be a HashMap, not a Map, because it is 
+					 * inserted into the the "parameter"object below which is of 
+					 * type Map<String, Serializable>. A HashMap is Serializable,
+					 * but a Map is not.
+					 */
 					HashMap<Object, String> dynamicList = new HashMap<>();
 
 					for (IParameterSelectionChoice selectionItem : selectionList) {
 						Object value = selectionItem.getValue();
 						String label = selectionItem.getLabel();
-						//logger.info(label + "--{}", value);
 						dynamicList.put(value, label);
 					}
-					parameter.put("Selection List", dynamicList);
+					parameter.put("SelectionList", dynamicList);
 				}
 			}
+		} else {
+			parameter.put("SelectionList", null);
 		}
 
 		/*
@@ -292,20 +438,20 @@ public class ParseReportParameters {
 		 * object:
 		 *     IScalarParameterDefn scalar.
 		 */
-		logger.info("");
-		logger.info("Parameter = {}", scalar.getName());
+		logger.debug("Parameter = {}", scalarParameter.getName());
 		for (Map.Entry<String, Serializable> parameterEntry : parameter.entrySet()) {
 			String name = parameterEntry.getKey();
-			if (name.equals("Selection List")) {
-				HashMap<?, ?> selList = (HashMap<?, ?>) parameterEntry.getValue();
-				for (Map.Entry<?, ?> selListEntry : selList.entrySet()) {
-					logger.info("  Selection List Entry ===== Key = {} Value = {}",
-							selListEntry.getKey(), selListEntry.getValue());
-				}
-			} else {
-				logger.info("  {} = {}", name, parameterEntry.getValue());
-			}
+			//if (name.equals("SelectionList")) {
+			//	HashMap<?, ?> selList = (HashMap<?, ?>) parameterEntry.getValue();
+			//	for (Map.Entry<?, ?> selListEntry : selList.entrySet()) {
+			//		logger.info("  Selection List Entry ===== Key = {} Value = {}",
+			//				selListEntry.getKey(), selListEntry.getValue());
+			//	}
+			//} else {
+			logger.debug("  {} = {}", name, parameterEntry.getValue());
+			//}
 		}
+
 		return parameter;
 	}
 
@@ -318,21 +464,45 @@ public class ParseReportParameters {
 			/*
 			 * Load rptdesign file into a String.
 			 */
+
+			Path rptdesignPath = Paths
+					.get("/home/jeffreyz/git/obo-birt-reports/birt-reports/tests/400-TestReport04_v1.1.rptdesign");
 			//Path rptdesignPath = Paths
-			//		.get("/home/jeffreyz/git/obo-birt-reports/birt-reports/tests/400-TestReport04_v1.1.rptdesign");
-			Path rptdesignPath = Paths.get("/home/jeffreyz/Desktop/cascade_v3.2.23.rptdesign");
+			//		.get("/home/jeffreyz/git/obo-birt-reports/birt-reports/tests/cascade.rptdesign");
+			//Path rptdesignPath = Paths.get("/home/jeffreyz/Desktop/cascade_v3.2.23.rptdesign");
 			//Path rptdesignPath = Paths.get("/home/jeffreyz/Desktop/cascade_v3.2.6.rptdesign");
+
 			List<String> rptdesignLines = null;
 			try {
 				rptdesignLines = Files.readAllLines(rptdesignPath);// assumes UTF-8 encoding
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 			String rptdesignXml = String.join("\n", rptdesignLines);
 			//logger.info("rptdesignXml = \n{}", rptdesignXml);
 
-			parseReportParams(rptdesignXml);
+			Map<String, Map<String, Serializable>> paramDetails = parseReportParams(rptdesignXml);
+
+			/*
+			 * Log all details for each parameter extracted from the report
+			 * design.
+			 */
+			for (Map.Entry<String, Map<String, Serializable>> paramDetailsEntry : paramDetails.entrySet()) {
+				logger.info("Parameter = {}", paramDetailsEntry.getKey());
+				Map<String, Serializable> parameter = paramDetailsEntry.getValue();
+				for (Map.Entry<String, Serializable> parameterEntry : parameter.entrySet()) {
+					String name = parameterEntry.getKey();
+					//if (name.equals("SelectionList")) {
+					//	HashMap<?, ?> selList = (HashMap<?, ?>) parameterEntry.getValue();
+					//	for (Map.Entry<?, ?> selListEntry : selList.entrySet()) {
+					//		logger.debug("  Selection List Entry ===== Key = {} Value = {}",
+					//				selListEntry.getKey(), selListEntry.getValue());
+					//	}
+					//} else {
+					logger.info("  {} = {}", name, parameterEntry.getValue());
+					//}
+				}
+			}
 
 		} catch (Exception e) {
 			e.printStackTrace();
