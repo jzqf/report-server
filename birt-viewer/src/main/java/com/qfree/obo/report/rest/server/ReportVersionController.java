@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -27,6 +28,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
+import org.eclipse.birt.core.exception.BirtException;
 import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
 import org.glassfish.jersey.media.multipart.FormDataParam;
 import org.slf4j.Logger;
@@ -48,6 +50,7 @@ import com.qfree.obo.report.dto.ResourcePath;
 import com.qfree.obo.report.dto.RestErrorResource.RestError;
 import com.qfree.obo.report.exceptions.RestApiException;
 import com.qfree.obo.report.rest.server.RestUtils.RestApiVersion;
+import com.qfree.obo.report.service.ReportParameterService;
 import com.qfree.obo.report.service.ReportSyncService;
 import com.qfree.obo.report.service.ReportVersionService;
 
@@ -61,17 +64,20 @@ public class ReportVersionController extends AbstractBaseController {
 	private final ReportVersionService reportVersionService;
 	private final ReportRepository reportRepository;
 	private final ReportSyncService reportSyncService;
+	private final ReportParameterService reportParameterService;
 
 	@Autowired
 	public ReportVersionController(
 			ReportVersionRepository reportVersionRepository,
 			ReportVersionService reportVersionService,
 			ReportRepository reportRepository,
-			ReportSyncService reportSyncService) {
+			ReportSyncService reportSyncService,
+			ReportParameterService reportParameterService) {
 		this.reportVersionRepository = reportVersionRepository;
 		this.reportVersionService = reportVersionService;
 		this.reportRepository = reportRepository;
 		this.reportSyncService = reportSyncService;
+		this.reportParameterService = reportParameterService;
 	}
 
 	/*
@@ -137,7 +143,7 @@ public class ReportVersionController extends AbstractBaseController {
 			@QueryParam(ResourcePath.EXPAND_QP_NAME) final List<String> expand,
 			@QueryParam(ResourcePath.SHOWALL_QP_NAME) final List<String> showAll,
 			@Context final ServletContext servletContext,
-			@Context final UriInfo uriInfo) {
+			@Context final UriInfo uriInfo) throws IOException, BirtException {
 		Map<String, List<String>> queryParams = new HashMap<>();
 		queryParams.put(ResourcePath.EXPAND_QP_KEY, expand);
 		queryParams.put(ResourcePath.SHOWALL_QP_KEY, showAll);
@@ -173,11 +179,13 @@ public class ReportVersionController extends AbstractBaseController {
 		if (RestUtils.AUTO_EXPAND_PRIMARY_RESOURCES) {
 			addToExpandList(expand, ReportVersion.class);
 		}
-		ReportVersionResource newReportVersionResource =
-				new ReportVersionResource(reportVersion, uriInfo, queryParams, apiVersion);
 
-		//TODO Parse report parameters here and persist details in DB here?
-		//XXXXXXXXXXXX reportParams = reportParameterService.createParameters(reportVersion.getRptdesign());
+		/*
+		 * Parse report parameters here and for each report parameter, create a 
+		 * ReportParameter entity which is stored in the report server database.
+		 */
+		Map<String, Map<String, Serializable>> parameters = reportParameterService
+				.createParametersForReport(reportVersion);
 
 		/*
 		 * Write uploaded rptdesign file to the file system of the report 
@@ -185,6 +193,9 @@ public class ReportVersionController extends AbstractBaseController {
 		 */
 		java.nio.file.Path rptdesignFilePath = reportSyncService.writeRptdesignFile(reportVersion,
 				servletContext.getRealPath(""));
+
+		ReportVersionResource newReportVersionResource = new ReportVersionResource(reportVersion, uriInfo, queryParams,
+				apiVersion);
 
 		return created(newReportVersionResource);
 	}
@@ -227,7 +238,7 @@ public class ReportVersionController extends AbstractBaseController {
 			@QueryParam(ResourcePath.SHOWALL_QP_NAME) final List<String> showAll,
 			@Context final ServletContext servletContext,
 			@Context final ServletConfig servletConfig,
-			@Context final UriInfo uriInfo) {
+			@Context final UriInfo uriInfo) throws BirtException {
 		Map<String, List<String>> queryParams = new HashMap<>();
 		queryParams.put(ResourcePath.EXPAND_QP_KEY, expand);
 		queryParams.put(ResourcePath.SHOWALL_QP_KEY, showAll);
@@ -305,10 +316,13 @@ public class ReportVersionController extends AbstractBaseController {
 			if (RestUtils.AUTO_EXPAND_PRIMARY_RESOURCES) {
 				addToExpandList(expand, ReportVersion.class);
 			}
-			reportVersionResource = new ReportVersionResource(reportVersion, uriInfo, queryParams, apiVersion);
-			logger.info("reportVersionResource = {}", reportVersionResource);
 
-			//TODO Parse report parameters here and persist details in DB here?
+			/*
+			 * Parse report parameters here and for each report parameter, create a 
+			 * ReportParameter entity which is stored in the report server database.
+			 */
+			Map<String, Map<String, Serializable>> parameters = reportParameterService
+					.createParametersForReport(reportVersion);
 
 			/*
 			 * Write uploaded rptdesign file to the file system of the report 
@@ -317,6 +331,9 @@ public class ReportVersionController extends AbstractBaseController {
 			//			ReportUtils.writeRptdesignFile(reportVersion, servletContext.getRealPath(""));
 			java.nio.file.Path rptdesignFilePath = reportSyncService.writeRptdesignFile(reportVersion,
 					servletContext.getRealPath(""));
+
+			reportVersionResource = new ReportVersionResource(reportVersion, uriInfo, queryParams, apiVersion);
+			logger.debug("reportVersionResource = {}", reportVersionResource);
 
 			//} catch (InvalidPathException e) {
 			//	throw new RestApiException(RestError.INTERNAL_SERVER_ERROR_REPORT_FOLDER_MISSING, e);

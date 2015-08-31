@@ -9,6 +9,7 @@ insert into reporting.parameter_type (parameter_type_id, description, abbreviati
 insert into reporting.parameter_type (parameter_type_id, description, abbreviation, active, created_on) values ('807c64b1-a59b-465c-998b-a399984b5ef4', 'Integer'                , 'integer'  , true, '2015-05-01T12:00:01');
 insert into reporting.parameter_type (parameter_type_id, description, abbreviation, active, created_on) values ('9b0af697-8bc9-49e2-b8b6-136ced83dbd8', 'String'                 , 'string'   , true, '2015-05-01T12:00:01');
 insert into reporting.parameter_type (parameter_type_id, description, abbreviation, active, created_on) values ('da575eee-e5a3-4149-8ea3-1fd86015bbb9', 'Time'                   , 'time'     , true, '2015-05-01T12:00:01');
+insert into reporting.parameter_type (parameter_type_id, description, abbreviation, active, created_on) values ('2bc62461-6ddb-4e86-b46d-080cd5e9cf83', 'Any'                    , 'any'      , true, '2015-05-01T12:00:01');
 
 
 insert into reporting.document_format (document_format_id, name, file_extension, media_type, binary_data, birt_format, active, created_on) values ('bc5169e0-3d36-483c-a7b5-a76766587991', 'Microsoft Word'               , 'doc' , 'application/msword'                                                       , true , 'doc' , true , '2015-06-30T11:59:00');
@@ -71,8 +72,10 @@ insert into reporting.report_version (report_version_id, report_id, file_name, r
 
 DROP TABLE IF EXISTS tmp_rptdesign;    -- for H2, not PostgreSQL
 
-insert into reporting.widget (widget_id, name, description, multiple_select ,active, created_on ) values ('b8e91527-8b0e-4ed2-8cba-8cb8989ba8e2', 'Checkbox', 'Checkbox widget', false, true, '2015-03-31T02:00:00');
+insert into reporting.widget (widget_id, name, description, multiple_select ,active, created_on ) values ('b8e91527-8b0e-4ed2-8cba-8cb8989ba8e2', 'Checkbox'    , 'Checkbox widget'    , false, true, '2015-03-31T02:00:00');
 insert into reporting.widget (widget_id, name, description, multiple_select ,active, created_on ) values ('e5b4cebb-1852-41a1-9fdf-bb4b8da82ef9', 'String entry', 'String entry widget', false, true, '2015-03-31T02:00:00');
+insert into reporting.widget (widget_id, name, description, multiple_select ,active, created_on ) values ('864c60a8-6c48-4efb-84dd-fc79502899fe', 'Radio button', 'Radio button widget', false, true, '2015-03-31T02:00:00');
+insert into reporting.widget (widget_id, name, description, multiple_select ,active, created_on ) values ('4d0842e4-ba65-4064-8ab1-556e90e3953b', 'Listbox'     , 'Listbox widget'     , false, true, '2015-03-31T02:00:00');
 
 
 --------------------------------------------------------------------------------

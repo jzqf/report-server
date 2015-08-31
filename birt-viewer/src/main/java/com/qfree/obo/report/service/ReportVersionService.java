@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.qfree.obo.report.db.ReportParameterRepository;
 import com.qfree.obo.report.db.ReportRepository;
 import com.qfree.obo.report.db.ReportVersionRepository;
 import com.qfree.obo.report.domain.Report;
@@ -27,16 +26,13 @@ public class ReportVersionService {
 
 	private final ReportVersionRepository reportVersionRepository;
 	private final ReportRepository reportRepository;
-	private final ReportParameterRepository reportParameterRepository;
 
 	@Autowired
 	public ReportVersionService(
 			ReportVersionRepository reportVersionRepository,
-			ReportRepository reportRepository,
-			ReportParameterRepository reportParameterRepository) {
+			ReportRepository reportRepository) {
 		this.reportVersionRepository = reportVersionRepository;
 		this.reportRepository = reportRepository;
-		this.reportParameterRepository = reportParameterRepository;
 	}
 
 	@Transactional

@@ -22,10 +22,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.qfree.obo.report.apps.ParseReportParameters;
 import com.qfree.obo.report.domain.Configuration.ParamName;
 import com.qfree.obo.report.rest.server.RestUtils.RestApiVersion;
 import com.qfree.obo.report.service.ConfigurationService;
+import com.qfree.obo.report.util.ReportUtils;
 
 @Component
 @Path("/test")
@@ -238,7 +238,7 @@ public class TestController extends AbstractBaseController {
 			String rptdesignXml = String.join("\n", rptdesignLines);
 			//logger.info("rptdesignXml = \n{}", rptdesignXml);
 
-			ParseReportParameters.parseReportParams(rptdesignXml);
+			ReportUtils.parseReportParams(rptdesignXml);
 
 		} catch (Exception e) {
 			logger.error("Parsing the report parameters failed with the following exception:", e);
