@@ -310,7 +310,7 @@ public class ReportUtils {
 		/*
 		 * Possible values for "ParameterType" are:
 		 * 
-		 *     IParameterDefnBase.SCALAR_0
+		 *     IParameterDefnBase.SCALAR_PARAMETER = 0
 		 *     IParameterDefnBase.FILTER_PARAMETER = 1
 		 *     IParameterDefnBase.LIST_PARAMETER = 2
 		 *     IParameterDefnBase.TABLE_PARAMETER = 3
@@ -324,7 +324,13 @@ public class ReportUtils {
 		parameter.put("ParameterType", scalarParameter.getParameterType());
 		parameter.put("TypeName", scalarParameter.getTypeName());
 		/*
-		 * "simple", "multi-value" or "ad-hoc"
+		 * Specifies the parameter type for this scalar parameter. The same data
+		 * is available also below from parameterHandle.getParamType(), but it 
+		 * is commented out there. Possible values are:
+		 * 
+		 *     DesignChoiceConstants.SCALAR_PARAM_TYPE_SIMPLE = "simple"
+		 *     DesignChoiceConstants.SCALAR_PARAM_TYPE_MULTI_VALUE = "multi-value"
+		 *     DesignChoiceConstants.SCALAR_PARAM_TYPE_AD_HOC = "ad-hoc"
 		 */
 		parameter.put("ScalarParameterType", scalarParameter.getScalarParameterType());
 		/*
@@ -382,6 +388,17 @@ public class ReportUtils {
 		 */
 		ReportDesignHandle reportHandle = (ReportDesignHandle) report.getDesignHandle();
 		ScalarParameterHandle parameterHandle = (ScalarParameterHandle) reportHandle.findParameter(scalarParameter.getName());
+
+		/*
+		 * Specifies the parameter type for this scalar parameter. The same data
+		 * is available also above from 
+		 * scalarParameter.getScalarParameterType(). Possible values are:
+		 * 
+		 *     DesignChoiceConstants.SCALAR_PARAM_TYPE_SIMPLE = "simple"
+		 *     DesignChoiceConstants.SCALAR_PARAM_TYPE_MULTI_VALUE = "multi-value"
+		 *     DesignChoiceConstants.SCALAR_PARAM_TYPE_AD_HOC = "ad-hoc"
+		 */
+		//parameter.put("ScalarParameterType", parameterHandle.getParamType());
 	
 		/*
 		 * This is an expression on the data row from the dynamic list data set 
@@ -421,7 +438,7 @@ public class ReportUtils {
 					 * as the default value here.
 					 */
 					//groupKeyValues[i] = handle.getDefaultValue();//<-- deprecated
-					List defaultValues = handle.getDefaultValueList();
+					List<Object> defaultValues = handle.getDefaultValueList();
 					/*
 					 * the ".toString()" here is necessary:
 					 */

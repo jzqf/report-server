@@ -60,10 +60,6 @@ public class Widget implements Serializable {
 	private String description;
 
 	@NotNull
-	@Column(name = "multiple_select", nullable = false)
-	private Boolean multipleSelect;
-
-	@NotNull
 	@Column(name = "active", nullable = false)
 	private Boolean active;
 
@@ -78,18 +74,17 @@ public class Widget implements Serializable {
 	private Widget() {
 	}
 
-	public Widget(String description, String name, Boolean multipleSelect) {
-		this(description, name, multipleSelect, true, DateUtils.nowUtc());
+	public Widget(String description, String name) {
+		this(description, name, true, DateUtils.nowUtc());
 	}
 
-	public Widget(String description, String name, Boolean multipleSelect, Boolean active) {
-		this(description, name, multipleSelect, active, DateUtils.nowUtc());
+	public Widget(String description, String name, Boolean active) {
+		this(description, name, active, DateUtils.nowUtc());
 	}
 
-	public Widget(String description, String name, Boolean multipleSelect, Boolean active, Date createdOn) {
+	public Widget(String description, String name, Boolean active, Date createdOn) {
 		this.description = description;
 		this.name = name;
-		this.multipleSelect = multipleSelect;
 		this.active = (active != null) ? active : true;
 		this.createdOn = (createdOn != null) ? createdOn : DateUtils.nowUtc();
 	}
@@ -112,14 +107,6 @@ public class Widget implements Serializable {
 
 	public void setName(String name) {
 		this.name = name;
-	}
-
-	public Boolean isMultipleSelect() {
-		return multipleSelect;
-	}
-
-	public void setMultipleSelect(Boolean multipleSelect) {
-		this.multipleSelect = multipleSelect;
 	}
 
 	public Boolean isActive() {

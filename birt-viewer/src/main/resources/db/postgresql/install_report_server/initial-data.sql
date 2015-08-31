@@ -31,10 +31,10 @@ insert into reporting.report_category (report_category_id, description, abbrevia
 insert into reporting.report_category (report_category_id, description, abbreviation, active, created_on) values ('72d7cb27-1770-4cc7-b301-44d39ccf1e76', 'Traffic'          , 'TRA'  , true, current_timestamp AT TIME ZONE 'UTC');
 
 
-insert into reporting.widget (widget_id, name, description, multiple_select ,active, created_on ) values ('b8e91527-8b0e-4ed2-8cba-8cb8989ba8e2', 'Checkbox'    , 'Checkbox widget'    , false, true, current_timestamp AT TIME ZONE 'UTC');
-insert into reporting.widget (widget_id, name, description, multiple_select ,active, created_on ) values ('e5b4cebb-1852-41a1-9fdf-bb4b8da82ef9', 'String entry', 'String entry widget', false, true, current_timestamp AT TIME ZONE 'UTC');
-insert into reporting.widget (widget_id, name, description, multiple_select ,active, created_on ) values ('864c60a8-6c48-4efb-84dd-fc79502899fe', 'Radio button', 'Radio button widget', false, true, current_timestamp AT TIME ZONE 'UTC');
-insert into reporting.widget (widget_id, name, description, multiple_select ,active, created_on ) values ('4d0842e4-ba65-4064-8ab1-556e90e3953b', 'Listbox'     , 'Listbox widget'     , false, true, current_timestamp AT TIME ZONE 'UTC');
+insert into reporting.widget (widget_id, name, description ,active, created_on ) values ('b8e91527-8b0e-4ed2-8cba-8cb8989ba8e2', 'Checkbox'    , 'Checkbox widget'    , true, current_timestamp AT TIME ZONE 'UTC');
+insert into reporting.widget (widget_id, name, description ,active, created_on ) values ('e5b4cebb-1852-41a1-9fdf-bb4b8da82ef9', 'String entry', 'String entry widget', true, current_timestamp AT TIME ZONE 'UTC');
+insert into reporting.widget (widget_id, name, description ,active, created_on ) values ('864c60a8-6c48-4efb-84dd-fc79502899fe', 'Radio button', 'Radio button widget', true, current_timestamp AT TIME ZONE 'UTC');
+insert into reporting.widget (widget_id, name, description ,active, created_on ) values ('4d0842e4-ba65-4064-8ab1-556e90e3953b', 'Listbox'     , 'Listbox widget'     , true, current_timestamp AT TIME ZONE 'UTC');
 
 
 -- Insert  tree of [role] records:

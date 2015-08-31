@@ -66,8 +66,8 @@ public class ReportParameter implements Serializable {
 	private String name;
 
 	@NotBlank
-	@Column(name = "description", nullable = false, length = 80)
-	private String description;
+	@Column(name = "prompt_text", nullable = false, length = 80)
+	private String promptText;
 
 	/**
 	 * If this is false, a GUI should display a checkbox labeled "Is null" (or 
@@ -162,18 +162,18 @@ public class ReportParameter implements Serializable {
 	public ReportParameter() {
 	}
 
-	public ReportParameter(ReportVersion reportVersion, String name, String description, ParameterType parameterType,
+	public ReportParameter(ReportVersion reportVersion, String name, String promptText, ParameterType parameterType,
 			Widget widget, Boolean required, Boolean multivalued, Integer orderIndex) {
-		this(reportVersion, name, description, parameterType, widget, required, multivalued, orderIndex, DateUtils
+		this(reportVersion, name, promptText, parameterType, widget, required, multivalued, orderIndex, DateUtils
 				.nowUtc());
 	}
 
-	public ReportParameter(ReportVersion reportVersion, String name, String description, ParameterType parameterType,
+	public ReportParameter(ReportVersion reportVersion, String name, String promptText, ParameterType parameterType,
 			Widget widget,
 			Boolean required, Boolean multivalued, Integer orderIndex, Date createdOn) {
 		this.reportVersion = reportVersion;
 		this.name = name;
-		this.description = description;
+		this.promptText = promptText;
 		this.parameterType = parameterType;
 		this.widget = widget;
 		this.required = required;
@@ -242,12 +242,12 @@ public class ReportParameter implements Serializable {
 		this.name = name;
 	}
 
-	public String getDescription() {
-		return this.description;
+	public String getPromptText() {
+		return promptText;
 	}
 
-	public void setDescription(String description) {
-		this.description = description;
+	public void setPromptText(String promptText) {
+		this.promptText = promptText;
 	}
 
 	public Boolean getRequired() {
@@ -289,8 +289,8 @@ public class ReportParameter implements Serializable {
 		builder.append(reportParameterId);
 		builder.append(", name=");
 		builder.append(name);
-		builder.append(", description=");
-		builder.append(description);
+		builder.append(", promptText=");
+		builder.append(promptText);
 		builder.append(", required=");
 		builder.append(required);
 		builder.append(", multivalued=");

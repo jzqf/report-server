@@ -32,7 +32,7 @@ public class ReportParameterResource extends AbstractBaseResource {
 	private String name;
 
 	@XmlElement
-	private String description;
+	private String promptText;
 
 	@XmlElement
 	private Boolean required;
@@ -109,7 +109,7 @@ public class ReportParameterResource extends AbstractBaseResource {
 
 			this.reportParameterId = reportParameter.getReportParameterId();
 			this.name = reportParameter.getName();
-			this.description = reportParameter.getDescription();
+			this.promptText = reportParameter.getPromptText();
 			this.required = reportParameter.getRequired();
 			this.multivalued = reportParameter.getMultivalued();
 			this.orderIndex = reportParameter.getOrderIndex();
@@ -150,12 +150,12 @@ public class ReportParameterResource extends AbstractBaseResource {
 		this.name = name;
 	}
 
-	public String getDescription() {
-		return description;
+	public String getPromptText() {
+		return promptText;
 	}
 
-	public void setDescription(String description) {
-		this.description = description;
+	public void setPromptText(String promptText) {
+		this.promptText = promptText;
 	}
 
 	public Boolean getRequired() {
@@ -205,8 +205,8 @@ public class ReportParameterResource extends AbstractBaseResource {
 		builder.append(reportParameterId);
 		builder.append(", name=");
 		builder.append(name);
-		builder.append(", description=");
-		builder.append(description);
+		builder.append(", promptText=");
+		builder.append(promptText);
 		builder.append(", required=");
 		builder.append(required);
 		builder.append(", multivalued=");

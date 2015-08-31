@@ -135,7 +135,7 @@ CREATE TABLE reporting.report_category (
 CREATE TABLE reporting.report_parameter (
     report_parameter_id uuid NOT NULL,
     created_on timestamp NOT NULL,
-    description character varying(80) NOT NULL,
+    prompt_text character varying(80) NOT NULL,
     multivalued boolean NOT NULL,
     name character varying(32) NOT NULL,
     order_index integer NOT NULL,
@@ -255,7 +255,6 @@ CREATE TABLE reporting.widget (
     active boolean NOT NULL,
     created_on timestamp NOT NULL,
     description character varying(80) NOT NULL,
-    multiple_select boolean NOT NULL,
     name character varying(32) NOT NULL
 );
 

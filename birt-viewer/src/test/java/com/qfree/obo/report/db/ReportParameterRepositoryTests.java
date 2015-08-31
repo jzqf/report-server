@@ -96,10 +96,10 @@ public class ReportParameterRepositoryTests {
 		Boolean multivalued = false;
 
 		//		ReportParameter unsavedReportParameter = new ReportParameter(
-		//				report04, "Some new parameter name", "Some new parameter description", parameterTypeDate, widget1,
+		//				report04, "Some new parameter name", "Some new parameter prompt text", parameterTypeDate, widget1,
 		//				required, multivalued, maxOrderIndex + 1);
 		ReportParameter unsavedReportParameter = new ReportParameter(
-				report04Version01, "Some new parameter name", "Some new parameter description", parameterTypeDate,
+				report04Version01, "Some new parameter name", "Some new parameter prompt text", parameterTypeDate,
 				widget1,
 				required, multivalued, maxOrderIndex + 1);
 		//		logger.info("unsavedReportParameter = {}", unsavedReportParameter);
@@ -126,7 +126,7 @@ public class ReportParameterRepositoryTests {
 		 * TODO Replace this code with a custom "assertReportParameter(...)" method.
 		 */
 		assertThat(foundReportParameter.getName(), is("Some new parameter name"));
-		assertThat(foundReportParameter.getDescription(), is("Some new parameter description"));
+		assertThat(foundReportParameter.getPromptText(), is("Some new parameter prompt text"));
 		assertThat(foundReportParameter.getRequired(), is(true));
 	}
 

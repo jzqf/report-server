@@ -2,7 +2,8 @@ BEGIN TRANSACTION;
 
 -- Update the DB schema from v1 to v2:
 
-
+-- MUST UPDATE [report_parameter]description --> [report_parameter]prompt_text  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+-- REMOVE [widget]multiple_select                                               !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 -- Update the DB content from v1 to v2:
 
@@ -16,10 +17,10 @@ insert into reporting.parameter_type (parameter_type_id, description, abbreviati
 insert into reporting.parameter_type (parameter_type_id, description, abbreviation, active, created_on) values ('da575eee-e5a3-4149-8ea3-1fd86015bbb9', 'Time'                   , 'time'     , true, current_timestamp AT TIME ZONE 'UTC');
 insert into reporting.parameter_type (parameter_type_id, description, abbreviation, active, created_on) values ('2bc62461-6ddb-4e86-b46d-080cd5e9cf83', 'Any'                    , 'any'      , true, current_timestamp AT TIME ZONE 'UTC');
 
-insert into reporting.widget (widget_id, name, description, multiple_select ,active, created_on ) values ('b8e91527-8b0e-4ed2-8cba-8cb8989ba8e2', 'Checkbox'    , 'Checkbox widget'    , false, true, current_timestamp AT TIME ZONE 'UTC');
-insert into reporting.widget (widget_id, name, description, multiple_select ,active, created_on ) values ('e5b4cebb-1852-41a1-9fdf-bb4b8da82ef9', 'String entry', 'String entry widget', false, true, current_timestamp AT TIME ZONE 'UTC');
-insert into reporting.widget (widget_id, name, description, multiple_select ,active, created_on ) values ('864c60a8-6c48-4efb-84dd-fc79502899fe', 'Radio button', 'Radio button widget', false, true, current_timestamp AT TIME ZONE 'UTC');
-insert into reporting.widget (widget_id, name, description, multiple_select ,active, created_on ) values ('4d0842e4-ba65-4064-8ab1-556e90e3953b', 'Listbox'     , 'Listbox widget'     , false, true, current_timestamp AT TIME ZONE 'UTC');
+insert into reporting.widget (widget_id, name, description ,active, created_on ) values ('b8e91527-8b0e-4ed2-8cba-8cb8989ba8e2', 'Checkbox'    , 'Checkbox widget'    , true, current_timestamp AT TIME ZONE 'UTC');
+insert into reporting.widget (widget_id, name, description ,active, created_on ) values ('e5b4cebb-1852-41a1-9fdf-bb4b8da82ef9', 'String entry', 'String entry widget', true, current_timestamp AT TIME ZONE 'UTC');
+insert into reporting.widget (widget_id, name, description ,active, created_on ) values ('864c60a8-6c48-4efb-84dd-fc79502899fe', 'Radio button', 'Radio button widget', true, current_timestamp AT TIME ZONE 'UTC');
+insert into reporting.widget (widget_id, name, description ,active, created_on ) values ('4d0842e4-ba65-4064-8ab1-556e90e3953b', 'Listbox'     , 'Listbox widget'     , true, current_timestamp AT TIME ZONE 'UTC');
 
 
 -- Update global configuration record for "DB_VERSION" to reflect the new version.

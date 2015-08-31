@@ -185,7 +185,7 @@ CREATE TABLE report_category (
 CREATE TABLE report_parameter (
     report_parameter_id uuid DEFAULT uuid_generate_v4() NOT NULL,
     created_on timestamp without time zone NOT NULL,
-    description character varying(80) NOT NULL,
+    prompt_text character varying(80) NOT NULL,
     multivalued boolean NOT NULL,
     name character varying(32) NOT NULL,
     order_index integer NOT NULL,
@@ -305,7 +305,6 @@ CREATE TABLE widget (
     active boolean NOT NULL,
     created_on timestamp without time zone NOT NULL,
     description character varying(80) NOT NULL,
-    multiple_select boolean NOT NULL,
     name character varying(32) NOT NULL
 );
 

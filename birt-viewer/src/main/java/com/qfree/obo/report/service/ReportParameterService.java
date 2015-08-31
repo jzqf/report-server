@@ -8,6 +8,7 @@ import java.util.UUID;
 import org.eclipse.birt.core.exception.BirtException;
 import org.eclipse.birt.report.engine.api.IParameterDefn;
 import org.eclipse.birt.report.engine.api.IScalarParameterDefn;
+import org.eclipse.birt.report.model.api.elements.DesignChoiceConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -89,7 +90,7 @@ public class ReportParameterService {
 			//}
 
 			orderIndex += 1;
-			logger.info("parameter #{}:", orderIndex);
+			logger.info("parameter #{}. Name = {}", orderIndex, parameter.get("Name"));
 
 			/*
 			 * Select a ParameterType that matches the parameter data type,
@@ -115,36 +116,44 @@ public class ReportParameterService {
 			} else {
 				parameterTypeId = DATA_TYPE_ANY;
 			}
-			logger.info("parameterTypeId = {}", parameterTypeId);
+			logger.debug("parameterTypeId = {}", parameterTypeId);
 			ParameterType parameterType = parameterTypeRepository.findOne(parameterTypeId);
-			logger.info("parameterType = {}", parameterType);
-			//			parameterType = parameterTypeRepository.getOne(parameterTypeId);
-			//			logger.info("parameterType (getOne)  = {}", parameterType);
+			logger.debug("parameterType = {}", parameterType);
 
 			/*
 			 * Select a WidgetId that matches the "control" type,
 			 * parameter.get("ControlType"):
 			 */
-			UUID WidgetId = null;
+			UUID widgetId = null;
 			if (parameter.get("ControlType").equals(IScalarParameterDefn.LIST_BOX)) {
-				WidgetId = WIDGET_LISTBOX;
+				widgetId = WIDGET_LISTBOX;
 			} else if (parameter.get("ControlType").equals(IScalarParameterDefn.RADIO_BUTTON)) {
-				WidgetId = WIDGET_RADIO_BUTTON;
+				widgetId = WIDGET_RADIO_BUTTON;
 			} else if (parameter.get("ControlType").equals(IScalarParameterDefn.CHECK_BOX)) {
-				WidgetId = WIDGET_CHECKBOX;
+				widgetId = WIDGET_CHECKBOX;
 			} else {// includes case: parameter.get("ControlType").equals(IScalarParameterDefn.TEXT_BOX)
-				WidgetId = WIDGET_TEXTBOX;
+				widgetId = WIDGET_TEXTBOX;
 			}
-			Widget widget = widgetRepository.findOne(WidgetId);
-			logger.info("widget = {}", widget);
+			logger.debug("widgetId = {}", widgetId);
+			Widget widget = widgetRepository.findOne(widgetId);
+			logger.debug("widget = {}", widget);
 
-			Boolean multivalued = false;//TODO Replace with parameter.get("Multivalued")
-			String description = "Parameter description (reuse for prmpt text)";//TODO Reuse this column for "Prompt text"
+			Boolean multivalued = false;
+			if (parameter.get("ScalarParameterType") != null) {
+				if (parameter.get("ScalarParameterType").equals(DesignChoiceConstants.SCALAR_PARAM_TYPE_SIMPLE)) {
+					multivalued = false;
+				} else if (parameter.get("ScalarParameterType")
+						.equals(DesignChoiceConstants.SCALAR_PARAM_TYPE_MULTI_VALUE)) {
+					multivalued = true;
+					//} else if (parameter.get("ScalarParameterType").equals(DesignChoiceConstants.SCALAR_PARAM_TYPE_AD_HOC)) {
+					//	// I hope this case does not occur because I don't know how to handle it.
+				}
+			}
 
 			ReportParameter reportParameter = new ReportParameter(
 					reportVersion,
 					(String) parameter.get("Name"),
-					description,
+					(String) parameter.get("PromptText"),
 					parameterType,
 					widget,
 					(Boolean) parameter.get("Required"),
