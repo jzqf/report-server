@@ -2,6 +2,7 @@ package com.qfree.obo.report.service;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
@@ -96,7 +97,7 @@ public class ReportParameterService {
 			 * Select a ParameterType that matches the parameter data type,
 			 * parameter.get("DataType"):
 			 */
-			UUID parameterTypeId = null;
+			UUID parameterTypeId = DATA_TYPE_ANY;
 			if (parameter.get("DataType").equals(IParameterDefn.TYPE_BOOLEAN)) {
 				parameterTypeId = DATA_TYPE_BOOLEAN;
 			} else if (parameter.get("DataType").equals(IParameterDefn.TYPE_DATE)) {
@@ -124,7 +125,7 @@ public class ReportParameterService {
 			 * Select a WidgetId that matches the "control" type,
 			 * parameter.get("ControlType"):
 			 */
-			UUID widgetId = null;
+			UUID widgetId = WIDGET_TEXTBOX;
 			if (parameter.get("ControlType").equals(IScalarParameterDefn.LIST_BOX)) {
 				widgetId = WIDGET_LISTBOX;
 			} else if (parameter.get("ControlType").equals(IScalarParameterDefn.RADIO_BUTTON)) {
@@ -138,7 +139,7 @@ public class ReportParameterService {
 			Widget widget = widgetRepository.findOne(widgetId);
 			logger.debug("widget = {}", widget);
 
-			Boolean multivalued = false;
+			Boolean multivalued = Boolean.FALSE;
 			if (parameter.get("ScalarParameterType") != null) {
 				if (parameter.get("ScalarParameterType").equals(DesignChoiceConstants.SCALAR_PARAM_TYPE_SIMPLE)) {
 					multivalued = false;
@@ -150,13 +151,47 @@ public class ReportParameterService {
 				}
 			}
 
+			String promptText;
+			if (parameter.get("PromptText") != null && ((String) parameter.get("PromptText")).isEmpty()) {
+				promptText = (String) parameter.get("PromptText");
+			} else {
+				promptText = (String) parameter.get("Name") + ":";// sensible default value
+			}
+
+			//TODO Arguments to add to ReportParameter constructor, or to create getters & setters for:
+			//TODO Should group details be stored in a related table? This will be more work, but better normalization.
+
+			String groupName = null;
+			String groupPromptText = null;
+			Integer GroupParameterType = null;
+			if (parameter.get("GroupDetails") != null) {
+				HashMap<String, Serializable> groupDetails = (HashMap<String, Serializable>) parameter
+						.get("GroupDetails");
+				groupName = (String) parameter.get("GroupName");
+				groupPromptText = (String) groupDetails.get("GroupPromptText");
+				GroupParameterType = (Integer) groupDetails.get("GroupParameterType");
+			}
+			if (groupPromptText == null && groupName != null) {
+				/*
+				 * This is a sensible value that will be used for normal 
+				 * parameter groups, i.e., not cascading parameter groups, where
+				 * the "GroupPromptText" value seems to always be null,
+				 * unfortunately.
+				 */
+				groupPromptText = groupName;
+			}
+			logger.debug("groupName={}, groupPromptText={}, GroupParameterType={}", groupName, groupPromptText,
+					GroupParameterType);
+
+			//String xXXXXX = parameter.get("XXXXXX") != null ? (String) parameter.get("XXXXXX") : "";
+
 			ReportParameter reportParameter = new ReportParameter(
 					reportVersion,
-					(String) parameter.get("Name"),
-					(String) parameter.get("PromptText"),
 					parameterType,
 					widget,
-					(Boolean) parameter.get("Required"),
+					(String) parameter.get("Name"),
+					promptText,
+					parameter.get("Required") != null ? (Boolean) parameter.get("Required") : Boolean.TRUE,
 					multivalued,
 					orderIndex);
 

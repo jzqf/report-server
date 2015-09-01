@@ -224,24 +224,84 @@ public class ReportUtils {
 			IScalarParameterDefn scalarParameter, IReportRunnable report, IParameterGroupDefn parameterGroup) {
 	
 		Map<String, Serializable> parameter = new HashMap<>();
-	
-		parameter.put("GroupName", parameterGroup == null ? null : parameterGroup.getName());
-		parameter.put("GroupPromptText", parameterGroup == null ? null : parameterGroup.getPromptText());
+
+		//	/*
+		//	 * Parameters that are members of the same group will have the same
+		//	 * value for their "GroupName".
+		//	 */
+		//	parameter.put("GroupName", parameterGroup == null ? null : parameterGroup.getName());
+		//	/*
+		//	 * The "GroupPromptText" will be null for parameters that are not 
+		//	 * members of a group. It also seems to be null for members of a normal
+		//	 * parameter group (disappointingly). But it does seem to be properly
+		//	 * set for members of *cascading" parameter groups. In this case, the
+		//	 * same value of this prompt text will be defined for each member of the
+		//	 * group.
+		//	 */
+		//	parameter.put("GroupPromptText", parameterGroup == null ? null : parameterGroup.getPromptText());
+		//	/*
+		//	 * Possible values for "GroupParameterType" are:
+		//	 * 
+		//	 *     IParameterDefnBase.SCALAR_PARAMETER = 0
+		//	 *     IParameterDefnBase.FILTER_PARAMETER = 1
+		//	 *     IParameterDefnBase.LIST_PARAMETER = 2
+		//	 *     IParameterDefnBase.TABLE_PARAMETER = 3
+		//	 *     IParameterDefnBase.PARAMETER_GROUP = 4
+		//	 *     IParameterDefnBase.CASCADING_PARAMETER_GROUP = 5
+		//	 * 
+		//	 * Some of these values will never appear here since these constants
+		//	 * are also used in other contexts. For example, see 
+		//	 * scalarParameter.getParameterType() below.
+		//	 */
+		//	parameter.put("GroupParameterType", parameterGroup == null ? null : parameterGroup.getParameterType());
+
 		/*
-		 * Possible values for "GroupParameterType" are:
-		 * 
-		 *     IParameterDefnBase.SCALAR_PARAMETER = 0
-		 *     IParameterDefnBase.FILTER_PARAMETER = 1
-		 *     IParameterDefnBase.LIST_PARAMETER = 2
-		 *     IParameterDefnBase.TABLE_PARAMETER = 3
-		 *     IParameterDefnBase.PARAMETER_GROUP = 4
-		 *     IParameterDefnBase.CASCADING_PARAMETER_GROUP = 5
-		 * 
-		 * Some of these values will never appear here since these constants
-		 * are also used in other contexts. For example, see 
-		 * scalarParameter.getParameterType() below.
+		 * If the parameter is a member of a group (normal parameter group or a
+		 * cascading parameter group), we insert here into "parameter" a HashMap 
+		 * that contains details about the group; otherwise, we insert only 
+		 * "null" to signal that this parameter is not a member of a group.
 		 */
-		parameter.put("GroupParameterType", parameterGroup == null ? null : parameterGroup.getParameterType());
+		if (parameterGroup == null) {
+			parameter.put("GroupDetails", null);
+		} else {
+			/*
+			 * groupDetails must be a HashMap, not a Map, because it is 
+			 * inserted into the the "parameter" object below which is of 
+			 * type Map<String, Serializable>. A HashMap is Serializable,
+			 * but a Map is not.
+			 */
+			HashMap<String, Serializable> groupDetails = new HashMap<>();
+			parameter.put("GroupDetails", groupDetails);
+			/*
+			 * Parameters that are members of the same group will have the same
+			 * value for their "GroupName".
+			 */
+			groupDetails.put("GroupName", parameterGroup.getName());
+			/*
+			 * The "GroupPromptText" will be null for parameters that are not 
+			 * members of a group. It also seems to be null for members of a normal
+			 * parameter group (disappointingly). But it does seem to be properly
+			 * set for members of *cascading" parameter groups. In this case, the
+			 * same value of this prompt text will be defined for each member of the
+			 * group.
+			 */
+			groupDetails.put("GroupPromptText", parameterGroup.getPromptText());
+			/*
+			 * Possible values for "GroupParameterType" are:
+			 * 
+			 *     IParameterDefnBase.SCALAR_PARAMETER = 0
+			 *     IParameterDefnBase.FILTER_PARAMETER = 1
+			 *     IParameterDefnBase.LIST_PARAMETER = 2
+			 *     IParameterDefnBase.TABLE_PARAMETER = 3
+			 *     IParameterDefnBase.PARAMETER_GROUP = 4
+			 *     IParameterDefnBase.CASCADING_PARAMETER_GROUP = 5
+			 * 
+			 * Some of these values will never appear here since these constants
+			 * are also used in other contexts. For example, see 
+			 * scalarParameter.getParameterType() below.
+			 */
+			groupDetails.put("GroupParameterType", new Integer(parameterGroup.getParameterType()));
+		}
 	
 		parameter.put("Name", scalarParameter.getName());
 		/*
@@ -482,7 +542,7 @@ public class ReportUtils {
 						.getSelectionListForCascadingGroup(parameterGroupName, groupKeyValues);
 				/*
 				 * dynamicList must be a HashMap, not a Map, because it is 
-				 * inserted into the the "parameter"object below which is of 
+				 * inserted into the the "parameter" object below which is of 
 				 * type Map<String, Serializable>. A HashMap is Serializable,
 				 * but a Map is not.
 				 */
@@ -506,7 +566,7 @@ public class ReportUtils {
 				if (selectionList != null) {
 					/*
 					 * dynamicList must be a HashMap, not a Map, because it is 
-					 * inserted into the the "parameter"object below which is of 
+					 * inserted into the the "parameter" object below which is of 
 					 * type Map<String, Serializable>. A HashMap is Serializable,
 					 * but a Map is not.
 					 */

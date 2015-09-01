@@ -2,8 +2,17 @@ BEGIN TRANSACTION;
 
 -- Update the DB schema from v1 to v2:
 
--- MUST UPDATE [report_parameter]description --> [report_parameter]prompt_text  !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
--- REMOVE [widget]multiple_select                                               !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+-- The DDL below does the following:
+--
+-- Update: [report_parameter]description --> [report_parameter]prompt_text
+-- Remove: [widget]multiple_select
+
+-- This is OK. We could have also used ALTER TABLE ... RENAME COLUMN ...
+ALTER TABLE reporting.report_parameter DROP COLUMN IF EXISTS description CASCADE;
+ALTER TABLE reporting.report_parameter ADD COLUMN prompt_text character varying(80) NOT NULL;
+
+ALTER TABLE reporting.widget DROP COLUMN IF EXISTS multiple_select CASCADE;
+
 
 -- Update the DB content from v1 to v2:
 

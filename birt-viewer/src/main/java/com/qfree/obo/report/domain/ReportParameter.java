@@ -162,14 +162,14 @@ public class ReportParameter implements Serializable {
 	public ReportParameter() {
 	}
 
-	public ReportParameter(ReportVersion reportVersion, String name, String promptText, ParameterType parameterType,
-			Widget widget, Boolean required, Boolean multivalued, Integer orderIndex) {
-		this(reportVersion, name, promptText, parameterType, widget, required, multivalued, orderIndex, DateUtils
+	public ReportParameter(ReportVersion reportVersion, ParameterType parameterType, Widget widget,
+			String name, String promptText, Boolean required, Boolean multivalued, Integer orderIndex) {
+		this(reportVersion, parameterType, widget, name, promptText, required, multivalued, orderIndex, DateUtils
 				.nowUtc());
 	}
 
-	public ReportParameter(ReportVersion reportVersion, String name, String promptText, ParameterType parameterType,
-			Widget widget,
+	public ReportParameter(ReportVersion reportVersion, ParameterType parameterType, Widget widget,
+			String name, String promptText,
 			Boolean required, Boolean multivalued, Integer orderIndex, Date createdOn) {
 		this.reportVersion = reportVersion;
 		this.name = name;

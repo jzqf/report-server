@@ -99,8 +99,8 @@ public class ReportParameterRepositoryTests {
 		//				report04, "Some new parameter name", "Some new parameter prompt text", parameterTypeDate, widget1,
 		//				required, multivalued, maxOrderIndex + 1);
 		ReportParameter unsavedReportParameter = new ReportParameter(
-				report04Version01, "Some new parameter name", "Some new parameter prompt text", parameterTypeDate,
-				widget1,
+				report04Version01, parameterTypeDate, widget1,
+				"Some new parameter name", "Some new parameter prompt text",
 				required, multivalued, maxOrderIndex + 1);
 		//		logger.info("unsavedReportParameter = {}", unsavedReportParameter);
 
