@@ -104,31 +104,62 @@ public class ReportParameter implements Serializable {
 	//			columnDefinition = "uuid")
 	//	private Report report;
 
-	@ManyToOne
-	/*
-	 * If columnDefinition="uuid" is omitted here and the database schema is 
-	 * created by Hibernate (via hibernate.hbm2ddl.auto="create"), then the 
-	 * PostgreSQL column definition includes "DEFAULT uuid_generate_v4()", which
-	 * is not what is wanted.
-	 */
+	//	@ManyToOne
+	//	/*
+	//	 * If columnDefinition="uuid" is omitted here and the database schema is 
+	//	 * created by Hibernate (via hibernate.hbm2ddl.auto="create"), then the 
+	//	 * PostgreSQL column definition includes "DEFAULT uuid_generate_v4()", which
+	//	 * is not what is wanted.
+	//	 */
+	//	@NotNull
+	//	@JoinColumn(name = "parameter_type_id", nullable = false,
+	//			foreignKey = @ForeignKey(name = "fk_reportparameter_parametertype"),
+	//			columnDefinition = "uuid")
+	//	private ParameterType parameterType;
 	@NotNull
-	@JoinColumn(name = "parameter_type_id", nullable = false,
-			foreignKey = @ForeignKey(name = "fk_reportparameter_parametertype"),
-			columnDefinition = "uuid")
-	private ParameterType parameterType;
+	@Column(name = "data_type", nullable = false)
+	private Integer dataType;
 
-	@ManyToOne
-	/*
-	 * If columnDefinition="uuid" is omitted here and the database schema is 
-	 * created by Hibernate (via hibernate.hbm2ddl.auto="create"), then the 
-	 * PostgreSQL column definition includes "DEFAULT uuid_generate_v4()", which
-	 * is not what is wanted.
-	 */
+	//	@ManyToOne
+	//	/*
+	//	 * If columnDefinition="uuid" is omitted here and the database schema is 
+	//	 * created by Hibernate (via hibernate.hbm2ddl.auto="create"), then the 
+	//	 * PostgreSQL column definition includes "DEFAULT uuid_generate_v4()", which
+	//	 * is not what is wanted.
+	//	 */
+	//	@NotNull
+	//	@JoinColumn(name = "widget_id", nullable = false,
+	//			foreignKey = @ForeignKey(name = "fk_reportparameter_widget"),
+	//			columnDefinition = "uuid")
+	//	private Widget widget;
 	@NotNull
-	@JoinColumn(name = "widget_id", nullable = false,
-			foreignKey = @ForeignKey(name = "fk_reportparameter_widget"),
-			columnDefinition = "uuid")
-	private Widget widget;
+	@Column(name = "control_type", nullable = false)
+	private Integer controlType;
+
+
+	//=============================================================================================================
+	/*
+	 * If the parameter is a member of a group, this will be the name of the
+	 * group; otherwise, this will be null.
+	 */
+	//	@Column(name = "group_name", nullable = true, length = 32)
+	//	private String groupName;
+	//
+	//	/*
+	//	 * If the parameter is a member of a group, this will be the prompt text for
+	//	 * the group; otherwise, this will be null.
+	//	 */
+	//	@Column(name = "group_prompt_text", nullable = true, length = 80)
+	//	private String groupPromptText;
+	//
+	//	/*
+	//	 * If the parameter is a member of a group, this will be the type of the
+	//	 * the parameter group; otherwise, this will be null.
+	//	 */
+	//	@Column(name = "group_parameter_type", nullable = true)
+	//	private Integer groupParameterType;
+	//=============================================================================================================
+
 
 	/*
 	 * cascade = CascadeType.ALL:
@@ -162,20 +193,38 @@ public class ReportParameter implements Serializable {
 	public ReportParameter() {
 	}
 
-	public ReportParameter(ReportVersion reportVersion, ParameterType parameterType, Widget widget,
+	//	public ReportParameter(ReportVersion reportVersion, ParameterType parameterType, Widget widget,
+	//			String name, String promptText, Boolean required, Boolean multivalued, Integer orderIndex) {
+	//		this(reportVersion, parameterType, widget, name, promptText, required, multivalued, orderIndex, DateUtils
+	//				.nowUtc());
+	//	}
+	public ReportParameter(ReportVersion reportVersion, Integer dataType, Integer controlType,
 			String name, String promptText, Boolean required, Boolean multivalued, Integer orderIndex) {
-		this(reportVersion, parameterType, widget, name, promptText, required, multivalued, orderIndex, DateUtils
+		this(reportVersion, dataType, controlType, name, promptText, required, multivalued, orderIndex, DateUtils
 				.nowUtc());
 	}
 
-	public ReportParameter(ReportVersion reportVersion, ParameterType parameterType, Widget widget,
+	//	public ReportParameter(ReportVersion reportVersion, ParameterType parameterType, Widget widget,
+	//			String name, String promptText,
+	//			Boolean required, Boolean multivalued, Integer orderIndex, Date createdOn) {
+	//		this.reportVersion = reportVersion;
+	//		this.name = name;
+	//		this.promptText = promptText;
+	//		this.parameterType = parameterType;
+	//		this.widget = widget;
+	//		this.required = required;
+	//		this.multivalued = multivalued;
+	//		this.orderIndex = orderIndex;
+	//		this.createdOn = (createdOn != null) ? createdOn : DateUtils.nowUtc();
+	//	}
+	public ReportParameter(ReportVersion reportVersion, Integer dataType, Integer controlType,
 			String name, String promptText,
 			Boolean required, Boolean multivalued, Integer orderIndex, Date createdOn) {
 		this.reportVersion = reportVersion;
+		this.dataType = dataType;
+		this.controlType = controlType;
 		this.name = name;
 		this.promptText = promptText;
-		this.parameterType = parameterType;
-		this.widget = widget;
 		this.required = required;
 		this.multivalued = multivalued;
 		this.orderIndex = orderIndex;
@@ -194,24 +243,40 @@ public class ReportParameter implements Serializable {
 		this.reportVersion = reportVersion;
 	}
 
-	public ParameterType getParameterType() {
-		return parameterType;
-	}
-
-	public void setParameterType(ParameterType parameterType) {
-		this.parameterType = parameterType;
-	}
-
-	public Widget getWidget() {
-		return widget;
-	}
-
-	public void setWidget(Widget widget) {
-		this.widget = widget;
-	}
+	//	public ParameterType getParameterType() {
+	//		return parameterType;
+	//	}
+	//
+	//	public void setParameterType(ParameterType parameterType) {
+	//		this.parameterType = parameterType;
+	//	}
+	//
+	//	public Widget getWidget() {
+	//		return widget;
+	//	}
+	//
+	//	public void setWidget(Widget widget) {
+	//		this.widget = widget;
+	//	}
 
 	public List<RoleParameterValue> getRoleParameterValues() {
 		return roleParameterValues;
+	}
+
+	public Integer getDataType() {
+		return dataType;
+	}
+
+	public void setDataType(Integer dataType) {
+		this.dataType = dataType;
+	}
+
+	public Integer getControlType() {
+		return controlType;
+	}
+
+	public void setControlType(Integer controlType) {
+		this.controlType = controlType;
 	}
 
 	public void setRoleParameterValues(List<RoleParameterValue> roleParameterValuess) {
@@ -289,23 +354,14 @@ public class ReportParameter implements Serializable {
 		builder.append(reportParameterId);
 		builder.append(", name=");
 		builder.append(name);
-		builder.append(", promptText=");
-		builder.append(promptText);
-		builder.append(", required=");
-		builder.append(required);
-		builder.append(", multivalued=");
-		builder.append(multivalued);
-		builder.append(", orderIndex=");
-		builder.append(orderIndex);
 		builder.append(", reportVersion=");
 		builder.append(reportVersion);
-		builder.append(", parameterType=");
-		builder.append(parameterType);
-		builder.append(", widget=");
-		builder.append(widget);
+		builder.append(", controlType=");
+		builder.append(controlType);
 		builder.append(", createdOn=");
 		builder.append(createdOn);
 		builder.append("]");
 		return builder.toString();
 	}
+
 }

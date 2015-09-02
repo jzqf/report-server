@@ -135,14 +135,14 @@ CREATE TABLE reporting.report_category (
 CREATE TABLE reporting.report_parameter (
     report_parameter_id uuid NOT NULL,
     created_on timestamp NOT NULL,
+    report_version_id uuid NOT NULL,
+    data_type int NOT NULL,
+    control_type int NOT NULL,
     prompt_text character varying(80) NOT NULL,
     multivalued boolean NOT NULL,
     name character varying(32) NOT NULL,
     order_index integer NOT NULL,
-    required boolean NOT NULL,
-    parameter_type_id uuid NOT NULL,
-    report_version_id uuid NOT NULL,
-    widget_id uuid NOT NULL
+    required boolean NOT NULL
 );
 
 --

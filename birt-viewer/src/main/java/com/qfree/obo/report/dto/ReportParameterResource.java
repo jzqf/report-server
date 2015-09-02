@@ -29,6 +29,12 @@ public class ReportParameterResource extends AbstractBaseResource {
 	private UUID reportParameterId;
 
 	@XmlElement
+	private Integer dataType;
+
+	@XmlElement
+	private Integer controlType;
+
+	@XmlElement
 	private String name;
 
 	@XmlElement
@@ -108,6 +114,8 @@ public class ReportParameterResource extends AbstractBaseResource {
 			apiVersion = null;
 
 			this.reportParameterId = reportParameter.getReportParameterId();
+			this.dataType = reportParameter.getDataType();
+			this.controlType = reportParameter.getControlType();
 			this.name = reportParameter.getName();
 			this.promptText = reportParameter.getPromptText();
 			this.required = reportParameter.getRequired();
@@ -140,6 +148,22 @@ public class ReportParameterResource extends AbstractBaseResource {
 
 	public void setReportParameterId(UUID reportParameterId) {
 		this.reportParameterId = reportParameterId;
+	}
+
+	public Integer getDataType() {
+		return dataType;
+	}
+
+	public void setDataType(Integer dataType) {
+		this.dataType = dataType;
+	}
+
+	public Integer getControlType() {
+		return controlType;
+	}
+
+	public void setControlType(Integer controlType) {
+		this.controlType = controlType;
 	}
 
 	public String getName() {

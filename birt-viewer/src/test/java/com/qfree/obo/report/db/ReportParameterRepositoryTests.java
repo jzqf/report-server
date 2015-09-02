@@ -3,13 +3,14 @@ package com.qfree.obo.report.db;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
-import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertThat;
 
 import java.util.List;
 import java.util.UUID;
 
+import org.eclipse.birt.report.engine.api.IParameterDefn;
+import org.eclipse.birt.report.engine.api.IScalarParameterDefn;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
@@ -20,11 +21,9 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.qfree.obo.report.ApplicationConfig;
-import com.qfree.obo.report.domain.ParameterType;
 import com.qfree.obo.report.domain.Report;
 import com.qfree.obo.report.domain.ReportParameter;
 import com.qfree.obo.report.domain.ReportVersion;
-import com.qfree.obo.report.domain.Widget;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = ApplicationConfig.class)
@@ -76,12 +75,12 @@ public class ReportParameterRepositoryTests {
 		ReportVersion report04Version01 = report04.getReportVersions().get(0);
 		assertThat(report04Version01, is(not(nullValue())));
 
-		UUID uuidOfWidget1 = UUID.fromString("b8e91527-8b0e-4ed2-8cba-8cb8989ba8e2");
-		Widget widget1 = widgetRepository.findOne(uuidOfWidget1);
-		assertThat(widget1, is(notNullValue()));
-
-		UUID uuidOfParameterTypeDate = UUID.fromString("12d3f4f8-468d-4faf-be3a-5c15eaba4eb6");
-		ParameterType parameterTypeDate = parameterTypeRepository.findOne(uuidOfParameterTypeDate);
+		//	UUID uuidOfWidget1 = UUID.fromString("b8e91527-8b0e-4ed2-8cba-8cb8989ba8e2");
+		//	Widget widget1 = widgetRepository.findOne(uuidOfWidget1);
+		//	assertThat(widget1, is(notNullValue()));
+		//
+		//	UUID uuidOfParameterTypeDate = UUID.fromString("12d3f4f8-468d-4faf-be3a-5c15eaba4eb6");
+		//	ParameterType parameterTypeDate = parameterTypeRepository.findOne(uuidOfParameterTypeDate);
 
 		/* Query for the current maximum value of orderIndex for all 
 		 * ReportParameter's for report04. This should be equal to the number of
@@ -92,14 +91,17 @@ public class ReportParameterRepositoryTests {
 		Integer maxOrderIndex = reportParameterRepository.maxOrderIndex(report04Version01);
 		assertThat(maxOrderIndex, is(equalTo(1)));
 
+		Integer dataType_Date = IParameterDefn.TYPE_DATE;
+		Integer controlType_Checkbox = IScalarParameterDefn.CHECK_BOX;
 		Boolean required = true;
 		Boolean multivalued = false;
 
-		//		ReportParameter unsavedReportParameter = new ReportParameter(
-		//				report04, "Some new parameter name", "Some new parameter prompt text", parameterTypeDate, widget1,
-		//				required, multivalued, maxOrderIndex + 1);
+		//	ReportParameter unsavedReportParameter = new ReportParameter(
+		//			report04Version01, parameterTypeDate, widget1,
+		//			"Some new parameter name", "Some new parameter prompt text",
+		//			required, multivalued, maxOrderIndex + 1);
 		ReportParameter unsavedReportParameter = new ReportParameter(
-				report04Version01, parameterTypeDate, widget1,
+				report04Version01, dataType_Date, controlType_Checkbox,
 				"Some new parameter name", "Some new parameter prompt text",
 				required, multivalued, maxOrderIndex + 1);
 		//		logger.info("unsavedReportParameter = {}", unsavedReportParameter);

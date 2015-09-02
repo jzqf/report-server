@@ -2,14 +2,12 @@ package com.qfree.obo.report.domain;
 
 import java.io.Serializable;
 import java.util.Date;
-import java.util.List;
 import java.util.UUID;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
@@ -65,8 +63,8 @@ public class ParameterType implements Serializable {
 	@Column(name = "description", nullable = false, length = 32)
 	private String description;
 
-	@OneToMany(targetEntity = ReportParameter.class, mappedBy = "parameterType")
-	private List<ReportParameter> reportParameters;
+	//	@OneToMany(targetEntity = ReportParameter.class, mappedBy = "parameterType")
+	//	private List<ReportParameter> reportParameters;
 
 	@NotNull
 	@Column(name = "active", nullable = false)
@@ -114,14 +112,14 @@ public class ParameterType implements Serializable {
 		this.abbreviation = abbreviation;
 	}
 
-	public List<ReportParameter> getReportParameters() {
-		return reportParameters;
-	}
-
-	public void setReportParameters(List<ReportParameter> reportParameters) {
-		this.reportParameters = reportParameters;
-	}
-
+	//	public List<ReportParameter> getReportParameters() {
+	//		return reportParameters;
+	//	}
+	//
+	//	public void setReportParameters(List<ReportParameter> reportParameters) {
+	//		this.reportParameters = reportParameters;
+	//	}
+	//
 	public Boolean isActive() {
 		return active;
 	}

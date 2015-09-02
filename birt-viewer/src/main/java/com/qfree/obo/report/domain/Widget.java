@@ -2,14 +2,12 @@ package com.qfree.obo.report.domain;
 
 import java.io.Serializable;
 import java.util.Date;
-import java.util.List;
 import java.util.UUID;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -63,8 +61,8 @@ public class Widget implements Serializable {
 	@Column(name = "active", nullable = false)
 	private Boolean active;
 
-	@OneToMany(targetEntity = ReportParameter.class, mappedBy = "widget")
-	private List<ReportParameter> reportParameters;
+	//	@OneToMany(targetEntity = ReportParameter.class, mappedBy = "widget")
+	//	private List<ReportParameter> reportParameters;
 
 	@NotNull
 	@Temporal(TemporalType.TIMESTAMP)
@@ -117,13 +115,13 @@ public class Widget implements Serializable {
 		this.active = active;
 	}
 
-	public List<ReportParameter> getReportParameters() {
-		return reportParameters;
-	}
-
-	public void setReportParameters(List<ReportParameter> reportParameters) {
-		this.reportParameters = reportParameters;
-	}
+	//	public List<ReportParameter> getReportParameters() {
+	//		return reportParameters;
+	//	}
+	//
+	//	public void setReportParameters(List<ReportParameter> reportParameters) {
+	//		this.reportParameters = reportParameters;
+	//	}
 
 	@Override
 	public String toString() {
