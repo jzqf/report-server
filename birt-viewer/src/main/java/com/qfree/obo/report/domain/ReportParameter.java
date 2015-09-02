@@ -193,41 +193,41 @@ public class ReportParameter implements Serializable {
 	public ReportParameter() {
 	}
 
-	//	public ReportParameter(ReportVersion reportVersion, ParameterType parameterType, Widget widget,
-	//			String name, String promptText, Boolean required, Boolean multivalued, Integer orderIndex) {
-	//		this(reportVersion, parameterType, widget, name, promptText, required, multivalued, orderIndex, DateUtils
-	//				.nowUtc());
+	//	public ReportParameter(ReportVersion reportVersion, Integer orderIndex, ParameterType parameterType, Widget widget,
+	//			String name, String promptText, Boolean required, Boolean multivalued) {
+	//		this(reportVersion, orderIndex, parameterType, widget, name, promptText, required, multivalued, 
+	//				DateUtils.nowUtc());
 	//	}
-	public ReportParameter(ReportVersion reportVersion, Integer dataType, Integer controlType,
-			String name, String promptText, Boolean required, Boolean multivalued, Integer orderIndex) {
-		this(reportVersion, dataType, controlType, name, promptText, required, multivalued, orderIndex, DateUtils
-				.nowUtc());
+	public ReportParameter(ReportVersion reportVersion, Integer orderIndex, Integer dataType, Integer controlType,
+			String name, String promptText, Boolean required, Boolean multivalued) {
+		this(reportVersion, orderIndex, dataType, controlType, name, promptText, required, multivalued,
+				DateUtils.nowUtc());
 	}
 
 	//	public ReportParameter(ReportVersion reportVersion, ParameterType parameterType, Widget widget,
 	//			String name, String promptText,
 	//			Boolean required, Boolean multivalued, Integer orderIndex, Date createdOn) {
 	//		this.reportVersion = reportVersion;
+	//		this.orderIndex = orderIndex;
 	//		this.name = name;
 	//		this.promptText = promptText;
 	//		this.parameterType = parameterType;
 	//		this.widget = widget;
 	//		this.required = required;
 	//		this.multivalued = multivalued;
-	//		this.orderIndex = orderIndex;
 	//		this.createdOn = (createdOn != null) ? createdOn : DateUtils.nowUtc();
 	//	}
-	public ReportParameter(ReportVersion reportVersion, Integer dataType, Integer controlType,
+	public ReportParameter(ReportVersion reportVersion, Integer orderIndex, Integer dataType, Integer controlType,
 			String name, String promptText,
-			Boolean required, Boolean multivalued, Integer orderIndex, Date createdOn) {
+			Boolean required, Boolean multivalued, Date createdOn) {
 		this.reportVersion = reportVersion;
+		this.orderIndex = orderIndex;
 		this.dataType = dataType;
 		this.controlType = controlType;
 		this.name = name;
 		this.promptText = promptText;
 		this.required = required;
 		this.multivalued = multivalued;
-		this.orderIndex = orderIndex;
 		this.createdOn = (createdOn != null) ? createdOn : DateUtils.nowUtc();
 	}
 

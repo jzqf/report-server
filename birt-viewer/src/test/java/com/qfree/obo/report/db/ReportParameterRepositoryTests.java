@@ -97,13 +97,13 @@ public class ReportParameterRepositoryTests {
 		Boolean multivalued = false;
 
 		//	ReportParameter unsavedReportParameter = new ReportParameter(
-		//			report04Version01, parameterTypeDate, widget1,
+		//			report04Version01, maxOrderIndex + 1, parameterTypeDate, widget1,
 		//			"Some new parameter name", "Some new parameter prompt text",
-		//			required, multivalued, maxOrderIndex + 1);
+		//			required, multivalued);
 		ReportParameter unsavedReportParameter = new ReportParameter(
-				report04Version01, dataType_Date, controlType_Checkbox,
+				report04Version01, maxOrderIndex + 1, dataType_Date, controlType_Checkbox,
 				"Some new parameter name", "Some new parameter prompt text",
-				required, multivalued, maxOrderIndex + 1);
+				required, multivalued);
 		//		logger.info("unsavedReportParameter = {}", unsavedReportParameter);
 
 		ReportParameter savedReportParameter = reportParameterRepository.save(unsavedReportParameter);

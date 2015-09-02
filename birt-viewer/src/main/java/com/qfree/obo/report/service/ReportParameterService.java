@@ -230,22 +230,22 @@ public class ReportParameterService {
 
 			//ReportParameter reportParameter = new ReportParameter(
 			//		reportVersion,
+			//		orderIndex,
 			//		parameterDataType,
 			//		widget,
 			//		(String) parameter.get("Name"),
 			//		promptText,
 			//		parameter.get("Required") != null ? (Boolean) parameter.get("Required") : Boolean.TRUE,
-			//		multivalued,
-			//		orderIndex);
+			//		multivalued);
 			ReportParameter reportParameter = new ReportParameter(
 					reportVersion,
+					orderIndex,
 					(Integer) parameter.get("DataType"),
 					(Integer) parameter.get("ControlType"),
 					(String) parameter.get("Name"),
 					promptText,
 					parameter.get("Required") != null ? (Boolean) parameter.get("Required") : Boolean.TRUE,
-					multivalued,
-					orderIndex);
+					multivalued);
 
 			reportParameter = reportParameterRepository.save(reportParameter);
 		}
