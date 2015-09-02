@@ -97,29 +97,29 @@ public class ReportParameterService {
 			 * Select a ParameterType that matches the parameter data type,
 			 * parameter.get("DataType"):
 			 */
-			UUID parameterTypeId = DATA_TYPE_ANY;
+			UUID parameterDataTypeId = DATA_TYPE_ANY;
 			if (parameter.get("DataType").equals(IParameterDefn.TYPE_BOOLEAN)) {
-				parameterTypeId = DATA_TYPE_BOOLEAN;
+				parameterDataTypeId = DATA_TYPE_BOOLEAN;
 			} else if (parameter.get("DataType").equals(IParameterDefn.TYPE_DATE)) {
-				parameterTypeId = DATA_TYPE_DATE;
+				parameterDataTypeId = DATA_TYPE_DATE;
 			} else if (parameter.get("DataType").equals(IParameterDefn.TYPE_DATE_TIME)) {
-				parameterTypeId = DATA_TYPE_DATETIME;
+				parameterDataTypeId = DATA_TYPE_DATETIME;
 			} else if (parameter.get("DataType").equals(IParameterDefn.TYPE_DECIMAL)) {
-				parameterTypeId = DATA_TYPE_DECIMAL;
+				parameterDataTypeId = DATA_TYPE_DECIMAL;
 			} else if (parameter.get("DataType").equals(IParameterDefn.TYPE_FLOAT)) {
-				parameterTypeId = DATA_TYPE_FLOAT;
+				parameterDataTypeId = DATA_TYPE_FLOAT;
 			} else if (parameter.get("DataType").equals(IParameterDefn.TYPE_INTEGER)) {
-				parameterTypeId = DATA_TYPE_INTEGER;
+				parameterDataTypeId = DATA_TYPE_INTEGER;
 			} else if (parameter.get("DataType").equals(IParameterDefn.TYPE_STRING)) {
-				parameterTypeId = DATA_TYPE_STRING;
+				parameterDataTypeId = DATA_TYPE_STRING;
 			} else if (parameter.get("DataType").equals(IParameterDefn.TYPE_TIME)) {
-				parameterTypeId = DATA_TYPE_TIME;
+				parameterDataTypeId = DATA_TYPE_TIME;
 			} else {
-				parameterTypeId = DATA_TYPE_ANY;
+				parameterDataTypeId = DATA_TYPE_ANY;
 			}
-			logger.debug("parameterTypeId = {}", parameterTypeId);
-			ParameterType parameterType = parameterTypeRepository.findOne(parameterTypeId);
-			logger.debug("parameterType = {}", parameterType);
+			logger.debug("parameterDataTypeId = {}", parameterDataTypeId);
+			ParameterType parameterDataType = parameterTypeRepository.findOne(parameterDataTypeId);
+			logger.debug("parameterDataType = {}", parameterDataType);
 
 			/*
 			 * Select a WidgetId that matches the "control" type,
@@ -158,9 +158,7 @@ public class ReportParameterService {
 				promptText = (String) parameter.get("Name") + ":";// sensible default value
 			}
 
-			//TODO Arguments to add to ReportParameter constructor, or to create getters & setters for:
 			//TODO Should group details be stored in a related table? This will be more work, but better normalization.
-
 			String groupName = null;
 			String groupPromptText = null;
 			Integer GroupParameterType = null;
@@ -178,16 +176,65 @@ public class ReportParameterService {
 				 * the "GroupPromptText" value seems to always be null,
 				 * unfortunately.
 				 */
-				groupPromptText = groupName;
+				groupPromptText = groupName;//TODO place this logic in the constructor!!!!!
 			}
 			logger.debug("groupName={}, groupPromptText={}, GroupParameterType={}", groupName, groupPromptText,
 					GroupParameterType);
 
-			//String xXXXXX = parameter.get("XXXXXX") != null ? (String) parameter.get("XXXXXX") : "";
+			String displayName = parameter.get("DisplayName") != null ? (String) parameter.get("DisplayName") : null;
+			String helpText = parameter.get("HelpText") != null ? (String) parameter.get("HelpText") : null;
+			if ("".equals(helpText)) {
+				/*
+				 * If helpText is blank, we store null instead since this is
+				 * a better way to determine if help text has been provided or 
+				 * not.
+				 */
+				helpText = null;//TODO place this logic in the setter/constructor!!!!!
+			}
+			String defaultValue = parameter.get("DefaultValue") != null ? (String) parameter.get("DefaultValue") : null;
+			if ("".equals(defaultValue)) {
+				/*
+				 * If defaultValue is blank, we store null instead since this is
+				 * a better way to determine if a default value has been 
+				 * provided or not.
+				 */
+				defaultValue = null;//TODO place this logic in the setter/constructor!!!!!
+			}
+			String displayFormat = parameter.get("DisplayFormat") != null ? (String) parameter.get("DisplayFormat")
+					: null;
+			Integer alignment = parameter.get("Alignment") != null ? (Integer) parameter.get("Alignment")
+					: IScalarParameterDefn.AUTO;
+			Boolean hidden = (Boolean) parameter.get("Hidden");
+			Boolean valueConcealed = (Boolean) parameter.get("ValueConcealed");
+			Boolean allowNewValues = (Boolean) parameter.get("AllowNewValues");
+			Boolean displayInFixedOrder = (Boolean) parameter.get("DisplayInFixedOrder");
+			Integer parameterType = (Integer) parameter.get("ParameterType");
+			String typeName = parameter.get("TypeName") != null ? (String) parameter.get("TypeName") : null;
+			if ("".equals(typeName)) {
+				/*
+				 * If typeName is blank, we store null instead since this is
+				 * a better way to determine if a value has been provided or 
+				 * not.
+				 */
+				typeName = null;//TODO place this logic in the setter/constructor!!!!!
+			}
+			Integer autoSuggestThreshold = (Integer) parameter.get("AutoSuggestThreshold");
+			Integer selectionListType = (Integer) parameter.get("SelectionListType");
+			String valueExpr = parameter.get("ValueExpr") != null ? (String) parameter.get("ValueExpr") : null;
+			if ("".equals(valueExpr)) {
+				/*
+				 * If valueExpr is blank, we store null instead since this is
+				 * a better way to determine if a value has been provided or 
+				 * not.
+				 */
+				valueExpr = null;//TODO place this logic in the setter/constructor!!!!!
+			}
+
+			//TODO These values should be added as arguments to the ReportParameter constructor:
 
 			ReportParameter reportParameter = new ReportParameter(
 					reportVersion,
-					parameterType,
+					parameterDataType,
 					widget,
 					(String) parameter.get("Name"),
 					promptText,

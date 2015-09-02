@@ -382,6 +382,11 @@ public class ReportUtils {
 		 * parameterGroup.getParameterType() above.
 		 */
 		parameter.put("ParameterType", scalarParameter.getParameterType());
+		/*
+		 * Possible values for "TypeName" are:
+		 * 
+		 *     "scalar", ... 
+		 */
 		parameter.put("TypeName", scalarParameter.getTypeName());
 		/*
 		 * Specifies the parameter type for this scalar parameter. The same data
