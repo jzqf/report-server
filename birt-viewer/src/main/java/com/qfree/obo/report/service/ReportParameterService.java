@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 import org.eclipse.birt.core.exception.BirtException;
 import org.eclipse.birt.report.model.api.elements.DesignChoiceConstants;
@@ -13,9 +14,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.qfree.obo.report.db.ParameterTypeRepository;
+import com.qfree.obo.report.db.ParameterGroupRepository;
 import com.qfree.obo.report.db.ReportParameterRepository;
-import com.qfree.obo.report.db.WidgetRepository;
+import com.qfree.obo.report.domain.ParameterGroup;
 import com.qfree.obo.report.domain.ReportParameter;
 import com.qfree.obo.report.domain.ReportVersion;
 import com.qfree.obo.report.util.ReportUtils;
@@ -44,21 +45,18 @@ public class ReportParameterService {
 	//	private final ReportVersionRepository reportVersionRepository;
 	//	private final ReportRepository reportRepository;
 	private final ReportParameterRepository reportParameterRepository;
-	private final ParameterTypeRepository parameterTypeRepository;
-	private WidgetRepository widgetRepository;
+	private final ParameterGroupRepository parameterGroupRepository;
 
 	@Autowired
 	public ReportParameterService(
 			//			ReportVersionRepository reportVersionRepository,
 			//			ReportRepository reportRepository,
 			ReportParameterRepository reportParameterRepository,
-			ParameterTypeRepository parameterTypeRepository,
-			WidgetRepository widgetRepository) {
+			ParameterGroupRepository parameterGroupRepository) {
 		//		this.reportVersionRepository = reportVersionRepository;
 		//		this.reportRepository = reportRepository;
 		this.reportParameterRepository = reportParameterRepository;
-		this.parameterTypeRepository = parameterTypeRepository;
-		this.widgetRepository = widgetRepository;
+		this.parameterGroupRepository = parameterGroupRepository;
 	}
 
 	@Transactional
@@ -71,6 +69,18 @@ public class ReportParameterService {
 		Map<String, Map<String, Serializable>> parameters = ReportUtils.parseReportParams(reportVersion.getRptdesign());
 
 		/*
+		 * This is used to keep trakc of ParameterGroup entities that have been
+		 * created here. A new ParameterGroup is created the first time a new
+		 * group is encountered. For those parameters that below to a 
+		 * ParameterGroup that has already been created, the id of that entity
+		 * is extracted from this map (instead of creating another 
+		 * ParameterGroup). The parameter group name is used as the key in this
+		 * map because it will always be unique - it is not allowed to have two
+		 * parameter groups in the same report with the same name.
+		 */
+		Map<String, UUID> parameterGroups = new HashMap<>();
+
+		/*
 		 * For each report parameter, create a ReportParameter entity which is
 		 * stored in the report server database. "parameters" is a LinkedHashMap
 		 * so this "for" loop will iterate through the parameters in the order
@@ -78,7 +88,7 @@ public class ReportParameterService {
 		 */
 		Integer orderIndex = 0;
 		for (Map.Entry<String, Map<String, Serializable>> parametersEntry : parameters.entrySet()) {
-			logger.info("Parameter = {}", parametersEntry.getKey());
+			logger.debug("Parameter = {}", parametersEntry.getKey());
 			Map<String, Serializable> parameter = parametersEntry.getValue();
 			//for (Map.Entry<String, Serializable> parameterEntry : parameter.entrySet()) {
 			//	String parameterAttrName = parameterEntry.getKey();
@@ -153,28 +163,58 @@ public class ReportParameterService {
 				promptText = (String) parameter.get("Name") + ":";// sensible default value
 			}
 
-			//TODO Should group details be stored in a related table? This will be more work, but better normalization.
-			String groupName = null;// need to be able to store SQL NULL if the parameter is not part of a group?
-			String groupPromptText = null;// need to be able to store SQL NULL if the parameter is not part of a group?
-			Integer groupParameterType = null;// need to be able to store SQL NULL if the parameter is not part of a group?
+			/*
+			 * This is the ParameterGroup to associate with the current 
+			 * parameter being processed. A parameter is not necessarily 
+			 * associated with a parameter group, so this can be null.
+			 */
+			ParameterGroup parameterGroup = null;
+			//			String groupName = null;// need to be able to store SQL NULL if the parameter is not part of a group?
+			//			String groupPromptText = null;// need to be able to store SQL NULL if the parameter is not part of a group?
+			//			Integer groupParameterType = null;// need to be able to store SQL NULL if the parameter is not part of a group?
 			if (parameter.get("GroupDetails") != null) {
 				HashMap<String, Serializable> groupDetails = (HashMap<String, Serializable>) parameter
 						.get("GroupDetails");
-				groupName = (String) groupDetails.get("GroupName");
-				groupPromptText = (String) groupDetails.get("GroupPromptText");
-				groupParameterType = (Integer) groupDetails.get("GroupParameterType");
-			}
-			if (groupPromptText == null && groupName != null) {
 				/*
-				 * This is a sensible value that will be used for normal 
-				 * parameter groups, i.e., not cascading parameter groups, where
-				 * the "GroupPromptText" value seems to always be null,
-				 * unfortunately.
+				 * If this is the first time the parameter group has been seen
+				 * in this loop, a new ParameterGroup is created; otherwise,
+				 * the UUID of an existing ParameterGroup that was created on an
+				 * earlier trip through this loop is used.
 				 */
-				groupPromptText = groupName;//TODO place this logic in the constructor!!!!!
+				String parameterGroupKey = (String) groupDetails.get("GroupName");
+				if (parameterGroups.containsKey(parameterGroupKey)) {
+					/*
+					 * Retrieve existing ParameterGroup entity from Map.
+					 */
+					parameterGroup = parameterGroupRepository.findOne(parameterGroups.get(parameterGroupKey));
+					logger.debug("parameterGroup (retrieved from parameterGroups)={}", parameterGroup);
+				} else {
+					/*
+					 * Create new ParameterGroup entity.
+					 * 
+					 * Unfortunately, the "GroupPromptText" value seems to 
+					 * always be null via the BIRT API for normal parameter 
+					 * groups (not cascading parameter groups), so it is treated
+					 * specially here.
+					 */
+					String groupPromptText = groupDetails.get("GroupPromptText") != null
+							? (String) groupDetails.get("GroupPromptText") : null;
+
+					parameterGroup = new ParameterGroup(
+							(String) groupDetails.get("GroupName"),
+							groupPromptText,
+							(Integer) groupDetails.get("GroupParameterType"));
+					parameterGroup = parameterGroupRepository.save(parameterGroup);
+					logger.debug("parameterGroup (created)={}", parameterGroup);
+					/*
+					 * Insert the id of the ParameterGroup just created into the
+					 * map that is used to keep track of all ParameterGroup's
+					 * that have been created. So that we only create *one*
+					 * ParameterGroup per parameter group that we encounter.
+					 */
+					parameterGroups.put(parameterGroupKey, parameterGroup.getParameterGroupId());
+				}
 			}
-			logger.debug("groupName={}, groupPromptText={}, groupParameterType={}", groupName, groupPromptText,
-					groupParameterType);
 
 			String displayName = parameter.get("DisplayName") != null ? (String) parameter.get("DisplayName") : null;
 			String helpText = parameter.get("HelpText") != null ? (String) parameter.get("HelpText") : null;
@@ -236,7 +276,8 @@ public class ReportParameterService {
 					(String) parameter.get("Name"),
 					promptText,
 					parameter.get("Required") != null ? (Boolean) parameter.get("Required") : Boolean.TRUE,
-					multivalued);
+					multivalued,
+					parameterGroup);
 
 			reportParameter = reportParameterRepository.save(reportParameter);
 		}

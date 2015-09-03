@@ -52,6 +52,9 @@ public class ReportParameterResource extends AbstractBaseResource {
 	@XmlElement(name = "reportVersion")
 	private ReportVersionResource reportVersionResource;
 
+	@XmlElement(name = "parameterGroup")
+	private ParameterGroupResource parameterGroupResource;
+
 	//	@XmlElement(name = "parameterType")
 	//	private ParameterTypeResource parameterTypeResource;
 
@@ -124,6 +127,15 @@ public class ReportParameterResource extends AbstractBaseResource {
 			this.createdOn = reportParameter.getCreatedOn();
 			this.reportVersionResource = new ReportVersionResource(reportParameter.getReportVersion(),
 					uriInfo, newQueryParams, apiVersion);
+			/*
+			 * A related ParameterGroup is optional (normal parameters that are
+			 * not part of a group do not have one), so we only create a related
+			 * ParameterGroupResource if necessary.
+			 */
+			if (reportParameter.getParameterGroup() != null) {
+				this.parameterGroupResource = new ParameterGroupResource(reportParameter.getParameterGroup(),
+						uriInfo, newQueryParams, apiVersion);
+			}
 		}
 	}
 

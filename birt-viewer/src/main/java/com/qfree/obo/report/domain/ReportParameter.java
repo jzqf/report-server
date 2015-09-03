@@ -227,8 +227,7 @@ public class ReportParameter implements Serializable {
 	//	 *     IParameterDefnBase.CASCADING_PARAMETER_GROUP = 5
 	//	 * 
 	//	 * Some of these values will never appear here since these constants
-	//	 * are also used in other contexts. For example, see 
-	//	 * parameterGroup.getParameterType() above.
+	//	 * are also used in other contexts, such as for parameter groups.
 	//	 */
 	//	@NotNull
 	//	@Column(name = "parameter_type", nullable = false)
@@ -282,28 +281,44 @@ public class ReportParameter implements Serializable {
 	//	@Column(name = "value_expr", nullable = true, length = 80)
 	//	private String valueExpr;
 	//
-	//	/*
-	//	 * If the parameter is a member of a group, this will be the name of the
-	//	 * group; otherwise, this will be null.
-	//	 */
-	//	@Column(name = "group_name", nullable = true, length = 32)
-	//	private String groupName;
-	//
-	//	/*
-	//	 * If the parameter is a member of a group, this will be the prompt text for
-	//	 * the group; otherwise, this will be null.
-	//	 */
-	//	@Column(name = "group_prompt_text", nullable = true, length = 80)
-	//	private String groupPromptText;
-	//
-	//	/*
-	//	 * If the parameter is a member of a group, this will be the type of the
-	//	 * the parameter group; otherwise, this will be null.
-	//	 */
-	//	@Column(name = "group_parameter_type", nullable = true)
-	//	private Integer groupParameterType;
+	//	
+	//	//	/*
+	//	//	 * If the parameter is a member of a group, this will be the name of the
+	//	//	 * group; otherwise, this will be null.
+	//	//	 */
+	//	//	@Column(name = "group_name", nullable = true, length = 32)
+	//	//	private String groupName;
+	//	//
+	//	//	/*
+	//	//	 * If the parameter is a member of a group, this will be the prompt text for
+	//	//	 * the group; otherwise, this will be null.
+	//	//	 */
+	//	//	@Column(name = "group_prompt_text", nullable = true, length = 80)
+	//	//	private String groupPromptText;
+	//	//
+	//	//	/*
+	//	//	 * If the parameter is a member of a group, this will be the type of the
+	//	//	 * the parameter group; otherwise, this will be null.
+	//	//	 */
+	//	//	@Column(name = "group_parameter_type", nullable = true)
+	//	//	private Integer groupParameterType;
+	//	
 	//=============================================================================================================
 
+	@ManyToOne
+	/*
+	 * If columnDefinition="uuid" is omitted here and the database schema is 
+	 * created by Hibernate (via hibernate.hbm2ddl.auto="create"), then the 
+	 * PostgreSQL column definition includes "DEFAULT uuid_generate_v4()", which
+	 * is not what is wanted.
+	 * 
+	 * A report parameter need not be a member of a group, so this foreign key 
+	 * can be null.
+	 */
+	@JoinColumn(name = "parameter_group_id", nullable = true,
+			foreignKey = @ForeignKey(name = "fk_reportparameter_parametergroup") ,
+			columnDefinition = "uuid")
+	private ParameterGroup parameterGroup;
 
 	/*
 	 * cascade = CascadeType.ALL:
@@ -345,7 +360,13 @@ public class ReportParameter implements Serializable {
 	public ReportParameter(ReportVersion reportVersion, Integer orderIndex, Integer dataType, Integer controlType,
 			String name, String promptText, Boolean required, Boolean multivalued) {
 		this(reportVersion, orderIndex, dataType, controlType, name, promptText, required, multivalued,
-				DateUtils.nowUtc());
+				null, DateUtils.nowUtc());
+	}
+
+	public ReportParameter(ReportVersion reportVersion, Integer orderIndex, Integer dataType, Integer controlType,
+			String name, String promptText, Boolean required, Boolean multivalued, ParameterGroup parameterGroup) {
+		this(reportVersion, orderIndex, dataType, controlType, name, promptText, required, multivalued,
+				parameterGroup, DateUtils.nowUtc());
 	}
 
 	//	public ReportParameter(ReportVersion reportVersion, ParameterType parameterType, Widget widget,
@@ -362,8 +383,8 @@ public class ReportParameter implements Serializable {
 	//		this.createdOn = (createdOn != null) ? createdOn : DateUtils.nowUtc();
 	//	}
 	public ReportParameter(ReportVersion reportVersion, Integer orderIndex, Integer dataType, Integer controlType,
-			String name, String promptText,
-			Boolean required, Boolean multivalued, Date createdOn) {
+			String name, String promptText, Boolean required, Boolean multivalued,
+			ParameterGroup parameterGroup, Date createdOn) {
 		this.reportVersion = reportVersion;
 		this.orderIndex = orderIndex;
 		this.dataType = dataType;
@@ -372,6 +393,7 @@ public class ReportParameter implements Serializable {
 		this.promptText = promptText;
 		this.required = required;
 		this.multivalued = multivalued;
+		this.parameterGroup = parameterGroup;
 		this.createdOn = (createdOn != null) ? createdOn : DateUtils.nowUtc();
 	}
 
@@ -487,6 +509,14 @@ public class ReportParameter implements Serializable {
 		return createdOn;
 	}
 
+	public ParameterGroup getParameterGroup() {
+		return parameterGroup;
+	}
+
+	public void setParameterGroup(ParameterGroup parameterGroup) {
+		this.parameterGroup = parameterGroup;
+	}
+
 	public void setCreatedOn(Date createdOn) {
 		this.createdOn = createdOn;
 	}
@@ -500,8 +530,12 @@ public class ReportParameter implements Serializable {
 		builder.append(name);
 		builder.append(", reportVersion=");
 		builder.append(reportVersion);
+		builder.append(", dataType=");
+		builder.append(dataType);
 		builder.append(", controlType=");
 		builder.append(controlType);
+		builder.append(", parameterGroup=");
+		builder.append(parameterGroup);
 		builder.append(", createdOn=");
 		builder.append(createdOn);
 		builder.append("]");

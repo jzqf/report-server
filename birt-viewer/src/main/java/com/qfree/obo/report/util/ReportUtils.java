@@ -218,6 +218,7 @@ public class ReportUtils {
 	 * @param scalarParameter
 	 * @param report
 	 * @param parameterGroup
+	 * @param groupCounter
 	 * @return
 	 */
 	private static Map<String, Serializable> loadParameterDetails(
