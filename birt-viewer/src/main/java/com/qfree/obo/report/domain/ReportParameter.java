@@ -137,11 +137,155 @@ public class ReportParameter implements Serializable {
 	private Integer controlType;
 
 
-	//=============================================================================================================
-	/*
-	 * If the parameter is a member of a group, this will be the name of the
-	 * group; otherwise, this will be null.
-	 */
+	//=============================== Dont'forget to at to the resource class as well =======================================================
+	//	/*
+	//	 * The default value for the parameter, as a String. This field may be null
+	//	 * to signify that there is no default. For a parameter of type String, a
+	//	 * legal value may be the empty string "", so we should differentiate 
+	//	 * between "" and null.
+	//	 */
+	//	@Column(name = "default_value", nullable = true, length = 80)
+	//	private String defaultValue;
+	//
+	//	/*
+	//	 * The locale-specific display name for the parameter. The locale used 
+	//	 * is the locale in the getParameterDefinition task. Not sure if this is
+	//	 * of interest.
+	//	 */
+	//	@Column(name = "display_name", nullable = true, length = 32)
+	//	private String displayName;
+	//
+	//	/*
+	//	 * The locale-specific help text. The locale used is the locale in the 
+	//	 * getParameterDefinition task.
+	//	 */
+	//	@Column(name = "help_text", nullable = true, length = 1024)
+	//	private String helpText;
+	//
+	//	/*
+	//	 * These are the formatting instructions for the parameter value within 
+	//	 * the parameter prompt UI. It does not influence the value passed to
+	//	 * the report.
+	//	 */
+	//	@Column(name = "display_format", nullable = true, length = 80)
+	//	private String displayFormat;
+	//
+	//	/*
+	//	 * Possible values for "Alignment" are:
+	//	 * 
+	//	 *     IScalarParameterDefn.AUTO   = 0  (default)
+	//	 *     IScalarParameterDefn.LEFT   = 1
+	//	 *     IScalarParameterDefn.CENTER = 2
+	//	 *     IScalarParameterDefn.RIGHT  = 3
+	//	 */
+	//	@NotNull
+	//	@Column(name = "alignment", nullable = false)
+	//	private Integer alignment;
+	//
+	//	/*
+	//	 * Specifies whether the parameter is a hidden parameter.
+	//	 */
+	//	@NotNull
+	//	@Column(name = "hidden", nullable = false)
+	//	private Boolean hidden;
+	//
+	//	/*
+	//	 * This should be true for passwords, possibly for bank account numbers, ...
+	//	 */
+	//	@NotNull
+	//	@Column(name = "value_concealed", nullable = false)
+	//	private Boolean valueConcealed;
+	//
+	//	/*
+	//	 * Applies only to parameters with a selection list. Specifies whether 
+	//	 * the user can enter a value different from values in a selection list. 
+	//	 * Usually, a parameter with allowNewValue=true is displayed as a 
+	//	 * combo-box, while a parameter with allowNewValue=false is displayed 
+	//	 * as a list. This is only a UI directve. The BIRT engine does not 
+	//	 * validate whether the value passed in is in the list.
+	//	 */
+	//	@NotNull
+	//	@Column(name = "allow_new_values", nullable = false)
+	//	private Boolean allowNewValues;
+	//
+	//	/*
+	//	 * Specifies whether the UI should display the selection list in a fixed
+	//	 * order. Only applies to parameters with a selection list.
+	//	 */
+	//	@NotNull
+	//	@Column(name = "display_in_fixed_order", nullable = false)
+	//	private Boolean displayInFixedOrder;
+	//
+	//	/*
+	//	 * Possible values for "ParameterType" are:
+	//	 * 
+	//	 *     IParameterDefnBase.SCALAR_PARAMETER = 0
+	//	 *     IParameterDefnBase.FILTER_PARAMETER = 1
+	//	 *     IParameterDefnBase.LIST_PARAMETER = 2
+	//	 *     IParameterDefnBase.TABLE_PARAMETER = 3
+	//	 *     IParameterDefnBase.PARAMETER_GROUP = 4
+	//	 *     IParameterDefnBase.CASCADING_PARAMETER_GROUP = 5
+	//	 * 
+	//	 * Some of these values will never appear here since these constants
+	//	 * are also used in other contexts. For example, see 
+	//	 * parameterGroup.getParameterType() above.
+	//	 */
+	//	@NotNull
+	//	@Column(name = "parameter_type", nullable = false)
+	//	private Integer parameterType;
+	//
+	//	/*
+	//	 * The number of values that a picklist could have. Not clear what this 
+	//	 * could be used for.
+	//	 */
+	//	@NotNull
+	//	@Column(name = "auto_suggest_threshold", nullable = false)
+	//	private Integer autoSuggestThreshold;
+	//
+	//	/*
+	//	 * Specifies the type of the parameter selection list. This may mean the
+	//	 * data type of items *displayed* in the selection list. If so, possible
+	//	 * values will be:
+	//	 * 
+	//	 *     IParameterDefn.TYPE_ANY       = 0
+	//	 *     IParameterDefn.TYPE_STRING    = 1
+	//	 *     IParameterDefn.TYPE_FLOAT     = 2
+	//	 *     IParameterDefn.TYPE_DECIMAL   = 3
+	//	 *     IParameterDefn.TYPE_DATE_TIME = 4
+	//	 *     IParameterDefn.TYPE_BOOLEAN   = 5
+	//	 *     IParameterDefn.TYPE_INTEGER   = 6
+	//	 *     IParameterDefn.TYPE_DATE      = 7
+	//	 *     IParameterDefn.TYPE_TIME      = 8
+	//	 * 
+	//	 * If this is the case, then this data type can be different that the
+	//	 * data type for the parameter (scalarParameter.getDataType()) because
+	//	 * selecting an item in the selection list will assign an associated
+	//	 * item to the parameter which might be of different type than the 
+	//	 * selected displayed value.
+	//	 */
+	//	@NotNull
+	//	@Column(name = "selection_list_type", nullable = false)
+	//	private Integer selectionListType;
+	//
+	//	/*
+	//	 * Possible values for "TypeName" are:
+	//	 * 
+	//	 *     "scalar", ... 
+	//	 */
+	//	@Column(name = "type_name", nullable = true, length = 32)
+	//	private String typeName;
+	//
+	//	/*
+	//	 * This is an expression on the data row from the dynamic list data set 
+	//	 * that returns the value for the choice.
+	//	 */
+	//	@Column(name = "value_expr", nullable = true, length = 80)
+	//	private String valueExpr;
+	//
+	//	/*
+	//	 * If the parameter is a member of a group, this will be the name of the
+	//	 * group; otherwise, this will be null.
+	//	 */
 	//	@Column(name = "group_name", nullable = true, length = 32)
 	//	private String groupName;
 	//

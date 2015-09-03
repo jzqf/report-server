@@ -153,8 +153,6 @@ public class ReportParameterService {
 				promptText = (String) parameter.get("Name") + ":";// sensible default value
 			}
 
-
-			//========================================================================================================================
 			//TODO Should group details be stored in a related table? This will be more work, but better normalization.
 			String groupName = null;// need to be able to store SQL NULL if the parameter is not part of a group?
 			String groupPromptText = null;// need to be able to store SQL NULL if the parameter is not part of a group?
@@ -189,14 +187,6 @@ public class ReportParameterService {
 				helpText = null;//TODO place this logic in the setter/constructor!!!!!
 			}
 			String defaultValue = parameter.get("DefaultValue") != null ? (String) parameter.get("DefaultValue") : null;
-			if ("".equals(defaultValue)) {
-				/*
-				 * If defaultValue is blank, we store null instead since this is
-				 * a better way to determine if a default value has been 
-				 * provided or not.
-				 */
-				defaultValue = null;//TODO place this logic in the setter/constructor!!!!!
-			}
 			String displayFormat = parameter.get("DisplayFormat") != null ? (String) parameter.get("DisplayFormat")
 					: null;
 			Integer alignment = (Integer) parameter.get("Alignment");
@@ -205,6 +195,8 @@ public class ReportParameterService {
 			Boolean allowNewValues = (Boolean) parameter.get("AllowNewValues");
 			Boolean displayInFixedOrder = (Boolean) parameter.get("DisplayInFixedOrder");
 			Integer parameterType = (Integer) parameter.get("ParameterType");
+			Integer autoSuggestThreshold = (Integer) parameter.get("AutoSuggestThreshold");
+			Integer selectionListType = (Integer) parameter.get("SelectionListType");
 			String typeName = parameter.get("TypeName") != null ? (String) parameter.get("TypeName") : null;
 			if ("".equals(typeName)) {
 				/*
@@ -214,8 +206,6 @@ public class ReportParameterService {
 				 */
 				typeName = null;//TODO place this logic in the setter/constructor!!!!!
 			}
-			Integer autoSuggestThreshold = (Integer) parameter.get("AutoSuggestThreshold");
-			Integer selectionListType = (Integer) parameter.get("SelectionListType");
 			String valueExpr = parameter.get("ValueExpr") != null ? (String) parameter.get("ValueExpr") : null;
 			if ("".equals(valueExpr)) {
 				/*
@@ -225,6 +215,7 @@ public class ReportParameterService {
 				 */
 				valueExpr = null;//TODO place this logic in the setter/constructor!!!!!
 			}
+			//========================================================================================================================
 
 			//TODO These values should be added as arguments to the ReportParameter constructor:
 

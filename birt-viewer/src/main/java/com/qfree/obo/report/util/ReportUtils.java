@@ -109,11 +109,11 @@ public class ReportUtils {
 	
 		/*
 		 * A LinkedHashMap is used here so that the order of the parameters 
-		 * insterted into this map is preserved, i.e., iteration over the 
+		 * inserted into this map is preserved, i.e., iteration over the 
 		 * entries in this map will always preserve the order that the entries
 		 * were originally inserted into the map. 
 		 */
-		Map<String, Map<String, Serializable>> paramDetails = new LinkedHashMap<>();
+		Map<String, Map<String, Serializable>> parameters = new LinkedHashMap<>();
 	
 		IReportEngine engine = null;
 		try {
@@ -144,8 +144,8 @@ public class ReportUtils {
 			 * rptdesign file as shown here. This code is commented out and only 
 			 * used for testing.
 			 */
-			//		design = engine.openReportDesign(
-			//				"/home/jeffreyz/git/obo-birt-reports/birt-reports/tests/400-TestReport04_v1.1.rptdesign");
+			//design = engine.openReportDesign(
+			//	"/home/jeffreyz/git/obo-birt-reports/birt-reports/tests/400-TestReport04_v1.1.rptdesign");
 			//design = engine.openReportDesign("/home/jeffreyz/Desktop/cascade_v3.2.23.rptdesign");
 
 			/*
@@ -173,7 +173,7 @@ public class ReportUtils {
 						 * Get details about the parameter as a Map and then insert
 						 * that Map into the paramDetails Map
 						 */
-						paramDetails.put(scalarParameter.getName(),
+						parameters.put(scalarParameter.getName(),
 								ReportUtils.loadParameterDetails(task, scalarParameter, design, group));
 					}
 
@@ -185,7 +185,7 @@ public class ReportUtils {
 					 * Get details about the parameter as a Map and then insert
 					 * that Map into the paramDetails Map
 					 */
-					paramDetails.put(scalarParameter.getName(),
+					parameters.put(scalarParameter.getName(),
 							ReportUtils.loadParameterDetails(task, scalarParameter, design, null));
 
 				}
@@ -207,12 +207,12 @@ public class ReportUtils {
 			logger.info("Finished");
 		}
 
-		return paramDetails;
+		return parameters;
 	}
 
 	/**
-	 * Returns a {@link Map<String, Serializable>} containing details for each
-	 * parameter of a report.
+	 * Returns a {@link Map<String, Serializable>} containing attributes for 
+	 * each parameter of a report.
 	 * 
 	 * @param task
 	 * @param scalarParameter
@@ -220,8 +220,11 @@ public class ReportUtils {
 	 * @param parameterGroup
 	 * @return
 	 */
-	private static Map<String, Serializable> loadParameterDetails(IGetParameterDefinitionTask task,
-			IScalarParameterDefn scalarParameter, IReportRunnable report, IParameterGroupDefn parameterGroup) {
+	private static Map<String, Serializable> loadParameterDetails(
+			IGetParameterDefinitionTask task,
+			IScalarParameterDefn scalarParameter,
+			IReportRunnable report,
+			IParameterGroupDefn parameterGroup) {
 	
 		Map<String, Serializable> parameter = new HashMap<>();
 
@@ -342,9 +345,9 @@ public class ReportUtils {
 		 */
 		parameter.put("HelpText", scalarParameter.getHelpText());
 		/*
-		 * There are the formatting instructions for the parameter value within 
+		 * These are the formatting instructions for the parameter value within 
 		 * the parameter prompt UI. It does not influence the value passed to
-		 * the report .
+		 * the report.
 		 */
 		parameter.put("DisplayFormat", scalarParameter.getDisplayFormat());
 		/*
@@ -356,6 +359,9 @@ public class ReportUtils {
 		 *     IScalarParameterDefn.RIGHT  = 3
 		 */
 		parameter.put("Alignment", scalarParameter.getAlignment());
+		/*
+		 * Specifies whether the parameter is a hidden parameter.
+		 */
 		parameter.put("Hidden", scalarParameter.isHidden());
 		/*
 		 * allowBlank() and allowNull() are deprecated, so they are commented 
