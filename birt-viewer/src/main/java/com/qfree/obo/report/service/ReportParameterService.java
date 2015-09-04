@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.UUID;
 
 import org.eclipse.birt.core.exception.BirtException;
+import org.eclipse.birt.report.engine.api.IParameterDefn;
 import org.eclipse.birt.report.model.api.elements.DesignChoiceConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,9 +17,11 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.qfree.obo.report.db.ParameterGroupRepository;
 import com.qfree.obo.report.db.ReportParameterRepository;
+import com.qfree.obo.report.db.SelectionListValueRepository;
 import com.qfree.obo.report.domain.ParameterGroup;
 import com.qfree.obo.report.domain.ReportParameter;
 import com.qfree.obo.report.domain.ReportVersion;
+import com.qfree.obo.report.domain.SelectionListValue;
 import com.qfree.obo.report.util.ReportUtils;
 
 @Component
@@ -45,6 +48,7 @@ public class ReportParameterService {
 	//	private final ReportVersionRepository reportVersionRepository;
 	//	private final ReportRepository reportRepository;
 	private final ReportParameterRepository reportParameterRepository;
+	private SelectionListValueRepository selectionListValueRepository;
 	private final ParameterGroupRepository parameterGroupRepository;
 
 	@Autowired
@@ -52,10 +56,12 @@ public class ReportParameterService {
 			//			ReportVersionRepository reportVersionRepository,
 			//			ReportRepository reportRepository,
 			ReportParameterRepository reportParameterRepository,
+			SelectionListValueRepository selectionListValueRepository,
 			ParameterGroupRepository parameterGroupRepository) {
 		//		this.reportVersionRepository = reportVersionRepository;
 		//		this.reportRepository = reportRepository;
 		this.reportParameterRepository = reportParameterRepository;
+		this.selectionListValueRepository = selectionListValueRepository;
 		this.parameterGroupRepository = parameterGroupRepository;
 	}
 
@@ -292,6 +298,25 @@ public class ReportParameterService {
 					parameter.get("ValueExpr") != null ? (String) parameter.get("ValueExpr") : null,
 					parameterGroup);
 			reportParameter = reportParameterRepository.save(reportParameter);
+
+			/*
+			 * If the ReportParameter just saved has a static selection list,
+			 * we persist is data here.
+			 */
+			if (parameter.get("SelectionList") != null
+					&& ((Integer) parameter.get("SelectionListType")).equals(IParameterDefn.SELECTION_LIST_STATIC)) {
+				HashMap<Object, String> selectionList = (HashMap<Object, String>) parameter.get("SelectionList");
+				Integer selectionListValueOrderIndex = 0;
+				for (Map.Entry<Object, String> selectionListEntry : selectionList.entrySet()) {
+					selectionListValueOrderIndex += 1;
+					logger.info("selectionListEntry:  {}: {}", selectionListEntry.getKey(),
+							selectionListEntry.getValue());
+					SelectionListValue selectionListValue = new SelectionListValue(
+							reportParameter, selectionListValueOrderIndex,
+							selectionListEntry.getKey().toString(), selectionListEntry.getValue());
+					selectionListValue = selectionListValueRepository.save(selectionListValue);
+				}
+			}
 		}
 
 		return parameters;

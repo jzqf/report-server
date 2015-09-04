@@ -430,25 +430,10 @@ public class ReportUtils {
 		 */
 		parameter.put("AutoSuggestThreshold", scalarParameter.getAutoSuggestThreshold());
 		/*
-		 * Specifies the type of the parameter selection list. This may mean the
-		 * data type of items *displayed* in the selection list. If so, possible
-		 * values will be:
-		 * 
-		 *     IParameterDefn.TYPE_ANY       = 0
-		 *     IParameterDefn.TYPE_STRING    = 1
-		 *     IParameterDefn.TYPE_FLOAT     = 2
-		 *     IParameterDefn.TYPE_DECIMAL   = 3
-		 *     IParameterDefn.TYPE_DATE_TIME = 4
-		 *     IParameterDefn.TYPE_BOOLEAN   = 5
-		 *     IParameterDefn.TYPE_INTEGER   = 6
-		 *     IParameterDefn.TYPE_DATE      = 7
-		 *     IParameterDefn.TYPE_TIME      = 8
-		 * 
-		 * If this is the case, then this data type can be different that the
-		 * data type for the parameter (scalarParameter.getDataType()) because
-		 * selecting an item in the selection list will assign an associated
-		 * item to the parameter which might be of different type than the 
-		 * selected displayed value.
+		 * Specifies the type of the parameter selection list.		 * 
+		 *     IParameterDefn.SELECTION_LIST_NONE    = 0
+		 *     IParameterDefn.SELECTION_LIST_DYNAMIC = 1
+		 *     IParameterDefn.SELECTION_LIST_STATIC  = 2
 		 */
 		parameter.put("SelectionListType", scalarParameter.getSelectionListType());
 	
@@ -556,9 +541,11 @@ public class ReportUtils {
 				 * dynamicList must be a HashMap, not a Map, because it is 
 				 * inserted into the the "parameter" object below which is of 
 				 * type Map<String, Serializable>. A HashMap is Serializable,
-				 * but a Map is not.
+				 * but a Map is not. We use a LinkedHashMap implementation so
+				 * that the selection list entries inserted into this map retain
+				 * the order that they are inserted.
 				 */
-				HashMap<Object, String> dynamicList = new HashMap<>();
+				HashMap<Object, String> dynamicList = new LinkedHashMap<>();
 	
 				for (IParameterSelectionChoice sI : selectionList) {
 					Object value = sI.getValue();
@@ -580,9 +567,11 @@ public class ReportUtils {
 					 * dynamicList must be a HashMap, not a Map, because it is 
 					 * inserted into the the "parameter" object below which is of 
 					 * type Map<String, Serializable>. A HashMap is Serializable,
-					 * but a Map is not.
+					 * but a Map is not. We use a LinkedHashMap implementation so
+					 * that the selection list entries inserted into this map retain
+					 * the order that they are inserted.
 					 */
-					HashMap<Object, String> dynamicList = new HashMap<>();
+					HashMap<Object, String> dynamicList = new LinkedHashMap<>();
 	
 					for (IParameterSelectionChoice selectionItem : selectionList) {
 						Object value = selectionItem.getValue();
