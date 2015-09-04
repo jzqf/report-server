@@ -321,6 +321,14 @@ public class ReportParameter implements Serializable {
 	/*
 	 * cascade = CascadeType.ALL:
 	 *     Deleting a ReportParameter will delete all of its 
+	 *     SelectionListValue's.
+	 */
+	@OneToMany(mappedBy = "reportParameter", cascade = CascadeType.ALL)
+	private List<SelectionListValue> selectionListValues;
+
+	/*
+	 * cascade = CascadeType.ALL:
+	 *     Deleting a ReportParameter will delete all of its 
 	 *     RoleParameterValue's.
 	 */
 	@OneToMany(mappedBy = "reportParameter", cascade = CascadeType.ALL)
@@ -467,6 +475,10 @@ public class ReportParameter implements Serializable {
 		return roleParameterValues;
 	}
 
+	public void setRoleParameterValues(List<RoleParameterValue> roleParameterValuess) {
+		this.roleParameterValues = roleParameterValuess;
+	}
+
 	public Integer getDataType() {
 		return dataType;
 	}
@@ -481,26 +493,6 @@ public class ReportParameter implements Serializable {
 
 	public void setControlType(Integer controlType) {
 		this.controlType = controlType;
-	}
-
-	public void setRoleParameterValues(List<RoleParameterValue> roleParameterValuess) {
-		this.roleParameterValues = roleParameterValuess;
-	}
-
-	public List<SubscriptionParameterValue> getSubscriptionParameterValues() {
-		return subscriptionParameterValues;
-	}
-
-	public void setSubscriptionParameterValues(List<SubscriptionParameterValue> subscriptionParameterValues) {
-		this.subscriptionParameterValues = subscriptionParameterValues;
-	}
-
-	public List<JobParameterValue> getJobParameterValues() {
-		return jobParameterValues;
-	}
-
-	public void setJobParameterValues(List<JobParameterValue> jobParameterValues) {
-		this.jobParameterValues = jobParameterValues;
 	}
 
 	public String getName() {
@@ -535,16 +527,116 @@ public class ReportParameter implements Serializable {
 		this.multivalued = multivalued;
 	}
 
+	public String getDefaultValue() {
+		return defaultValue;
+	}
+
+	public void setDefaultValue(String defaultValue) {
+		this.defaultValue = defaultValue;
+	}
+
+	public String getDisplayName() {
+		return displayName;
+	}
+
+	public void setDisplayName(String displayName) {
+		this.displayName = displayName;
+	}
+
+	public String getHelpText() {
+		return helpText;
+	}
+
+	public void setHelpText(String helpText) {
+		this.helpText = helpText;
+	}
+
+	public String getDisplayFormat() {
+		return displayFormat;
+	}
+
+	public void setDisplayFormat(String displayFormat) {
+		this.displayFormat = displayFormat;
+	}
+
+	public Integer getAlignment() {
+		return alignment;
+	}
+
+	public void setAlignment(Integer alignment) {
+		this.alignment = alignment;
+	}
+
+	public Boolean getHidden() {
+		return hidden;
+	}
+
+	public void setHidden(Boolean hidden) {
+		this.hidden = hidden;
+	}
+
+	public Boolean getValueConcealed() {
+		return valueConcealed;
+	}
+
+	public void setValueConcealed(Boolean valueConcealed) {
+		this.valueConcealed = valueConcealed;
+	}
+
+	public Boolean getAllowNewValues() {
+		return allowNewValues;
+	}
+
+	public void setAllowNewValues(Boolean allowNewValues) {
+		this.allowNewValues = allowNewValues;
+	}
+
+	public Boolean getDisplayInFixedOrder() {
+		return displayInFixedOrder;
+	}
+
+	public void setDisplayInFixedOrder(Boolean displayInFixedOrder) {
+		this.displayInFixedOrder = displayInFixedOrder;
+	}
+
+	public Integer getParameterType() {
+		return parameterType;
+	}
+
+	public void setParameterType(Integer parameterType) {
+		this.parameterType = parameterType;
+	}
+
+	public Integer getAutoSuggestThreshold() {
+		return autoSuggestThreshold;
+	}
+
+	public void setAutoSuggestThreshold(Integer autoSuggestThreshold) {
+		this.autoSuggestThreshold = autoSuggestThreshold;
+	}
+
+	public Integer getSelectionListType() {
+		return selectionListType;
+	}
+
+	public void setSelectionListType(Integer selectionListType) {
+		this.selectionListType = selectionListType;
+	}
+
+	public String getValueExpr() {
+		return valueExpr;
+	}
+
+	public void setValueExpr(String valueExpr) {
+		this.valueExpr = valueExpr;
+	}
+
 	public Integer getOrderIndex() {
 		return orderIndex;
 	}
 
 	public void setOrderIndex(Integer orderIndex) {
 		this.orderIndex = orderIndex;
-	}
-
-	public Date getCreatedOn() {
-		return createdOn;
 	}
 
 	public ParameterGroup getParameterGroup() {
@@ -555,8 +647,32 @@ public class ReportParameter implements Serializable {
 		this.parameterGroup = parameterGroup;
 	}
 
-	public void setCreatedOn(Date createdOn) {
-		this.createdOn = createdOn;
+	public Date getCreatedOn() {
+		return createdOn;
+	}
+
+	public List<SelectionListValue> getSelectionListValues() {
+		return selectionListValues;
+	}
+
+	public void setSelectionListValues(List<SelectionListValue> selectionListValues) {
+		this.selectionListValues = selectionListValues;
+	}
+
+	public List<SubscriptionParameterValue> getSubscriptionParameterValues() {
+		return subscriptionParameterValues;
+	}
+
+	public void setSubscriptionParameterValues(List<SubscriptionParameterValue> subscriptionParameterValues) {
+		this.subscriptionParameterValues = subscriptionParameterValues;
+	}
+
+	public List<JobParameterValue> getJobParameterValues() {
+		return jobParameterValues;
+	}
+
+	public void setJobParameterValues(List<JobParameterValue> jobParameterValues) {
+		this.jobParameterValues = jobParameterValues;
 	}
 
 	@Override
