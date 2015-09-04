@@ -76,7 +76,7 @@ public class SelectionListValue implements Serializable {
 	 * This value may be blank ("").
 	 */
 	@NotNull
-	@Column(name = "value_assigned", nullable = false, length = 80)
+	@Column(name = "value_assigned", nullable = false, length = 132)
 	private String valueAssigned;
 
 	/**
@@ -90,7 +90,7 @@ public class SelectionListValue implements Serializable {
 	 * This value may be blank ("").
 	 */
 	@NotNull
-	@Column(name = "value_displayed", nullable = false, length = 80)
+	@Column(name = "value_displayed", nullable = false, length = 132)
 	private String valueDisplayed;
 
 	@NotNull

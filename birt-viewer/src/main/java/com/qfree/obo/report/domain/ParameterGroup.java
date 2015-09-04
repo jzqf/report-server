@@ -49,11 +49,11 @@ public class ParameterGroup implements Serializable {
 	private UUID parameterGroupId;
 
 	@NotBlank
-	@Column(name = "name", nullable = false, length = 32)
+	@Column(name = "name", nullable = false, length = 80)
 	private String name;
 
 	@NotBlank
-	@Column(name = "prompt_text", nullable = false, length = 80)
+	@Column(name = "prompt_text", nullable = false, length = 132)
 	private String promptText;
 
 	@NotNull

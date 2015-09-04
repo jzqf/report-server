@@ -62,11 +62,11 @@ public class ReportParameter implements Serializable {
 	 * values for the parameter. 
 	 */
 	@NotBlank
-	@Column(name = "name", nullable = false, length = 32)
+	@Column(name = "name", nullable = false, length = 80)
 	private String name;
 
 	@NotBlank
-	@Column(name = "prompt_text", nullable = false, length = 80)
+	@Column(name = "prompt_text", nullable = false, length = 132)
 	private String promptText;
 
 	/**
@@ -151,7 +151,7 @@ public class ReportParameter implements Serializable {
 	 * is the locale in the getParameterDefinition task. Not sure if this is
 	 * of interest.
 	 */
-	@Column(name = "display_name", nullable = true, length = 32)
+	@Column(name = "display_name", nullable = true, length = 80)
 	private String displayName;
 
 	/*
@@ -166,7 +166,7 @@ public class ReportParameter implements Serializable {
 	 * the parameter prompt UI. It does not influence the value passed to
 	 * the report.
 	 */
-	@Column(name = "display_format", nullable = true, length = 80)
+	@Column(name = "display_format", nullable = true, length = 132)
 	private String displayFormat;
 
 	/*
@@ -270,28 +270,28 @@ public class ReportParameter implements Serializable {
 	//	 * 
 	//	 *     "scalar", ... 
 	//	 */
-	//	@Column(name = "type_name", nullable = true, length = 32)
+	//	@Column(name = "type_name", nullable = true, length = 80)
 	//	private String typeName;
 
 	/*
 	 * This is an expression on the data row from the dynamic list data set 
 	 * that returns the value for the choice.
 	 */
-	@Column(name = "value_expr", nullable = true, length = 80)
+	@Column(name = "value_expr", nullable = true, length = 132)
 	private String valueExpr;
 
 	//	/*
 	//	 * If the parameter is a member of a group, this will be the name of the
 	//	 * group; otherwise, this will be null.
 	//	 */
-	//	@Column(name = "group_name", nullable = true, length = 32)
+	//	@Column(name = "group_name", nullable = true, length = 80)
 	//	private String groupName;
 	//
 	//	/*
 	//	 * If the parameter is a member of a group, this will be the prompt text for
 	//	 * the group; otherwise, this will be null.
 	//	 */
-	//	@Column(name = "group_prompt_text", nullable = true, length = 80)
+	//	@Column(name = "group_prompt_text", nullable = true, length = 132)
 	//	private String groupPromptText;
 	//
 	//	/*
@@ -419,7 +419,8 @@ public class ReportParameter implements Serializable {
 		this.orderIndex = orderIndex;
 		this.dataType = dataType;
 		this.controlType = controlType;
-		this.name = name;
+		//this.name = name;
+		setName(name);
 		this.promptText = promptText;
 		this.required = required;
 		this.multivalued = multivalued;
@@ -500,6 +501,19 @@ public class ReportParameter implements Serializable {
 	}
 
 	public void setName(String name) {
+		//	/*
+		//	 * This truncates the length of the string to the length defined for
+		//	 * the database column if the Java String length exceeds the database
+		//	 * column length.
+		//	 */
+		//	try {
+		//		int size = getClass().getDeclaredField("name").getAnnotation(Column.class).length();
+		//		int inLength = name.length();
+		//		if (inLength > size) {
+		//			name = name.substring(0, size);
+		//		}
+		//	} catch (NoSuchFieldException ex) {
+		//	}
 		this.name = name;
 	}
 

@@ -6,6 +6,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
 
+import org.postgresql.util.PSQLException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -54,7 +55,21 @@ public class GenericExceptionMapper implements ExceptionMapper<Throwable> {
 		if ((rootCause != null) && (rootCause.getClass().equals(ConstraintViolationException.class))) {
 			restError = RestError.FORBIDDEN_VALIDATION_ERROR;
 			restErrorResource = new RestErrorResource(restError, rootCause.getMessage(), ex);
-		} else {
+		} else if ((rootCause != null) && (rootCause.getClass().equals(PSQLException.class))) {
+			/*
+			 * This can happen if, e.g., 
+			 * 
+			 *   1. An attempt is made to store a string in a VARCHAR column 
+			 *      that is too short to hold the string. In this case, the 
+			 *      message could be something like:
+			 *      
+			 *        "value too long for type character varying(32)"
+			 *        
+			 *   2. ...
+			 */
+			restError = RestError.INTERNAL_SERVER_ERROR;
+			restErrorResource = new RestErrorResource(restError, rootCause.getMessage(), ex);
+		}else {
 			restError = RestError.INTERNAL_SERVER_ERROR;
 			restErrorResource = new RestErrorResource(restError, ex.getMessage(), ex);
 		}
