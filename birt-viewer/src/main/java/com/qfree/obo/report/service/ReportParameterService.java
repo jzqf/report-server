@@ -156,12 +156,12 @@ public class ReportParameterService {
 				}
 			}
 
-			String promptText;
-			if (parameter.get("PromptText") != null && ((String) parameter.get("PromptText")).isEmpty()) {
-				promptText = (String) parameter.get("PromptText");
-			} else {
-				promptText = (String) parameter.get("Name") + ":";// sensible default value
-			}
+			//			String promptText;
+			//			if (parameter.get("PromptText") != null && ((String) parameter.get("PromptText")).isEmpty()) {
+			//				promptText = (String) parameter.get("PromptText");
+			//			} else {
+			//				promptText = (String) parameter.get("Name") + ":";// sensible default value
+			//			}
 
 			/*
 			 * This is the ParameterGroup to associate with the current 
@@ -216,45 +216,44 @@ public class ReportParameterService {
 				}
 			}
 
-			String displayName = parameter.get("DisplayName") != null ? (String) parameter.get("DisplayName") : null;
-			String helpText = parameter.get("HelpText") != null ? (String) parameter.get("HelpText") : null;
-			if ("".equals(helpText)) {
-				/*
-				 * If helpText is blank, we store null instead since this is
-				 * a better way to determine if help text has been provided or 
-				 * not.
-				 */
-				helpText = null;//TODO place this logic in the setter/constructor!!!!!
-			}
-			String defaultValue = parameter.get("DefaultValue") != null ? (String) parameter.get("DefaultValue") : null;
-			String displayFormat = parameter.get("DisplayFormat") != null ? (String) parameter.get("DisplayFormat")
-					: null;
-			Integer alignment = (Integer) parameter.get("Alignment");
-			Boolean hidden = (Boolean) parameter.get("Hidden");
-			Boolean valueConcealed = (Boolean) parameter.get("ValueConcealed");
-			Boolean allowNewValues = (Boolean) parameter.get("AllowNewValues");
-			Boolean displayInFixedOrder = (Boolean) parameter.get("DisplayInFixedOrder");
-			Integer parameterType = (Integer) parameter.get("ParameterType");
-			Integer autoSuggestThreshold = (Integer) parameter.get("AutoSuggestThreshold");
-			Integer selectionListType = (Integer) parameter.get("SelectionListType");
-			String typeName = parameter.get("TypeName") != null ? (String) parameter.get("TypeName") : null;
-			if ("".equals(typeName)) {
-				/*
-				 * If typeName is blank, we store null instead since this is
-				 * a better way to determine if a value has been provided or 
-				 * not.
-				 */
-				typeName = null;//TODO place this logic in the setter/constructor!!!!!
-			}
-			String valueExpr = parameter.get("ValueExpr") != null ? (String) parameter.get("ValueExpr") : null;
-			if ("".equals(valueExpr)) {
-				/*
-				 * If valueExpr is blank, we store null instead since this is
-				 * a better way to determine if a value has been provided or 
-				 * not.
-				 */
-				valueExpr = null;//TODO place this logic in the setter/constructor!!!!!
-			}
+			//			String displayName = parameter.get("DisplayName") != null ? (String) parameter.get("DisplayName") : null;
+			//			String helpText = parameter.get("HelpText") != null ? (String) parameter.get("HelpText") : null;
+			//			if ("".equals(helpText)) {
+			//				/*
+			//				 * If helpText is blank, we store null instead since this is
+			//				 * a better way to determine if help text has been provided or 
+			//				 * not.
+			//				 */
+			//				helpText = null;//TODO place this logic in the setter/constructor!!!!!
+			//			}
+			//			String defaultValue = parameter.get("DefaultValue") != null ? (String) parameter.get("DefaultValue") : null;
+			//			String displayFormat = parameter.get("DisplayFormat") != null ? (String) parameter.get("DisplayFormat"): null;
+			//			Integer alignment = (Integer) parameter.get("Alignment");
+			//			Boolean hidden = (Boolean) parameter.get("Hidden");
+			//			Boolean valueConcealed = (Boolean) parameter.get("ValueConcealed");
+			//			Boolean allowNewValues = (Boolean) parameter.get("AllowNewValues");
+			//			Boolean displayInFixedOrder = (Boolean) parameter.get("DisplayInFixedOrder");
+			//			Integer parameterType = (Integer) parameter.get("ParameterType");
+			//			Integer autoSuggestThreshold = (Integer) parameter.get("AutoSuggestThreshold");
+			//			Integer selectionListType = (Integer) parameter.get("SelectionListType");
+			//			String typeName = parameter.get("TypeName") != null ? (String) parameter.get("TypeName") : null;
+			//			if ("".equals(typeName)) {
+			//				/*
+			//				 * If typeName is blank, we store null instead since this is
+			//				 * a better way to determine if a value has been provided or 
+			//				 * not.
+			//				 */
+			//				typeName = null;//TODO place this logic in the setter/constructor!!!!!
+			//			}
+			//			String valueExpr = parameter.get("ValueExpr") != null ? (String) parameter.get("ValueExpr") : null;
+			//			if ("".equals(valueExpr)) {
+			//				/*
+			//				 * If valueExpr is blank, we store null instead since this is
+			//				 * a better way to determine if a value has been provided or 
+			//				 * not.
+			//				 */
+			//				valueExpr = null;//TODO place this logic in the setter/constructor!!!!!
+			//			}
 			//========================================================================================================================
 
 			//TODO These values should be added as arguments to the ReportParameter constructor:
@@ -274,11 +273,24 @@ public class ReportParameterService {
 					(Integer) parameter.get("DataType"),
 					(Integer) parameter.get("ControlType"),
 					(String) parameter.get("Name"),
-					promptText,
-					parameter.get("Required") != null ? (Boolean) parameter.get("Required") : Boolean.TRUE,
+					parameter.get("PromptText") != null ? (String) parameter.get("PromptText") : null,
+					(Boolean) parameter.get("Required"),
 					multivalued,
+					parameter.get("DefaultValue") != null ? (String) parameter.get("DefaultValue") : null,
+					parameter.get("DisplayName") != null ? (String) parameter.get("DisplayName") : null,
+					parameter.get("HelpText") != null ? (String) parameter.get("HelpText") : null,
+					parameter.get("DisplayFormat") != null ? (String) parameter.get("DisplayFormat") : null,
+					(Integer) parameter.get("Alignment"),
+					(Boolean) parameter.get("Hidden"),
+					(Boolean) parameter.get("ValueConcealed"),
+					(Boolean) parameter.get("AllowNewValues"),
+					(Boolean) parameter.get("DisplayInFixedOrder"),
+					(Integer) parameter.get("ParameterType"),
+					(Integer) parameter.get("AutoSuggestThreshold"),
+					(Integer) parameter.get("SelectionListType"),
+					//parameter.get("TypeName") != null ? (String) parameter.get("TypeName") : null,
+					parameter.get("ValueExpr") != null ? (String) parameter.get("ValueExpr") : null,
 					parameterGroup);
-
 			reportParameter = reportParameterRepository.save(reportParameter);
 		}
 

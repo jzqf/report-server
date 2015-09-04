@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.UUID;
 
 import org.eclipse.birt.report.engine.api.IParameterDefn;
+import org.eclipse.birt.report.engine.api.IParameterDefnBase;
 import org.eclipse.birt.report.engine.api.IScalarParameterDefn;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -21,6 +22,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.qfree.obo.report.ApplicationConfig;
+import com.qfree.obo.report.domain.ParameterGroup;
 import com.qfree.obo.report.domain.Report;
 import com.qfree.obo.report.domain.ReportParameter;
 import com.qfree.obo.report.domain.ReportVersion;
@@ -95,6 +97,22 @@ public class ReportParameterRepositoryTests {
 		Integer controlType_Checkbox = IScalarParameterDefn.CHECK_BOX;
 		Boolean required = true;
 		Boolean multivalued = false;
+		
+		String defaultValue=null;
+		String displayName= null;
+		String helpText= null;
+		String displayFormat=null;
+		Integer alignment=IScalarParameterDefn.AUTO;
+		Boolean hidden=false;
+		Boolean valueConcealed=false;
+		Boolean allowNewValues=false;
+		Boolean displayInFixedOrder=true;
+		Integer parameterType=IParameterDefnBase.SCALAR_PARAMETER;
+		Integer autoSuggestThreshold=100;
+		Integer selectionListType=IParameterDefn.TYPE_STRING;
+		//String typeName = ;
+		String valueExpr = null;
+		ParameterGroup parameterGroup=null;
 
 		//	ReportParameter unsavedReportParameter = new ReportParameter(
 		//			report04Version01, maxOrderIndex + 1, parameterTypeDate, widget1,
@@ -103,7 +121,22 @@ public class ReportParameterRepositoryTests {
 		ReportParameter unsavedReportParameter = new ReportParameter(
 				report04Version01, maxOrderIndex + 1, dataType_Date, controlType_Checkbox,
 				"Some new parameter name", "Some new parameter prompt text",
-				required, multivalued);
+				required, multivalued,
+				defaultValue,
+				displayName,
+				helpText,
+				displayFormat,
+				alignment,
+				hidden,
+				valueConcealed,
+				allowNewValues,
+				displayInFixedOrder,
+				parameterType,
+				autoSuggestThreshold,
+				selectionListType,
+				//parameter.get("TypeName") != null ? (String) parameter.get("TypeName") : null,
+				valueExpr,
+				parameterGroup);
 		//		logger.info("unsavedReportParameter = {}", unsavedReportParameter);
 
 		ReportParameter savedReportParameter = reportParameterRepository.save(unsavedReportParameter);
