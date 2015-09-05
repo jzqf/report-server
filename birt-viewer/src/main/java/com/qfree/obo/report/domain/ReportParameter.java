@@ -136,13 +136,12 @@ public class ReportParameter implements Serializable {
 	@Column(name = "control_type", nullable = false)
 	private Integer controlType;
 
-	//=============================== Dont'forget to add to the resource class as well =======================================================
 	/*
-	 * The default value for the parameter, as a String. This field may be null
-	 * to signify that there is no default. For a parameter of type String, a
-	 * legal value may be the empty string "", so we should differentiate 
-	 * between "" and null.
-	 */
+	* The default value for the parameter, as a String. This field may be null
+	* to signify that there is no default. For a parameter of type String, a
+	* legal value may be the empty string "", so we should differentiate 
+	* between "" and null.
+	*/
 	@Column(name = "default_value", nullable = true, length = 80)
 	private String defaultValue;
 
@@ -265,29 +264,6 @@ public class ReportParameter implements Serializable {
 	@Column(name = "value_expr", nullable = true, length = 132)
 	private String valueExpr;
 
-	//	/*
-	//	 * If the parameter is a member of a group, this will be the name of the
-	//	 * group; otherwise, this will be null.
-	//	 */
-	//	@Column(name = "group_name", nullable = true, length = 80)
-	//	private String groupName;
-	//
-	//	/*
-	//	 * If the parameter is a member of a group, this will be the prompt text for
-	//	 * the group; otherwise, this will be null.
-	//	 */
-	//	@Column(name = "group_prompt_text", nullable = true, length = 132)
-	//	private String groupPromptText;
-	//
-	//	/*
-	//	 * If the parameter is a member of a group, this will be the type of the
-	//	 * the parameter group; otherwise, this will be null.
-	//	 */
-	//	@Column(name = "group_parameter_type", nullable = true)
-	//	private Integer groupParameterType;
-
-	//=============================================================================================================
-
 	@ManyToOne
 	/*
 	 * If columnDefinition="uuid" is omitted here and the database schema is 
@@ -343,17 +319,6 @@ public class ReportParameter implements Serializable {
 	public ReportParameter() {
 	}
 
-	//	public ReportParameter(ReportVersion reportVersion, Integer orderIndex, ParameterType parameterType, Widget widget,
-	//			String name, String promptText, Boolean required, Boolean multivalued) {
-	//		this(reportVersion, orderIndex, parameterType, widget, name, promptText, required, multivalued, 
-	//				DateUtils.nowUtc());
-	//	}
-	//	public ReportParameter(ReportVersion reportVersion, Integer orderIndex, Integer dataType, Integer controlType,
-	//			String name, String promptText, Boolean required, Boolean multivalued) {
-	//		this(reportVersion, orderIndex, dataType, controlType, name, promptText, required, multivalued,
-	//				null, DateUtils.nowUtc());
-	//	}
-
 	public ReportParameter(ReportVersion reportVersion, Integer orderIndex,
 			Integer dataType, Integer controlType, String name, String promptText,
 			Boolean required, Boolean multivalued,
@@ -373,19 +338,6 @@ public class ReportParameter implements Serializable {
 				parameterGroup, DateUtils.nowUtc());
 	}
 
-	//	public ReportParameter(ReportVersion reportVersion, ParameterType parameterType, Widget widget,
-	//			String name, String promptText,
-	//			Boolean required, Boolean multivalued, Integer orderIndex, Date createdOn) {
-	//		this.reportVersion = reportVersion;
-	//		this.orderIndex = orderIndex;
-	//		this.name = name;
-	//		this.promptText = promptText;
-	//		this.parameterType = parameterType;
-	//		this.widget = widget;
-	//		this.required = required;
-	//		this.multivalued = multivalued;
-	//		this.createdOn = (createdOn != null) ? createdOn : DateUtils.nowUtc();
-	//	}
 	public ReportParameter(ReportVersion reportVersion, Integer orderIndex,
 			Integer dataType, Integer controlType, String name, String promptText,
 			Boolean required, Boolean multivalued,

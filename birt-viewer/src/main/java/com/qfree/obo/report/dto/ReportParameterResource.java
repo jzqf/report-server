@@ -29,13 +29,16 @@ public class ReportParameterResource extends AbstractBaseResource {
 	private UUID reportParameterId;
 
 	@XmlElement
+	private Integer orderIndex;
+
+	@XmlElement
+	private String name;
+
+	@XmlElement
 	private Integer dataType;
 
 	@XmlElement
 	private Integer controlType;
-
-	@XmlElement
-	private String name;
 
 	@XmlElement
 	private String promptText;
@@ -47,13 +50,55 @@ public class ReportParameterResource extends AbstractBaseResource {
 	private Boolean multivalued;
 
 	@XmlElement
-	private Integer orderIndex;
+	private String defaultValue;
+
+	@XmlElement
+	private String displayName;
+
+	@XmlElement
+	private String helpText;
+
+	@XmlElement
+	private String displayFormat;
+
+	@XmlElement
+	private Integer alignment;
+
+	@XmlElement
+	private Boolean hidden;
+
+	@XmlElement
+	private Boolean valueConcealed;
+
+	@XmlElement
+	private Boolean allowNewValues;
+
+	@XmlElement
+	private Boolean displayInFixedOrder;
+
+	@XmlElement
+	private Integer parameterType;
+
+	@XmlElement
+	private Integer autoSuggestThreshold;
+
+	@XmlElement
+	private Integer selectionListType;
+
+	//@XmlElement
+	//private String typeName;
+
+	@XmlElement
+	private String valueExpr;
 
 	@XmlElement(name = "reportVersion")
 	private ReportVersionResource reportVersionResource;
 
 	@XmlElement(name = "parameterGroup")
 	private ParameterGroupResource parameterGroupResource;
+
+	@XmlElement(name = "selectionListValues")
+	private SelectionListValueCollectionResource selectionListValues;
 
 	//	@XmlElement(name = "parameterType")
 	//	private ParameterTypeResource parameterTypeResource;
@@ -117,16 +162,45 @@ public class ReportParameterResource extends AbstractBaseResource {
 			apiVersion = null;
 
 			this.reportParameterId = reportParameter.getReportParameterId();
+			this.orderIndex = reportParameter.getOrderIndex();
 			this.dataType = reportParameter.getDataType();
 			this.controlType = reportParameter.getControlType();
 			this.name = reportParameter.getName();
 			this.promptText = reportParameter.getPromptText();
 			this.required = reportParameter.getRequired();
 			this.multivalued = reportParameter.getMultivalued();
-			this.orderIndex = reportParameter.getOrderIndex();
+			this.defaultValue = reportParameter.getDefaultValue();
+			this.displayName = reportParameter.getDisplayName();
+			this.helpText = reportParameter.getHelpText();
+			this.displayFormat = reportParameter.getDisplayFormat();
+			this.alignment = reportParameter.getAlignment();
+			this.hidden = reportParameter.getHidden();
+			this.valueConcealed = reportParameter.getValueConcealed();
+			this.allowNewValues = reportParameter.getAllowNewValues();
+			this.displayInFixedOrder = reportParameter.getDisplayInFixedOrder();
+			this.parameterType = reportParameter.getParameterType();
+			this.autoSuggestThreshold = reportParameter.getAutoSuggestThreshold();
+			this.selectionListType = reportParameter.getSelectionListType();
+			//this.typeName = reportParameter.getTypeName();
+			this.valueExpr = reportParameter.getValueExpr();
 			this.createdOn = reportParameter.getCreatedOn();
+
 			this.reportVersionResource = new ReportVersionResource(reportParameter.getReportVersion(),
 					uriInfo, newQueryParams, apiVersion);
+			/*
+			 * If there is no selection list for the parameter, no 
+			 * "selectionListValues" field will appear in the resource. The 
+			 * alternative would be to always include the field, but its value
+			 * will be an empty collection resource for the case when there is
+			 * no selection list for the parameter.
+			 */
+			logger.info("Parameter = {}: reportParameter.getSelectionListValues() = {}", this.name,
+					reportParameter.getSelectionListValues());
+			if (reportParameter.getSelectionListValues() != null
+					&& reportParameter.getSelectionListValues().size() > 0) {
+				this.selectionListValues = new SelectionListValueCollectionResource(reportParameter,
+						uriInfo, newQueryParams, apiVersion);
+			}
 			/*
 			 * A related ParameterGroup is optional (normal parameters that are
 			 * not part of a group do not have one), so we only create a related
@@ -224,6 +298,22 @@ public class ReportParameterResource extends AbstractBaseResource {
 
 	public void setReportVersionResource(ReportVersionResource reportVersionResource) {
 		this.reportVersionResource = reportVersionResource;
+	}
+
+	public ParameterGroupResource getParameterGroupResource() {
+		return parameterGroupResource;
+	}
+
+	public void setParameterGroupResource(ParameterGroupResource parameterGroupResource) {
+		this.parameterGroupResource = parameterGroupResource;
+	}
+
+	public SelectionListValueCollectionResource getSelectionListValues() {
+		return selectionListValues;
+	}
+
+	public void setSelectionListValues(SelectionListValueCollectionResource selectionListValues) {
+		this.selectionListValues = selectionListValues;
 	}
 
 	public Date getCreatedOn() {
