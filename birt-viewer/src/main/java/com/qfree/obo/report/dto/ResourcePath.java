@@ -57,13 +57,13 @@ public enum ResourcePath {
 	 * constant expression.
 	 */
 	public static final String CONFIGURATIONS_PATH = ResourcePath.PATH_SEPARATOR + "configurations";
-	public static final String PARAMETERGROUPS_PATH = ResourcePath.PATH_SEPARATOR + "parametergroups";
+	public static final String PARAMETERGROUPS_PATH = ResourcePath.PATH_SEPARATOR + "parameterGroups";
 	public static final String REPORTCATEGORIES_PATH = ResourcePath.PATH_SEPARATOR + "reportCategories";
 	public static final String REPORTPARAMETERS_PATH = ResourcePath.PATH_SEPARATOR + "reportParameters";
 	public static final String REPORTVERSIONS_PATH = ResourcePath.PATH_SEPARATOR + "reportVersions";
 	public static final String REPORTS_PATH = ResourcePath.PATH_SEPARATOR + "reports";
 	public static final String ROLES_PATH = ResourcePath.PATH_SEPARATOR + "roles";
-	public static final String SELECTIONLISTVALUES_PATH = ResourcePath.PATH_SEPARATOR + "selectionlistvalues";
+	public static final String SELECTIONLISTVALUES_PATH = ResourcePath.PATH_SEPARATOR + "selectionListValues";
 
 	public static final String LOGINATTEMPTS_PATH = ResourcePath.PATH_SEPARATOR + "loginAttempts";
 
@@ -81,13 +81,13 @@ public enum ResourcePath {
 	 * "expand" query parameter.
 	 */
 	public static final String CONFIGURATION_EXPAND_PARAM = "configurations";
-	public static final String PARAMETERGROUP_EXPAND_PARAM = "parametergroups";
+	public static final String PARAMETERGROUP_EXPAND_PARAM = "parameterGroups";
 	public static final String REPORT_EXPAND_PARAM = "reports";
 	public static final String REPORTCATEGORY_EXPAND_PARAM = "reportCategories";
 	public static final String REPORTPARAMETER_EXPAND_PARAM = "reportParameters";
 	public static final String REPORTVERSION_EXPAND_PARAM = "reportVersions";
 	public static final String ROLE_EXPAND_PARAM = "roles";
-	public static final String SELECTIONLISTVALUE_EXPAND_PARAM = "selectionlistvalues";
+	public static final String SELECTIONLISTVALUE_EXPAND_PARAM = "selectionListValues";
 	/*
 	 * Special "expand" parameter for the *field* ReportVersion.rptdesign.
 	 */
