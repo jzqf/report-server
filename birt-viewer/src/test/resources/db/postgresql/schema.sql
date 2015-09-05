@@ -14,8 +14,6 @@ DROP TABLE IF EXISTS role_role;
 DROP TABLE IF EXISTS subscription_parameter_value;
 DROP TABLE IF EXISTS subscription;
 DROP TABLE IF EXISTS document_format;
-DROP TABLE IF EXISTS parameter_type;
-DROP TABLE IF EXISTS widget;
 
 CREATE SCHEMA IF NOT EXISTS reporting;
 --------------------------------------------------------------------------------
@@ -139,19 +137,6 @@ CREATE SEQUENCE job_parameter_value_job_parameter_value_id_seq
 
 ALTER SEQUENCE job_parameter_value_job_parameter_value_id_seq OWNED BY job_parameter_value.job_parameter_value_id;
 
-
---
--- Name: parameter_type; Type: TABLE; Schema: reporting; Owner: dbtest; Tablespace: 
---
-
-CREATE TABLE parameter_type (
-    parameter_type_id uuid DEFAULT uuid_generate_v4() NOT NULL,
-    abbreviation character varying(32) NOT NULL,
-    active boolean NOT NULL,
-    created_on timestamp without time zone NOT NULL,
-    description character varying(32) NOT NULL
-);
-
 --
 -- Name: report; Type: TABLE; Schema: reporting; Owner: dbtest; Tablespace: 
 --
@@ -185,14 +170,14 @@ CREATE TABLE report_category (
 CREATE TABLE report_parameter (
     report_parameter_id uuid DEFAULT uuid_generate_v4() NOT NULL,
     created_on timestamp without time zone NOT NULL,
-    description character varying(80) NOT NULL,
+    report_version_id uuid NOT NULL,
+    data_type int NOT NULL,
+    control_type int NOT NULL,
+    prompt_text character varying(80) NOT NULL,
     multivalued boolean NOT NULL,
     name character varying(32) NOT NULL,
     order_index integer NOT NULL,
-    required boolean NOT NULL,
-    parameter_type_id uuid NOT NULL,
-    report_version_id uuid NOT NULL,
-    widget_id uuid NOT NULL
+    required boolean NOT NULL
 );
 
 --
@@ -297,19 +282,6 @@ CREATE TABLE subscription_parameter_value (
 );
 
 --
--- Name: widget; Type: TABLE; Schema: reporting; Owner: dbtest; Tablespace: 
---
-
-CREATE TABLE widget (
-    widget_id uuid DEFAULT uuid_generate_v4() NOT NULL,
-    active boolean NOT NULL,
-    created_on timestamp without time zone NOT NULL,
-    description character varying(80) NOT NULL,
-    multiple_select boolean NOT NULL,
-    name character varying(32) NOT NULL
-);
-
---
 -- Name: job_id; Type: DEFAULT; Schema: reporting; Owner: dbtest
 --
 
@@ -353,14 +325,6 @@ ALTER TABLE ONLY job_parameter_value
 
 ALTER TABLE ONLY job
     ADD CONSTRAINT job_pkey PRIMARY KEY (job_id);
-
-
---
--- Name: parameter_type_pkey; Type: CONSTRAINT; Schema: reporting; Owner: dbtest; Tablespace: 
---
-
-ALTER TABLE ONLY parameter_type
-    ADD CONSTRAINT parameter_type_pkey PRIMARY KEY (parameter_type_id);
 
 
 --
@@ -516,14 +480,6 @@ ALTER TABLE ONLY role_role
 
 
 --
--- Name: widget_pkey; Type: CONSTRAINT; Schema: reporting; Owner: dbtest; Tablespace: 
---
-
-ALTER TABLE ONLY widget
-    ADD CONSTRAINT widget_pkey PRIMARY KEY (widget_id);
-
-
---
 -- Name: fk_configuration_role; Type: FK CONSTRAINT; Schema: reporting; Owner: dbtest
 --
 
@@ -580,27 +536,11 @@ ALTER TABLE ONLY report
 
 
 --
--- Name: fk_reportparameter_parametertype; Type: FK CONSTRAINT; Schema: reporting; Owner: dbtest
---
-
-ALTER TABLE ONLY report_parameter
-    ADD CONSTRAINT fk_reportparameter_parametertype FOREIGN KEY (parameter_type_id) REFERENCES parameter_type(parameter_type_id);
-
-
---
 -- Name: fk_reportparameter_report; Type: FK CONSTRAINT; Schema: reporting; Owner: dbtest
 --
 
 ALTER TABLE ONLY report_parameter
     ADD CONSTRAINT fk_reportparameter_report FOREIGN KEY (report_version_id) REFERENCES report_version(report_version_id);
-
-
---
--- Name: fk_reportparameter_widget; Type: FK CONSTRAINT; Schema: reporting; Owner: dbtest
---
-
-ALTER TABLE ONLY report_parameter
-    ADD CONSTRAINT fk_reportparameter_widget FOREIGN KEY (widget_id) REFERENCES widget(widget_id);
 
 
 --

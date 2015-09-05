@@ -28,7 +28,8 @@ public class ReportVersionService {
 	private final ReportRepository reportRepository;
 
 	@Autowired
-	public ReportVersionService(ReportVersionRepository reportVersionRepository,
+	public ReportVersionService(
+			ReportVersionRepository reportVersionRepository,
 			ReportRepository reportRepository) {
 		this.reportVersionRepository = reportVersionRepository;
 		this.reportRepository = reportRepository;
