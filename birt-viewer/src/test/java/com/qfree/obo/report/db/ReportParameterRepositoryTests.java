@@ -40,12 +40,6 @@ public class ReportParameterRepositoryTests {
 	@Autowired
 	ReportRepository reportRepository;
 
-	@Autowired
-	WidgetRepository widgetRepository;
-
-	@Autowired
-	ParameterTypeRepository parameterTypeRepository;
-
 	@Test
 	@Transactional
 	public void count() {
@@ -77,13 +71,6 @@ public class ReportParameterRepositoryTests {
 		ReportVersion report04Version01 = report04.getReportVersions().get(0);
 		assertThat(report04Version01, is(not(nullValue())));
 
-		//	UUID uuidOfWidget1 = UUID.fromString("b8e91527-8b0e-4ed2-8cba-8cb8989ba8e2");
-		//	Widget widget1 = widgetRepository.findOne(uuidOfWidget1);
-		//	assertThat(widget1, is(notNullValue()));
-		//
-		//	UUID uuidOfParameterTypeDate = UUID.fromString("12d3f4f8-468d-4faf-be3a-5c15eaba4eb6");
-		//	ParameterType parameterTypeDate = parameterTypeRepository.findOne(uuidOfParameterTypeDate);
-
 		/* Query for the current maximum value of orderIndex for all 
 		 * ReportParameter's for report04. This should be equal to the number of
 		 * ReportParameter's for report04 because orderIndex is 1-based and 
@@ -114,10 +101,6 @@ public class ReportParameterRepositoryTests {
 		String valueExpr = null;
 		ParameterGroup parameterGroup=null;
 
-		//	ReportParameter unsavedReportParameter = new ReportParameter(
-		//			report04Version01, maxOrderIndex + 1, parameterTypeDate, widget1,
-		//			"Some new parameter name", "Some new parameter prompt text",
-		//			required, multivalued);
 		ReportParameter unsavedReportParameter = new ReportParameter(
 				report04Version01, maxOrderIndex + 1, dataType_Date, controlType_Checkbox,
 				"Some new parameter name", "Some new parameter prompt text",

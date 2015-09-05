@@ -104,34 +104,10 @@ public class ReportParameter implements Serializable {
 	//			columnDefinition = "uuid")
 	//	private Report report;
 
-	//	@ManyToOne
-	//	/*
-	//	 * If columnDefinition="uuid" is omitted here and the database schema is 
-	//	 * created by Hibernate (via hibernate.hbm2ddl.auto="create"), then the 
-	//	 * PostgreSQL column definition includes "DEFAULT uuid_generate_v4()", which
-	//	 * is not what is wanted.
-	//	 */
-	//	@NotNull
-	//	@JoinColumn(name = "parameter_type_id", nullable = false,
-	//			foreignKey = @ForeignKey(name = "fk_reportparameter_parametertype"),
-	//			columnDefinition = "uuid")
-	//	private ParameterType parameterType;
 	@NotNull
 	@Column(name = "data_type", nullable = false)
 	private Integer dataType;
 
-	//	@ManyToOne
-	//	/*
-	//	 * If columnDefinition="uuid" is omitted here and the database schema is 
-	//	 * created by Hibernate (via hibernate.hbm2ddl.auto="create"), then the 
-	//	 * PostgreSQL column definition includes "DEFAULT uuid_generate_v4()", which
-	//	 * is not what is wanted.
-	//	 */
-	//	@NotNull
-	//	@JoinColumn(name = "widget_id", nullable = false,
-	//			foreignKey = @ForeignKey(name = "fk_reportparameter_widget"),
-	//			columnDefinition = "uuid")
-	//	private Widget widget;
 	@NotNull
 	@Column(name = "control_type", nullable = false)
 	private Integer controlType;
@@ -392,22 +368,6 @@ public class ReportParameter implements Serializable {
 	public void setReportVersion(ReportVersion reportVersion) {
 		this.reportVersion = reportVersion;
 	}
-
-	//	public ParameterType getParameterType() {
-	//		return parameterType;
-	//	}
-	//
-	//	public void setParameterType(ParameterType parameterType) {
-	//		this.parameterType = parameterType;
-	//	}
-	//
-	//	public Widget getWidget() {
-	//		return widget;
-	//	}
-	//
-	//	public void setWidget(Widget widget) {
-	//		this.widget = widget;
-	//	}
 
 	public List<RoleParameterValue> getRoleParameterValues() {
 		return roleParameterValues;

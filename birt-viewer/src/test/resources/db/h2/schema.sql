@@ -13,7 +13,6 @@ DROP TABLE IF EXISTS reporting.configuration CASCADE;
 DROP TABLE IF EXISTS reporting.document_format CASCADE;
 DROP TABLE IF EXISTS reporting.job CASCADE;
 DROP TABLE IF EXISTS reporting.job_parameter_value CASCADE;
-DROP TABLE IF EXISTS reporting.parameter_type CASCADE;
 DROP TABLE IF EXISTS reporting.report CASCADE;
 DROP TABLE IF EXISTS reporting.report_category CASCADE;
 DROP TABLE IF EXISTS reporting.report_parameter CASCADE;
@@ -24,7 +23,6 @@ DROP TABLE IF EXISTS reporting.role_report CASCADE;
 DROP TABLE IF EXISTS reporting.role_role CASCADE;
 DROP TABLE IF EXISTS reporting.subscription CASCADE;
 DROP TABLE IF EXISTS reporting.subscription_parameter_value CASCADE;
-DROP TABLE IF EXISTS reporting.widget CASCADE;
 
 --------------------------------------------------------------------------------
 
@@ -90,17 +88,6 @@ CREATE TABLE reporting.job_parameter_value (
     report_parameter_id uuid NOT NULL
 );
 
---
--- Name: parameter_type; Type: TABLE; Schema: reporting; Owner: dbtest; Tablespace: 
---
-
-CREATE TABLE reporting.parameter_type (
-    parameter_type_id uuid NOT NULL,
-    abbreviation character varying(32) NOT NULL,
-    active boolean NOT NULL,
-    created_on timestamp NOT NULL,
-    description character varying(32) NOT NULL
-);
 
 --
 -- Name: report; Type: TABLE; Schema: reporting; Owner: dbtest; Tablespace: 
@@ -246,17 +233,6 @@ CREATE TABLE reporting.subscription_parameter_value (
     subscription_id uuid NOT NULL
 );
 
---
--- Name: widget; Type: TABLE; Schema: reporting; Owner: dbtest; Tablespace: 
---
-
-CREATE TABLE reporting.widget (
-    widget_id uuid NOT NULL,
-    active boolean NOT NULL,
-    created_on timestamp NOT NULL,
-    description character varying(80) NOT NULL,
-    name character varying(32) NOT NULL
-);
 
 --
 -- Name: configuration_pkey; Type: CONSTRAINT; Schema: reporting; Owner: dbtest; Tablespace: 
@@ -272,14 +248,6 @@ ALTER TABLE reporting.configuration
 
 ALTER TABLE reporting.document_format
     ADD CONSTRAINT document_format_pkey PRIMARY KEY (document_format_id);
-
-
---
--- Name: parameter_type_pkey; Type: CONSTRAINT; Schema: reporting; Owner: dbtest; Tablespace: 
---
-
-ALTER TABLE reporting.parameter_type
-    ADD CONSTRAINT parameter_type_pkey PRIMARY KEY (parameter_type_id);
 
 
 --
@@ -435,14 +403,6 @@ ALTER TABLE reporting.role_role
 
 
 --
--- Name: widget_pkey; Type: CONSTRAINT; Schema: reporting; Owner: dbtest; Tablespace: 
---
-
-ALTER TABLE reporting.widget
-    ADD CONSTRAINT widget_pkey PRIMARY KEY (widget_id);
-
-
---
 -- Name: fk_configuration_role; Type: FK CONSTRAINT; Schema: reporting; Owner: dbtest
 --
 
@@ -499,27 +459,11 @@ ALTER TABLE reporting.report
 
 
 --
--- Name: fk_reportparameter_parametertype; Type: FK CONSTRAINT; Schema: reporting; Owner: dbtest
---
-
-ALTER TABLE reporting.report_parameter
-    ADD CONSTRAINT fk_reportparameter_parametertype FOREIGN KEY (parameter_type_id) REFERENCES parameter_type(parameter_type_id);
-
-
---
 -- Name: fk_reportparameter_report; Type: FK CONSTRAINT; Schema: reporting; Owner: dbtest
 --
 
 ALTER TABLE reporting.report_parameter
     ADD CONSTRAINT fk_reportparameter_report FOREIGN KEY (report_version_id) REFERENCES report_version(report_version_id);
-
-
---
--- Name: fk_reportparameter_widget; Type: FK CONSTRAINT; Schema: reporting; Owner: dbtest
---
-
-ALTER TABLE reporting.report_parameter
-    ADD CONSTRAINT fk_reportparameter_widget FOREIGN KEY (widget_id) REFERENCES widget(widget_id);
 
 
 --

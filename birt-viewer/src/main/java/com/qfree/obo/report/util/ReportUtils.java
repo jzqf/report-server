@@ -229,36 +229,6 @@ public class ReportUtils {
 	
 		Map<String, Serializable> parameter = new HashMap<>();
 
-		//	/*
-		//	 * Parameters that are members of the same group will have the same
-		//	 * value for their "GroupName".
-		//	 */
-		//	parameter.put("GroupName", parameterGroup == null ? null : parameterGroup.getName());
-		//	/*
-		//	 * The "GroupPromptText" will be null for parameters that are not 
-		//	 * members of a group. It also seems to be null for members of a normal
-		//	 * parameter group (disappointingly). But it does seem to be properly
-		//	 * set for members of *cascading" parameter groups. In this case, the
-		//	 * same value of this prompt text will be defined for each member of the
-		//	 * group.
-		//	 */
-		//	parameter.put("GroupPromptText", parameterGroup == null ? null : parameterGroup.getPromptText());
-		//	/*
-		//	 * Possible values for "GroupParameterType" are:
-		//	 * 
-		//	 *     IParameterDefnBase.SCALAR_PARAMETER = 0
-		//	 *     IParameterDefnBase.FILTER_PARAMETER = 1
-		//	 *     IParameterDefnBase.LIST_PARAMETER = 2
-		//	 *     IParameterDefnBase.TABLE_PARAMETER = 3
-		//	 *     IParameterDefnBase.PARAMETER_GROUP = 4
-		//	 *     IParameterDefnBase.CASCADING_PARAMETER_GROUP = 5
-		//	 * 
-		//	 * Some of these values will never appear here since these constants
-		//	 * are also used in other contexts. For example, see 
-		//	 * scalarParameter.getParameterType() below.
-		//	 */
-		//	parameter.put("GroupParameterType", parameterGroup == null ? null : parameterGroup.getParameterType());
-
 		/*
 		 * If the parameter is a member of a group (normal parameter group or a
 		 * cascading parameter group), we insert here into "parameter" a HashMap 

@@ -100,12 +100,6 @@ public class ReportParameterResource extends AbstractBaseResource {
 	@XmlElement(name = "selectionListValues")
 	private SelectionListValueCollectionResource selectionListValues;
 
-	//	@XmlElement(name = "parameterType")
-	//	private ParameterTypeResource parameterTypeResource;
-
-	//	@XmlElement(name = "widget")
-	//	private WidgetResource widgetResource;
-
 	//	private List<RoleParameterValue> roleParameterValues;
 	//	private List<SubscriptionParameterValue> subscriptionParameterValues;
 	//	private List<JobParameterValue> jobParameterValues;

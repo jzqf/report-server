@@ -2325,12 +2325,6 @@ insert into reporting.report_version (report_version_id, report_id, file_name, r
 delete from tmp_rptdesign;
 
 
-insert into reporting.widget (widget_id, name, description ,active, created_on ) values ('b8e91527-8b0e-4ed2-8cba-8cb8989ba8e2', 'Checkbox'    , 'Checkbox widget'    , true, '2015-03-31T02:00:00');
-insert into reporting.widget (widget_id, name, description ,active, created_on ) values ('e5b4cebb-1852-41a1-9fdf-bb4b8da82ef9', 'String entry', 'String entry widget', true, '2015-03-31T02:00:00');
-insert into reporting.widget (widget_id, name, description ,active, created_on ) values ('864c60a8-6c48-4efb-84dd-fc79502899fe', 'Radio button', 'Radio button widget', true, '2015-03-31T02:00:00');
-insert into reporting.widget (widget_id, name, description ,active, created_on ) values ('4d0842e4-ba65-4064-8ab1-556e90e3953b', 'Listbox'     , 'Listbox widget'     , true, '2015-03-31T02:00:00');
-
-
 --insert into reporting.report_parameter (report_parameter_id, report_version_id, name, prompt_text, order_index, created_on) values ('206723d6-50e7-4f4a-85c0-cb679e92ad6b', 'dbc0883b-afe3-4147-87b4-0ed35869cd35', 'Report01Param01', 'Prompt text for parameter #1 for Report #1', 1, '2015-05-06T15:00:00');
 --insert into reporting.report_parameter (report_parameter_id, report_version_id, name, prompt_text, order_index, created_on) values ('36fc0de4-cc4c-4efa-8c47-73e0e254e449', 'fb8a4896-609b-438a-81b0-c70587f8f637', 'Report02Param01', 'Prompt text for parameter #1 for Report #2', 1, '2015-05-06T15:00:01');
 --insert into reporting.report_parameter (report_parameter_id, report_version_id, name, prompt_text, order_index, created_on) values ('5a201251-b04f-406e-b07c-c6d55dc3dc85', '2f88d7ff-8b74-457a-bce6-89d3e74d0bb9', 'Report03Param01', 'Prompt text for parameter #1 for Report #3', 1, '2015-05-06T15:00:02');
