@@ -1,14 +1,20 @@
 package com.qfree.obo.report.service;
 
+import java.io.IOException;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 
 import javax.annotation.PostConstruct;
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
+
+import com.qfree.obo.report.dto.ReportSyncResource;
 
 //@Component  <- not needed because bean is explicitly created in ApplicationConfig.java
 @PropertySource("classpath:config.properties")
@@ -19,8 +25,8 @@ public class StartupService {
 	@Autowired
 	private ReportSyncService reportSyncService;
 
-	//	@Autowired
-	//	ServletContext servletContext;
+	//@Autowired
+	//ServletContext servletContext;
 
 	/*
 	 * The injected "env" object here will contain key/value pairs for each 
@@ -49,19 +55,54 @@ public class StartupService {
 			//logger.info("path2 = {}", path2);  // /home/jeffreyz/Applications/java/apache-tomcat/apache-tomcat-8.0.17/bin
 
 			String classesPath = this.getClass().getClassLoader().getResource("").getPath();
-			logger.info("classesPath = {}", classesPath);  // /home/jeffreyz/Applications/java/apache-tomcat/apache-tomcat-8.0.17/webapps/report-server/WEB-INF/classes/
+			logger.info("classesPath = {}", classesPath);// /home/jeffreyz/Applications/java/apache-tomcat/apache-tomcat-8.0.17/webapps/report-server/WEB-INF/classes/
 			Path absoluteContextPath;
-			//try {
-			//	absoluteContextPath = Paths.get(classesPath).resolve("..").resolve("..").toRealPath();
-			//	logger.info("absoluteContextPath = {}", absoluteContextPath);
-			//	Boolean showInactiveReports = false;
-			//	ReportSyncResource reportSyncResource = reportSyncService.syncReportsWithFileSystem(
-			//			absoluteContextPath, showInactiveReports);
-			//} catch (IOException e) {
-			//	logger.error(
-			//			"Exception thrown during startup. To avoid this, set startup.syncreports=false in config.properties",
-			//			e);
-			//}
+			try {
+				absoluteContextPath = Paths.get(classesPath).resolve("..").resolve("..").toRealPath();
+				logger.info("absoluteContextPath = {}", absoluteContextPath);
+				/*
+				 * Synchronize the reports stored in the database with the file
+				 * system. However, we must not do this if this application is
+				 * started via:
+				 * 
+				 *     $ mvn clean spring-boot:run
+				 * 
+				 * because in that case there will not be a context where the 
+				 * files can be written because "absoluteContextPath" will not
+				 * refer to the servlet context path of the web application 
+				 * running in Tomcat; instead, "absoluteContextPath" will be the
+				 * ".../obo-birt-viewer/birt-viewer/src" directory of the Maven
+				 * project from which "mvn clean spring-boot:run" is executed.
+				 * 
+				 * We test when environment we are in by testing if the JNDI
+				 * initial context "java:comp/env" is available:
+				 */
+				try {
+					new InitialContext().lookup("java:comp/env");
+					/*
+					 * If no exception is thrown, we are probably running in a
+					 * servlet container environment, e.g., Tomcat. Therefore,
+					 * it is safe to synchronize the reports stored in the 
+					 * database with the file system.
+					 */
+					Boolean showInactiveReports = false;
+					ReportSyncResource reportSyncResource = reportSyncService.syncReportsWithFileSystem(
+							absoluteContextPath, showInactiveReports);
+				} catch (NamingException ex) {
+					/*
+					 * We are probably running via:
+					 * 
+					 *     $ mvn clean spring-boot:run
+					 * 
+					 * so we do not attempt to synchronize the reports stored in 
+					 * the database with the file system.
+					 */
+				}
+			} catch (IOException e) {
+				logger.error(
+						"Exception thrown during startup. To avoid this, set startup.syncreports=false in config.properties",
+						e);
+			}
 		}
 		//		/* 
 		//		 * This is the default version for the endpoint to which the request is
