@@ -95,8 +95,8 @@ public class ParameterGroupController extends AbstractBaseController {
 	 * ParameterGroup to create is given:
 	 * 
 	 *	curl -iH "Accept: application/json;v=1" -H "Content-Type: application/json" -X POST -d \
-	 *	'{"parameterGroupId":"71b3e8ae-bba8-45b7-a85f-12546bcc95b2",'\
-	 *	'"name":"ParameterGroup name","promptText":"Group prompt text",'\
+	 *	'{"parameterGroupId":"71b3e8ae-bba8-45b7-a85f-12546bcc95b2",\
+	 *	'"name":"ParameterGroup name","promptText":"Group prompt text",\
 	 *	'"groupType":4, "createdOn":"1958-05-06T12:00:00.000Z"}' \
 	 *	http://localhost:8080/rest/parameterGroups
 	 */

@@ -17,35 +17,42 @@ public enum ResourcePath {
 			ResourcePath.CONFIGURATIONS_PATH,
 			ResourcePath.CONFIGURATION_EXPAND_PARAM,
 			ResourcePath.CONFIGURATION_SHOWALL_PARAM,
-			Configuration.class), PARAMETERGROUPS(
-					ResourcePath.PARAMETERGROUPS_PATH,
-					ResourcePath.PARAMETERGROUP_EXPAND_PARAM,
-					ResourcePath.PARAMETERGROUP_SHOWALL_PARAM,
-					ParameterGroup.class), REPORTS(
-							ResourcePath.REPORTS_PATH,
-							ResourcePath.REPORT_EXPAND_PARAM,
-							ResourcePath.REPORT_SHOWALL_PARAM,
-							Report.class), REPORTCATEGORIES(
-									ResourcePath.REPORTCATEGORIES_PATH,
-									ResourcePath.REPORTCATEGORY_EXPAND_PARAM,
-									ResourcePath.REPORTCATEGORY_SHOWALL_PARAM,
-									ReportCategory.class), REPORTPARAMETERS(
-											ResourcePath.REPORTPARAMETERS_PATH,
-											ResourcePath.REPORTPARAMETER_EXPAND_PARAM,
-											ResourcePath.REPORTPARAMETER_SHOWALL_PARAM,
-											ReportParameter.class), REPORTVERSIONS(
-													ResourcePath.REPORTVERSIONS_PATH,
-													ResourcePath.REPORTVERSION_EXPAND_PARAM,
-													ResourcePath.REPORTVERSION_SHOWALL_PARAM,
-													ReportVersion.class), ROLES(
-															ResourcePath.ROLES_PATH,
-															ResourcePath.ROLE_EXPAND_PARAM,
-															ResourcePath.ROLE_SHOWALL_PARAM,
-															Role.class), SELECTIONLISTVALUES(
-																	ResourcePath.SELECTIONLISTVALUES_PATH,
-																	ResourcePath.SELECTIONLISTVALUE_EXPAND_PARAM,
-																	ResourcePath.SELECTIONLISTVALUE_SHOWALL_PARAM,
-																	SelectionListValue.class);
+			Configuration.class),
+	PARAMETERGROUPS(
+			ResourcePath.PARAMETERGROUPS_PATH,
+			ResourcePath.PARAMETERGROUP_EXPAND_PARAM,
+			ResourcePath.PARAMETERGROUP_SHOWALL_PARAM,
+			ParameterGroup.class),
+	REPORTS(
+			ResourcePath.REPORTS_PATH,
+			ResourcePath.REPORT_EXPAND_PARAM,
+			ResourcePath.REPORT_SHOWALL_PARAM,
+			Report.class),
+	REPORTCATEGORIES(
+			ResourcePath.REPORTCATEGORIES_PATH,
+			ResourcePath.REPORTCATEGORY_EXPAND_PARAM,
+			ResourcePath.REPORTCATEGORY_SHOWALL_PARAM,
+			ReportCategory.class),
+	REPORTPARAMETERS(
+			ResourcePath.REPORTPARAMETERS_PATH,
+			ResourcePath.REPORTPARAMETER_EXPAND_PARAM,
+			ResourcePath.REPORTPARAMETER_SHOWALL_PARAM,
+			ReportParameter.class),
+	REPORTVERSIONS(
+			ResourcePath.REPORTVERSIONS_PATH,
+			ResourcePath.REPORTVERSION_EXPAND_PARAM,
+			ResourcePath.REPORTVERSION_SHOWALL_PARAM,
+			ReportVersion.class),
+	ROLES(
+			ResourcePath.ROLES_PATH,
+			ResourcePath.ROLE_EXPAND_PARAM,
+			ResourcePath.ROLE_SHOWALL_PARAM,
+			Role.class),
+	SELECTIONLISTVALUES(
+			ResourcePath.SELECTIONLISTVALUES_PATH,
+			ResourcePath.SELECTIONLISTVALUE_EXPAND_PARAM,
+			ResourcePath.SELECTIONLISTVALUE_SHOWALL_PARAM,
+			SelectionListValue.class);
 
 	private static final String PATH_SEPARATOR = "/";
 

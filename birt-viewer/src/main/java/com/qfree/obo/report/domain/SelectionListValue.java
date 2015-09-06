@@ -20,6 +20,7 @@ import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;
 
+import com.qfree.obo.report.dto.SelectionListValueResource;
 import com.qfree.obo.report.util.DateUtils;
 
 /**
@@ -103,11 +104,30 @@ public class SelectionListValue implements Serializable {
 
 	public SelectionListValue(ReportParameter reportParameter, Integer orderIndex,
 			String valueAssigned, String valueDisplayed) {
-		this(reportParameter, orderIndex, valueAssigned, valueDisplayed, DateUtils.nowUtc());
+		this(null, reportParameter, orderIndex, valueAssigned, valueDisplayed, DateUtils.nowUtc());
 	}
 
 	public SelectionListValue(ReportParameter reportParameter, Integer orderIndex,
 			String valueAssigned, String valueDisplayed, Date createdOn) {
+		this(null, reportParameter, orderIndex, valueAssigned, valueDisplayed, createdOn);
+	}
+
+	public SelectionListValue(
+			SelectionListValueResource selectionListValueResource,
+			ReportParameter reportParameter) {
+		this(
+				selectionListValueResource.getSelectionListValueId(),
+				reportParameter,
+				selectionListValueResource.getOrderIndex(),
+				selectionListValueResource.getValueAssigned(),
+				selectionListValueResource.getValueDisplayed(),
+				selectionListValueResource.getCreatedOn());
+	}
+
+	public SelectionListValue(UUID selectionListValueId, ReportParameter reportParameter, Integer orderIndex,
+			String valueAssigned, String valueDisplayed, Date createdOn) {
+		this.selectionListValueId = selectionListValueId;
+		this.selectionListValueId = selectionListValueId;
 		this.reportParameter = reportParameter;
 		this.orderIndex = orderIndex;
 		this.valueAssigned = valueAssigned;
