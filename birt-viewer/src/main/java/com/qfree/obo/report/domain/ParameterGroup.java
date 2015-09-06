@@ -18,6 +18,7 @@ import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;
 import org.hibernate.validator.constraints.NotBlank;
 
+import com.qfree.obo.report.dto.ParameterGroupResource;
 import com.qfree.obo.report.util.DateUtils;
 
 /**
@@ -38,7 +39,7 @@ public class ParameterGroup implements Serializable {
 	@Id
 	//	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	//	@Column(name = "parameter_group_id", unique = true, nullable = false)
-	//	private Long reportCategoryId;
+	//	private Long parameterGroupId;
 	@NotNull
 	@Type(type = "uuid-custom")
 	//	@Type(type = "pg-uuid")
@@ -56,6 +57,20 @@ public class ParameterGroup implements Serializable {
 	@Column(name = "prompt_text", nullable = false, length = 132)
 	private String promptText;
 
+	/*
+	 * Possible values for "GroupParameterType" are:
+	 * 
+	 *     IParameterDefnBase.SCALAR_PARAMETER = 0
+	 *     IParameterDefnBase.FILTER_PARAMETER = 1
+	 *     IParameterDefnBase.LIST_PARAMETER = 2
+	 *     IParameterDefnBase.TABLE_PARAMETER = 3
+	 *     IParameterDefnBase.PARAMETER_GROUP = 4
+	 *     IParameterDefnBase.CASCADING_PARAMETER_GROUP = 5
+	 * 
+	 * Some of these values will never appear here since these constants
+	 * are also used in other contexts. For example, see 
+	 * scalarParameter.getParameterType() below.
+	 */
 	@NotNull
 	@Column(name = "type", nullable = false)
 	private Integer type;
@@ -70,8 +85,16 @@ public class ParameterGroup implements Serializable {
 	private ParameterGroup() {
 	}
 
-	public ParameterGroup(String name, String promptText, Integer type) {
-		this(name, promptText, type, DateUtils.nowUtc());
+	public ParameterGroup(String name, String promptText, Integer groupType) {
+		this(name, promptText, groupType, DateUtils.nowUtc());
+	}
+
+	public ParameterGroup(ParameterGroupResource parameterGroupResource) {
+		this(
+				parameterGroupResource.getName(),
+				parameterGroupResource.getPromptText(),
+				parameterGroupResource.getGroupType(),
+				parameterGroupResource.getCreatedOn());
 	}
 
 	public ParameterGroup(String name, String promptText, Integer type, Date createdOn) {

@@ -258,6 +258,11 @@ public class ReportVersionController extends AbstractBaseController {
 			String servletContextInitParamName = servletContextinitParamEnum.nextElement();
 			logger.debug("servletContextInitParamName = {}", servletContextInitParamName);
 		}
+		/*
+		 * This returns null if this application ius run via:
+		 *  
+		 *     mvn clean spring-boot:run
+		 */
 		logger.debug("BIRT_VIEWER_WORKING_FOLDER = {}", servletContext.getInitParameter("BIRT_VIEWER_WORKING_FOLDER"));
 
 		Enumeration<String> servletConfigInitParamEnum = servletConfig.getInitParameterNames();
