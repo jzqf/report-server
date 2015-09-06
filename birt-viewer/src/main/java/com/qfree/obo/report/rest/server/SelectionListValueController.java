@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.UUID;
 
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.HeaderParam;
 import javax.ws.rs.POST;
@@ -208,4 +209,68 @@ public class SelectionListValueController extends AbstractBaseController {
 		return Response.status(Response.Status.OK).build();
 	}
 
+	/*
+	 * This endpoint can be tested with:
+	 * 
+	 *   $ mvn clean spring-boot:run
+	 *   $ curl -iH "Accept: application/json;v=1" -H "Content-Type: application/json" -X DELETE \
+	 *   http://localhost:8080/rest/selectionListValues/0b986fd2-6d6b-46c3-9be7-5c1831a563ca
+	 */
+	@Path("/{id}")
+	@DELETE
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	@Transactional
+	public SelectionListValueResource updateById(
+			//public Response updateById(
+			@PathParam("id") final UUID id,
+			@HeaderParam("Accept") final String acceptHeader,
+			@QueryParam(ResourcePath.EXPAND_QP_NAME) final List<String> expand,
+			@QueryParam(ResourcePath.SHOWALL_QP_NAME) final List<String> showAll,
+			@Context final UriInfo uriInfo) {
+		Map<String, List<String>> queryParams = new HashMap<>();
+		queryParams.put(ResourcePath.EXPAND_QP_KEY, expand);
+		queryParams.put(ResourcePath.SHOWALL_QP_KEY, showAll);
+		RestApiVersion apiVersion = RestUtils.extractAPIVersion(acceptHeader, RestApiVersion.v1);
+
+		/*
+		 * Retrieve SelectionListValue entity to be updated.
+		 */
+		SelectionListValue selectionListValue = selectionListValueRepository.findOne(id);
+		logger.info("selectionListValue = {}", selectionListValue);
+		RestUtils.ifNullThen404(selectionListValue, SelectionListValue.class, "selectionListValueId", id.toString());
+
+		/*
+		 * If the SelectionListValue entity is successfully deleted, it is 
+		 * returned as the entity body so it is clear to the caller precisely
+		 * which entity was deleted. Here, the resource to be returned is 
+		 * created before the entity is deleted.
+		 */
+		//	if (RestUtils.AUTO_EXPAND_PRIMARY_RESOURCES) {
+		addToExpandList(expand, SelectionListValue.class);// Force primary resource to be "expanded"
+		//	}
+		SelectionListValueResource selectionListValueResource = new SelectionListValueResource(selectionListValue,
+				uriInfo, queryParams, apiVersion);
+		logger.info("selectionListValueResource = {}", selectionListValueResource);
+		/*
+		 * Delete entity.
+		 */
+		selectionListValueRepository.delete(selectionListValue);
+		logger.info("selectionListValue (after deletion) = {}", selectionListValue);
+		/*
+		 * Confirm that the entity was, indeed, deleted. selectionListValue here
+		 * should be null. Currently, I don't do anything based on this check.
+		 * I assume that the delete call above with throw some sort of 
+		 * RuntimeException if that happens, or some other exception will be
+		 * thrown by the back-end databse (PostgreSQL) code when the transaction
+		 * is eventually committed. I don't have the time to look into this at
+		 * the moment, but I doubt that this deletion will encounter problems
+		 * often, if ever, since it will never violate a foreign key constraint.
+		 */
+		selectionListValue = selectionListValueRepository.findOne(selectionListValueResource.getSelectionListValueId());
+		logger.info("selectionListValue (after find()) = {}", selectionListValue);
+
+		//return Response.status(Response.Status.OK).build();
+		return selectionListValueResource;
+	}
 }
