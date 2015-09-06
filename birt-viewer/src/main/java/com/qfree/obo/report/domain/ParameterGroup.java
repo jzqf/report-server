@@ -42,7 +42,7 @@ public class ParameterGroup implements Serializable {
 	//	private Long parameterGroupId;
 	@NotNull
 	@Type(type = "uuid-custom")
-	//	@Type(type = "pg-uuid")
+	//	@Type(groupType = "pg-uuid")
 	@GeneratedValue(generator = "uuid2")
 	@GenericGenerator(name = "uuid2", strategy = "uuid2")
 	@Column(name = "parameter_group_id", unique = true, nullable = false,
@@ -72,8 +72,8 @@ public class ParameterGroup implements Serializable {
 	 * scalarParameter.getParameterType() below.
 	 */
 	@NotNull
-	@Column(name = "type", nullable = false)
-	private Integer type;
+	@Column(name = "group_type", nullable = false)
+	private Integer groupType;
 
 	@OneToMany(targetEntity = ReportParameter.class, mappedBy = "parameterGroup")
 	private List<ReportParameter> reportParameters;
@@ -91,13 +91,14 @@ public class ParameterGroup implements Serializable {
 
 	public ParameterGroup(ParameterGroupResource parameterGroupResource) {
 		this(
+				parameterGroupResource.getParameterGroupId(),
 				parameterGroupResource.getName(),
 				parameterGroupResource.getPromptText(),
 				parameterGroupResource.getGroupType(),
 				parameterGroupResource.getCreatedOn());
 	}
 
-	public ParameterGroup(String name, String promptText, Integer type, Date createdOn) {
+	public ParameterGroup(String name, String promptText, Integer groupType, Date createdOn) {
 		this.name = name;
 		/*
 		 * This defines a sensible value promptText where promptText is 
@@ -106,7 +107,21 @@ public class ParameterGroup implements Serializable {
 		 * parameter groups).
 		 */
 		this.promptText = (promptText == null) ? name : promptText;
-		this.type = type;
+		this.groupType = groupType;
+		this.createdOn = (createdOn != null) ? createdOn : DateUtils.nowUtc();
+	}
+
+	public ParameterGroup(UUID parameterGroupId, String name, String promptText, Integer groupType, Date createdOn) {
+		this.parameterGroupId = parameterGroupId;
+		this.name = name;
+		/*
+		 * This defines a sensible value promptText where promptText is 
+		 * null. Unfortunately, the "GroupPromptText" value seems to always 
+		 * be null via the BIRT API for normal parameter groups (not cascading
+		 * parameter groups).
+		 */
+		this.promptText = (promptText == null) ? name : promptText;
+		this.groupType = groupType;
 		this.createdOn = (createdOn != null) ? createdOn : DateUtils.nowUtc();
 	}
 
@@ -130,12 +145,12 @@ public class ParameterGroup implements Serializable {
 		this.name = name;
 	}
 
-	public Integer getType() {
-		return type;
+	public Integer getGroupType() {
+		return groupType;
 	}
 
-	public void setType(Integer type) {
-		this.type = type;
+	public void setGroupType(Integer groupType) {
+		this.groupType = groupType;
 	}
 
 	public Date getCreatedOn() {
@@ -159,8 +174,8 @@ public class ParameterGroup implements Serializable {
 		builder.append(promptText);
 		builder.append(", name=");
 		builder.append(name);
-		builder.append(", type=");
-		builder.append(type);
+		builder.append(", groupType=");
+		builder.append(groupType);
 		builder.append(", createdOn=");
 		builder.append(createdOn);
 		builder.append("]");

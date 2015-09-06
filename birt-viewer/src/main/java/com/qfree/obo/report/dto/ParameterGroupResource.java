@@ -33,7 +33,7 @@ public class ParameterGroupResource extends AbstractBaseResource {
 	@XmlElement
 	private String promptText;
 
-	@XmlElement(name = "groupType")
+	@XmlElement
 	private Integer groupType;
 
 	@XmlElement
@@ -87,7 +87,7 @@ public class ParameterGroupResource extends AbstractBaseResource {
 			this.parameterGroupId = parameterGroup.getParameterGroupId();
 			this.name = parameterGroup.getName();
 			this.promptText = parameterGroup.getPromptText();
-			this.groupType = parameterGroup.getType();
+			this.groupType = parameterGroup.getGroupType();
 			this.createdOn = parameterGroup.getCreatedOn();
 		}
 		logger.debug("this = {}", this);

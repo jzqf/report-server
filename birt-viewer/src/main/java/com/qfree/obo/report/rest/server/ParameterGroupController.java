@@ -56,7 +56,7 @@ public class ParameterGroupController extends AbstractBaseController {
 	 * 
 	 *   $ mvn clean spring-boot:run
 	 *   $ curl -i -H "Accept: application/json;v=1" -X GET \
-	 *   http://localhost:8080/rest/parameterGroups
+	 *   http://localhost:8080/rest/parameterGroups?expand=parameterGroups
 	 */
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
@@ -114,7 +114,6 @@ public class ParameterGroupController extends AbstractBaseController {
 		queryParams.put(ResourcePath.EXPAND_QP_KEY, expand);
 		queryParams.put(ResourcePath.SHOWALL_QP_KEY, showAll);
 		RestApiVersion apiVersion = RestUtils.extractAPIVersion(acceptHeader, RestApiVersion.v1);
-		logger.info("Made it!");
 		ParameterGroup parameterGroup = parameterGroupService.saveNewFromResource(parameterGroupResource);
 		//	if (RestUtils.AUTO_EXPAND_PRIMARY_RESOURCES) {
 		addToExpandList(expand, ParameterGroup.class);// Force primary resource to be "expanded"
@@ -128,7 +127,8 @@ public class ParameterGroupController extends AbstractBaseController {
 	 * 
 	 *   $ mvn clean spring-boot:run
 	 *   $ curl -i -H "Accept: application/json;v=1" -X GET \
-	 *   http://localhost:8081/report-server/rest/parameterGroups/7a482694-51d2-42d0-b0e2-19dd13bbbc64
+	 *   http://localhost:8080/rest/parameterGroups/7a482694-51d2-42d0-b0e2-19dd13bbbc64\
+	 *   ?expand=parameterGroups
 	 */
 	@Path("/{id}")
 	@GET
@@ -183,16 +183,20 @@ public class ParameterGroupController extends AbstractBaseController {
 		 * Retrieve ParameterGroup entity to be updated.
 		 */
 		ParameterGroup parameterGroup = parameterGroupRepository.findOne(id);
+		logger.debug("parameterGroup = {}", parameterGroup);
 		RestUtils.ifNullThen404(parameterGroup, ParameterGroup.class, "parameterGroupId", id.toString());
 		/*
 		 * Ensure that the entity's "id" and "CreatedOn" are not changed.
 		 */
 		parameterGroupResource.setParameterGroupId(parameterGroup.getParameterGroupId());
+		logger.debug("parameterGroupResource = {}", parameterGroupResource);
 		parameterGroupResource.setCreatedOn(parameterGroup.getCreatedOn());
+		logger.debug("parameterGroupResource = {}", parameterGroupResource);
 		/*
 		 * Save updated entity.
 		 */
 		parameterGroup = parameterGroupService.saveExistingFromResource(parameterGroupResource);
+		logger.debug("parameterGroup = {}", parameterGroup);
 		return Response.status(Response.Status.OK).build();
 	}
 
