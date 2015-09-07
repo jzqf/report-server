@@ -273,9 +273,6 @@ public class ReportParameterController extends AbstractBaseController {
 		queryParams.put(ResourcePath.SHOWALL_QP_KEY, showAll);
 		RestApiVersion apiVersion = RestUtils.extractAPIVersion(acceptHeader, RestApiVersion.v1);
 
-		if (RestUtils.AUTO_EXPAND_PRIMARY_RESOURCES) {
-			addToExpandList(expand, ReportParameter.class);
-		}
 		ReportParameter reportParameter = reportParameterRepository.findOne(id);
 		RestUtils.ifNullThen404(reportParameter, ReportParameter.class, "reportId", id.toString());
 		return new SelectionListValueCollectionResource(reportParameter, uriInfo, queryParams, apiVersion);
