@@ -32,7 +32,7 @@ public class SelectionListValueCollectionResource extends AbstractCollectionReso
 				SelectionListValue.class,
 				AbstractBaseResource.createHref(uriInfo, ReportParameter.class, reportParameter.getReportParameterId(),
 						null),
-				ResourcePath.REPORTVERSIONS_PATH,
+				ResourcePath.SELECTIONLISTVALUES_PATH,
 				uriInfo, queryParams, apiVersion);
 	}
 

@@ -385,7 +385,7 @@ public class ReportUtils {
 		 * the user can enter a value different from values in a selection list. 
 		 * Usually, a parameter with allowNewValue=true is displayed as a 
 		 * combo-box, while a parameter with allowNewValue=false is displayed 
-		 * as a list. This is only a UI directve. The BIRT engine does not 
+		 * as a list. This is only a UI directive. The BIRT engine does not 
 		 * validate whether the value passed in is in the list.
 		 */
 		parameter.put("AllowNewValues", scalarParameter.allowNewValues());

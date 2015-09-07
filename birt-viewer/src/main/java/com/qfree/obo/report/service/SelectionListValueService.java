@@ -75,8 +75,8 @@ public class SelectionListValueService {
 			RestUtils.ifNullThen404(reportParameter, ReportParameter.class, "reportParameterId",
 					reportParameterId.toString());
 		} else {
-			throw new RestApiException(RestError.FORBIDDEN_REPORT_PARAMETER_NULL, SelectionListValue.class,
-					"reportParameterId");
+			throw new RestApiException(RestError.FORBIDDEN_SELECTIONLISTVALUE_REPORTPARAMETER_NULL,
+					SelectionListValue.class, "reportParameterId");
 		}
 
 		SelectionListValue selectionListValue = new SelectionListValue(selectionListValueResource, reportParameter);

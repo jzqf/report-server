@@ -221,7 +221,7 @@ public class SelectionListValueController extends AbstractBaseController {
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	@Transactional
-	public SelectionListValueResource updateById(
+	public SelectionListValueResource deleteById(
 			//public Response updateById(
 			@PathParam("id") final UUID id,
 			@HeaderParam("Accept") final String acceptHeader,

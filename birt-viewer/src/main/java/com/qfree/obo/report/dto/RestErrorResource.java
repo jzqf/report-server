@@ -168,10 +168,12 @@ public class RestErrorResource {
 				"An attribute is null or blank when it should not be", null),
 		FORBIDDEN_VALIDATION_ERROR(Response.Status.FORBIDDEN, "403.8",
 				"An attribute violates a validation constraint", null),
-		FORBIDDEN_REPORT_PARAMETER_NULL(
+		FORBIDDEN_SELECTIONLISTVALUE_REPORTPARAMETER_NULL(
 				Response.Status.FORBIDDEN, "403.3",
-				"reportParameterId is null for a selection list value being saved",
-				null),
+				"reportParameterId is null for a selection list value being saved", null),
+		FORBIDDEN_REPORTPARAMETER_REPORTVERSION_NULL(
+				Response.Status.FORBIDDEN, "403.3",
+				"reportVersionId is null for a report parameter being saved", null),
 		/**
 		 * {@code 404 Not Found}.
 		 * @see <a href="http://tools.ietf.org/html/rfc2616#section-10.4.5">HTTP/1.1</a>

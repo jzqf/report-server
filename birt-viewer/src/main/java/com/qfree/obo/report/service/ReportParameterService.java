@@ -17,11 +17,18 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.qfree.obo.report.db.ParameterGroupRepository;
 import com.qfree.obo.report.db.ReportParameterRepository;
+import com.qfree.obo.report.db.ReportVersionRepository;
 import com.qfree.obo.report.db.SelectionListValueRepository;
 import com.qfree.obo.report.domain.ParameterGroup;
 import com.qfree.obo.report.domain.ReportParameter;
 import com.qfree.obo.report.domain.ReportVersion;
 import com.qfree.obo.report.domain.SelectionListValue;
+import com.qfree.obo.report.dto.ParameterGroupResource;
+import com.qfree.obo.report.dto.ReportParameterResource;
+import com.qfree.obo.report.dto.ReportVersionResource;
+import com.qfree.obo.report.dto.RestErrorResource.RestError;
+import com.qfree.obo.report.exceptions.RestApiException;
+import com.qfree.obo.report.rest.server.RestUtils;
 import com.qfree.obo.report.util.ReportUtils;
 
 @Component
@@ -33,21 +40,105 @@ public class ReportParameterService {
 	//	private final ReportVersionRepository reportVersionRepository;
 	//	private final ReportRepository reportRepository;
 	private final ReportParameterRepository reportParameterRepository;
+	private final ReportVersionRepository reportVersionRepository;
 	private SelectionListValueRepository selectionListValueRepository;
 	private final ParameterGroupRepository parameterGroupRepository;
 
 	@Autowired
 	public ReportParameterService(
-			//			ReportVersionRepository reportVersionRepository,
-			//			ReportRepository reportRepository,
 			ReportParameterRepository reportParameterRepository,
+			ReportVersionRepository reportVersionRepository,
 			SelectionListValueRepository selectionListValueRepository,
 			ParameterGroupRepository parameterGroupRepository) {
-		//		this.reportVersionRepository = reportVersionRepository;
-		//		this.reportRepository = reportRepository;
 		this.reportParameterRepository = reportParameterRepository;
+		this.reportVersionRepository = reportVersionRepository;
 		this.selectionListValueRepository = selectionListValueRepository;
 		this.parameterGroupRepository = parameterGroupRepository;
+	}
+
+	@Transactional
+	public ReportParameter saveNewFromResource(ReportParameterResource reportParameterResource) {
+		RestUtils.ifNewResourceIdNotNullThen403(reportParameterResource.getReportParameterId(), ReportParameter.class,
+				"reportParameterId", reportParameterResource.getReportParameterId());
+		return saveOrUpdateFromResource(reportParameterResource);
+	}
+
+	@Transactional
+	public ReportParameter saveExistingFromResource(ReportParameterResource reportParameterResource) {
+		return saveOrUpdateFromResource(reportParameterResource);
+	}
+
+	@Transactional
+	public ReportParameter saveOrUpdateFromResource(ReportParameterResource reportParameterResource) {
+		logger.debug("reportParameterResource = {}", reportParameterResource);
+
+		/*
+		 * IMPORTANT:
+		 * 
+		 * Retrieve the ReportVersionResource from reportParameterResource 
+		 * We assume here that the reportVersionId attribute of this object is
+		 * set to the id of the ReportVersion that will we associated with the
+		 * ReportParameter entity that is be saved/created below. It is not 
+		 * necessary for any on the other ReportVersionResource attributes to 
+		 * have non-null values.
+		 * 
+		 * If reportVersionId is not provided here, we throw a custom 
+		 * exception. 
+		 */
+		ReportVersionResource reportVersionResource = reportParameterResource.getReportVersionResource();
+		logger.debug("reportVersionResource = {}", reportVersionResource);
+		UUID reportVersionId = reportVersionResource.getReportVersionId();
+		logger.debug("reportVersionId = {}", reportVersionId);
+		ReportVersion reportVersion = null;
+		if (reportVersionId != null) {
+			reportVersion = reportVersionRepository.findOne(reportVersionId);
+			RestUtils.ifNullThen404(reportVersion, ReportVersion.class, "reportVersionId",
+					reportVersionId.toString());
+		} else {
+			throw new RestApiException(RestError.FORBIDDEN_REPORTPARAMETER_REPORTVERSION_NULL, ReportParameter.class,
+					"reportVersionId");
+		}
+		/*
+		 * IMPORTANT:
+		 * 
+		 * Retrieve the ParameterGroupResource from reportParameterResource. If 
+		 * the report parameter is not linked to a parameter group, then 
+		 * ParameterGroupResource will be null).
+		 * We assume here that the parameterGroupId attribute of this object is
+		 * set to the id of the ParameterGroup that will we associated with the
+		 * ReportParameter entity that is be saved/created below. It is not 
+		 * necessary for any on the other ParameterGroupResource attributes to 
+		 * have non-null values.
+		 * 
+		 * If parameterGroupId is not provided here, we throw a custom 
+		 * exception. 
+		 */
+		ParameterGroupResource parameterGroupResource = reportParameterResource.getParameterGroupResource();
+		logger.debug("parameterGroupResource = {}", parameterGroupResource);
+		UUID parameterGroupId = parameterGroupResource.getParameterGroupId();
+		logger.debug("parameterGroupId = {}", parameterGroupId);
+		ParameterGroup parameterGroup = null;
+		if (parameterGroupId != null) {
+			parameterGroup = parameterGroupRepository.findOne(parameterGroupId);
+			RestUtils.ifNullThen404(parameterGroup, ParameterGroup.class, "parameterGroupId",
+					parameterGroupId.toString());
+		}
+
+		ReportParameter reportParameter = new ReportParameter(reportParameterResource, reportVersion, parameterGroup);
+		logger.debug("reportParameter = {}", reportParameter);
+		/*
+		 * This "save" method will persist or merge the given entity using the
+		 * underlying JPA EntityManager. If the entity has not been persisted 
+		 * yet, Spring Data JPA will save the entity via a call to the 
+		 * entityManager.persist(...) method; otherwise, the 
+		 * entityManager.merge(...) method will be called. But since the id of
+		 * this entity is not set above, currently this will always save a new
+		 * ReportParameter.
+		 */
+		reportParameter = reportParameterRepository.save(reportParameter);
+		logger.debug("reportParameter (created/updated) = {}", reportParameter);
+
+		return reportParameter;
 	}
 
 	@Transactional
