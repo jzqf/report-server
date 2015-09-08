@@ -25,6 +25,9 @@ public class StartupService {
 	@Autowired
 	private ReportSyncService reportSyncService;
 
+	//	@Autowired
+	//	private BirtService birtService;
+
 	//@Autowired
 	//ServletContext servletContext;
 
@@ -149,4 +152,10 @@ public class StartupService {
 		//		ReportResource responseEntity = response.readEntity(ReportResource.class);
 
 	}
+
+	//	@PreDestroy
+	//	public void shutdown() {
+	//		birtService.shutdownBirt();
+	//	}
+
 }

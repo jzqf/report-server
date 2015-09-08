@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.UUID;
 
 import javax.ws.rs.core.UriInfo;
@@ -33,10 +34,11 @@ import com.qfree.obo.report.dto.ReportVersionResource;
 import com.qfree.obo.report.dto.RestErrorResource.RestError;
 import com.qfree.obo.report.dto.SelectionListValueCollectionResource;
 import com.qfree.obo.report.dto.SelectionListValueResource;
+import com.qfree.obo.report.exceptions.DynamicSelectionListKeyException;
 import com.qfree.obo.report.exceptions.RestApiException;
+import com.qfree.obo.report.exceptions.RptdesignOpenFromStreamException;
 import com.qfree.obo.report.rest.server.RestUtils;
 import com.qfree.obo.report.rest.server.RestUtils.RestApiVersion;
-import com.qfree.obo.report.util.ReportUtils;
 
 @Component
 @Transactional
@@ -50,17 +52,20 @@ public class ReportParameterService {
 	private final ReportVersionRepository reportVersionRepository;
 	private SelectionListValueRepository selectionListValueRepository;
 	private final ParameterGroupRepository parameterGroupRepository;
+	private final BirtService birtService;
 
 	@Autowired
 	public ReportParameterService(
 			ReportParameterRepository reportParameterRepository,
 			ReportVersionRepository reportVersionRepository,
 			SelectionListValueRepository selectionListValueRepository,
-			ParameterGroupRepository parameterGroupRepository) {
+			ParameterGroupRepository parameterGroupRepository,
+			BirtService birtService) {
 		this.reportParameterRepository = reportParameterRepository;
 		this.reportVersionRepository = reportVersionRepository;
 		this.selectionListValueRepository = selectionListValueRepository;
 		this.parameterGroupRepository = parameterGroupRepository;
+		this.birtService = birtService;
 	}
 
 	@Transactional
@@ -155,7 +160,8 @@ public class ReportParameterService {
 		/*
 		 * Extract all parameters and their metadata from the rptdesign.
 		 */
-		Map<String, Map<String, Serializable>> parameters = ReportUtils.parseReportParams(reportVersion.getRptdesign());
+		//Map<String, Map<String, Serializable>> parameters = ReportUtils.parseReportParams(reportVersion.getRptdesign());
+		Map<String, Map<String, Serializable>> parameters = birtService.parseReportParams(reportVersion.getRptdesign());
 
 		/*
 		 * This is used to keep trakc of ParameterGroup entities that have been
@@ -319,15 +325,38 @@ public class ReportParameterService {
 	 * @param queryParams
 	 * @param apiVersion
 	 * @return
+	 * @throws BirtException 
+	 * @throws RptdesignOpenFromStreamException 
+	 * @throws DynamicSelectionListKeyException 
 	 */
 	public SelectionListValueCollectionResource getDynamicSelectionList(ReportParameter reportParameter,
 			List<String> dynamicListKeys, String rptdesign, UriInfo uriInfo, Map<String, List<String>> queryParams,
-			RestApiVersion apiVersion) {
+			RestApiVersion apiVersion)
+					throws RptdesignOpenFromStreamException, BirtException, DynamicSelectionListKeyException {
 
+		Map<Object, String> dynamicList = birtService.getReportParameterDynamicSelectionList(
+				reportParameter.getName(), dynamicListKeys, rptdesign);
+		logger.debug("dynamicList = {}", dynamicList);
+
+		/*
+		 * Create a list of SelectionListValueResource's from the Map 
+		 * dynamicList. This list is used to create a 
+		 * SelectionListValueCollectionResource to be returned by this method.
+		 */
+		Integer orderIndex = 0;
+		SelectionListValue selectionListValue = null;
+		List<SelectionListValueResource> selectionListValueResources = new ArrayList<>(dynamicList.size());
+		for (Entry<Object, String> entry : dynamicList.entrySet()) {
+			orderIndex += 1;
+			selectionListValue = new SelectionListValue(reportParameter, orderIndex,
+					entry.getKey().toString(), entry.getValue());
+			selectionListValueResources.add(
+					new SelectionListValueResource(selectionListValue, uriInfo, queryParams, apiVersion));
+		}
+		logger.debug("selectionListValueResources = {}", selectionListValueResources);
 
 		SelectionListValueCollectionResource selectionListValueCollectionResource = new SelectionListValueCollectionResource(
-				new ArrayList<SelectionListValueResource>(),
-				SelectionListValue.class, uriInfo, queryParams, apiVersion);
+				selectionListValueResources, SelectionListValue.class, uriInfo, queryParams, apiVersion);
 		return selectionListValueCollectionResource;
 	}
 }

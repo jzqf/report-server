@@ -24,8 +24,8 @@ import org.springframework.stereotype.Component;
 
 import com.qfree.obo.report.domain.Configuration.ParamName;
 import com.qfree.obo.report.rest.server.RestUtils.RestApiVersion;
+import com.qfree.obo.report.service.BirtService;
 import com.qfree.obo.report.service.ConfigurationService;
-import com.qfree.obo.report.util.ReportUtils;
 
 @Component
 @Path("/test")
@@ -34,10 +34,14 @@ public class TestController extends AbstractBaseController {
 	private static final Logger logger = LoggerFactory.getLogger(TestController.class);
 
 	private final ConfigurationService configurationService;
+	private final BirtService birtService;
 
 	@Autowired
-	public TestController(ConfigurationService configurationService) {
+	public TestController(
+			ConfigurationService configurationService,
+			BirtService birtService) {
 		this.configurationService = configurationService;
+		this.birtService = birtService;
 	}
 
 	@GET
@@ -238,7 +242,8 @@ public class TestController extends AbstractBaseController {
 			String rptdesignXml = String.join("\n", rptdesignLines);
 			//logger.info("rptdesignXml = \n{}", rptdesignXml);
 
-			ReportUtils.parseReportParams(rptdesignXml);
+			//ReportUtils.parseReportParams(rptdesignXml);
+			birtService.parseReportParams(rptdesignXml);
 
 		} catch (Exception e) {
 			logger.error("Parsing the report parameters failed with the following exception:", e);

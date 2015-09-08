@@ -19,6 +19,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
+import org.eclipse.birt.core.exception.BirtException;
 import org.eclipse.birt.report.engine.api.IParameterDefn;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,6 +33,8 @@ import com.qfree.obo.report.dto.ReportParameterResource;
 import com.qfree.obo.report.dto.ReportParameterResource;
 import com.qfree.obo.report.dto.ResourcePath;
 import com.qfree.obo.report.dto.SelectionListValueCollectionResource;
+import com.qfree.obo.report.exceptions.DynamicSelectionListKeyException;
+import com.qfree.obo.report.exceptions.RptdesignOpenFromStreamException;
 import com.qfree.obo.report.rest.server.RestUtils.RestApiVersion;
 import com.qfree.obo.report.service.ReportParameterService;
 
@@ -269,7 +272,8 @@ public class ReportParameterController extends AbstractBaseController {
 			@QueryParam(ResourcePath.EXPAND_QP_NAME) final List<String> expand,
 			@QueryParam(ResourcePath.SHOWALL_QP_NAME) final List<String> showAll,
 			@QueryParam("dynamicListKey") final List<String> dynamicListKeys,
-			@Context final UriInfo uriInfo) {
+			@Context final UriInfo uriInfo)
+					throws RptdesignOpenFromStreamException, BirtException, DynamicSelectionListKeyException {
 		Map<String, List<String>> queryParams = new HashMap<>();
 		queryParams.put(ResourcePath.EXPAND_QP_KEY, expand);
 		queryParams.put(ResourcePath.SHOWALL_QP_KEY, showAll);

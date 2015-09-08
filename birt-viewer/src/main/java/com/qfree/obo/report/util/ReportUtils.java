@@ -1,33 +1,22 @@
 package com.qfree.obo.report.util;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Semaphore;
-import java.util.logging.Level;
 
-import org.eclipse.birt.core.exception.BirtException;
-import org.eclipse.birt.core.framework.Platform;
-import org.eclipse.birt.report.engine.api.EngineConfig;
 import org.eclipse.birt.report.engine.api.IGetParameterDefinitionTask;
-import org.eclipse.birt.report.engine.api.IParameterDefnBase;
 import org.eclipse.birt.report.engine.api.IParameterGroupDefn;
 import org.eclipse.birt.report.engine.api.IParameterSelectionChoice;
-import org.eclipse.birt.report.engine.api.IReportEngine;
-import org.eclipse.birt.report.engine.api.IReportEngineFactory;
 import org.eclipse.birt.report.engine.api.IReportRunnable;
 import org.eclipse.birt.report.engine.api.IScalarParameterDefn;
 import org.eclipse.birt.report.model.api.CascadingParameterGroupHandle;
@@ -104,112 +93,112 @@ public class ReportUtils {
 		return rptdesignFilePath;
 	}
 
-	public static Map<String, Map<String, Serializable>> parseReportParams(String rptdesignXml)
-			throws IOException, BirtException {
-	
-		/*
-		 * A LinkedHashMap is used here so that the order of the parameters 
-		 * inserted into this map is preserved, i.e., iteration over the 
-		 * entries in this map will always preserve the order that the entries
-		 * were originally inserted into the map. 
-		 */
-		Map<String, Map<String, Serializable>> parameters = new LinkedHashMap<>();
-	
-		IReportEngine engine = null;
-		try {
-
-			EngineConfig config = new EngineConfig();
-			config.setLogConfig(null, Level.FINE);
-
-			Platform.startup(config);
-			IReportEngineFactory factory = (IReportEngineFactory) Platform
-					.createFactoryObject(IReportEngineFactory.EXTENSION_REPORT_ENGINE_FACTORY);
-			engine = factory.createReportEngine(config);
-			engine.changeLogLevel(Level.WARNING);
-
-			logger.info("Report engine is initialized");
-
-			IReportRunnable design = null;
-
-			/*
-			 * Open the report design.
-			 */
-			try (InputStream rptdesignStream = new ByteArrayInputStream(
-					rptdesignXml.getBytes(StandardCharsets.UTF_8))) {
-				design = engine.openReportDesign(rptdesignStream);
-			}
-
-			/*
-			 * One can also open a design by passing an absolute path to an 
-			 * rptdesign file as shown here. This code is commented out and only 
-			 * used for testing.
-			 */
-			//design = engine.openReportDesign(
-			//	"/home/jeffreyz/git/obo-birt-reports/birt-reports/tests/400-TestReport04_v1.1.rptdesign");
-			//design = engine.openReportDesign("/home/jeffreyz/Desktop/cascade_v3.2.23.rptdesign");
-
-			/*
-			 * Create an engine task for obtaining report parameter definitions.
-			 */
-			IGetParameterDefinitionTask task = engine.createGetParameterDefinitionTask(design);
-			Collection<IParameterDefnBase> params = (Collection<IParameterDefnBase>) task.getParameterDefns(true);
-
-			/*
-			 * Iterate through all parameter entries in "params". These can be 
-			 * either IScalarParameterDefn or IParameterGroupDefn objects.
-			 */
-			for (IParameterDefnBase param : params) {
-				if (param instanceof IParameterGroupDefn) {
-
-					IParameterGroupDefn group = (IParameterGroupDefn) param;
-
-					/*
-					 *  Iterate over each parameter in the parameter group.
-					 */
-					for (IScalarParameterDefn scalarParameter : (ArrayList<IScalarParameterDefn>) group.getContents()) {
-						logger.info("Scalar parameter '{}' from group '{}'", scalarParameter.getName(),
-								group.getName());
-						/*
-						 * Get details about the parameter as a Map and then insert
-						 * that Map into the paramDetails Map
-						 */
-						parameters.put(scalarParameter.getName(),
-								ReportUtils.loadParameterDetails(task, scalarParameter, design, group));
-					}
-
-				} else {
-
-					IScalarParameterDefn scalarParameter = (IScalarParameterDefn) param;
-					logger.info("Scalar parameter '{}'", scalarParameter.getName());
-					/*
-					 * Get details about the parameter as a Map and then insert
-					 * that Map into the paramDetails Map
-					 */
-					parameters.put(scalarParameter.getName(),
-							ReportUtils.loadParameterDetails(task, scalarParameter, design, null));
-
-				}
-			}
-
-			//} catch (BirtException ex) {
-			//	logger.error("Exception starting up BIRT platform for parsing parameters in a report:",
-			//			ex);
-		} finally {
-
-			/*
-			 * Destroy the engine and shutdown the Platform.
-			 */
-			if (engine != null) {
-				engine.destroy();
-			}
-			Platform.shutdown();
-			engine = null;
-
-			logger.info("Finished");
-		}
-
-		return parameters;
-	}
+	//	public static Map<String, Map<String, Serializable>> parseReportParams(String rptdesignXml)
+	//			throws IOException, BirtException {
+	//	
+	//		/*
+	//		 * A LinkedHashMap is used here so that the order of the parameters 
+	//		 * inserted into this map is preserved, i.e., iteration over the 
+	//		 * entries in this map will always preserve the order that the entries
+	//		 * were originally inserted into the map. 
+	//		 */
+	//		Map<String, Map<String, Serializable>> parameters = new LinkedHashMap<>();
+	//	
+	//		IReportEngine engine = null;
+	//		try {
+	//
+	//			EngineConfig config = new EngineConfig();
+	//			config.setLogConfig(null, Level.FINE);
+	//
+	//			Platform.startup(config);
+	//			IReportEngineFactory factory = (IReportEngineFactory) Platform
+	//					.createFactoryObject(IReportEngineFactory.EXTENSION_REPORT_ENGINE_FACTORY);
+	//			engine = factory.createReportEngine(config);
+	//			engine.changeLogLevel(Level.WARNING);
+	//
+	//			logger.info("Report engine is initialized");
+	//
+	//			IReportRunnable design = null;
+	//
+	//			/*
+	//			 * Open the report design.
+	//			 */
+	//			try (InputStream rptdesignStream = new ByteArrayInputStream(
+	//					rptdesignXml.getBytes(StandardCharsets.UTF_8))) {
+	//				design = engine.openReportDesign(rptdesignStream);
+	//			}
+	//
+	//			/*
+	//			 * One can also open a design by passing an absolute path to an 
+	//			 * rptdesign file as shown here. This code is commented out and only 
+	//			 * used for testing.
+	//			 */
+	//			//design = engine.openReportDesign(
+	//			//	"/home/jeffreyz/git/obo-birt-reports/birt-reports/tests/400-TestReport04_v1.1.rptdesign");
+	//			//design = engine.openReportDesign("/home/jeffreyz/Desktop/cascade_v3.2.23.rptdesign");
+	//
+	//			/*
+	//			 * Create an engine task for obtaining report parameter definitions.
+	//			 */
+	//			IGetParameterDefinitionTask task = engine.createGetParameterDefinitionTask(design);
+	//			Collection<IParameterDefnBase> params = (Collection<IParameterDefnBase>) task.getParameterDefns(true);
+	//
+	//			/*
+	//			 * Iterate through all parameter entries in "params". These can be 
+	//			 * either IScalarParameterDefn or IParameterGroupDefn objects.
+	//			 */
+	//			for (IParameterDefnBase param : params) {
+	//				if (param instanceof IParameterGroupDefn) {
+	//
+	//					IParameterGroupDefn group = (IParameterGroupDefn) param;
+	//
+	//					/*
+	//					 *  Iterate over each parameter in the parameter group.
+	//					 */
+	//					for (IScalarParameterDefn scalarParameter : (ArrayList<IScalarParameterDefn>) group.getContents()) {
+	//						logger.info("Scalar parameter '{}' from group '{}'", scalarParameter.getName(),
+	//								group.getName());
+	//						/*
+	//						 * Get details about the parameter as a Map and then insert
+	//						 * that Map into the paramDetails Map
+	//						 */
+	//						parameters.put(scalarParameter.getName(),
+	//								ReportUtils.loadParameterDetails(task, scalarParameter, design, group));
+	//					}
+	//
+	//				} else {
+	//
+	//					IScalarParameterDefn scalarParameter = (IScalarParameterDefn) param;
+	//					logger.info("Scalar parameter '{}'", scalarParameter.getName());
+	//					/*
+	//					 * Get details about the parameter as a Map and then insert
+	//					 * that Map into the paramDetails Map
+	//					 */
+	//					parameters.put(scalarParameter.getName(),
+	//							ReportUtils.loadParameterDetails(task, scalarParameter, design, null));
+	//
+	//				}
+	//			}
+	//
+	//			//} catch (BirtException ex) {
+	//			//	logger.error("Exception starting up BIRT platform for parsing parameters in a report:",
+	//			//			ex);
+	//		} finally {
+	//
+	//			/*
+	//			 * Destroy the engine and shutdown the Platform.
+	//			 */
+	//			if (engine != null) {
+	//				engine.destroy();
+	//			}
+	//			Platform.shutdown();
+	//			engine = null;
+	//
+	//			logger.info("Finished");
+	//		}
+	//
+	//		return parameters;
+	//	}
 
 	/**
 	 * Returns a {@link Map<String, Serializable>} containing attributes for 
@@ -222,7 +211,8 @@ public class ReportUtils {
 	 * @param groupCounter
 	 * @return
 	 */
-	private static Map<String, Serializable> loadParameterDetails(
+	//private static Map<String, Serializable> loadParameterDetails(
+	public static Map<String, Serializable> loadParameterDetails(
 			IGetParameterDefinitionTask task,
 			IScalarParameterDefn scalarParameter,
 			IReportRunnable report,

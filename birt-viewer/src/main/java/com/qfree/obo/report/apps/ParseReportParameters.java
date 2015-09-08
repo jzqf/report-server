@@ -10,14 +10,20 @@ import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
-import com.qfree.obo.report.util.ReportUtils;
+import com.qfree.obo.report.ApplicationConfig;
+import com.qfree.obo.report.service.BirtService;
 
 public class ParseReportParameters {
 
 	private static final Logger logger = LoggerFactory.getLogger(ParseReportParameters.class);
 
 	public static void main(String[] args) {
+		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(ApplicationConfig.class);
+		BirtService birtService=(BirtService)context.getBean(BirtService.class);
+		logger.info("birtService = {}", birtService);
+		
 		try {
 
 			/*
@@ -43,7 +49,8 @@ public class ParseReportParameters {
 			/*
 			 * Extract all parameters and their metadata from the rptdesign.
 			 */
-			Map<String, Map<String, Serializable>> paramDetails = ReportUtils.parseReportParams(rptdesignXml);
+			//Map<String, Map<String, Serializable>> paramDetails = ReportUtils.parseReportParams(rptdesignXml);
+			Map<String, Map<String, Serializable>> paramDetails = birtService.parseReportParams(rptdesignXml);
 
 			/*
 			 * Log all details for each parameter extracted from the report
@@ -69,6 +76,8 @@ public class ParseReportParameters {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+
+		context.close();
 	}
 
 }
