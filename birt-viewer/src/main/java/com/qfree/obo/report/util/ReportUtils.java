@@ -203,6 +203,7 @@ public class ReportUtils {
 				engine.destroy();
 			}
 			Platform.shutdown();
+			engine = null;
 
 			logger.info("Finished");
 		}

@@ -343,6 +343,15 @@ public class ReportVersionController extends AbstractBaseController {
 			//} catch (InvalidPathException e) {
 			//	throw new RestApiException(RestError.INTERNAL_SERVER_ERROR_REPORT_FOLDER_MISSING, e);
 		} catch (IOException e) {
+			/*
+			 * TODO Treat IOException better:
+			 * This exception can be thrown either when working with the 
+			 * BufferedReader above or from the call to 
+			 * reportParameterService.createParametersForReport(reportVersion)
+			 * above. Consider catching the IOException from 
+			 * createParametersForReport in such a way that I can report a
+			 * more detailed description of the error?
+			 */
 			throw new RestApiException(RestError.INTERNAL_SERVER_ERROR_RPTDESIGN_SYNC, e);
 		}
 

@@ -2,9 +2,13 @@ package com.qfree.obo.report.service;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+
+import javax.ws.rs.core.UriInfo;
 
 import org.eclipse.birt.core.exception.BirtException;
 import org.eclipse.birt.report.engine.api.IParameterDefn;
@@ -27,8 +31,11 @@ import com.qfree.obo.report.dto.ParameterGroupResource;
 import com.qfree.obo.report.dto.ReportParameterResource;
 import com.qfree.obo.report.dto.ReportVersionResource;
 import com.qfree.obo.report.dto.RestErrorResource.RestError;
+import com.qfree.obo.report.dto.SelectionListValueCollectionResource;
+import com.qfree.obo.report.dto.SelectionListValueResource;
 import com.qfree.obo.report.exceptions.RestApiException;
 import com.qfree.obo.report.rest.server.RestUtils;
+import com.qfree.obo.report.rest.server.RestUtils.RestApiVersion;
 import com.qfree.obo.report.util.ReportUtils;
 
 @Component
@@ -299,5 +306,28 @@ public class ReportParameterService {
 		}
 
 		return parameters;
+	}
+
+	/**
+	 * Returns a SelectionListValueCollectionResource representing the dynamic 
+	 * selection list for a report parameter.
+	 * 
+	 * @param reportParameter
+	 * @param dynamicListKeys
+	 * @param rptdesign
+	 * @param uriInfo
+	 * @param queryParams
+	 * @param apiVersion
+	 * @return
+	 */
+	public SelectionListValueCollectionResource getDynamicSelectionList(ReportParameter reportParameter,
+			List<String> dynamicListKeys, String rptdesign, UriInfo uriInfo, Map<String, List<String>> queryParams,
+			RestApiVersion apiVersion) {
+
+
+		SelectionListValueCollectionResource selectionListValueCollectionResource = new SelectionListValueCollectionResource(
+				new ArrayList<SelectionListValueResource>(),
+				SelectionListValue.class, uriInfo, queryParams, apiVersion);
+		return selectionListValueCollectionResource;
 	}
 }
