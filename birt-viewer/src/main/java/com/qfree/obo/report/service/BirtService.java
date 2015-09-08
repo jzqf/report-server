@@ -81,7 +81,7 @@ public class BirtService {
 	}
 
 	public Map<String, Map<String, Serializable>> parseReportParams(String rptdesignXml)
-			throws IOException, BirtException {
+			throws IOException, BirtException, RptdesignOpenFromStreamException {
 
 		/*
 		 * A LinkedHashMap is used here so that the order of the parameters 
@@ -92,29 +92,21 @@ public class BirtService {
 		Map<String, Map<String, Serializable>> parameters = new LinkedHashMap<>();
 
 		IReportEngine engine = getBirtReportEngine();
-
-		/*
-		 * Open the report design.
-		 */
-		IReportRunnable design = null;
-		try (InputStream rptdesignStream = new ByteArrayInputStream(
-				rptdesignXml.getBytes(StandardCharsets.UTF_8))) {
-			design = engine.openReportDesign(rptdesignStream);
-		}
+		IReportRunnable runnableReportDesign = openReportDesign(rptdesignXml, engine);
 
 		/*
 		 * One can also open a design by passing an absolute path to an 
 		 * rptdesign file as shown here. This code is commented out and only 
 		 * used for testing.
 		 */
-		//design = engine.openReportDesign(
+		//runnableReportDesign = engine.openReportDesign(
 		//	"/home/jeffreyz/git/obo-birt-reports/birt-reports/tests/400-TestReport04_v1.1.rptdesign");
-		//design = engine.openReportDesign("/home/jeffreyz/Desktop/cascade_v3.2.23.rptdesign");
+		//runnableReportDesign = engine.openReportDesign("/home/jeffreyz/Desktop/cascade_v3.2.23.rptdesign");
 
 		/*
 		 * Create an engine task for obtaining report parameter definitions.
 		 */
-		IGetParameterDefinitionTask task = engine.createGetParameterDefinitionTask(design);
+		IGetParameterDefinitionTask task = engine.createGetParameterDefinitionTask(runnableReportDesign);
 		Collection<IParameterDefnBase> params = (Collection<IParameterDefnBase>) task.getParameterDefns(true);
 
 		/*
@@ -137,7 +129,7 @@ public class BirtService {
 					 * that Map into the paramDetails Map
 					 */
 					parameters.put(scalarParameter.getName(),
-							BirtService.loadParameterDetails(task, scalarParameter, design, group));
+							BirtService.loadParameterDetails(task, scalarParameter, runnableReportDesign, group));
 				}
 
 			} else {
@@ -149,7 +141,7 @@ public class BirtService {
 				 * that Map into the paramDetails Map
 				 */
 				parameters.put(scalarParameter.getName(),
-						BirtService.loadParameterDetails(task, scalarParameter, design, null));
+						BirtService.loadParameterDetails(task, scalarParameter, runnableReportDesign, null));
 
 			}
 		}
@@ -162,26 +154,16 @@ public class BirtService {
 					throws RptdesignOpenFromStreamException, BirtException, DynamicSelectionListKeyException {
 
 		IReportEngine engine = getBirtReportEngine();
-
-		/*
-		 * Open the report design.
-		 */
-		IReportRunnable runnableReportDesign = null;
-		try (InputStream rptdesignStream = new ByteArrayInputStream(
-				rptdesignXml.getBytes(StandardCharsets.UTF_8))) {
-			runnableReportDesign = engine.openReportDesign(rptdesignStream);
-		} catch (EngineException | IOException e) {
-			throw new RptdesignOpenFromStreamException("rptdesign = " + rptdesignXml, e);
-		}
+		IReportRunnable runnableReportDesign = openReportDesign(rptdesignXml, engine);
 
 		/*
 		 * One can also open a design by passing an absolute path to an 
 		 * rptdesign file as shown here. This code is commented out and only 
 		 * used for testing.
 		 */
-		//design = engine.openReportDesign(
+		//runnableReportDesign = engine.openReportDesign(
 		//	"/home/jeffreyz/git/obo-birt-reports/birt-reports/tests/400-TestReport04_v1.1.rptdesign");
-		//design = engine.openReportDesign("/home/jeffreyz/Desktop/cascade_v3.2.23.rptdesign");
+		//runnableReportDesign = engine.openReportDesign("/home/jeffreyz/Desktop/cascade_v3.2.23.rptdesign");
 
 		/*
 		 * Create an engine task for obtaining the report parameter definition
@@ -292,6 +274,29 @@ public class BirtService {
 		}
 
 		return dynamicList;
+	}
+
+	/**
+	 * Opens a report design. 
+	 * 
+	 * The XML content of an rptdesign file is passed as a String, along with
+	 * a report engine.
+	 * 
+	 * @param rptdesignXml
+	 * @param engine
+	 * @return
+	 * @throws RptdesignOpenFromStreamException
+	 */
+	private IReportRunnable openReportDesign(String rptdesignXml, IReportEngine engine)
+			throws RptdesignOpenFromStreamException {
+		IReportRunnable runnableReportDesign = null;
+		try (InputStream rptdesignStream = new ByteArrayInputStream(
+				rptdesignXml.getBytes(StandardCharsets.UTF_8))) {
+			runnableReportDesign = engine.openReportDesign(rptdesignStream);
+		} catch (EngineException | IOException e) {
+			throw new RptdesignOpenFromStreamException("rptdesign = " + rptdesignXml, e);
+		}
+		return runnableReportDesign;
 	}
 
 	/**

@@ -49,6 +49,7 @@ import com.qfree.obo.report.dto.ReportVersionResource;
 import com.qfree.obo.report.dto.ResourcePath;
 import com.qfree.obo.report.dto.RestErrorResource.RestError;
 import com.qfree.obo.report.exceptions.RestApiException;
+import com.qfree.obo.report.exceptions.RptdesignOpenFromStreamException;
 import com.qfree.obo.report.rest.server.RestUtils.RestApiVersion;
 import com.qfree.obo.report.service.ReportParameterService;
 import com.qfree.obo.report.service.ReportSyncService;
@@ -143,7 +144,7 @@ public class ReportVersionController extends AbstractBaseController {
 			@QueryParam(ResourcePath.EXPAND_QP_NAME) final List<String> expand,
 			@QueryParam(ResourcePath.SHOWALL_QP_NAME) final List<String> showAll,
 			@Context final ServletContext servletContext,
-			@Context final UriInfo uriInfo) throws IOException, BirtException {
+			@Context final UriInfo uriInfo) throws IOException, BirtException, RptdesignOpenFromStreamException {
 		Map<String, List<String>> queryParams = new HashMap<>();
 		queryParams.put(ResourcePath.EXPAND_QP_KEY, expand);
 		queryParams.put(ResourcePath.SHOWALL_QP_KEY, showAll);
@@ -238,7 +239,7 @@ public class ReportVersionController extends AbstractBaseController {
 			@QueryParam(ResourcePath.SHOWALL_QP_NAME) final List<String> showAll,
 			@Context final ServletContext servletContext,
 			@Context final ServletConfig servletConfig,
-			@Context final UriInfo uriInfo) throws BirtException {
+			@Context final UriInfo uriInfo) throws BirtException, RptdesignOpenFromStreamException {
 		Map<String, List<String>> queryParams = new HashMap<>();
 		queryParams.put(ResourcePath.EXPAND_QP_KEY, expand);
 		queryParams.put(ResourcePath.SHOWALL_QP_KEY, showAll);

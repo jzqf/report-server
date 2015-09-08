@@ -155,7 +155,7 @@ public class ReportParameterService {
 
 	@Transactional
 	public Map<String, Map<String, Serializable>> createParametersForReport(ReportVersion reportVersion)
-			throws IOException, BirtException {
+			throws IOException, BirtException, RptdesignOpenFromStreamException {
 
 		/*
 		 * Extract all parameters and their metadata from the rptdesign.
