@@ -393,7 +393,9 @@ public class BirtService {
 		parameter.put("DataType", scalarParameter.getDataType());
 		parameter.put("DefaultValue", scalarParameter.getDefaultValue());
 		logger.debug("scalarParameter.getDefaultValue() = {}, class = {}",
-				scalarParameter.getDefaultValue(), scalarParameter.getDefaultValue().getClass().getSimpleName());
+				scalarParameter.getDefaultValue(),
+				scalarParameter.getDefaultValue() != null ? scalarParameter.getDefaultValue().getClass().getSimpleName()
+						: null);
 		parameter.put("PromptText", scalarParameter.getPromptText());
 		/*
 		 * The locale-specific help text. The locale used is the locale in the 

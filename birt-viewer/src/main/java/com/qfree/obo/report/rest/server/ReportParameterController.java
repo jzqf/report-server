@@ -260,7 +260,7 @@ public class ReportParameterController extends AbstractBaseController {
 	 *   ?expand=selectionListValues
 	 * 
 	 * @Transactional is used to avoid org.hibernate.LazyInitializationException
-	 * being thrown when evaluating reportParameter.getSelectionListValue's().
+	 * being thrown when evaluating reportParameter.getSelectionListValues().
 	 */
 	@Transactional
 	@Path("/{id}" + ResourcePath.SELECTIONLISTVALUES_PATH)
