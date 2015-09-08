@@ -319,7 +319,7 @@ public class ReportParameterService {
 	 * selection list for a report parameter.
 	 * 
 	 * @param reportParameter
-	 * @param dynamicListKeys
+	 * @param parentParamValues
 	 * @param rptdesign
 	 * @param uriInfo
 	 * @param queryParams
@@ -330,12 +330,12 @@ public class ReportParameterService {
 	 * @throws DynamicSelectionListKeyException 
 	 */
 	public SelectionListValueCollectionResource getDynamicSelectionList(ReportParameter reportParameter,
-			List<String> dynamicListKeys, String rptdesign, UriInfo uriInfo, Map<String, List<String>> queryParams,
+			List<String> parentParamValues, String rptdesign, UriInfo uriInfo, Map<String, List<String>> queryParams,
 			RestApiVersion apiVersion)
 					throws RptdesignOpenFromStreamException, BirtException, DynamicSelectionListKeyException {
 
 		Map<Object, String> dynamicList = birtService.getReportParameterDynamicSelectionList(
-				reportParameter.getName(), dynamicListKeys, rptdesign);
+				reportParameter.getName(), parentParamValues, rptdesign);
 		logger.debug("dynamicList = {}", dynamicList);
 
 		/*

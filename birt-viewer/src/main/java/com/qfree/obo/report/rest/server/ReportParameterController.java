@@ -271,7 +271,7 @@ public class ReportParameterController extends AbstractBaseController {
 			@HeaderParam("Accept") final String acceptHeader,
 			@QueryParam(ResourcePath.EXPAND_QP_NAME) final List<String> expand,
 			@QueryParam(ResourcePath.SHOWALL_QP_NAME) final List<String> showAll,
-			@QueryParam("dynamicListKey") final List<String> dynamicListKeys,
+			@QueryParam(ResourcePath.PARENTPARAMVALUE_QP_NAME) final List<String> parentParamValues,
 			@Context final UriInfo uriInfo)
 					throws RptdesignOpenFromStreamException, BirtException, DynamicSelectionListKeyException {
 		Map<String, List<String>> queryParams = new HashMap<>();
@@ -299,10 +299,10 @@ public class ReportParameterController extends AbstractBaseController {
 			/*
 			 * The selection list is dynamic. 
 			 */
-			logger.info("dynamicListKeys = {}", dynamicListKeys);
+			logger.info("dynamicListKeys = {}", parentParamValues);
 			String rptdesign = reportParameter.getReportVersion().getRptdesign();
 			selectionListValueCollectionResource = reportParameterService.getDynamicSelectionList(
-					reportParameter, dynamicListKeys, rptdesign, uriInfo, queryParams, apiVersion);
+					reportParameter, parentParamValues, rptdesign, uriInfo, queryParams, apiVersion);
 		} else {
 			/*
 			 * Either the selection list is static or there is no selection list

@@ -122,6 +122,13 @@ public enum ResourcePath {
 	public static final String ROLE_SHOWALL_PARAM = ROLE_EXPAND_PARAM;
 	public static final String SELECTIONLISTVALUE_SHOWALL_PARAM = SELECTIONLISTVALUE_EXPAND_PARAM;
 
+	/*
+	 * This is the name of query parameter used to specify the value(s) of
+	 * "parent" cascading parameters that are needed to fill in the dynamic
+	 * selection list for the next parameter in the group.
+	 */
+	public static final String PARENTPARAMVALUE_QP_NAME = "parentParam";
+
 	private final String path;
 	private final String expandParam;
 	private final String showAllParam;
