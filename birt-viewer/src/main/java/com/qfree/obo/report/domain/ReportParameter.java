@@ -55,6 +55,23 @@ public class ReportParameter implements Serializable {
 			columnDefinition = "uuid DEFAULT uuid_generate_v4()")
 	private UUID reportParameterId;
 
+	@ManyToOne
+	/*
+	 * If columnDefinition="uuid" is omitted here and the database schema is 
+	 * created by Hibernate (via hibernate.hbm2ddl.auto="create"), then the 
+	 * PostgreSQL column definition includes "DEFAULT uuid_generate_v4()", which
+	 * is not what is wanted.
+	 */
+	@NotNull
+	@JoinColumn(name = "report_version_id", nullable = false,
+			foreignKey = @ForeignKey(name = "fk_reportparameter_report") ,
+			columnDefinition = "uuid")
+	private ReportVersion reportVersion;
+	//	@JoinColumn(name = "report_id", nullable = false,
+	//			foreignKey = @ForeignKey(name = "fk_reportparameter_report"),
+	//			columnDefinition = "uuid")
+	//	private Report report;
+
 	/**
 	 * The name of the report parameter as defined in the BIRT report.
 	 * 
@@ -87,23 +104,6 @@ public class ReportParameter implements Serializable {
 	@NotNull
 	@Column(name = "order_index", nullable = false)
 	private Integer orderIndex;
-
-	@ManyToOne
-	/*
-	 * If columnDefinition="uuid" is omitted here and the database schema is 
-	 * created by Hibernate (via hibernate.hbm2ddl.auto="create"), then the 
-	 * PostgreSQL column definition includes "DEFAULT uuid_generate_v4()", which
-	 * is not what is wanted.
-	 */
-	@NotNull
-	@JoinColumn(name = "report_version_id", nullable = false,
-			foreignKey = @ForeignKey(name = "fk_reportparameter_report") ,
-			columnDefinition = "uuid")
-	private ReportVersion reportVersion;
-	//	@JoinColumn(name = "report_id", nullable = false,
-	//			foreignKey = @ForeignKey(name = "fk_reportparameter_report"),
-	//			columnDefinition = "uuid")
-	//	private Report report;
 
 	/*
 	 * Possible values for "DataType" are:

@@ -27,10 +27,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.qfree.obo.report.db.ParameterGroupRepository;
 import com.qfree.obo.report.db.ReportParameterRepository;
+import com.qfree.obo.report.db.ReportVersionRepository;
+import com.qfree.obo.report.domain.ParameterGroup;
 import com.qfree.obo.report.domain.ReportParameter;
+import com.qfree.obo.report.domain.ReportVersion;
 import com.qfree.obo.report.dto.ReportParameterResource;
 import com.qfree.obo.report.dto.ReportParameterResource;
+import com.qfree.obo.report.dto.ReportVersionResource;
 import com.qfree.obo.report.dto.ResourcePath;
 import com.qfree.obo.report.dto.SelectionListValueCollectionResource;
 import com.qfree.obo.report.exceptions.DynamicSelectionListKeyException;
@@ -46,62 +51,75 @@ public class ReportParameterController extends AbstractBaseController {
 
 	private final ReportParameterRepository reportParameterRepository;
 	private final ReportParameterService reportParameterService;
+	private final ReportVersionRepository reportVersionRepository;
+	private final ParameterGroupRepository parameterGroupRepository;
 
 	@Autowired
 	public ReportParameterController(
 			ReportParameterRepository reportParameterRepository,
-			ReportParameterService reportParameterService) {
+			ReportParameterService reportParameterService,
+			ReportVersionRepository reportVersionRepository,
+			ParameterGroupRepository parameterGroupRepository) {
 		this.reportParameterRepository = reportParameterRepository;
 		this.reportParameterService = reportParameterService;
+		this.reportVersionRepository = reportVersionRepository;
+		this.parameterGroupRepository = parameterGroupRepository;
 	}
 
-	///*
-	// * This endpoint is commented out because there should be no need to 
-	// * retrieve *all* ReportParameter's via the ReST API. Instead, the 
+	/// *
+	// * This endpoint is commented out because there should be no need to
+	// * retrieve *all* ReportParameter's via the ReST API. Instead, the
 	// * ReportVersionController can be used to retrieve all report parameters
 	// * assiciated with a single ReportVersion entity. Or, the endpoint below
-	// * associated with the getById(...) method can be used to retrieve a single
+	// * associated with the getById(...) method can be used to retrieve a
+	/// single
 	// * specified ReportParameter.
-	// * 
+	// *
 	// * This endpoint can be tested with:
-	// * 
-	// *   $ mvn clean spring-boot:run
-	// *   $ curl -i -H "Accept: application/json;v=1" -X GET \
-	// *   http://localhost:8080/rest/reportParameters?expand=reportParameters
-	// * 
-	// * @Transactional is used to avoid org.hibernate.LazyInitializationException
+	// *
+	// * $ mvn clean spring-boot:run
+	// * $ curl -i -H "Accept: application/json;v=1" -X GET \
+	// * http://localhost:8080/rest/reportParameters?expand=reportParameters
+	// *
+	// * @Transactional is used to avoid
+	/// org.hibernate.LazyInitializationException
 	// * being thrown when evaluating reportParameter.getSelectionListValues().
 	// */
-	//@Transactional
-	//@GET
-	//@Produces(MediaType.APPLICATION_JSON)
-	////	public List<ReportParameterResource> getList(
-	//public ReportParameterCollectionResource getList(
-	//		@HeaderParam("Accept") final String acceptHeader,
-	//		@QueryParam(ResourcePath.EXPAND_QP_NAME) final List<String> expand,
-	//		@QueryParam(ResourcePath.SHOWALL_QP_NAME) final List<String> showAll,
-	//		@Context final UriInfo uriInfo) {
-	//	Map<String, List<String>> queryParams = new HashMap<>();
-	//	queryParams.put(ResourcePath.EXPAND_QP_KEY, expand);
-	//	queryParams.put(ResourcePath.SHOWALL_QP_KEY, showAll);
-	//	RestApiVersion apiVersion = RestUtils.extractAPIVersion(acceptHeader, RestApiVersion.v1);
+	// @Transactional
+	// @GET
+	// @Produces(MediaType.APPLICATION_JSON)
+	//// public List<ReportParameterResource> getList(
+	// public ReportParameterCollectionResource getList(
+	// @HeaderParam("Accept") final String acceptHeader,
+	// @QueryParam(ResourcePath.EXPAND_QP_NAME) final List<String> expand,
+	// @QueryParam(ResourcePath.SHOWALL_QP_NAME) final List<String> showAll,
+	// @Context final UriInfo uriInfo) {
+	// Map<String, List<String>> queryParams = new HashMap<>();
+	// queryParams.put(ResourcePath.EXPAND_QP_KEY, expand);
+	// queryParams.put(ResourcePath.SHOWALL_QP_KEY, showAll);
+	// RestApiVersion apiVersion = RestUtils.extractAPIVersion(acceptHeader,
+	/// RestApiVersion.v1);
 	//
-	//	List<ReportParameter> reportParameters = null;
-	//	//if (RestUtils.FILTER_INACTIVE_RECORDS && !ResourcePath.showAll(ReportParameter.class, showAll)) {
-	//	//	reportParameters = reportParameterRepository.findByActiveTrue();
-	//	//} else {
-	//	reportParameters = reportParameterRepository.findAll();
-	//	//}
-	//	List<ReportParameterResource> reportParameterResources = new ArrayList<>(reportParameters.size());
-	//	for (ReportParameter reportParameter : reportParameters) {
-	//		reportParameterResources
-	//				.add(new ReportParameterResource(reportParameter, uriInfo, queryParams, apiVersion));
-	//	}
-	//	//		return reportParameterResources;
-	//	return new ReportParameterCollectionResource(reportParameterResources, ReportParameter.class, uriInfo,
-	//			queryParams,
-	//			apiVersion);
-	//}
+	// List<ReportParameter> reportParameters = null;
+	// //if (RestUtils.FILTER_INACTIVE_RECORDS &&
+	/// !ResourcePath.showAll(ReportParameter.class, showAll)) {
+	// // reportParameters = reportParameterRepository.findByActiveTrue();
+	// //} else {
+	// reportParameters = reportParameterRepository.findAll();
+	// //}
+	// List<ReportParameterResource> reportParameterResources = new
+	/// ArrayList<>(reportParameters.size());
+	// for (ReportParameter reportParameter : reportParameters) {
+	// reportParameterResources
+	// .add(new ReportParameterResource(reportParameter, uriInfo, queryParams,
+	/// apiVersion));
+	// }
+	// // return reportParameterResources;
+	// return new ReportParameterCollectionResource(reportParameterResources,
+	/// ReportParameter.class, uriInfo,
+	// queryParams,
+	// apiVersion);
+	// }
 
 	/*
 	 * This endpoint is commented out because there should be no need to create
@@ -112,40 +130,43 @@ public class ReportParameterController extends AbstractBaseController {
 	 * 
 	 * This endpoint can be tested with:
 	 * 
-	 *   $ mvn clean spring-boot:run
-	 *   $ curl -iH "Accept: application/json;v=1" -H "Content-Type: application/json" -X POST -d \
-	 *   '{...}' \
-	 *   http://localhost:8080/rest/reportParameters
+	 * $ mvn clean spring-boot:run $ curl -iH "Accept: application/json;v=1" -H
+	 * "Content-Type: application/json" -X POST -d \ '{...}' \
+	 * http://localhost:8080/rest/reportParameters
 	 */
-	//	@POST
-	//	@Consumes(MediaType.APPLICATION_JSON)
-	//	@Produces(MediaType.APPLICATION_JSON)
-	//	public Response create(
-	//			ReportParameterResource reportParameterResource,
-	//			@HeaderParam("Accept") final String acceptHeader,
-	//			@QueryParam(ResourcePath.EXPAND_QP_NAME) final List<String> expand,
-	//			@QueryParam(ResourcePath.SHOWALL_QP_NAME) final List<String> showAll,
-	//			@Context final UriInfo uriInfo) {
-	//		Map<String, List<String>> queryParams = new HashMap<>();
-	//		queryParams.put(ResourcePath.EXPAND_QP_KEY, expand);
-	//		queryParams.put(ResourcePath.SHOWALL_QP_KEY, showAll);
-	//		RestApiVersion apiVersion = RestUtils.extractAPIVersion(acceptHeader, RestApiVersion.v1);
+	// @POST
+	// @Consumes(MediaType.APPLICATION_JSON)
+	// @Produces(MediaType.APPLICATION_JSON)
+	// public Response create(
+	// ReportParameterResource reportParameterResource,
+	// @HeaderParam("Accept") final String acceptHeader,
+	// @QueryParam(ResourcePath.EXPAND_QP_NAME) final List<String> expand,
+	// @QueryParam(ResourcePath.SHOWALL_QP_NAME) final List<String> showAll,
+	// @Context final UriInfo uriInfo) {
+	// Map<String, List<String>> queryParams = new HashMap<>();
+	// queryParams.put(ResourcePath.EXPAND_QP_KEY, expand);
+	// queryParams.put(ResourcePath.SHOWALL_QP_KEY, showAll);
+	// RestApiVersion apiVersion = RestUtils.extractAPIVersion(acceptHeader,
+	// RestApiVersion.v1);
 	//
-	//		ReportParameter reportParameter = reportParameterService.saveNewFromResource(reportParameterResource);
-	//		if (RestUtils.AUTO_EXPAND_PRIMARY_RESOURCES) {
-	//			addToExpandList(expand, ReportParameter.class);
-	//		}
-	//		ReportParameterResource resource = new ReportParameterResource(reportParameter, uriInfo, queryParams,
-	//				apiVersion);
-	//		return created(resource);
-	//	}
+	// ReportParameter reportParameter =
+	// reportParameterService.saveNewFromResource(reportParameterResource);
+	// if (RestUtils.AUTO_EXPAND_PRIMARY_RESOURCES) {
+	// addToExpandList(expand, ReportParameter.class);
+	// }
+	// ReportParameterResource resource = new
+	// ReportParameterResource(reportParameter, uriInfo, queryParams,
+	// apiVersion);
+	// return created(resource);
+	// }
 
 	/*
 	 * This endpoint can be tested with:
 	 * 
-	 *   $ mvn clean spring-boot:run
-	 *   $ curl -i -H "Accept: application/json;v=1" -X GET \
-	 *   http://localhost:8080/rest/reportParameters/c7f1d394-9814-4ede-bb01-2700187d79ca
+	 * $ mvn clean spring-boot:run $ curl -i -H "Accept: application/json;v=1"
+	 * -X GET \
+	 * http://localhost:8080/rest/reportParameters/c7f1d394-9814-4ede-bb01-
+	 * 2700187d79ca
 	 * 
 	 * @Transactional is used to avoid org.hibernate.LazyInitializationException
 	 * being thrown when evaluating reportParameter.getSelectionListValues().
@@ -178,21 +199,18 @@ public class ReportParameterController extends AbstractBaseController {
 	/*
 	 * This endpoint can be tested with:
 	 * 
-	 *   $ mvn clean spring-boot:run
-	 *   $ curl -iH "Accept: application/json;v=1" -H "Content-Type: application/json" -X PUT -d \
-	 *   '{"reportVersion":{"reportVersionId":"7ff1da11-a229-45c5-90be-79417a628125"},\
-	 *   "orderIndex":999,\
-	 *   "controlType":0,\
-	 *   "promptText":"New prompt text",\
-	 *   "required":false,\
-	 *   "defaultValue":"new default value",\
-	 *   "displayName":"new display name",\
-	 *   "helpText":"new help text",\
-	 *   "displayFormat":"new display format",\
-	 *   "alignment":3,\
-	 *   "allowNewValues":true,\
-	 *   "parameterGroup":{"parameterGroupId":"abc81f46-3940-44bb-a401-d937c55a10bc"}}' \
-	 *   http://localhost:8080/rest/reportParameters/fecd8f20-5ff0-4b0f-ae0c-0829cea1c938
+	 * $ mvn clean spring-boot:run $ curl -iH "Accept: application/json;v=1" -H
+	 * "Content-Type: application/json" -X PUT -d \
+	 * '{"reportVersion":{"reportVersionId":
+	 * "7ff1da11-a229-45c5-90be-79417a628125"},"orderIndex":999,\
+	 * "controlType":0,"promptText":"New prompt text","required":false,\
+	 * "defaultValue":"new default value","displayName":"new display name",\
+	 * "helpText":"new help text","displayFormat":"new display format",\
+	 * "alignment":3,"allowNewValues":true,\
+	 * "parameterGroup":{"parameterGroupId":
+	 * "abc81f46-3940-44bb-a401-d937c55a10bc"}}' \
+	 * http://localhost:8080/rest/reportParameters/fecd8f20-5ff0-4b0f-ae0c-
+	 * 0829cea1c938
 	 * 
 	 * All UUID values must be replaced here with actual resource id's from the
 	 * report server database, of course.
@@ -225,22 +243,111 @@ public class ReportParameterController extends AbstractBaseController {
 		RestUtils.ifNullThen404(reportParameter, ReportParameter.class, "reportId", id.toString());
 
 		/*
-		 * Ensure that some of the entity's attributes are not changed. These 
-		 * attributes should not appear in the PUT data, but if they do, their
-		 * value will not be used because it will be overridden here.
+		 * Treat attributes of reportParameterResource that are effectively
+		 * required. These attributes can be omitted in the PUT data, but in
+		 * that case they are then set here to the CURRENT values from the
+		 * ReportParameter entity. These are that attributes that are required,
+		 * but if their value does not need to be changed, they do not need to 
+		 * be included in the PUT data.
+		 */
+		if (reportParameterResource.getReportVersionResource() == null) {
+			/*
+			 * Construct a ReportVersionResource to specify the CURRENTLY
+			 * selected ReportVersion.
+			 */
+			UUID currentReportVersionId = reportParameter.getReportVersion().getReportVersionId();
+			ReportVersionResource reportVersionResource = new ReportVersionResource();
+			reportVersionResource.setReportVersionId(currentReportVersionId);
+			reportParameterResource.setReportVersionResource(reportVersionResource);
+		} else {
+			/*
+			 * If a "reportVersionResource" attribute *is* supplied in the PUT
+			 * data, it *must* have a value set for its "reportVersionId"
+			 * attribute...
+			 */
+			RestUtils.ifAttrNullOrBlankThen403(reportParameterResource.getReportVersionResource().getReportVersionId(),
+					ReportVersion.class, "reportVersionId");
+			/*
+			 * ... and the value for "reportVersionId" must correspond to an
+			 * existing ReportVersion entity.
+			 */
+			UUID reportVersionId=reportParameterResource.getReportVersionResource().getReportVersionId();
+			RestUtils.ifNullThen404(reportVersionRepository.findOne(reportVersionId), ReportVersion.class, 
+					"reportVersionId", reportVersionId.toString());
+		}
+		if (reportParameterResource.getOrderIndex() == null) {
+			reportParameterResource.setOrderIndex(reportParameter.getOrderIndex());
+		}
+		if (reportParameterResource.getControlType() == null) {
+			reportParameterResource.setControlType(reportParameter.getControlType());
+		}
+		if (reportParameterResource.getValueConcealed() == null) {
+			reportParameterResource.setValueConcealed(reportParameter.getValueConcealed());
+		}
+		if (reportParameterResource.getAllowNewValues() == null) {
+			reportParameterResource.setAllowNewValues(reportParameter.getAllowNewValues());
+		}
+		if (reportParameterResource.getAlignment() == null) {
+			reportParameterResource.setAlignment(reportParameter.getAlignment());
+		}
+		if (reportParameterResource.getPromptText() == null) {
+			reportParameterResource.setPromptText(reportParameter.getPromptText());
+		}
+
+		/*
+		 * The values for the following attributes cannot be changed. These
+		 * attributes should not appear in the PUT data, but if any do, their
+		 * values will not be used because they will be overridden here by
+		 * forcing their values to be the same as the current value stored for
+		 * the ReportParameter entity.
 		 */
 		reportParameterResource.setReportParameterId(reportParameter.getReportParameterId());
 		reportParameterResource.setName(reportParameter.getName());
 		reportParameterResource.setDataType(reportParameter.getDataType());
+		reportParameterResource.setRequired(reportParameter.getRequired());
 		reportParameterResource.setMultivalued(reportParameter.getMultivalued());
 		reportParameterResource.setHidden(reportParameter.getHidden());
-		reportParameterResource.setValueConcealed(reportParameter.getValueConcealed());
 		reportParameterResource.setDisplayInFixedOrder(reportParameter.getDisplayInFixedOrder());
 		reportParameterResource.setParameterType(reportParameter.getParameterType());
-		reportParameterResource.setAutoSuggestThreshold(reportParameter.getAutoSuggestThreshold());
 		reportParameterResource.setSelectionListType(reportParameter.getSelectionListType());
+		reportParameterResource.setAutoSuggestThreshold(reportParameter.getAutoSuggestThreshold());
 		reportParameterResource.setValueExpr(reportParameter.getValueExpr());
 		reportParameterResource.setCreatedOn(reportParameter.getCreatedOn());
+
+		/*
+		 * The values of the following attributes be *cleared* if they do not
+		 * appear in the PUT data. These are attributes where SQL NULL is a
+		 * legal value in the underlying database [report_parameter] table.
+		 * 
+		 *   defaultValue 
+		 *   displayFormat 
+		 *   parameterGroup 
+		 *   displayName 
+		 *   helpText
+		 */
+
+		/*
+		 * Although the parameterGroup attribute can be omitted from the PUT
+		 * data, if it *is* present, the ParameterGroupResource resource *must*
+		 * have a value for its parameterGroupId attribute.
+		 */
+		if (reportParameterResource.getParameterGroupResource() != null) {
+			/*
+			 * If a "reportParameterResource" attribute *is* supplied in the PUT
+			 * data, it *must* have a value set for its "reportParameterId"
+			 * attribute...
+			 */
+			RestUtils.ifAttrNullOrBlankThen403(
+					reportParameterResource.getParameterGroupResource().getParameterGroupId(),
+					ParameterGroup.class, "parameterGroupId");
+			/*
+			 * ... and the value for "parameterGroupId" must correspond to an
+			 * existing ParameterGroup entity.
+			 */
+			UUID parameterGroupId = reportParameterResource.getParameterGroupResource().getParameterGroupId();
+			RestUtils.ifNullThen404(parameterGroupRepository.findOne(parameterGroupId), ParameterGroup.class,
+					"parameterGroupId", parameterGroupId.toString());
+		}
 
 		/*
 		 * Save updated entity.
@@ -251,13 +358,13 @@ public class ReportParameterController extends AbstractBaseController {
 	}
 
 	/*
-	 * Return the SelectionListValue's associated with a single ReportParameter 
+	 * Return the SelectionListValue's associated with a single ReportParameter
 	 * that is specified by its id. This endpoint can be tested with:
 	 * 
-	 *   $ mvn clean spring-boot:run
-	 *   $ curl -i -H "Accept: application/json;v=1" -X GET \
-	 *   http://localhost:8080/rest/reportParameters/0955ab6e-6ce6-4b90-a60c-aa0548e4d358/selectionListValues\
-	 *   ?expand=selectionListValues
+	 * $ mvn clean spring-boot:run $ curl -i -H "Accept: application/json;v=1"
+	 * -X GET \
+	 * http://localhost:8080/rest/reportParameters/0955ab6e-6ce6-4b90-a60c-
+	 * aa0548e4d358/selectionListValues\ ?expand=selectionListValues
 	 * 
 	 * @Transactional is used to avoid org.hibernate.LazyInitializationException
 	 * being thrown when evaluating reportParameter.getSelectionListValues().
@@ -283,21 +390,21 @@ public class ReportParameterController extends AbstractBaseController {
 		RestUtils.ifNullThen404(reportParameter, ReportParameter.class, "reportParameterId", id.toString());
 
 		/*
-		 * Create a SelectionListValueCollectionResource to represent the 
+		 * Create a SelectionListValueCollectionResource to represent the
 		 * selection list values. If the selection list is dynamic, i.e., it
-		 * must be generated by running a query that is represented by a data 
+		 * must be generated by running a query that is represented by a data
 		 * source specified in the rptdesign file, then it is necessary to use
 		 * the BIRT API to request these values.
 		 * 
 		 * If, on the other hand, the selection list is static or there is no
 		 * selection list at all, then it is a simple matter of creating a
 		 * SelectionListValueCollectionResource from SelectionListValue entities
-		 * stored in the report server database. 
+		 * stored in the report server database.
 		 */
 		SelectionListValueCollectionResource selectionListValueCollectionResource = null;
 		if (reportParameter.getSelectionListType().equals(IParameterDefn.SELECTION_LIST_DYNAMIC)) {
 			/*
-			 * The selection list is dynamic. 
+			 * The selection list is dynamic.
 			 */
 			logger.info("dynamicListKeys = {}", parentParamValues);
 			String rptdesign = reportParameter.getReportVersion().getRptdesign();
@@ -306,8 +413,8 @@ public class ReportParameterController extends AbstractBaseController {
 		} else {
 			/*
 			 * Either the selection list is static or there is no selection list
-			 * at all. It is a simple matter of returning a 
-			 * SelectionListValueCollectionResource based on SelectionListValue 
+			 * at all. It is a simple matter of returning a
+			 * SelectionListValueCollectionResource based on SelectionListValue
 			 * entities stored in the report server database that are linked to
 			 * the specified report parameter.
 			 */

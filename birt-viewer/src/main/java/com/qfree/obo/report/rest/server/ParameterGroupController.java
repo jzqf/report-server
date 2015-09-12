@@ -1,6 +1,5 @@
 package com.qfree.obo.report.rest.server;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -28,7 +27,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.qfree.obo.report.db.ParameterGroupRepository;
 import com.qfree.obo.report.domain.ParameterGroup;
-import com.qfree.obo.report.dto.ParameterGroupCollectionResource;
 import com.qfree.obo.report.dto.ParameterGroupResource;
 import com.qfree.obo.report.dto.ResourcePath;
 import com.qfree.obo.report.rest.server.RestUtils.RestApiVersion;
@@ -51,36 +49,40 @@ public class ParameterGroupController extends AbstractBaseController {
 		this.parameterGroupService = parameterGroupService;
 	}
 
-	/*
-	 * This endpoint can be tested with:
-	 * 
-	 *   $ mvn clean spring-boot:run
-	 *   $ curl -i -H "Accept: application/json;v=1" -X GET \
-	 *   http://localhost:8080/rest/parameterGroups?expand=parameterGroups
-	 */
-	@GET
-	@Produces(MediaType.APPLICATION_JSON)
-	//	public List<ParameterGroupResource> getList(
-	public ParameterGroupCollectionResource getList(
-			@HeaderParam("Accept") final String acceptHeader,
-			@QueryParam(ResourcePath.EXPAND_QP_NAME) final List<String> expand,
-			@QueryParam(ResourcePath.SHOWALL_QP_NAME) final List<String> showAll,
-			@Context final UriInfo uriInfo) {
-		Map<String, List<String>> queryParams = new HashMap<>();
-		queryParams.put(ResourcePath.EXPAND_QP_KEY, expand);
-		queryParams.put(ResourcePath.SHOWALL_QP_KEY, showAll);
-		RestApiVersion apiVersion = RestUtils.extractAPIVersion(acceptHeader, RestApiVersion.v1);
-
-		List<ParameterGroup> parameterGroups = null;
-		parameterGroups = parameterGroupRepository.findAll();
-		List<ParameterGroupResource> parameterGroupResources = new ArrayList<>(parameterGroups.size());
-		for (ParameterGroup parameterGroup : parameterGroups) {
-			parameterGroupResources.add(new ParameterGroupResource(parameterGroup, uriInfo, queryParams, apiVersion));
-		}
-		//		return parameterGroupResources;
-		return new ParameterGroupCollectionResource(parameterGroupResources, ParameterGroup.class, uriInfo,
-				queryParams, apiVersion);
-	}
+	// /*
+	// * This endpoint can be tested with:
+	// *
+	// * $ mvn clean spring-boot:run
+	// * $ curl -i -H "Accept: application/json;v=1" -X GET \
+	// * http://localhost:8080/rest/parameterGroups?expand=parameterGroups
+	// */
+	// @GET
+	// @Produces(MediaType.APPLICATION_JSON)
+	// // public List<ParameterGroupResource> getList(
+	// public ParameterGroupCollectionResource getList(
+	// @HeaderParam("Accept") final String acceptHeader,
+	// @QueryParam(ResourcePath.EXPAND_QP_NAME) final List<String> expand,
+	// @QueryParam(ResourcePath.SHOWALL_QP_NAME) final List<String> showAll,
+	// @Context final UriInfo uriInfo) {
+	// Map<String, List<String>> queryParams = new HashMap<>();
+	// queryParams.put(ResourcePath.EXPAND_QP_KEY, expand);
+	// queryParams.put(ResourcePath.SHOWALL_QP_KEY, showAll);
+	// RestApiVersion apiVersion = RestUtils.extractAPIVersion(acceptHeader,
+	// RestApiVersion.v1);
+	//
+	// List<ParameterGroup> parameterGroups = null;
+	// parameterGroups = parameterGroupRepository.findAll();
+	// List<ParameterGroupResource> parameterGroupResources = new
+	// ArrayList<>(parameterGroups.size());
+	// for (ParameterGroup parameterGroup : parameterGroups) {
+	// parameterGroupResources.add(new ParameterGroupResource(parameterGroup,
+	// uriInfo, queryParams, apiVersion));
+	// }
+	// // return parameterGroupResources;
+	// return new ParameterGroupCollectionResource(parameterGroupResources,
+	// ParameterGroup.class, uriInfo,
+	// queryParams, apiVersion);
+	// }
 
 	/*
 	 * This endpoint can be tested with:
@@ -183,20 +185,19 @@ public class ParameterGroupController extends AbstractBaseController {
 		 * Retrieve ParameterGroup entity to be updated.
 		 */
 		ParameterGroup parameterGroup = parameterGroupRepository.findOne(id);
-		logger.debug("parameterGroup = {}", parameterGroup);
 		RestUtils.ifNullThen404(parameterGroup, ParameterGroup.class, "parameterGroupId", id.toString());
+
 		/*
 		 * Ensure that the entity's "id" and "CreatedOn" are not changed.
 		 */
 		parameterGroupResource.setParameterGroupId(parameterGroup.getParameterGroupId());
-		logger.debug("parameterGroupResource = {}", parameterGroupResource);
 		parameterGroupResource.setCreatedOn(parameterGroup.getCreatedOn());
-		logger.debug("parameterGroupResource = {}", parameterGroupResource);
+
 		/*
 		 * Save updated entity.
 		 */
 		parameterGroup = parameterGroupService.saveExistingFromResource(parameterGroupResource);
-		logger.debug("parameterGroup = {}", parameterGroup);
+
 		return Response.status(Response.Status.OK).build();
 	}
 

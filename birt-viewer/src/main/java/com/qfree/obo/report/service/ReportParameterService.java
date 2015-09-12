@@ -348,6 +348,16 @@ public class ReportParameterService {
 		List<SelectionListValueResource> selectionListValueResources = new ArrayList<>(dynamicList.size());
 		for (Entry<Object, String> entry : dynamicList.entrySet()) {
 			orderIndex += 1;
+			/*
+			 * IMPORTANT: This SelectionListValue is not saved/persisted to the
+			 *            report server database. As a result, it's id,
+			 *            selectionListValueId will be null. This is the 
+			 *            intended behaviour because these list values that will
+			 *            be returned as a SelectionListValueCollectionResource
+			 *            are never persisted in the report server database. The
+			 *            only reason for creating a SelectionListValue here is 
+			 *            to use it to construct a SelectionListValueResource.
+			 */
 			selectionListValue = new SelectionListValue(reportParameter, orderIndex,
 					entry.getKey().toString(), entry.getValue());
 			selectionListValueResources.add(
