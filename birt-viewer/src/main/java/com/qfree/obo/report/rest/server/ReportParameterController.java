@@ -32,13 +32,14 @@ import com.qfree.obo.report.db.ReportParameterRepository;
 import com.qfree.obo.report.db.ReportVersionRepository;
 import com.qfree.obo.report.domain.ParameterGroup;
 import com.qfree.obo.report.domain.ReportParameter;
-import com.qfree.obo.report.domain.ReportVersion;
 import com.qfree.obo.report.dto.ReportParameterResource;
 import com.qfree.obo.report.dto.ReportParameterResource;
 import com.qfree.obo.report.dto.ReportVersionResource;
 import com.qfree.obo.report.dto.ResourcePath;
+import com.qfree.obo.report.dto.RestErrorResource.RestError;
 import com.qfree.obo.report.dto.SelectionListValueCollectionResource;
 import com.qfree.obo.report.exceptions.DynamicSelectionListKeyException;
+import com.qfree.obo.report.exceptions.RestApiException;
 import com.qfree.obo.report.exceptions.RptdesignOpenFromStreamException;
 import com.qfree.obo.report.rest.server.RestUtils.RestApiVersion;
 import com.qfree.obo.report.service.ReportParameterService;
@@ -250,31 +251,6 @@ public class ReportParameterController extends AbstractBaseController {
 		 * but if their value does not need to be changed, they do not need to 
 		 * be included in the PUT data.
 		 */
-		if (reportParameterResource.getReportVersionResource() == null) {
-			/*
-			 * Construct a ReportVersionResource to specify the CURRENTLY
-			 * selected ReportVersion.
-			 */
-			UUID currentReportVersionId = reportParameter.getReportVersion().getReportVersionId();
-			ReportVersionResource reportVersionResource = new ReportVersionResource();
-			reportVersionResource.setReportVersionId(currentReportVersionId);
-			reportParameterResource.setReportVersionResource(reportVersionResource);
-		} else {
-			/*
-			 * If a "reportVersionResource" attribute *is* supplied in the PUT
-			 * data, it *must* have a value set for its "reportVersionId"
-			 * attribute...
-			 */
-			RestUtils.ifAttrNullOrBlankThen403(reportParameterResource.getReportVersionResource().getReportVersionId(),
-					ReportVersion.class, "reportVersionId");
-			/*
-			 * ... and the value for "reportVersionId" must correspond to an
-			 * existing ReportVersion entity.
-			 */
-			UUID reportVersionId=reportParameterResource.getReportVersionResource().getReportVersionId();
-			RestUtils.ifNullThen404(reportVersionRepository.findOne(reportVersionId), ReportVersion.class, 
-					"reportVersionId", reportVersionId.toString());
-		}
 		if (reportParameterResource.getOrderIndex() == null) {
 			reportParameterResource.setOrderIndex(reportParameter.getOrderIndex());
 		}
@@ -313,6 +289,14 @@ public class ReportParameterController extends AbstractBaseController {
 		reportParameterResource.setAutoSuggestThreshold(reportParameter.getAutoSuggestThreshold());
 		reportParameterResource.setValueExpr(reportParameter.getValueExpr());
 		reportParameterResource.setCreatedOn(reportParameter.getCreatedOn());
+		/*
+		 * Construct a ReportVersionResource to specify the CURRENTLY
+		 * selected ReportVersion.
+		 */
+		UUID currentReportVersionId = reportParameter.getReportVersion().getReportVersionId();
+		ReportVersionResource reportVersionResource = new ReportVersionResource();
+		reportVersionResource.setReportVersionId(currentReportVersionId);
+		reportParameterResource.setReportVersionResource(reportVersionResource);
 
 		/*
 		 * The values of the following attributes be *cleared* if they do not
@@ -380,7 +364,7 @@ public class ReportParameterController extends AbstractBaseController {
 			@QueryParam(ResourcePath.SHOWALL_QP_NAME) final List<String> showAll,
 			@QueryParam(ResourcePath.PARENTPARAMVALUE_QP_NAME) final List<String> parentParamValues,
 			@Context final UriInfo uriInfo)
-					throws RptdesignOpenFromStreamException, BirtException, DynamicSelectionListKeyException {
+					throws RptdesignOpenFromStreamException, BirtException {
 		Map<String, List<String>> queryParams = new HashMap<>();
 		queryParams.put(ResourcePath.EXPAND_QP_KEY, expand);
 		queryParams.put(ResourcePath.SHOWALL_QP_KEY, showAll);
@@ -406,10 +390,15 @@ public class ReportParameterController extends AbstractBaseController {
 			/*
 			 * The selection list is dynamic.
 			 */
-			logger.info("dynamicListKeys = {}", parentParamValues);
-			String rptdesign = reportParameter.getReportVersion().getRptdesign();
-			selectionListValueCollectionResource = reportParameterService.getDynamicSelectionList(
-					reportParameter, parentParamValues, rptdesign, uriInfo, queryParams, apiVersion);
+			try {
+				logger.info("dynamicListKeys = {}", parentParamValues);
+				String rptdesign = reportParameter.getReportVersion().getRptdesign();
+				selectionListValueCollectionResource = reportParameterService.getDynamicSelectionList(
+						reportParameter, parentParamValues, rptdesign, uriInfo, queryParams, apiVersion);
+			} catch (DynamicSelectionListKeyException e) {
+				throw new RestApiException(RestError.FORBIDDEN_DYN_SEL_LIST_PARENT_KEY_COUNT, e.getMessage());
+			}
+
 		} else {
 			/*
 			 * Either the selection list is static or there is no selection list

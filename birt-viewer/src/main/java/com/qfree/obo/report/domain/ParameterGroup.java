@@ -58,7 +58,7 @@ public class ParameterGroup implements Serializable {
 	private String promptText;
 
 	/*
-	 * Possible values for "GroupParameterType" are:
+	 * Possible values for "groupType" are:
 	 * 
 	 *     IParameterDefnBase.SCALAR_PARAMETER = 0
 	 *     IParameterDefnBase.FILTER_PARAMETER = 1

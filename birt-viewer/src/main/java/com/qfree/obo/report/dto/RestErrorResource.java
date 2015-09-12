@@ -169,11 +169,14 @@ public class RestErrorResource {
 		FORBIDDEN_VALIDATION_ERROR(Response.Status.FORBIDDEN, "403.8",
 				"An attribute violates a validation constraint", null),
 		FORBIDDEN_SELECTIONLISTVALUE_REPORTPARAMETER_NULL(
-				Response.Status.FORBIDDEN, "403.3",
+				Response.Status.FORBIDDEN, "403.9",
 				"reportParameterId is null for a selection list value being saved", null),
 		FORBIDDEN_REPORTPARAMETER_REPORTVERSION_NULL(
-				Response.Status.FORBIDDEN, "403.3",
+				Response.Status.FORBIDDEN, "403.10",
 				"reportVersionId is null for a report parameter being saved", null),
+		FORBIDDEN_DYN_SEL_LIST_PARENT_KEY_COUNT(
+				Response.Status.FORBIDDEN, "403.11",
+				"Wrong number of parent key values passed for a cascading parameter dynamic list", null),
 		/**
 		 * {@code 404 Not Found}.
 		 * @see <a href="http://tools.ietf.org/html/rfc2616#section-10.4.5">HTTP/1.1</a>

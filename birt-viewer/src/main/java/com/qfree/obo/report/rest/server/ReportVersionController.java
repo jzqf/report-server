@@ -443,6 +443,45 @@ public class ReportVersionController extends AbstractBaseController {
 		 */
 		ReportVersion reportVersion = reportVersionRepository.findOne(id);
 		RestUtils.ifNullThen404(reportVersion, ReportVersion.class, "reportVersionId", id.toString());
+
+		// TODO Uncomment and finish this (see ReportParameterController):
+
+		// /*
+		// * Treat attributes of reportVersionResource that are effectively
+		// * required. These attributes can be omitted in the PUT data, but in
+		// * that case they are then set here to the CURRENT values from the
+		// * reportVersion entity. These are that attributes that are required,
+		// * but if their value does not need to be changed, they do not need to
+		// * be included in the PUT data.
+		// */
+		// if (reportVersionResource.getReportResource() == null) {
+		// /*
+		// * Construct a ReportResource to specify the CURRENTLY
+		// * selected Report.
+		// */
+		// UUID currentReportId = reportVersion.getReport().getReportId();
+		// ReportResource reportResource = new ReportResource();
+		// reportResource.setReportId(currentReportId);
+		// reportVersionResource.setReportResource(reportResource);
+		// } else {
+		// /*
+		// * If a "reportVersionResource" attribute *is* supplied in the PUT
+		// * data, it *must* have a value set for its "reportId"
+		// * attribute...
+		// */
+		// RestUtils.ifAttrNullOrBlankThen403(reportVersionResource.getReportResource().getReportId(),
+		// Report.class, "reportId");
+		// /*
+		// * ... and the value for "reportId" must correspond to an
+		// * existing Report entity.
+		// */
+		// UUID
+		// reportId=reportVersionResource.getReportResource().getReportId();
+		// RestUtils.ifNullThen404(reportRepository.findOne(reportId),
+		// Report.class,
+		// "reportId", reportId.toString());
+		// }
+
 		/*
 		 * Ensure that the entity's "id" and "CreatedOn" are not changed.
 		 */

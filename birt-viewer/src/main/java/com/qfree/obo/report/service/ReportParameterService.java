@@ -28,9 +28,11 @@ import com.qfree.obo.report.domain.ParameterGroup;
 import com.qfree.obo.report.domain.ReportParameter;
 import com.qfree.obo.report.domain.ReportVersion;
 import com.qfree.obo.report.domain.SelectionListValue;
+import com.qfree.obo.report.dto.AbstractBaseResource;
 import com.qfree.obo.report.dto.ParameterGroupResource;
 import com.qfree.obo.report.dto.ReportParameterResource;
 import com.qfree.obo.report.dto.ReportVersionResource;
+import com.qfree.obo.report.dto.ResourcePath;
 import com.qfree.obo.report.dto.RestErrorResource.RestError;
 import com.qfree.obo.report.dto.SelectionListValueCollectionResource;
 import com.qfree.obo.report.dto.SelectionListValueResource;
@@ -360,13 +362,38 @@ public class ReportParameterService {
 			 */
 			selectionListValue = new SelectionListValue(reportParameter, orderIndex,
 					entry.getKey().toString(), entry.getValue());
-			selectionListValueResources.add(
-					new SelectionListValueResource(selectionListValue, uriInfo, queryParams, apiVersion));
+			SelectionListValueResource selectionListValueResource = new SelectionListValueResource(selectionListValue,
+					uriInfo, queryParams, apiVersion);
+			/*
+			 * selectionListValueResource will have a value for its "href" 
+			 * attribute, but it will not be usable. So I set it to null here.
+			 */
+			logger.debug("selectionListValueResource.getHref() = {}", selectionListValueResource.getHref());
+			selectionListValueResource.setHref(null);
+			selectionListValueResources.add(selectionListValueResource);
 		}
 		logger.debug("selectionListValueResources = {}", selectionListValueResources);
 
+		// SelectionListValueCollectionResource
+		// selectionListValueCollectionResource = new
+		// SelectionListValueCollectionResource(
+		// selectionListValueResources,
+		// SelectionListValue.class,
+		// uriInfo, queryParams, apiVersion);
 		SelectionListValueCollectionResource selectionListValueCollectionResource = new SelectionListValueCollectionResource(
-				selectionListValueResources, SelectionListValue.class, uriInfo, queryParams, apiVersion);
+				selectionListValueResources,
+				SelectionListValue.class,
+				AbstractBaseResource.createHref(uriInfo, ReportParameter.class, reportParameter.getReportParameterId(),
+						null),
+				ResourcePath.SELECTIONLISTVALUES_PATH,
+				uriInfo, queryParams, apiVersion);
+
+		/*
+		 * selectionListValueCollectionResource will have a value for its "href" 
+		 * attribute, but it will not be usable. So I set it to null here.
+		 */
+		// selectionListValueCollectionResource.setHref(null);
+
 		return selectionListValueCollectionResource;
 	}
 }

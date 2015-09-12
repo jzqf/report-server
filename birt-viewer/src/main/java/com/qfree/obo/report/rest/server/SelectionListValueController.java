@@ -1,6 +1,5 @@
 package com.qfree.obo.report.rest.server;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -29,8 +28,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.qfree.obo.report.db.SelectionListValueRepository;
 import com.qfree.obo.report.domain.SelectionListValue;
+import com.qfree.obo.report.dto.ReportParameterResource;
 import com.qfree.obo.report.dto.ResourcePath;
-import com.qfree.obo.report.dto.SelectionListValueCollectionResource;
 import com.qfree.obo.report.dto.SelectionListValueResource;
 import com.qfree.obo.report.rest.server.RestUtils.RestApiVersion;
 import com.qfree.obo.report.service.SelectionListValueService;
@@ -52,37 +51,43 @@ public class SelectionListValueController extends AbstractBaseController {
 		this.selectionListValueService = selectionListValueService;
 	}
 
-	/*
-	 * This endpoint can be tested with:
-	 * 
-	 *   $ mvn clean spring-boot:run
-	 *   $ curl -i -H "Accept: application/json;v=1" -X GET \
-	 *   http://localhost:8080/rest/selectionListValues?expand=selectionListValues
-	 */
-	@GET
-	@Produces(MediaType.APPLICATION_JSON)
-	//	public List<SelectionListValueResource> getList(
-	public SelectionListValueCollectionResource getList(
-			@HeaderParam("Accept") final String acceptHeader,
-			@QueryParam(ResourcePath.EXPAND_QP_NAME) final List<String> expand,
-			@QueryParam(ResourcePath.SHOWALL_QP_NAME) final List<String> showAll,
-			@Context final UriInfo uriInfo) {
-		Map<String, List<String>> queryParams = new HashMap<>();
-		queryParams.put(ResourcePath.EXPAND_QP_KEY, expand);
-		queryParams.put(ResourcePath.SHOWALL_QP_KEY, showAll);
-		RestApiVersion apiVersion = RestUtils.extractAPIVersion(acceptHeader, RestApiVersion.v1);
-
-		List<SelectionListValue> selectionListValues = null;
-		selectionListValues = selectionListValueRepository.findAll();
-		List<SelectionListValueResource> selectionListValueResources = new ArrayList<>(selectionListValues.size());
-		for (SelectionListValue selectionListValue : selectionListValues) {
-			selectionListValueResources
-					.add(new SelectionListValueResource(selectionListValue, uriInfo, queryParams, apiVersion));
-		}
-		//		return selectionListValueResources;
-		return new SelectionListValueCollectionResource(selectionListValueResources, SelectionListValue.class, uriInfo,
-				queryParams, apiVersion);
-	}
+	// /*
+	// * This endpoint can be tested with:
+	// *
+	// * $ mvn clean spring-boot:run
+	// * $ curl -i -H "Accept: application/json;v=1" -X GET \
+	// *
+	// http://localhost:8080/rest/selectionListValues?expand=selectionListValues
+	// */
+	// @GET
+	// @Produces(MediaType.APPLICATION_JSON)
+	// // public List<SelectionListValueResource> getList(
+	// public SelectionListValueCollectionResource getList(
+	// @HeaderParam("Accept") final String acceptHeader,
+	// @QueryParam(ResourcePath.EXPAND_QP_NAME) final List<String> expand,
+	// @QueryParam(ResourcePath.SHOWALL_QP_NAME) final List<String> showAll,
+	// @Context final UriInfo uriInfo) {
+	// Map<String, List<String>> queryParams = new HashMap<>();
+	// queryParams.put(ResourcePath.EXPAND_QP_KEY, expand);
+	// queryParams.put(ResourcePath.SHOWALL_QP_KEY, showAll);
+	// RestApiVersion apiVersion = RestUtils.extractAPIVersion(acceptHeader,
+	// RestApiVersion.v1);
+	//
+	// List<SelectionListValue> selectionListValues = null;
+	// selectionListValues = selectionListValueRepository.findAll();
+	// List<SelectionListValueResource> selectionListValueResources = new
+	// ArrayList<>(selectionListValues.size());
+	// for (SelectionListValue selectionListValue : selectionListValues) {
+	// selectionListValueResources
+	// .add(new SelectionListValueResource(selectionListValue, uriInfo,
+	// queryParams, apiVersion));
+	// }
+	// // return selectionListValueResources;
+	// return new
+	// SelectionListValueCollectionResource(selectionListValueResources,
+	// SelectionListValue.class, uriInfo,
+	// queryParams, apiVersion);
+	// }
 
 	/*
 	 * This endpoint can be tested with:
@@ -166,9 +171,8 @@ public class SelectionListValueController extends AbstractBaseController {
 	 * 
 	 *   $ mvn clean spring-boot:run
 	 *   $ curl -iH "Accept: application/json;v=1" -H "Content-Type: application/json" -X PUT -d \
-	 *   '{"reportParameter":{"reportParameterId":"3012de58-e668-41d5-8a9e-aa305ee79811"},\
-	 *   "valueAssigned":"valuetoassign-modified","valueDisplayed":"Displayed value - modified",\
-	 *   "orderIndex":5, "createdOn":"1958-05-06T12:00:00.000Z"}' \
+	 *   '{"valueAssigned":"valuetoassign-modified","valueDisplayed":"Displayed value - modified",\
+	 *   "orderIndex":5}' \
 	 *   http://localhost:8080/rest/selectionListValues/0b986fd2-6d6b-46c3-9be7-5c1831a563ca
 	 */
 	@Path("/{id}")
@@ -192,15 +196,44 @@ public class SelectionListValueController extends AbstractBaseController {
 		 * Retrieve SelectionListValue entity to be updated.
 		 */
 		SelectionListValue selectionListValue = selectionListValueRepository.findOne(id);
-		logger.debug("selectionListValue = {}", selectionListValue);
 		RestUtils.ifNullThen404(selectionListValue, SelectionListValue.class, "selectionListValueId", id.toString());
+
 		/*
-		 * Ensure that the entity's "id" and "CreatedOn" are not changed.
+		 * Treat attributes of selectionListValueResource that are effectively
+		 * required. These attributes can be omitted in the PUT data, but in
+		 * that case they are then set here to the CURRENT values from the
+		 * selectionListValue entity. These are that attributes that are required,
+		 * but if their value does not need to be changed, they do not need to 
+		 * be included in the PUT data.
+		 */
+		if (selectionListValueResource.getValueAssigned() == null) {
+			selectionListValueResource.setValueAssigned(selectionListValue.getValueAssigned());
+		}
+		if (selectionListValueResource.getValueDisplayed() == null) {
+			selectionListValueResource.setValueDisplayed(selectionListValue.getValueDisplayed());
+		}
+		if (selectionListValueResource.getOrderIndex() == null) {
+			selectionListValueResource.setOrderIndex(selectionListValue.getOrderIndex());
+		}
+
+		/*
+		 * The values for the following attributes cannot be changed. These
+		 * attributes should not appear in the PUT data, but if any do, their
+		 * values will not be used because they will be overridden here by
+		 * forcing their values to be the same as the CURRENT value stored for
+		 * the selectionListValue entity.
 		 */
 		selectionListValueResource.setSelectionListValueId(selectionListValue.getSelectionListValueId());
-		logger.debug("selectionListValueResource = {}", selectionListValueResource);
 		selectionListValueResource.setCreatedOn(selectionListValue.getCreatedOn());
-		logger.debug("selectionListValueResource = {}", selectionListValueResource);
+		/*
+		 * Construct a ReportParameterResource to specify the CURRENTLY
+		 * selected ReportParameter.
+		 */
+		UUID currentReportParameterId = selectionListValue.getReportParameter().getReportParameterId();
+		ReportParameterResource reportParameterResource = new ReportParameterResource();
+		reportParameterResource.setReportParameterId(currentReportParameterId);
+		selectionListValueResource.setReportParameterResource(reportParameterResource);
+
 		/*
 		 * Save updated entity.
 		 */

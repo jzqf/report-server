@@ -97,9 +97,7 @@ public class ParameterGroupController extends AbstractBaseController {
 	 * ParameterGroup to create is given:
 	 * 
 	 *	curl -iH "Accept: application/json;v=1" -H "Content-Type: application/json" -X POST -d \
-	 *	'{"parameterGroupId":"71b3e8ae-bba8-45b7-a85f-12546bcc95b2",\
-	 *	'"name":"ParameterGroup name","promptText":"Group prompt text",\
-	 *	'"groupType":4, "createdOn":"1958-05-06T12:00:00.000Z"}' \
+	 *	'{"name":"ParameterGroup name","promptText":"Group prompt text","groupType":4}' \
 	 *	http://localhost:8080/rest/parameterGroups
 	 */
 	@POST
@@ -188,9 +186,29 @@ public class ParameterGroupController extends AbstractBaseController {
 		RestUtils.ifNullThen404(parameterGroup, ParameterGroup.class, "parameterGroupId", id.toString());
 
 		/*
-		 * Ensure that the entity's "id" and "CreatedOn" are not changed.
+		 * Treat attributes of parameterGroupResource that are effectively
+		 * required. These attributes can be omitted in the PUT data, but in
+		 * that case they are then set here to the CURRENT values from the
+		 * parameterGroup entity. These are that attributes that are required,
+		 * but if their value does not need to be changed, they do not need to 
+		 * be included in the PUT data.
+		 */
+		if (parameterGroupResource.getGroupType() == null) {
+			parameterGroupResource.setGroupType(parameterGroup.getGroupType());
+		}
+		if (parameterGroupResource.getPromptText() == null) {
+			parameterGroupResource.setPromptText(parameterGroup.getPromptText());
+		}
+
+		/*
+		 * The values for the following attributes cannot be changed. These
+		 * attributes should not appear in the PUT data, but if any do, their
+		 * values will not be used because they will be overridden here by
+		 * forcing their values to be the same as the current value stored for
+		 * the parameterGroup entity.
 		 */
 		parameterGroupResource.setParameterGroupId(parameterGroup.getParameterGroupId());
+		parameterGroupResource.setName(parameterGroup.getName());
 		parameterGroupResource.setCreatedOn(parameterGroup.getCreatedOn());
 
 		/*
