@@ -37,9 +37,28 @@ public class SelectionListValueService {
 
 	@Transactional
 	public SelectionListValue saveNewFromResource(SelectionListValueResource selectionListValueResource) {
+
 		RestUtils.ifNewResourceIdNotNullThen403(selectionListValueResource.getSelectionListValueId(),
 				SelectionListValue.class,
 				"selectionListValueId", selectionListValueResource.getSelectionListValueId());
+
+		RestUtils.ifAttrNullThen403(selectionListValueResource.getValueAssigned(), SelectionListValue.class,
+				"valueAssigned");
+		RestUtils.ifAttrNullThen403(selectionListValueResource.getValueDisplayed(), SelectionListValue.class,
+				"valueDisplayed");
+		RestUtils.ifAttrNullThen403(selectionListValueResource.getOrderIndex(), SelectionListValue.class, "orderIndex");
+
+		RestUtils.ifAttrNullThen403(selectionListValueResource.getReportParameterResource(), SelectionListValue.class,
+				"reportParameter");
+		/*
+		 * Not only must selectionListValueResource.getReportParameterResource()
+		 * be not null, this ReportParameterResource must have an id so that the
+		 * new SelectionListValue entity will be linked to a ReportParameter
+		 * entity.
+		 */
+		RestUtils.ifAttrNullThen403(selectionListValueResource.getReportParameterResource().getReportParameterId(),
+				ReportParameter.class, "reportParameterId");
+
 		return saveOrUpdateFromResource(selectionListValueResource);
 	}
 

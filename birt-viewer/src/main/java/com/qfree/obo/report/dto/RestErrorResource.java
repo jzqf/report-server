@@ -164,8 +164,8 @@ public class RestErrorResource {
 		FORBIDDEN_REPORTVERSION_REPORT_NULL(Response.Status.FORBIDDEN, "403.5",
 				"reportId is null for a report version being saved", null),
 		FORBIDDEN_XML_NOT_VALID(Response.Status.FORBIDDEN, "403.6", "The XML is not well formed", null),
-		FORBIDDEN_ATTRIBUTE_NULL_OR_BLANK(Response.Status.FORBIDDEN, "403.7",
-				"An attribute is null or blank when it should not be", null),
+		FORBIDDEN_ATTRIBUTE_NULL(Response.Status.FORBIDDEN, "403.7",
+				"An attribute is null when it should not be", null),
 		FORBIDDEN_VALIDATION_ERROR(Response.Status.FORBIDDEN, "403.8",
 				"An attribute violates a validation constraint", null),
 		FORBIDDEN_SELECTIONLISTVALUE_REPORTPARAMETER_NULL(
@@ -177,6 +177,8 @@ public class RestErrorResource {
 		FORBIDDEN_DYN_SEL_LIST_PARENT_KEY_COUNT(
 				Response.Status.FORBIDDEN, "403.11",
 				"Wrong number of parent key values passed for a cascading parameter dynamic list", null),
+		FORBIDDEN_ATTRIBUTE_BLANK(Response.Status.FORBIDDEN, "403.12",
+				"An attribute is blank when it should not be", null),
 		/**
 		 * {@code 404 Not Found}.
 		 * @see <a href="http://tools.ietf.org/html/rfc2616#section-10.4.5">HTTP/1.1</a>

@@ -26,8 +26,14 @@ public class ParameterGroupService {
 
 	@Transactional
 	public ParameterGroup saveNewFromResource(ParameterGroupResource parameterGroupResource) {
+
 		RestUtils.ifNewResourceIdNotNullThen403(parameterGroupResource.getParameterGroupId(), ParameterGroup.class,
 				"parameterGroupId", parameterGroupResource.getParameterGroupId());
+
+		RestUtils.ifAttrNullThen403(parameterGroupResource.getName(), ParameterGroup.class, "name");
+		RestUtils.ifAttrNullThen403(parameterGroupResource.getGroupType(), ParameterGroup.class, "groupType");
+		RestUtils.ifAttrNullThen403(parameterGroupResource.getPromptText(), ParameterGroup.class, "promptText");
+
 		return saveOrUpdateFromResource(parameterGroupResource);
 	}
 

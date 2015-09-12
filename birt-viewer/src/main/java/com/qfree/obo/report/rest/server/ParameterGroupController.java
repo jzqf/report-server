@@ -114,10 +114,12 @@ public class ParameterGroupController extends AbstractBaseController {
 		queryParams.put(ResourcePath.EXPAND_QP_KEY, expand);
 		queryParams.put(ResourcePath.SHOWALL_QP_KEY, showAll);
 		RestApiVersion apiVersion = RestUtils.extractAPIVersion(acceptHeader, RestApiVersion.v1);
+
 		ParameterGroup parameterGroup = parameterGroupService.saveNewFromResource(parameterGroupResource);
 		//	if (RestUtils.AUTO_EXPAND_PRIMARY_RESOURCES) {
 		addToExpandList(expand, ParameterGroup.class);// Force primary resource to be "expanded"
 		//	}
+		
 		ParameterGroupResource resource = new ParameterGroupResource(parameterGroup, uriInfo, queryParams, apiVersion);
 		return created(resource);
 	}

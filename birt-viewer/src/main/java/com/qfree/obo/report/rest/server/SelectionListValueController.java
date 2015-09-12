@@ -123,11 +123,13 @@ public class SelectionListValueController extends AbstractBaseController {
 		queryParams.put(ResourcePath.EXPAND_QP_KEY, expand);
 		queryParams.put(ResourcePath.SHOWALL_QP_KEY, showAll);
 		RestApiVersion apiVersion = RestUtils.extractAPIVersion(acceptHeader, RestApiVersion.v1);
+
 		SelectionListValue selectionListValue = selectionListValueService
 				.saveNewFromResource(selectionListValueResource);
 		//	if (RestUtils.AUTO_EXPAND_PRIMARY_RESOURCES) {
 		addToExpandList(expand, SelectionListValue.class);// Force primary resource to be "expanded"
 		//	}
+
 		SelectionListValueResource resource = new SelectionListValueResource(selectionListValue, uriInfo, queryParams,
 				apiVersion);
 		return created(resource);

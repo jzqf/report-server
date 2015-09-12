@@ -116,8 +116,10 @@ public class RestUtils {
 				} else if (attrName != null) {
 					message = String.format("'%s' is null", attrName);
 				} else {
-					message = RestError.FORBIDDEN_ATTRIBUTE_NULL_OR_BLANK.getErrorMessage();
+					message = RestError.FORBIDDEN_ATTRIBUTE_NULL.getErrorMessage();
 				}
+				throw new RestApiException(RestError.FORBIDDEN_ATTRIBUTE_NULL, message, objectClass, attrName,
+						null);
 			} else if (object instanceof String && object.toString().isEmpty()) {
 				if (objectClass != null && attrName != null) {
 					message = String.format("Attribute '%s' of %s is blank", attrName, objectClass.getSimpleName());
@@ -126,11 +128,31 @@ public class RestUtils {
 				} else if (attrName != null) {
 					message = String.format("'%s' is blank", attrName);
 				} else {
-					message = RestError.FORBIDDEN_ATTRIBUTE_NULL_OR_BLANK.getErrorMessage();
+					message = RestError.FORBIDDEN_ATTRIBUTE_BLANK.getErrorMessage();
 				}
+				throw new RestApiException(RestError.FORBIDDEN_ATTRIBUTE_BLANK, message, objectClass, attrName,
+						null);
 			}
-			logger.debug("message = {}", message);
-			throw new RestApiException(RestError.FORBIDDEN_ATTRIBUTE_NULL_OR_BLANK, message, objectClass, attrName,
+		}
+	}
+
+	public static void ifAttrNullThen403(Object object, Class<?> objectClass, String attrName) {
+		/*
+		 * Create different messages based on on which which arguments passed to
+		 * this method are not null.
+		 */
+		if (object == null) {
+			String message = null;
+			if (objectClass != null && attrName != null) {
+				message = String.format("Attribute '%s' of %s is null", attrName, objectClass.getSimpleName());
+			} else if (objectClass != null) {
+				message = String.format("An attribute %s is null", objectClass.getSimpleName());
+			} else if (attrName != null) {
+				message = String.format("'%s' is null", attrName);
+			} else {
+				message = RestError.FORBIDDEN_ATTRIBUTE_NULL.getErrorMessage();
+			}
+			throw new RestApiException(RestError.FORBIDDEN_ATTRIBUTE_NULL, message, objectClass, attrName,
 					null);
 		}
 	}
