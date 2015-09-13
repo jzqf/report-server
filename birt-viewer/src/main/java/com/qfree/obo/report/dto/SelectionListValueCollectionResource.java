@@ -32,16 +32,20 @@ public class SelectionListValueCollectionResource extends AbstractCollectionReso
 				SelectionListValue.class,
 				AbstractBaseResource.createHref(uriInfo, ReportParameter.class, reportParameter.getReportParameterId(),
 						null),
-				ResourcePath.REPORTVERSIONS_PATH,
+				ResourcePath.SELECTIONLISTVALUES_PATH,
 				uriInfo, queryParams, apiVersion);
 	}
 
-	public SelectionListValueCollectionResource(List<SelectionListValueResource> items, Class<?> entityClass,
+	public SelectionListValueCollectionResource(
+			List<SelectionListValueResource> items,
+			Class<?> entityClass,
 			UriInfo uriInfo, Map<String, List<String>> queryParams, RestApiVersion apiVersion) {
 		this(items, entityClass, null, null, uriInfo, queryParams, apiVersion);
 	}
 
-	public SelectionListValueCollectionResource(List<SelectionListValueResource> items, Class<?> entityClass,
+	public SelectionListValueCollectionResource(
+			List<SelectionListValueResource> items,
+			Class<?> entityClass,
 			String baseResourceUri, String collectionPath,
 			UriInfo uriInfo, Map<String, List<String>> queryParams, RestApiVersion apiVersion) {
 

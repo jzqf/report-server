@@ -164,17 +164,29 @@ public class RestErrorResource {
 		FORBIDDEN_REPORTVERSION_REPORT_NULL(Response.Status.FORBIDDEN, "403.5",
 				"reportId is null for a report version being saved", null),
 		FORBIDDEN_XML_NOT_VALID(Response.Status.FORBIDDEN, "403.6", "The XML is not well formed", null),
-		FORBIDDEN_ATTRIBUTE_NULL_OR_BLANK(Response.Status.FORBIDDEN, "403.7",
-				"An attribute is null or blank when it should not be", null),
+		FORBIDDEN_ATTRIBUTE_NULL(Response.Status.FORBIDDEN, "403.7",
+				"An attribute is null when it should not be", null),
 		FORBIDDEN_VALIDATION_ERROR(Response.Status.FORBIDDEN, "403.8",
 				"An attribute violates a validation constraint", null),
+		FORBIDDEN_SELECTIONLISTVALUE_REPORTPARAMETER_NULL(
+				Response.Status.FORBIDDEN, "403.9",
+				"reportParameterId is null for a selection list value being saved", null),
+		FORBIDDEN_REPORTPARAMETER_REPORTVERSION_NULL(
+				Response.Status.FORBIDDEN, "403.10",
+				"reportVersionId is null for a report parameter being saved", null),
+		FORBIDDEN_DYN_SEL_LIST_PARENT_KEY_COUNT(
+				Response.Status.FORBIDDEN, "403.11",
+				"Wrong number of parent key values passed for a cascading parameter dynamic list", null),
+		FORBIDDEN_ATTRIBUTE_BLANK(Response.Status.FORBIDDEN, "403.12",
+				"An attribute is blank when it should not be", null),
 		/**
 		 * {@code 404 Not Found}.
 		 * @see <a href="http://tools.ietf.org/html/rfc2616#section-10.4.5">HTTP/1.1</a>
 		 */
 		NOT_FOUND(Response.Status.NOT_FOUND, "404.0", null, null),
 		NOT_FOUND_RESOUCE(Response.Status.NOT_FOUND, "404.1", "A resource could not be located", null),
-		NOT_FOUND_ROLE_TO_AUTHENTICATE(Response.Status.NOT_FOUND, "404.2", "Both a username and encoded password must be submitted", null),
+		NOT_FOUND_ROLE_TO_AUTHENTICATE(Response.Status.NOT_FOUND, "404.2",
+				"Both a username and encoded password must be submitted", null),
 		/**
 		 * {@code 405 Method Not Allowed}.
 		 * @see <a href="http://tools.ietf.org/html/rfc2616#section-10.4.6">HTTP/1.1</a>
@@ -240,41 +252,41 @@ public class RestErrorResource {
 		 * @see <a href="http://tools.ietf.org/html/rfc2616#section-10.4.18">HTTP/1.1</a>
 		 */
 		EXPECTATION_FAILED(Response.Status.EXPECTATION_FAILED, null, null, null),
-//		/**
-//		 * {@code 419 Insufficient Space on Resource}.
-//		 * @see <a href="http://tools.ietf.org/html/draft-ietf-webdav-protocol-05#section-10.4">WebDAV Draft</a>
-//		 */
-//		INSUFFICIENT_SPACE_ON_RESOURCE(419, "Insufficient Space On Resource"),
-//		/**
-//		 * {@code 420 Method Failure}.
-//		 * @see <a href="http://tools.ietf.org/html/draft-ietf-webdav-protocol-05#section-10.5">WebDAV Draft</a>
-//		 */
-//		METHOD_FAILURE(420, "Method Failure"),
-//		/**
-//		 * {@code 421 Destination Locked}.
-//		 * @see <a href="http://tools.ietf.org/html/draft-ietf-webdav-protocol-05#section-10.6">WebDAV Draft</a>
-//		 */
-//		DESTINATION_LOCKED(421, "Destination Locked"),
-//		/**
-//		 * {@code 422 Unprocessable Entity}.
-//		 * @see <a href="http://tools.ietf.org/html/rfc4918#section-11.2">WebDAV</a>
-//		 */
-//		UNPROCESSABLE_ENTITY(422, "Unprocessable Entity"),
-//		/**
-//		 * {@code 423 Locked}.
-//		 * @see <a href="http://tools.ietf.org/html/rfc4918#section-11.3">WebDAV</a>
-//		 */
-//		LOCKED(423, "Locked"),
-//		/**
-//		 * {@code 424 Failed Dependency}.
-//		 * @see <a href="http://tools.ietf.org/html/rfc4918#section-11.4">WebDAV</a>
-//		 */
-//		FAILED_DEPENDENCY(424, "Failed Dependency"),
-//		/**
-//		 * {@code 426 Upgrade Required}.
-//		 * @see <a href="http://tools.ietf.org/html/rfc2817#section-6">Upgrading to TLS Within HTTP/1.1</a>
-//		 */
-//		UPGRADE_REQUIRED(426, "Upgrade Required"),
+		//		/**
+		//		 * {@code 419 Insufficient Space on Resource}.
+		//		 * @see <a href="http://tools.ietf.org/html/draft-ietf-webdav-protocol-05#section-10.4">WebDAV Draft</a>
+		//		 */
+		//		INSUFFICIENT_SPACE_ON_RESOURCE(419, "Insufficient Space On Resource"),
+		//		/**
+		//		 * {@code 420 Method Failure}.
+		//		 * @see <a href="http://tools.ietf.org/html/draft-ietf-webdav-protocol-05#section-10.5">WebDAV Draft</a>
+		//		 */
+		//		METHOD_FAILURE(420, "Method Failure"),
+		//		/**
+		//		 * {@code 421 Destination Locked}.
+		//		 * @see <a href="http://tools.ietf.org/html/draft-ietf-webdav-protocol-05#section-10.6">WebDAV Draft</a>
+		//		 */
+		//		DESTINATION_LOCKED(421, "Destination Locked"),
+		//		/**
+		//		 * {@code 422 Unprocessable Entity}.
+		//		 * @see <a href="http://tools.ietf.org/html/rfc4918#section-11.2">WebDAV</a>
+		//		 */
+		//		UNPROCESSABLE_ENTITY(422, "Unprocessable Entity"),
+		//		/**
+		//		 * {@code 423 Locked}.
+		//		 * @see <a href="http://tools.ietf.org/html/rfc4918#section-11.3">WebDAV</a>
+		//		 */
+		//		LOCKED(423, "Locked"),
+		//		/**
+		//		 * {@code 424 Failed Dependency}.
+		//		 * @see <a href="http://tools.ietf.org/html/rfc4918#section-11.4">WebDAV</a>
+		//		 */
+		//		FAILED_DEPENDENCY(424, "Failed Dependency"),
+		//		/**
+		//		 * {@code 426 Upgrade Required}.
+		//		 * @see <a href="http://tools.ietf.org/html/rfc2817#section-6">Upgrading to TLS Within HTTP/1.1</a>
+		//		 */
+		//		UPGRADE_REQUIRED(426, "Upgrade Required"),
 
 		// --- 5xx Server Error ---
 
@@ -322,26 +334,26 @@ public class RestErrorResource {
 		 * @see <a href="http://tools.ietf.org/html/rfc2616#section-10.5.6">HTTP/1.1</a>
 		 */
 		HTTP_VERSION_NOT_SUPPORTED(Response.Status.HTTP_VERSION_NOT_SUPPORTED, null, null, null);
-//		/**
-//		 * {@code 506 Variant Also Negotiates}
-//		 * @see <a href="http://tools.ietf.org/html/rfc2295#section-8.1">Transparent Content Negotiation</a>
-//		 */
-//		VARIANT_ALSO_NEGOTIATES(506, "Variant Also Negotiates"),
-//		/**
-//		 * {@code 507 Insufficient Storage}
-//		 * @see <a href="http://tools.ietf.org/html/rfc4918#section-11.5">WebDAV</a>
-//		 */
-//		INSUFFICIENT_STORAGE(507, "Insufficient Storage"),
-//		/**
-//		 * {@code 508 Loop Detected}
-//		 * @see <a href="http://tools.ietf.org/html/draft-ietf-webdav-bind-27#section-7.2">WebDAV Binding Extensions</a>
-//		 */
-//		LOOP_DETECTED(508, "Loop Detected"),
-//		/**
-//		 * {@code 510 Not Extended}
-//		 * @see <a href="http://tools.ietf.org/html/rfc2774#section-7">HTTP Extension Framework</a>
-//		 */
-//		NOT_EXTENDED(510, "Not Extended");
+		//		/**
+		//		 * {@code 506 Variant Also Negotiates}
+		//		 * @see <a href="http://tools.ietf.org/html/rfc2295#section-8.1">Transparent Content Negotiation</a>
+		//		 */
+		//		VARIANT_ALSO_NEGOTIATES(506, "Variant Also Negotiates"),
+		//		/**
+		//		 * {@code 507 Insufficient Storage}
+		//		 * @see <a href="http://tools.ietf.org/html/rfc4918#section-11.5">WebDAV</a>
+		//		 */
+		//		INSUFFICIENT_STORAGE(507, "Insufficient Storage"),
+		//		/**
+		//		 * {@code 508 Loop Detected}
+		//		 * @see <a href="http://tools.ietf.org/html/draft-ietf-webdav-bind-27#section-7.2">WebDAV Binding Extensions</a>
+		//		 */
+		//		LOOP_DETECTED(508, "Loop Detected"),
+		//		/**
+		//		 * {@code 510 Not Extended}
+		//		 * @see <a href="http://tools.ietf.org/html/rfc2774#section-7">HTTP Extension Framework</a>
+		//		 */
+		//		NOT_EXTENDED(510, "Not Extended");
 
 		private final Response.Status responseStatus;
 		private final String errorCode;
@@ -400,16 +412,16 @@ public class RestErrorResource {
 	@XmlElement
 	private String errorMessage;
 	@XmlTransient
-	private String resourceName;	// @XmlTransient means this will not be serialized to JSON
+	private String resourceName;// @XmlTransient means this will not be serialized to JSON
 	@XmlTransient
-	private String attrName;		// @XmlTransient means this will not be serialized to JSON
+	private String attrName;// @XmlTransient means this will not be serialized to JSON
 	@XmlTransient
-	private String attrValue;		// @XmlTransient means this will not be serialized to JSON
+	private String attrValue;// @XmlTransient means this will not be serialized to JSON
 	@XmlElement
 	private String moreInfoUrl;
 	@XmlTransient
 	//	@XmlElement
-	private Throwable cause;	// @XmlTransient means this will not be serialized to JSON
+	private Throwable cause;// @XmlTransient means this will not be serialized to JSON
 
 	public RestErrorResource() {
 	}

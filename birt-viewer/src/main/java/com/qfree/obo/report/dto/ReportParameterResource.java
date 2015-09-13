@@ -230,6 +230,22 @@ public class ReportParameterResource extends AbstractBaseResource {
 		this.reportParameterId = reportParameterId;
 	}
 
+	public Integer getOrderIndex() {
+		return orderIndex;
+	}
+
+	public void setOrderIndex(Integer orderIndex) {
+		this.orderIndex = orderIndex;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
 	public Integer getDataType() {
 		return dataType;
 	}
@@ -244,14 +260,6 @@ public class ReportParameterResource extends AbstractBaseResource {
 
 	public void setControlType(Integer controlType) {
 		this.controlType = controlType;
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
 	}
 
 	public String getPromptText() {
@@ -278,12 +286,108 @@ public class ReportParameterResource extends AbstractBaseResource {
 		this.multivalued = multivalued;
 	}
 
-	public Integer getOrderIndex() {
-		return orderIndex;
+	public String getDefaultValue() {
+		return defaultValue;
 	}
 
-	public void setOrderIndex(Integer orderIndex) {
-		this.orderIndex = orderIndex;
+	public void setDefaultValue(String defaultValue) {
+		this.defaultValue = defaultValue;
+	}
+
+	public String getDisplayName() {
+		return displayName;
+	}
+
+	public void setDisplayName(String displayName) {
+		this.displayName = displayName;
+	}
+
+	public String getHelpText() {
+		return helpText;
+	}
+
+	public void setHelpText(String helpText) {
+		this.helpText = helpText;
+	}
+
+	public String getDisplayFormat() {
+		return displayFormat;
+	}
+
+	public void setDisplayFormat(String displayFormat) {
+		this.displayFormat = displayFormat;
+	}
+
+	public Integer getAlignment() {
+		return alignment;
+	}
+
+	public void setAlignment(Integer alignment) {
+		this.alignment = alignment;
+	}
+
+	public Boolean getHidden() {
+		return hidden;
+	}
+
+	public void setHidden(Boolean hidden) {
+		this.hidden = hidden;
+	}
+
+	public Boolean getValueConcealed() {
+		return valueConcealed;
+	}
+
+	public void setValueConcealed(Boolean valueConcealed) {
+		this.valueConcealed = valueConcealed;
+	}
+
+	public Boolean getAllowNewValues() {
+		return allowNewValues;
+	}
+
+	public void setAllowNewValues(Boolean allowNewValues) {
+		this.allowNewValues = allowNewValues;
+	}
+
+	public Boolean getDisplayInFixedOrder() {
+		return displayInFixedOrder;
+	}
+
+	public void setDisplayInFixedOrder(Boolean displayInFixedOrder) {
+		this.displayInFixedOrder = displayInFixedOrder;
+	}
+
+	public Integer getParameterType() {
+		return parameterType;
+	}
+
+	public void setParameterType(Integer parameterType) {
+		this.parameterType = parameterType;
+	}
+
+	public Integer getAutoSuggestThreshold() {
+		return autoSuggestThreshold;
+	}
+
+	public void setAutoSuggestThreshold(Integer autoSuggestThreshold) {
+		this.autoSuggestThreshold = autoSuggestThreshold;
+	}
+
+	public Integer getSelectionListType() {
+		return selectionListType;
+	}
+
+	public void setSelectionListType(Integer selectionListType) {
+		this.selectionListType = selectionListType;
+	}
+
+	public String getValueExpr() {
+		return valueExpr;
+	}
+
+	public void setValueExpr(String valueExpr) {
+		this.valueExpr = valueExpr;
 	}
 
 	public ReportVersionResource getReportVersionResource() {

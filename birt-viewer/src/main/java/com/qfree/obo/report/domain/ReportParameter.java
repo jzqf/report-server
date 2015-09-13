@@ -25,6 +25,7 @@ import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;
 import org.hibernate.validator.constraints.NotBlank;
 
+import com.qfree.obo.report.dto.ReportParameterResource;
 import com.qfree.obo.report.util.DateUtils;
 
 /**
@@ -53,6 +54,23 @@ public class ReportParameter implements Serializable {
 	@Column(name = "report_parameter_id", unique = true, nullable = false,
 			columnDefinition = "uuid DEFAULT uuid_generate_v4()")
 	private UUID reportParameterId;
+
+	@ManyToOne
+	/*
+	 * If columnDefinition="uuid" is omitted here and the database schema is 
+	 * created by Hibernate (via hibernate.hbm2ddl.auto="create"), then the 
+	 * PostgreSQL column definition includes "DEFAULT uuid_generate_v4()", which
+	 * is not what is wanted.
+	 */
+	@NotNull
+	@JoinColumn(name = "report_version_id", nullable = false,
+			foreignKey = @ForeignKey(name = "fk_reportparameter_report") ,
+			columnDefinition = "uuid")
+	private ReportVersion reportVersion;
+	//	@JoinColumn(name = "report_id", nullable = false,
+	//			foreignKey = @ForeignKey(name = "fk_reportparameter_report"),
+	//			columnDefinition = "uuid")
+	//	private Report report;
 
 	/**
 	 * The name of the report parameter as defined in the BIRT report.
@@ -87,27 +105,31 @@ public class ReportParameter implements Serializable {
 	@Column(name = "order_index", nullable = false)
 	private Integer orderIndex;
 
-	@ManyToOne
 	/*
-	 * If columnDefinition="uuid" is omitted here and the database schema is 
-	 * created by Hibernate (via hibernate.hbm2ddl.auto="create"), then the 
-	 * PostgreSQL column definition includes "DEFAULT uuid_generate_v4()", which
-	 * is not what is wanted.
+	 * Possible values for "DataType" are:
+	 * 
+	 *     IParameterDefn.TYPE_ANY       = 0
+	 *     IParameterDefn.TYPE_STRING    = 1
+	 *     IParameterDefn.TYPE_FLOAT     = 2
+	 *     IParameterDefn.TYPE_DECIMAL   = 3
+	 *     IParameterDefn.TYPE_DATE_TIME = 4
+	 *     IParameterDefn.TYPE_BOOLEAN   = 5
+	 *     IParameterDefn.TYPE_INTEGER   = 6
+	 *     IParameterDefn.TYPE_DATE      = 7
+	 *     IParameterDefn.TYPE_TIME      = 8
 	 */
-	@NotNull
-	@JoinColumn(name = "report_version_id", nullable = false,
-			foreignKey = @ForeignKey(name = "fk_reportparameter_report") ,
-			columnDefinition = "uuid")
-	private ReportVersion reportVersion;
-	//	@JoinColumn(name = "report_id", nullable = false,
-	//			foreignKey = @ForeignKey(name = "fk_reportparameter_report"),
-	//			columnDefinition = "uuid")
-	//	private Report report;
-
 	@NotNull
 	@Column(name = "data_type", nullable = false)
 	private Integer dataType;
 
+	/*
+	 * Possible values for "ControlType" are:
+	 * 
+	 *     IScalarParameterDefn.TEXT_BOX     = 0  (default)
+	 *     IScalarParameterDefn.LIST_BOX     = 1
+	 *     IScalarParameterDefn.RADIO_BUTTON = 2
+	 *     IScalarParameterDefn.CHECK_BOX    = 3
+	 */
 	@NotNull
 	@Column(name = "control_type", nullable = false)
 	private Integer controlType;
@@ -175,7 +197,7 @@ public class ReportParameter implements Serializable {
 	 * the user can enter a value different from values in a selection list. 
 	 * Usually, a parameter with allowNewValue=true is displayed as a 
 	 * combo-box, while a parameter with allowNewValue=false is displayed 
-	 * as a list. This is only a UI directve. The BIRT engine does not 
+	 * as a list. This is only a UI directive. The BIRT engine does not 
 	 * validate whether the value passed in is in the list.
 	 */
 	@NotNull
@@ -304,7 +326,7 @@ public class ReportParameter implements Serializable {
 			//String typeName, 
 			String valueExpr,
 			ParameterGroup parameterGroup) {
-		this(reportVersion, orderIndex,
+		this(null, reportVersion, orderIndex,
 				dataType, controlType, name, promptText, required, multivalued,
 				defaultValue, displayName, helpText, displayFormat, alignment,
 				hidden, valueConcealed, allowNewValues, displayInFixedOrder,
@@ -314,7 +336,40 @@ public class ReportParameter implements Serializable {
 				parameterGroup, DateUtils.nowUtc());
 	}
 
-	public ReportParameter(ReportVersion reportVersion, Integer orderIndex,
+	public ReportParameter(
+			ReportParameterResource reportParameterResource,
+			ReportVersion reportVersion,
+			ParameterGroup parameterGroup) {
+		this(
+				reportParameterResource.getReportParameterId(),
+				reportVersion,
+				reportParameterResource.getOrderIndex(),
+				reportParameterResource.getDataType(),
+				reportParameterResource.getControlType(),
+				reportParameterResource.getName(),
+				reportParameterResource.getPromptText(),
+				reportParameterResource.getRequired(),
+				reportParameterResource.getMultivalued(),
+				reportParameterResource.getDefaultValue(),
+				reportParameterResource.getDisplayName(),
+				reportParameterResource.getHelpText(),
+				reportParameterResource.getDisplayFormat(),
+				reportParameterResource.getAlignment(),
+				reportParameterResource.getHidden(),
+				reportParameterResource.getValueConcealed(),
+				reportParameterResource.getAllowNewValues(),
+				reportParameterResource.getDisplayInFixedOrder(),
+				reportParameterResource.getParameterType(),
+				reportParameterResource.getAutoSuggestThreshold(),
+				reportParameterResource.getSelectionListType(),
+				//reportParameterResource.getTypeName(),
+				reportParameterResource.getValueExpr(),
+				parameterGroup,
+				reportParameterResource.getCreatedOn()
+		);
+	}
+
+	public ReportParameter(UUID reportParameterId, ReportVersion reportVersion, Integer orderIndex,
 			Integer dataType, Integer controlType, String name, String promptText,
 			Boolean required, Boolean multivalued,
 			String defaultValue, String displayName, String helpText, String displayFormat, Integer alignment,
@@ -328,6 +383,7 @@ public class ReportParameter implements Serializable {
 			promptText = name + ":";// sensible default value
 		}
 
+		this.reportParameterId = reportParameterId;
 		this.reportVersion = reportVersion;
 		this.orderIndex = orderIndex;
 		this.dataType = dataType;
@@ -337,7 +393,6 @@ public class ReportParameter implements Serializable {
 		this.promptText = promptText;
 		this.required = required;
 		this.multivalued = multivalued;
-
 		this.defaultValue = defaultValue;
 		this.displayName = displayName;
 		this.helpText = helpText;
@@ -353,7 +408,6 @@ public class ReportParameter implements Serializable {
 		//		this.typeName = typeName;
 		this.valueExpr = valueExpr;
 		this.parameterGroup = parameterGroup;
-
 		this.createdOn = (createdOn != null) ? createdOn : DateUtils.nowUtc();
 	}
 

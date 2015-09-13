@@ -34,7 +34,7 @@ public class ParameterGroupResource extends AbstractBaseResource {
 	private String promptText;
 
 	@XmlElement
-	private Integer type;
+	private Integer groupType;
 
 	@XmlElement
 	@XmlJavaTypeAdapter(DateAdapter.class)
@@ -87,7 +87,7 @@ public class ParameterGroupResource extends AbstractBaseResource {
 			this.parameterGroupId = parameterGroup.getParameterGroupId();
 			this.name = parameterGroup.getName();
 			this.promptText = parameterGroup.getPromptText();
-			this.type = parameterGroup.getType();
+			this.groupType = parameterGroup.getGroupType();
 			this.createdOn = parameterGroup.getCreatedOn();
 		}
 		logger.debug("this = {}", this);
@@ -117,12 +117,12 @@ public class ParameterGroupResource extends AbstractBaseResource {
 		this.promptText = promptText;
 	}
 
-	public Integer getType() {
-		return type;
+	public Integer getGroupType() {
+		return groupType;
 	}
 
-	public void setType(Integer type) {
-		this.type = type;
+	public void setGroupType(Integer groupType) {
+		this.groupType = groupType;
 	}
 
 	public Date getCreatedOn() {
@@ -142,8 +142,8 @@ public class ParameterGroupResource extends AbstractBaseResource {
 		builder.append(name);
 		builder.append(", promptText=");
 		builder.append(promptText);
-		builder.append(", type=");
-		builder.append(type);
+		builder.append(", groupType=");
+		builder.append(groupType);
 		builder.append(", createdOn=");
 		builder.append(createdOn);
 		builder.append("]");

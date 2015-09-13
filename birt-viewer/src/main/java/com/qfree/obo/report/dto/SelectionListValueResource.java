@@ -109,4 +109,71 @@ public class SelectionListValueResource extends AbstractBaseResource {
 		}
 	}
 
+	public UUID getSelectionListValueId() {
+		return selectionListValueId;
+	}
+
+	public void setSelectionListValueId(UUID selectionListValueId) {
+		this.selectionListValueId = selectionListValueId;
+	}
+
+	public ReportParameterResource getReportParameterResource() {
+		return reportParameterResource;
+	}
+
+	public void setReportParameterResource(ReportParameterResource reportParameterResource) {
+		this.reportParameterResource = reportParameterResource;
+	}
+
+	public Integer getOrderIndex() {
+		return orderIndex;
+	}
+
+	public void setOrderIndex(Integer orderIndex) {
+		this.orderIndex = orderIndex;
+	}
+
+	public String getValueAssigned() {
+		return valueAssigned;
+	}
+
+	public void setValueAssigned(String valueAssigned) {
+		this.valueAssigned = valueAssigned;
+	}
+
+	public String getValueDisplayed() {
+		return valueDisplayed;
+	}
+
+	public void setValueDisplayed(String valueDisplayed) {
+		this.valueDisplayed = valueDisplayed;
+	}
+
+	public Date getCreatedOn() {
+		return createdOn;
+	}
+
+	public void setCreatedOn(Date createdOn) {
+		this.createdOn = createdOn;
+	}
+
+	@Override
+	public String toString() {
+		StringBuilder builder = new StringBuilder();
+		builder.append("SelectionListValueResource [selectionListValueId=");
+		builder.append(selectionListValueId);
+		builder.append(", reportParameterResource=");
+		builder.append(reportParameterResource);
+		builder.append(", orderIndex=");
+		builder.append(orderIndex);
+		builder.append(", valueAssigned=");
+		builder.append(valueAssigned);
+		builder.append(", valueDisplayed=");
+		builder.append(valueDisplayed);
+		builder.append(", createdOn=");
+		builder.append(createdOn);
+		builder.append("]");
+		return builder.toString();
+	}
+
 }

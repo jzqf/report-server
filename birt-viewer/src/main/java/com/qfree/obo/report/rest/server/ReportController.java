@@ -260,9 +260,6 @@ public class ReportController extends AbstractBaseController {
 		queryParams.put(ResourcePath.SHOWALL_QP_KEY, showAll);
 		RestApiVersion apiVersion = RestUtils.extractAPIVersion(acceptHeader, RestApiVersion.v1);
 
-		if (RestUtils.AUTO_EXPAND_PRIMARY_RESOURCES) {
-			addToExpandList(expand, Report.class);
-		}
 		Report report = reportRepository.findOne(id);
 		RestUtils.ifNullThen404(report, Report.class, "reportId", id.toString());
 		return new ReportVersionCollectionResource(report, uriInfo, queryParams, apiVersion);

@@ -65,7 +65,6 @@ public class ReportService {
 		 */
 		ReportCategoryResource reportCategoryResource = reportResource.getReportCategoryResource();
 		logger.debug("reportCategoryResource = {}", reportCategoryResource);
-
 		UUID reportCategoryId = reportCategoryResource.getReportCategoryId();
 		logger.debug("reportCategoryId = {}", reportCategoryId);
 		ReportCategory reportCategory = null;
