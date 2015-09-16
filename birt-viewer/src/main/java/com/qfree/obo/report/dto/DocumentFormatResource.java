@@ -47,7 +47,7 @@ public class DocumentFormatResource extends AbstractBaseResource {
 	private Boolean active;
 
 	@XmlElement
-	@XmlJavaTypeAdapter(DateAdapter.class)
+	@XmlJavaTypeAdapter(DatetimeAdapter.class)
 	private Date createdOn;
 
 	// @XmlElement(name = "subscriptions")

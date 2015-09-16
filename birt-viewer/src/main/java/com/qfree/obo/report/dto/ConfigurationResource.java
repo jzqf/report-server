@@ -1,6 +1,7 @@
 package com.qfree.obo.report.dto;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -24,8 +25,8 @@ public class ConfigurationResource extends AbstractBaseResource {
 	@XmlJavaTypeAdapter(UuidAdapter.class)
 	private UUID configurationId;
 
-	//	@XmlElement
-	//	private RoleResource roleResource;
+	@XmlElement(name = "role")
+	private RoleResource roleResource;
 
 	@XmlElement
 	private ParamName paramName;
@@ -47,7 +48,7 @@ public class ConfigurationResource extends AbstractBaseResource {
 	private Date dateValue;
 
 	@XmlElement
-	@XmlJavaTypeAdapter(DateAdapter.class)
+	@XmlJavaTypeAdapter(DatetimeAdapter.class)
 	private Date datetimeValue;
 
 	@XmlElement
@@ -69,11 +70,11 @@ public class ConfigurationResource extends AbstractBaseResource {
 	private String textValue;
 
 	@XmlElement
-	// @XmlJavaTypeAdapter(DateAdapter.class)
+	@XmlJavaTypeAdapter(TimeAdapter.class)
 	private Date timeValue;
 
 	@XmlElement
-	@XmlJavaTypeAdapter(DateAdapter.class)
+	@XmlJavaTypeAdapter(DatetimeAdapter.class)
 	private Date createdOn;
 
 	/*
@@ -115,7 +116,6 @@ public class ConfigurationResource extends AbstractBaseResource {
 			apiVersion = null;
 
 			this.configurationId = configuration.getConfigurationId();
-			//		this.role = configuration.getRole();
 			this.paramName = configuration.getParamName();
 			this.paramType = configuration.getParamType();
 			this.booleanValue = configuration.getBooleanValue();
@@ -132,6 +132,15 @@ public class ConfigurationResource extends AbstractBaseResource {
 			this.createdOn = configuration.getCreatedOn();
 
 			/*
+			 * A Configuration may not be associated with a Role. This is the
+			 * case for global defaults.
+			 */
+			if (configuration.getRole() != null) {
+				this.roleResource = new RoleResource(configuration.getRole(),
+						uriInfo, newQueryParams, apiVersion);
+			}
+
+			/*
 			 * Set "value" from appropriate field based on this.paramName.paramType()????????????????????????????????????????????????????????
 			 * No, set "value from configuration.getStringValue(), but this will not work for data type "bytea", 
 			 * so I will need to check this.paramName.paramType() for this case??????????????????????????????????????????????????????????????
@@ -143,9 +152,169 @@ public class ConfigurationResource extends AbstractBaseResource {
 		}
 	}
 
+	public UUID getConfigurationId() {
+		return configurationId;
+	}
+
+	public void setConfigurationId(UUID configurationId) {
+		this.configurationId = configurationId;
+	}
+
+	public RoleResource getRoleResource() {
+		return roleResource;
+	}
+
+	public void setRoleResource(RoleResource roleResource) {
+		this.roleResource = roleResource;
+	}
+
+	public ParamName getParamName() {
+		return paramName;
+	}
+
+	public void setParamName(ParamName paramName) {
+		this.paramName = paramName;
+	}
+
+	public ParamType getParamType() {
+		return paramType;
+	}
+
+	public void setParamType(ParamType paramType) {
+		this.paramType = paramType;
+	}
+
+	public Boolean getBooleanValue() {
+		return booleanValue;
+	}
+
+	public void setBooleanValue(Boolean booleanValue) {
+		this.booleanValue = booleanValue;
+	}
+
+	public byte[] getByteaValue() {
+		return byteaValue;
+	}
+
+	public void setByteaValue(byte[] byteaValue) {
+		this.byteaValue = byteaValue;
+	}
+
+	public Date getDateValue() {
+		return dateValue;
+	}
+
+	public void setDateValue(Date dateValue) {
+		this.dateValue = dateValue;
+	}
+
+	public Date getDatetimeValue() {
+		return datetimeValue;
+	}
+
+	public void setDatetimeValue(Date datetimeValue) {
+		this.datetimeValue = datetimeValue;
+	}
+
+	public Double getDoubleValue() {
+		return doubleValue;
+	}
+
+	public void setDoubleValue(Double doubleValue) {
+		this.doubleValue = doubleValue;
+	}
+
+	public Float getFloatValue() {
+		return floatValue;
+	}
+
+	public void setFloatValue(Float floatValue) {
+		this.floatValue = floatValue;
+	}
+
+	public Integer getIntegerValue() {
+		return integerValue;
+	}
+
+	public void setIntegerValue(Integer integerValue) {
+		this.integerValue = integerValue;
+	}
+
+	public Long getLongValue() {
+		return longValue;
+	}
+
+	public void setLongValue(Long longValue) {
+		this.longValue = longValue;
+	}
+
+	public String getStringValue() {
+		return stringValue;
+	}
+
+	public void setStringValue(String stringValue) {
+		this.stringValue = stringValue;
+	}
+
+	public String getTextValue() {
+		return textValue;
+	}
+
+	public void setTextValue(String textValue) {
+		this.textValue = textValue;
+	}
+
+	public Date getTimeValue() {
+		return timeValue;
+	}
+
+	public void setTimeValue(Date timeValue) {
+		this.timeValue = timeValue;
+	}
+
+	public Date getCreatedOn() {
+		return createdOn;
+	}
+
+	public void setCreatedOn(Date createdOn) {
+		this.createdOn = createdOn;
+	}
+
 	@Override
 	public String toString() {
-		return "ConfigurationResource [href=" + href + "]";
+		StringBuilder builder = new StringBuilder();
+		builder.append("ConfigurationResource [configurationId=");
+		builder.append(configurationId);
+		builder.append(", paramName=");
+		builder.append(paramName);
+		builder.append(", paramType=");
+		builder.append(paramType);
+		builder.append(", booleanValue=");
+		builder.append(booleanValue);
+		builder.append(", byteaValue=");
+		builder.append(Arrays.toString(byteaValue));
+		builder.append(", dateValue=");
+		builder.append(dateValue);
+		builder.append(", datetimeValue=");
+		builder.append(datetimeValue);
+		builder.append(", doubleValue=");
+		builder.append(doubleValue);
+		builder.append(", floatValue=");
+		builder.append(floatValue);
+		builder.append(", integerValue=");
+		builder.append(integerValue);
+		builder.append(", longValue=");
+		builder.append(longValue);
+		builder.append(", stringValue=");
+		builder.append(stringValue);
+		builder.append(", textValue=");
+		builder.append(textValue);
+		builder.append(", timeValue=");
+		builder.append(timeValue);
+		builder.append(", createdOn=");
+		builder.append(createdOn);
+		builder.append("]");
+		return builder.toString();
 	}
 
 }

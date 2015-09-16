@@ -40,7 +40,7 @@ public class RoleResource extends AbstractBaseResource {
 	private Boolean loginRole;
 
 	@XmlElement
-	@XmlJavaTypeAdapter(DateAdapter.class)
+	@XmlJavaTypeAdapter(DatetimeAdapter.class)
 	private Date createdOn;
 
 	public RoleResource() {

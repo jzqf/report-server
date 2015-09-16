@@ -106,7 +106,7 @@ public class SubscriptionParameterValueResource extends AbstractBaseResource {
 	private Integer durationToAddSeconds;
 
 	@XmlElement
-	@XmlJavaTypeAdapter(DateAdapter.class)
+	@XmlJavaTypeAdapter(DatetimeAdapter.class)
 	private Date createdOn;
 
 	public SubscriptionParameterValueResource() {

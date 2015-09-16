@@ -1,6 +1,7 @@
 package com.qfree.obo.report.service;
 
 import java.util.Date;
+import java.util.UUID;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -9,10 +10,16 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.qfree.obo.report.db.ConfigurationRepository;
+import com.qfree.obo.report.db.RoleRepository;
+import com.qfree.obo.report.domain.Configuration;
 import com.qfree.obo.report.domain.Configuration;
 import com.qfree.obo.report.domain.Configuration.ParamName;
 import com.qfree.obo.report.domain.Configuration.ParamType;
 import com.qfree.obo.report.domain.Role;
+import com.qfree.obo.report.dto.ConfigurationResource;
+import com.qfree.obo.report.dto.ConfigurationResource;
+import com.qfree.obo.report.dto.RoleResource;
+import com.qfree.obo.report.rest.server.RestUtils;
 
 @Component
 @Transactional
@@ -21,10 +28,14 @@ public class ConfigurationService {
 	private static final Logger logger = LoggerFactory.getLogger(ConfigurationService.class);
 
 	private final ConfigurationRepository configurationRepository;
+	private final RoleRepository roleRepository;
 
 	@Autowired
-	public ConfigurationService(ConfigurationRepository configurationRepository) {
+	public ConfigurationService(
+			ConfigurationRepository configurationRepository,
+			RoleRepository roleRepository) {
 		this.configurationRepository = configurationRepository;
+		this.roleRepository = roleRepository;
 	}
 
 	@Transactional(readOnly = true)
@@ -232,5 +243,72 @@ public class ConfigurationService {
 		}
 
 		configurationRepository.save(configuration);
+	}
+
+	@Transactional
+	public Configuration saveNewFromResource(ConfigurationResource configurationResource) {
+		logger.info("configurationResource = {}", configurationResource);
+
+		RestUtils.ifNewResourceIdNotNullThen403(
+				configurationResource.getConfigurationId(),
+				Configuration.class,
+				"configurationId",
+				configurationResource.getConfigurationId());
+
+		RestUtils.ifAttrNullThen403(configurationResource.getParamName(), Configuration.class,
+				"paramName");
+		RestUtils.ifAttrNullThen403(configurationResource.getParamType(), Configuration.class,
+				"paramType");
+
+		return saveOrUpdateFromResource(configurationResource);
+	}
+
+	@Transactional
+	public Configuration saveExistingFromResource(ConfigurationResource configurationResource) {
+		return saveOrUpdateFromResource(configurationResource);
+	}
+
+	@Transactional
+	public Configuration saveOrUpdateFromResource(ConfigurationResource configurationResource) {
+		logger.debug("configurationResource = {}", configurationResource);
+
+		/*
+		 * IMPORTANT:
+		 * 
+		 * Retrieve the RoleResource from configurationResource. This may be 
+		 * null, in which case there is nothing else to check. However, if the
+		 * RoleResource is not null, we assume here that the roleId attribute of
+		 * this object is set to the id of the Role that will we associated with
+		 * the Configuration entity that is be saved/created below. It is not 
+		 * necessary for any on the other RoleResource attributes to 
+		 * have non-null values.
+		 */
+		Role role = null;
+		RoleResource roleResource = configurationResource.getRoleResource();
+		logger.debug("roleResource = {}", roleResource);
+		if (roleResource != null) {
+			UUID roleId = roleResource.getRoleId();
+			logger.debug("roleId = {}", roleId);
+			if (roleId != null) {
+				role = roleRepository.findOne(roleId);
+				RestUtils.ifNullThen404(role, Role.class, "roleId", roleId.toString());
+			}
+		}
+
+		Configuration configuration = new Configuration(configurationResource, role);
+		logger.debug("configuration = {}", configuration);
+		/*
+		 * This "save" method will persist or merge the given entity using the
+		 * underlying JPA EntityManager. If the entity has not been persisted 
+		 * yet, Spring Data JPA will save the entity via a call to the 
+		 * entityManager.persist(...) method; otherwise, the 
+		 * entityManager.merge(...) method will be called. But since the id of
+		 * this entity is not set above, currently this will always save a new
+		 * Configuration.
+		 */
+		configuration = configurationRepository.save(configuration);
+		logger.debug("configuration (created/updated) = {}", configuration);
+
+		return configuration;
 	}
 }

@@ -105,7 +105,7 @@ public class ReportParameterResource extends AbstractBaseResource {
 	//	private List<JobParameterValue> jobParameterValues;
 
 	@XmlElement
-	@XmlJavaTypeAdapter(DateAdapter.class)
+	@XmlJavaTypeAdapter(DatetimeAdapter.class)
 	private Date createdOn;
 
 	public ReportParameterResource() {

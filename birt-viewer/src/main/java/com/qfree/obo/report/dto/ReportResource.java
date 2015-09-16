@@ -50,7 +50,7 @@ public class ReportResource extends AbstractBaseResource {
 	private Boolean active;
 
 	@XmlElement
-	@XmlJavaTypeAdapter(DateAdapter.class)
+	@XmlJavaTypeAdapter(DatetimeAdapter.class)
 	private Date createdOn;
 
 	public ReportResource() {

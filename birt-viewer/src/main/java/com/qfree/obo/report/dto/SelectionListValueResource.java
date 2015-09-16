@@ -44,7 +44,7 @@ public class SelectionListValueResource extends AbstractBaseResource {
 	private String valueDisplayed;
 
 	@XmlElement
-	@XmlJavaTypeAdapter(DateAdapter.class)
+	@XmlJavaTypeAdapter(DatetimeAdapter.class)
 	private Date createdOn;
 
 	public SelectionListValueResource() {
