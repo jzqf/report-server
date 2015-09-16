@@ -49,7 +49,7 @@ public class SubscriptionParameterValue implements Serializable {
 	@GenericGenerator(name = "uuid2", strategy = "uuid2")
 	@Column(name = "subscription_parameter_value_id", unique = true, nullable = false,
 			columnDefinition = "uuid DEFAULT uuid_generate_v4()")
-	private UUID subscriptionParameterValue;
+	private UUID subscriptionParameterValueId;
 
 	@ManyToOne
 	/*
@@ -77,9 +77,60 @@ public class SubscriptionParameterValue implements Serializable {
 			columnDefinition = "uuid")
 	private ReportParameter reportParameter;
 
+	/**
+	 * The parameter value to use, if its data type is "Boolean".
+	 */
+	@Column(name = "boolean_value", nullable = true)
+	private Boolean booleanValue;
+
+	/**
+	 * The parameter value to use, if its data type is "Date" <i>and</i> a fixed
+	 * date value is specified for the parameter.
+	 * 
+	 * This will not be used if the various SubscriptionParameterValue date
+	 * offset fields are used to generate a dynamic date value that depends on
+	 * when the report is run.
+	 */
+	@Temporal(TemporalType.DATE)
+	@Column(name = "date_value", nullable = true)
+	private Date dateValue;
+
+	/**
+	 * The parameter value to use, if its data type is "Datetime" <i>and</i> a
+	 * fixed datetime value is specified for the parameter.
+	 * 
+	 * This will not be used if the various SubscriptionParameterValue date
+	 * offset fields are used to generate a dynamic datetime value that depends
+	 * on when the report is run.
+	 */
+	@Temporal(TemporalType.TIMESTAMP)
+	@Column(name = "datetime_value", nullable = true)
+	private Date datetimeValue;
+
+	/**
+	 * The parameter value to use, if its data type is "Float".
+	 */
+	/*
+	 * TODO Can this also be used for report parameters of type "Decimal"?
+	 */
+	@Column(name = "float_value", nullable = true)
+	private Double floatValue;
+
+	/**
+	 * The parameter value to use, if its data type is "Integer".
+	 */
+	@Column(name = "integer_value", nullable = true)
+	private Integer integerValue;
+
+	/**
+	 * The parameter value to use, if its data type is "String".
+	 */
 	@Column(name = "string_value", nullable = true, length = 80)
 	private String stringValue;
 
+	/**
+	 * The parameter value to use, if its data type is "Time".
+	 */
 	@Temporal(TemporalType.TIME)
 	@Column(name = "time_value", nullable = true)
 	private Date timeValue;
@@ -87,32 +138,185 @@ public class SubscriptionParameterValue implements Serializable {
 	@Column(name = "year_number", nullable = true)
 	private Integer yearNumber;
 
-	@Column(name = "years_relative", nullable = true)
-	private Integer yearsRelative;
+	@Column(name = "years_ago", nullable = true)
+	private Integer yearsAgo;
 
 	@Column(name = "month_number", nullable = true)
 	private Integer monthNumber;
 
-	@Column(name = "months_relative", nullable = true)
-	private Integer monthsRelative;
+	@Column(name = "months_ago", nullable = true)
+	private Integer monthsAgo;
 
-	@Column(name = "week_of_month_number", nullable = true)
-	private Integer weekOfMonthNumber;
+	// @Column(name = "week_of_month_number", nullable = true)
+	// private Integer weekOfMonthNumber;
+	//
+	// @Column(name = "week_of_year_number", nullable = true)
+	// private Integer weekOfYearNumber;
 
-	@Column(name = "week_of_year_number", nullable = true)
-	private Integer weekOfYearNumber;
+	@Column(name = "weeks_ago", nullable = true)
+	private Integer weeksAgo;
 
-	@Column(name = "weeks_relative", nullable = true)
-	private Integer weeksRelative;
+	/**
+	 * Used to specify the N<sup>th</sup> occurrence of a day-of-week in a
+	 * month.
+	 * 
+	 * <p>
+	 * The day-of-week that this applies to is specified by
+	 * {@link #dayOfWeekInMonthNumber}.
+	 * 
+	 * <p>
+	 * Possible values:
+	 * 
+	 * <dl>
+	 * <dt>...</dt>
+	 * <dd>&nbsp;</dd>
+	 * <dt>-2:</dt>
+	 * <dd>2<sup>nd</sup> to last occurrence of the day-of-week in the current
+	 * month</dd>
+	 * <dt>-1:</dt>
+	 * <dd>Last occurrence of the day-of-week in the current month</dd>
+	 * </dl>
+	 * <dt>0:</dt>
+	 * <dd>Last occurrence of the day-of-week in the <i>previous</i> month</dd>
+	 * </dl>
+	 * <dt>1:</dt>
+	 * <dd>First occurrence of the day-of-week in the current month</dd>
+	 * <dt>2:</dt>
+	 * <dd>Second occurrence of the day-of-week in the current month</dd>
+	 * <dt>...</dt>
+	 * <dd></dd>
+	 * </dl>
+	 * 
+	 * <p>
+	 * The presence of "_in_month" in the field name refers to the behaviour
+	 * that after adjustment the date will be in the same month as before the
+	 * adjustment, unless this ordinal value is sufficiently large in absolute
+	 * value that it forces the date to be shifted to an earlier or later month.
+	 */
+	@Column(name = "day_of_week_in_month_ordinal", nullable = true)
+	private Integer dayOfWeekInMonthOrdinal;
 
+	/**
+	 * The day-of-week to use with {@link #dayOfWeekInMonthOrdinal}.
+	 * 
+	 * <p>
+	 * Possible values:
+	 * 
+	 * <dl>
+	 * <dt>1:</dt>
+	 * <dd>Monday</dd>
+	 * <dt>2:</dt>
+	 * <dd>Tuesday</dd>
+	 * <dt>3:</dt>
+	 * <dd>Wednesday</dd>
+	 * <dt>4:</dt>
+	 * <dd>Thursday</dd>
+	 * <dt>5:</dt>
+	 * <dd>Friday</dd>
+	 * <dt>6:</dt>
+	 * <dd>Saturday</dd>
+	 * <dt>7:</dt>
+	 * <dd>Sunday</dd>
+	 * </dl>
+	 * 
+	 * <p>
+	 * The presence of "_in_month" in the field name refers to the behaviour
+	 * that after adjustment the date will be in the same month as before the
+	 * adjustment, unless this ordinal value is sufficiently large in absolute
+	 * value that it forces the date to be shifted to an earlier or later month.
+	 */
+	@Column(name = "day_of_week_in_month_number", nullable = true)
+	private Integer dayOfWeekInMonthNumber;
+
+	/**
+	 * Use to shift the day of week within the current Monday-to-Sunday week,
+	 * even if it causes the month to change.
+	 */
 	@Column(name = "day_of_week_number", nullable = true)
 	private Integer dayOfWeekNumber;
 
 	@Column(name = "day_of_month_number", nullable = true)
 	private Integer dayOfMonthNumber;
 
-	@Column(name = "days_relative", nullable = true)
-	private Integer daysRelative;
+	@Column(name = "days_ago", nullable = true)
+	private Integer daysAgo;
+
+	/**
+	 * The number of years to shift a date or datetime forward after all other
+	 * date adjustments have been applied.
+	 * 
+	 * This can be used together with the other "duration_to_add" fields to
+	 * ensure that a "to" date is exactly a specified time period after a "from"
+	 * date.
+	 */
+	@Column(name = "duration_to_add_years", nullable = true)
+	private Integer durationToAddYears;
+
+	/**
+	 * The number of months to shift a date or datetime forward after all other
+	 * date adjustments have been applied.
+	 * 
+	 * This can be used together with the other "duration_to_add" fields to
+	 * ensure that a "to" date is exactly a specified time period after a "from"
+	 * date.
+	 */
+	@Column(name = "duration_to_add_months", nullable = true)
+	private Integer durationToAddMonths;
+
+	/**
+	 * The number of weeks (7-day periods) to shift a date or datetime forward
+	 * after all other date adjustments have been applied.
+	 * 
+	 * This can be used together with the other "duration_to_add" fields to
+	 * ensure that a "to" date is exactly a specified time period after a "from"
+	 * date.
+	 */
+	@Column(name = "duration_to_add_weeks", nullable = true)
+	private Integer durationToAddWeeks;
+
+	/**
+	 * The number of days to shift a date or datetime forward after all other
+	 * date adjustments have been applied.
+	 * 
+	 * This can be used together with the other "duration_to_add" fields to
+	 * ensure that a "to" date is exactly a specified time period after a "from"
+	 * date.
+	 */
+	@Column(name = "duration_to_add_days", nullable = true)
+	private Integer durationToAddDays;
+
+	/**
+	 * The number of hours to shift a datetime forward after all other date
+	 * adjustments have been applied.
+	 * 
+	 * This can be used together with the other "duration_to_add" fields to
+	 * ensure that a "to" date is exactly a specified time period after a "from"
+	 * date.
+	 */
+	@Column(name = "duration_to_add_hours", nullable = true)
+	private Integer durationToAddHours;
+
+	/**
+	 * The number of minutes to shift a datetime forward after all other date
+	 * adjustments have been applied.
+	 * 
+	 * This can be used together with the other "duration_to_add" fields to
+	 * ensure that a "to" date is exactly a specified time period after a "from"
+	 * date.
+	 */
+	@Column(name = "duration_to_add_minutes", nullable = true)
+	private Integer durationToAddMinutes;
+
+	/**
+	 * The number of seconds to shift a datetime forward after all other date
+	 * adjustments have been applied.
+	 * 
+	 * This can be used together with the other "duration_to_add" fields to
+	 * ensure that a "to" date is exactly a specified time period after a "from"
+	 * date.
+	 */
+	@Column(name = "duration_to_add_seconds", nullable = true)
+	private Integer durationToAddSeconds;
 
 	@NotNull
 	@Temporal(TemporalType.TIMESTAMP)
@@ -122,15 +326,121 @@ public class SubscriptionParameterValue implements Serializable {
 	public SubscriptionParameterValue() {
 	}
 
-	public SubscriptionParameterValue(Subscription subscription, ReportParameter reportParameter, String stringValue) {
-		this(subscription, reportParameter, stringValue, DateUtils.nowUtc());
+	public SubscriptionParameterValue(
+			Subscription subscription,
+			ReportParameter reportParameter,
+			Boolean booleanValue,
+			Date dateValue,
+			Date datetimeValue,
+			Double floatValue,
+			Integer integerValue,
+			String stringValue,
+			Date timeValue,
+			Integer yearNumber,
+			Integer yearsAgo,
+			Integer monthNumber,
+			Integer monthsAgo,
+			Integer weeksAgo,
+			Integer dayOfWeekInMonthOrdinal,
+			Integer dayOfWeekInMonthNumber,
+			Integer dayOfWeekNumber,
+			Integer dayOfMonthNumber,
+			Integer daysAgo,
+			Integer durationToAddYears,
+			Integer durationToAddMonths,
+			Integer durationToAddWeeks,
+			Integer durationToAddDays,
+			Integer durationToAddHours,
+			Integer durationToAddMinutes,
+			Integer durationToAddSeconds) {
+		this(
+				null,
+				subscription,
+				reportParameter,
+				booleanValue,
+				dateValue,
+				datetimeValue,
+				floatValue,
+				integerValue,
+				stringValue,
+				timeValue,
+				yearNumber,
+				yearsAgo,
+				monthNumber,
+				monthsAgo,
+				weeksAgo,
+				dayOfWeekInMonthOrdinal,
+				dayOfWeekInMonthNumber,
+				dayOfWeekNumber,
+				dayOfMonthNumber,
+				daysAgo,
+				durationToAddYears,
+				durationToAddMonths,
+				durationToAddWeeks,
+				durationToAddDays,
+				durationToAddHours,
+				durationToAddMinutes,
+				durationToAddSeconds,
+				DateUtils.nowUtc());
 	}
 
-	public SubscriptionParameterValue(Subscription subscription, ReportParameter reportParameter, String stringValue,
+	public SubscriptionParameterValue(
+			UUID subscriptionParameterValueId,
+			Subscription subscription,
+			ReportParameter reportParameter,
+			Boolean booleanValue,
+			Date dateValue,
+			Date datetimeValue,
+			Double floatValue,
+			Integer integerValue,
+			String stringValue,
+			Date timeValue,
+			Integer yearNumber,
+			Integer yearsAgo,
+			Integer monthNumber,
+			Integer monthsAgo,
+			Integer weeksAgo,
+			Integer dayOfWeekInMonthOrdinal,
+			Integer dayOfWeekInMonthNumber,
+			Integer dayOfWeekNumber,
+			Integer dayOfMonthNumber,
+			Integer daysAgo,
+			Integer durationToAddYears,
+			Integer durationToAddMonths,
+			Integer durationToAddWeeks,
+			Integer durationToAddDays,
+			Integer durationToAddHours,
+			Integer durationToAddMinutes,
+			Integer durationToAddSeconds,
 			Date createdOn) {
+		super();
+		this.subscriptionParameterValueId = subscriptionParameterValueId;
 		this.subscription = subscription;
 		this.reportParameter = reportParameter;
+		this.booleanValue = booleanValue;
+		this.dateValue = dateValue;
+		this.datetimeValue = datetimeValue;
+		this.floatValue = floatValue;
+		this.integerValue = integerValue;
 		this.stringValue = stringValue;
+		this.timeValue = timeValue;
+		this.yearNumber = yearNumber;
+		this.yearsAgo = yearsAgo;
+		this.monthNumber = monthNumber;
+		this.monthsAgo = monthsAgo;
+		this.weeksAgo = weeksAgo;
+		this.dayOfWeekInMonthOrdinal = dayOfWeekInMonthOrdinal;
+		this.dayOfWeekInMonthNumber = dayOfWeekInMonthNumber;
+		this.dayOfWeekNumber = dayOfWeekNumber;
+		this.dayOfMonthNumber = dayOfMonthNumber;
+		this.daysAgo = daysAgo;
+		this.durationToAddYears = durationToAddYears;
+		this.durationToAddMonths = durationToAddMonths;
+		this.durationToAddWeeks = durationToAddWeeks;
+		this.durationToAddDays = durationToAddDays;
+		this.durationToAddHours = durationToAddHours;
+		this.durationToAddMinutes = durationToAddMinutes;
+		this.durationToAddSeconds = durationToAddSeconds;
 		this.createdOn = (createdOn != null) ? createdOn : DateUtils.nowUtc();
 	}
 
@@ -142,10 +452,6 @@ public class SubscriptionParameterValue implements Serializable {
 		this.subscription = subscription;
 	}
 
-	public UUID getSubscriptionParameterValue() {
-		return this.subscriptionParameterValue;
-	}
-
 	public ReportParameter getReportParameter() {
 		return reportParameter;
 	}
@@ -154,23 +460,221 @@ public class SubscriptionParameterValue implements Serializable {
 		this.reportParameter = reportParameter;
 	}
 
-	public String getStringValue() {
-		return this.stringValue;
+	public Boolean getBooleanValue() {
+		return booleanValue;
 	}
 
-	public void setStringValue(String description) {
-		this.stringValue = description;
+	public void setBooleanValue(Boolean booleanValue) {
+		this.booleanValue = booleanValue;
+	}
+
+	public Date getDateValue() {
+		return dateValue;
+	}
+
+	public void setDateValue(Date dateValue) {
+		this.dateValue = dateValue;
+	}
+
+	public Date getDatetimeValue() {
+		return datetimeValue;
+	}
+
+	public void setDatetimeValue(Date datetimeValue) {
+		this.datetimeValue = datetimeValue;
+	}
+
+	public Double getFloatValue() {
+		return floatValue;
+	}
+
+	public void setFloatValue(Double floatValue) {
+		this.floatValue = floatValue;
+	}
+
+	public Integer getIntegerValue() {
+		return integerValue;
+	}
+
+	public void setIntegerValue(Integer integerValue) {
+		this.integerValue = integerValue;
+	}
+
+	public String getStringValue() {
+		return stringValue;
+	}
+
+	public void setStringValue(String stringValue) {
+		this.stringValue = stringValue;
+	}
+
+	public Date getTimeValue() {
+		return timeValue;
+	}
+
+	public void setTimeValue(Date timeValue) {
+		this.timeValue = timeValue;
+	}
+
+	public Integer getYearNumber() {
+		return yearNumber;
+	}
+
+	public void setYearNumber(Integer yearNumber) {
+		this.yearNumber = yearNumber;
+	}
+
+	public Integer getYearsAgo() {
+		return yearsAgo;
+	}
+
+	public void setYearsAgo(Integer yearsAgo) {
+		this.yearsAgo = yearsAgo;
+	}
+
+	public Integer getMonthNumber() {
+		return monthNumber;
+	}
+
+	public void setMonthNumber(Integer monthNumber) {
+		this.monthNumber = monthNumber;
+	}
+
+	public Integer getMonthsAgo() {
+		return monthsAgo;
+	}
+
+	public void setMonthsAgo(Integer monthsAgo) {
+		this.monthsAgo = monthsAgo;
+	}
+
+	public Integer getWeeksAgo() {
+		return weeksAgo;
+	}
+
+	public void setWeeksAgo(Integer weeksAgo) {
+		this.weeksAgo = weeksAgo;
+	}
+
+	public Integer getDayOfWeekInMonthOrdinal() {
+		return dayOfWeekInMonthOrdinal;
+	}
+
+	public void setDayOfWeekInMonthOrdinal(Integer dayOfWeekInMonthOrdinal) {
+		this.dayOfWeekInMonthOrdinal = dayOfWeekInMonthOrdinal;
+	}
+
+	public Integer getDayOfWeekInMonthNumber() {
+		return dayOfWeekInMonthNumber;
+	}
+
+	public void setDayOfWeekInMonthNumber(Integer dayOfWeekInMonthNumber) {
+		this.dayOfWeekInMonthNumber = dayOfWeekInMonthNumber;
+	}
+
+	public Integer getDayOfWeekNumber() {
+		return dayOfWeekNumber;
+	}
+
+	public void setDayOfWeekNumber(Integer dayOfWeekNumber) {
+		this.dayOfWeekNumber = dayOfWeekNumber;
+	}
+
+	public Integer getDayOfMonthNumber() {
+		return dayOfMonthNumber;
+	}
+
+	public void setDayOfMonthNumber(Integer dayOfMonthNumber) {
+		this.dayOfMonthNumber = dayOfMonthNumber;
+	}
+
+	public Integer getDaysAgo() {
+		return daysAgo;
+	}
+
+	public void setDaysAgo(Integer daysAgo) {
+		this.daysAgo = daysAgo;
+	}
+
+	public Integer getDurationToAddYears() {
+		return durationToAddYears;
+	}
+
+	public void setDurationToAddYears(Integer durationToAddYears) {
+		this.durationToAddYears = durationToAddYears;
+	}
+
+	public Integer getDurationToAddMonths() {
+		return durationToAddMonths;
+	}
+
+	public void setDurationToAddMonths(Integer durationToAddMonths) {
+		this.durationToAddMonths = durationToAddMonths;
+	}
+
+	public Integer getDurationToAddWeeks() {
+		return durationToAddWeeks;
+	}
+
+	public void setDurationToAddWeeks(Integer durationToAddWeeks) {
+		this.durationToAddWeeks = durationToAddWeeks;
+	}
+
+	public Integer getDurationToAddDays() {
+		return durationToAddDays;
+	}
+
+	public void setDurationToAddDays(Integer durationToAddDays) {
+		this.durationToAddDays = durationToAddDays;
+	}
+
+	public Integer getDurationToAddHours() {
+		return durationToAddHours;
+	}
+
+	public void setDurationToAddHours(Integer durationToAddHours) {
+		this.durationToAddHours = durationToAddHours;
+	}
+
+	public Integer getDurationToAddMinutes() {
+		return durationToAddMinutes;
+	}
+
+	public void setDurationToAddMinutes(Integer durationToAddMinutes) {
+		this.durationToAddMinutes = durationToAddMinutes;
+	}
+
+	public Integer getDurationToAddSeconds() {
+		return durationToAddSeconds;
+	}
+
+	public void setDurationToAddSeconds(Integer durationToAddSeconds) {
+		this.durationToAddSeconds = durationToAddSeconds;
+	}
+
+	public Date getCreatedOn() {
+		return createdOn;
+	}
+
+	public void setCreatedOn(Date createdOn) {
+		this.createdOn = createdOn;
+	}
+
+	public UUID getSubscriptionParameterValueId() {
+		return subscriptionParameterValueId;
 	}
 
 	@Override
 	public String toString() {
 		StringBuilder builder = new StringBuilder();
-		builder.append("SubscriptionParameterValue [subscription=");
+		builder.append("SubscriptionParameterValue [subscriptionParameterValueId=");
+		builder.append(subscriptionParameterValueId);
+		builder.append(", subscription=");
 		builder.append(subscription);
 		builder.append(", reportParameter=");
 		builder.append(reportParameter);
-		builder.append(", stringValue=");
-		builder.append(stringValue);
+		builder.append(", createdOn=");
+		builder.append(createdOn);
 		builder.append("]");
 		return builder.toString();
 	}

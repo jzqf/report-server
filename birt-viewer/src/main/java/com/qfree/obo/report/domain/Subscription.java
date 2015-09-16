@@ -94,13 +94,6 @@ public class Subscription implements Serializable {
 			columnDefinition = "uuid")
 	private DocumentFormat documentFormat;
 
-	/*
-	 * cascade = CascadeType.ALL:
-	 *     Deleting a Role will delete all of its SubscriptionParameterValue's.
-	 */
-	@OneToMany(mappedBy = "subscription", cascade = CascadeType.ALL)
-	private List<SubscriptionParameterValue> subscriptionParameterValues;
-
 	/**
 	 * "cron" expression used to specify the delivery schedule for the 
 	 * subscription. This can be specified instead of (or in addition to?) 
@@ -137,22 +130,59 @@ public class Subscription implements Serializable {
 	private String description;
 
 	@NotNull
+	@Column(name = "active", nullable = false)
+	private Boolean active;
+
+	@NotNull
 	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name = "created_on", nullable = false)
 	private Date createdOn;
 
+	/*
+	 * cascade = CascadeType.ALL:
+	 *     Deleting a Role will delete all of its SubscriptionParameterValue's.
+	 */
+	@OneToMany(mappedBy = "subscription", cascade = CascadeType.ALL)
+	private List<SubscriptionParameterValue> subscriptionParameterValues;
+
 	private Subscription() {
 	}
 
-	public Subscription(Role role, ReportVersion reportVersion, DocumentFormat documentFormat, String cronSchedule,
+	public Subscription(
+			Role role,
+			ReportVersion reportVersion,
+			DocumentFormat documentFormat,
+			String cronSchedule,
 			Date runOnceAt,
-			String email, String description) {
-		this(role, reportVersion, documentFormat, cronSchedule, runOnceAt, email, description, DateUtils.nowUtc());
+			String email,
+			String description,
+			Boolean active) {
+		this(
+				null,
+				role,
+				reportVersion,
+				documentFormat,
+				cronSchedule,
+				runOnceAt,
+				email,
+				description,
+				true,
+				DateUtils.nowUtc());
 	}
 
-	public Subscription(Role role, ReportVersion reportVersion, DocumentFormat documentFormat, String cronSchedule,
+	public Subscription(
+			UUID subscriptionId,
+			Role role,
+			ReportVersion reportVersion,
+			DocumentFormat documentFormat,
+			String cronSchedule,
 			Date runOnceAt,
-			String email, String description, Date createdOn) {
+			String email,
+			String description,
+			Boolean active,
+			Date createdOn) {
+		super();
+		this.subscriptionId = subscriptionId;
 		this.role = role;
 		this.reportVersion = reportVersion;
 		this.documentFormat = documentFormat;
@@ -160,31 +190,24 @@ public class Subscription implements Serializable {
 		this.runOnceAt = runOnceAt;
 		this.email = email;
 		this.description = description;
+		this.active = (active != null) ? active : true;
 		this.createdOn = (createdOn != null) ? createdOn : DateUtils.nowUtc();
 	}
 
-	public UUID getSubscriptionId() {
-		return this.subscriptionId;
-	}
-
-	public Date getCreatedOn() {
-		return this.createdOn;
-	}
-
-	public ReportVersion getReportVersion() {
-		return this.reportVersion;
-	}
-
-	public void setReportVersion(ReportVersion reportVersion) {
-		this.reportVersion = reportVersion;
-	}
-
 	public Role getRole() {
-		return this.role;
+		return role;
 	}
 
 	public void setRole(Role role) {
 		this.role = role;
+	}
+
+	public ReportVersion getReportVersion() {
+		return reportVersion;
+	}
+
+	public void setReportVersion(ReportVersion reportVersion) {
+		this.reportVersion = reportVersion;
 	}
 
 	public DocumentFormat getDocumentFormat() {
@@ -193,14 +216,6 @@ public class Subscription implements Serializable {
 
 	public void setDocumentFormat(DocumentFormat documentFormat) {
 		this.documentFormat = documentFormat;
-	}
-
-	public List<SubscriptionParameterValue> getSubscriptionParameterValues() {
-		return subscriptionParameterValues;
-	}
-
-	public void setSubscriptionParameterValues(List<SubscriptionParameterValue> subscriptionParameterValues) {
-		this.subscriptionParameterValues = subscriptionParameterValues;
 	}
 
 	public String getCronSchedule() {
@@ -235,13 +250,57 @@ public class Subscription implements Serializable {
 		this.description = description;
 	}
 
+	public Boolean getActive() {
+		return active;
+	}
+
+	public void setActive(Boolean active) {
+		this.active = active;
+	}
+
+	public Date getCreatedOn() {
+		return createdOn;
+	}
+
+	public void setCreatedOn(Date createdOn) {
+		this.createdOn = createdOn;
+	}
+
+	public List<SubscriptionParameterValue> getSubscriptionParameterValues() {
+		return subscriptionParameterValues;
+	}
+
+	public void setSubscriptionParameterValues(List<SubscriptionParameterValue> subscriptionParameterValues) {
+		this.subscriptionParameterValues = subscriptionParameterValues;
+	}
+
+	public UUID getSubscriptionId() {
+		return subscriptionId;
+	}
+
 	@Override
 	public String toString() {
 		StringBuilder builder = new StringBuilder();
-		builder.append("RoleReport [role=");
+		builder.append("Subscription [subscriptionId=");
+		builder.append(subscriptionId);
+		builder.append(", role=");
 		builder.append(role);
 		builder.append(", reportVersion=");
 		builder.append(reportVersion);
+		builder.append(", documentFormat=");
+		builder.append(documentFormat);
+		builder.append(", cronSchedule=");
+		builder.append(cronSchedule);
+		builder.append(", runOnceAt=");
+		builder.append(runOnceAt);
+		builder.append(", email=");
+		builder.append(email);
+		builder.append(", description=");
+		builder.append(description);
+		builder.append(", active=");
+		builder.append(active);
+		builder.append(", createdOn=");
+		builder.append(createdOn);
 		builder.append("]");
 		return builder.toString();
 	}

@@ -14,6 +14,7 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import com.qfree.obo.report.domain.Configuration;
 import com.qfree.obo.report.domain.Configuration.ParamName;
+import com.qfree.obo.report.domain.Configuration.ParamType;
 import com.qfree.obo.report.rest.server.RestUtils.RestApiVersion;
 
 @XmlRootElement
@@ -23,18 +24,57 @@ public class ConfigurationResource extends AbstractBaseResource {
 	@XmlJavaTypeAdapter(UuidAdapter.class)
 	private UUID configurationId;
 
-	@XmlElement
-	@XmlJavaTypeAdapter(DateAdapter.class)
-	private Date createdOn;
-
 	//	@XmlElement
 	//	private RoleResource roleResource;
 
 	@XmlElement
 	private ParamName paramName;
 
+	// @XmlElement
+	// private String value;
+
 	@XmlElement
-	private String value;
+	private ParamType paramType;
+
+	@XmlElement
+	private Boolean booleanValue;
+
+	@XmlElement
+	private byte[] byteaValue;
+
+	@XmlElement
+	@XmlJavaTypeAdapter(DateAdapter.class)
+	private Date dateValue;
+
+	@XmlElement
+	@XmlJavaTypeAdapter(DateAdapter.class)
+	private Date datetimeValue;
+
+	@XmlElement
+	private Double doubleValue;
+
+	@XmlElement
+	private Float floatValue;
+
+	@XmlElement
+	private Integer integerValue;
+
+	@XmlElement
+	private Long longValue;
+
+	@XmlElement
+	private String stringValue;
+
+	@XmlElement
+	private String textValue;
+
+	@XmlElement
+	// @XmlJavaTypeAdapter(DateAdapter.class)
+	private Date timeValue;
+
+	@XmlElement
+	@XmlJavaTypeAdapter(DateAdapter.class)
+	private Date createdOn;
 
 	/*
 	 * Required by JAXB
@@ -75,9 +115,22 @@ public class ConfigurationResource extends AbstractBaseResource {
 			apiVersion = null;
 
 			this.configurationId = configuration.getConfigurationId();
-			this.createdOn = configuration.getCreatedOn();
 			//		this.role = configuration.getRole();
 			this.paramName = configuration.getParamName();
+			this.paramType = configuration.getParamType();
+			this.booleanValue = configuration.getBooleanValue();
+			this.byteaValue = configuration.getByteaValue();
+			this.dateValue = configuration.getDateValue();
+			this.datetimeValue = configuration.getDatetimeValue();
+			this.doubleValue = configuration.getDoubleValue();
+			this.floatValue = configuration.getFloatValue();
+			this.integerValue = configuration.getIntegerValue();
+			this.longValue = configuration.getLongValue();
+			this.stringValue = configuration.getStringValue();
+			this.textValue = configuration.getTextValue();
+			this.timeValue = configuration.getTimeValue();
+			this.createdOn = configuration.getCreatedOn();
+
 			/*
 			 * Set "value" from appropriate field based on this.paramName.paramType()????????????????????????????????????????????????????????
 			 * No, set "value from configuration.getStringValue(), but this will not work for data type "bytea", 

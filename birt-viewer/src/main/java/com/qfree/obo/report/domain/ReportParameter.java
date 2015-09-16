@@ -20,6 +20,7 @@ import javax.persistence.TemporalType;
 import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.NotNull;
 
+import org.eclipse.birt.report.engine.api.IParameterDefn;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;
@@ -64,7 +65,7 @@ public class ReportParameter implements Serializable {
 	 */
 	@NotNull
 	@JoinColumn(name = "report_version_id", nullable = false,
-			foreignKey = @ForeignKey(name = "fk_reportparameter_report") ,
+			foreignKey = @ForeignKey(name = "fk_reportparameter_reportversion") ,
 			columnDefinition = "uuid")
 	private ReportVersion reportVersion;
 	//	@JoinColumn(name = "report_id", nullable = false,
@@ -105,18 +106,23 @@ public class ReportParameter implements Serializable {
 	@Column(name = "order_index", nullable = false)
 	private Integer orderIndex;
 
-	/*
+	/**
+	 * The data type of the report parameter.
+	 * 
+	 * <p>
 	 * Possible values for "DataType" are:
 	 * 
-	 *     IParameterDefn.TYPE_ANY       = 0
-	 *     IParameterDefn.TYPE_STRING    = 1
-	 *     IParameterDefn.TYPE_FLOAT     = 2
-	 *     IParameterDefn.TYPE_DECIMAL   = 3
-	 *     IParameterDefn.TYPE_DATE_TIME = 4
-	 *     IParameterDefn.TYPE_BOOLEAN   = 5
-	 *     IParameterDefn.TYPE_INTEGER   = 6
-	 *     IParameterDefn.TYPE_DATE      = 7
-	 *     IParameterDefn.TYPE_TIME      = 8
+	 * <ul>
+	 * <li>{@link IParameterDefn#TYPE_ANY} = 0
+	 * <li>{@link IParameterDefn#TYPE_STRING} = 1
+	 * <li>{@link IParameterDefn#TYPE_FLOAT} = 2
+	 * <li>{@link IParameterDefn#TYPE_DECIMAL} = 3
+	 * <li>{@link IParameterDefn#TYPE_DATE_TIME} = 4
+	 * <li>{@link IParameterDefn#TYPE_BOOLEAN} = 5
+	 * <li>{@link IParameterDefn#TYPE_INTEGER} = 6
+	 * <li>{@link IParameterDefn#TYPE_DATE} = 7
+	 * <li>{@link IParameterDefn#TYPE_TIME} = 8
+	 * </ul>
 	 */
 	@NotNull
 	@Column(name = "data_type", nullable = false)
@@ -238,7 +244,7 @@ public class ReportParameter implements Serializable {
 	private Integer autoSuggestThreshold;
 
 	/*
-	 * Specifies the type of the parameter selection list.		 * 
+	 * Specifies the type of the parameter selection list.
 	 *     IParameterDefn.SELECTION_LIST_NONE    = 0
 	 *     IParameterDefn.SELECTION_LIST_DYNAMIC = 1
 	 *     IParameterDefn.SELECTION_LIST_STATIC  = 2

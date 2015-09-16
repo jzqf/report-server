@@ -152,16 +152,20 @@ public class DocumentFormat implements Serializable {
 		this.createdOn = (createdOn != null) ? createdOn : DateUtils.nowUtc();
 	}
 
-	public UUID getDocumentFormatId() {
-		return documentFormatId;
+	public List<Subscription> getSubscriptions() {
+		return subscriptions;
 	}
 
-	public String getFileExtension() {
-		return fileExtension;
+	public void setSubscriptions(List<Subscription> subscriptions) {
+		this.subscriptions = subscriptions;
 	}
 
-	public void setFileExtension(String fileExtension) {
-		this.fileExtension = fileExtension;
+	public List<Job> getJobs() {
+		return jobs;
+	}
+
+	public void setJobs(List<Job> jobs) {
+		this.jobs = jobs;
 	}
 
 	public String getName() {
@@ -170,6 +174,14 @@ public class DocumentFormat implements Serializable {
 
 	public void setName(String name) {
 		this.name = name;
+	}
+
+	public String getFileExtension() {
+		return fileExtension;
+	}
+
+	public void setFileExtension(String fileExtension) {
+		this.fileExtension = fileExtension;
 	}
 
 	public String getMediaType() {
@@ -188,15 +200,15 @@ public class DocumentFormat implements Serializable {
 		this.birtFormat = birtFormat;
 	}
 
-	public Boolean isBinaryData() {
+	public Boolean getBinaryData() {
 		return binaryData;
 	}
 
-	public void setBinaryData(Boolean binary) {
-		this.binaryData = binary;
+	public void setBinaryData(Boolean binaryData) {
+		this.binaryData = binaryData;
 	}
 
-	public Boolean isActive() {
+	public Boolean getActive() {
 		return active;
 	}
 
@@ -204,20 +216,16 @@ public class DocumentFormat implements Serializable {
 		this.active = active;
 	}
 
-	public List<Subscription> getSubscriptions() {
-		return subscriptions;
+	public Date getCreatedOn() {
+		return createdOn;
 	}
 
-	public void setSubscriptions(List<Subscription> subscriptions) {
-		this.subscriptions = subscriptions;
+	public void setCreatedOn(Date createdOn) {
+		this.createdOn = createdOn;
 	}
 
-	public List<Job> getJobs() {
-		return jobs;
-	}
-
-	public void setJobs(List<Job> jobs) {
-		this.jobs = jobs;
+	public UUID getDocumentFormatId() {
+		return documentFormatId;
 	}
 
 	@Override

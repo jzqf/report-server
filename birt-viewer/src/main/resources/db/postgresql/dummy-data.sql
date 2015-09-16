@@ -2712,19 +2712,12 @@ insert into reporting.role_report (role_report_id, role_id, report_id, created_o
 --insert into reporting.configuration (configuration_id, param_name, role_id, param_type, time_value    , created_on) VALUES ('96a86f9a-da4e-4173-9267-94a68176bff0', 'TEST_TIME'     , 'ee56f34d-dbb4-41c1-9d30-ce29cf973820', 'TIME'     , '00:00:01'                , '2015-07-14T00:00:00');
 --
 --
-----------------------------------------------------------------------------------
----- [subscription]'s with relation to [report]:
------- Subscription #1:  Deliver report "Test Report #01" to role "aabb" in format "PDF":
-----insert into reporting.subscription (subscription_id, role_id, report_id, document_format_id, run_once_at, cron_schedule, email, description, created_on) values ('7f68e31c-2884-4638-b3e5-c64697a28bd1', 'ee56f34d-dbb4-41c1-9d30-ce29cf973820', 'd65f3d9c-f67d-4beb-9936-9dfa19aa1407', '30800d77-5fdd-44bc-94a3-1502bd307c1d', '2016-01-01T03:00:00', '00 6 * * 1', 'jeffreyz@q-free.com', 'Description for Subscription #1', '2015-06-06T15:45:30');
-----------------------------------------------------------------------------------
----- [subscription]'s with relation to [report_version]:
---insert into reporting.subscription (subscription_id, role_id, report_version_id, document_format_id, run_once_at, cron_schedule, email, description, created_on) values ('7f68e31c-2884-4638-b3e5-c64697a28bd1', 'ee56f34d-dbb4-41c1-9d30-ce29cf973820', 'dbc0883b-afe3-4147-87b4-0ed35869cd35', '30800d77-5fdd-44bc-94a3-1502bd307c1d', '2016-01-01T03:00:00', '00 6 * * 1', 'jeffreyz@q-free.com', 'Description for Subscription #1', '2015-06-06T15:45:30');
-----------------------------------------------------------------------------------
+--insert into reporting.subscription (subscription_id, role_id, report_version_id, document_format_id, run_once_at, cron_schedule, email, description, active, created_on) values ('7f68e31c-2884-4638-b3e5-c64697a28bd1', 'ee56f34d-dbb4-41c1-9d30-ce29cf973820', 'dbc0883b-afe3-4147-87b4-0ed35869cd35', '30800d77-5fdd-44bc-94a3-1502bd307c1d', '2016-01-01T03:00:00', '00 6 * * 1', 'jeffreyz@q-free.com', 'Description for Subscription #1', true, '2015-06-06T15:45:30');
 --
 --
 ---- [subscription_parameter_value] rows for [report_parameter]'s associated with 
 ---- [report] "Test Report #01" for [subscription] "Description for Subscription #1":
---insert into reporting.subscription_parameter_value (subscription_parameter_value_id, subscription_id, report_parameter_id, string_value, time_value, year_number, years_relative, month_number, months_relative, week_of_month_number, week_of_year_number, weeks_relative, day_of_month_number, day_of_week_number, days_relative, created_on) VALUES ('a5159f31-1c2b-496f-af04-bcb02cc04cfb', '7f68e31c-2884-4638-b3e5-c64697a28bd1', '206723d6-50e7-4f4a-85c0-cb679e92ad6b', 'integer value for Report01Param01 for subscription #1', null, null, null, null, null, null, null, null, null, null, null, '2015-03-15T11:00:01');
+--insert into reporting.subscription_parameter_value (subscription_parameter_value_id, subscription_id, report_parameter_id, string_value, time_value, year_number, years_ago, month_number, months_ago, weeks_ago, day_of_month_number, day_of_week_number, days_ago, created_on) VALUES ('a5159f31-1c2b-496f-af04-bcb02cc04cfb', '7f68e31c-2884-4638-b3e5-c64697a28bd1', '206723d6-50e7-4f4a-85c0-cb679e92ad6b', 'integer value for Report01Param01 for subscription #1', null, null, null, null, null, null, null, null, null, '2015-03-15T11:00:01');
 --
 --
 ----------------------------------------------------------------------------------
