@@ -37,9 +37,11 @@ public class SubscriptionParameterValueResource extends AbstractBaseResource {
 	private Boolean booleanValue;
 
 	@XmlElement
+	@XmlJavaTypeAdapter(DateAdapter.class)
 	private Date dateValue;
 
 	@XmlElement
+	@XmlJavaTypeAdapter(DatetimeAdapter.class)
 	private Date datetimeValue;
 
 	@XmlElement
@@ -52,6 +54,7 @@ public class SubscriptionParameterValueResource extends AbstractBaseResource {
 	private String stringValue;
 
 	@XmlElement
+	@XmlJavaTypeAdapter(TimeAdapter.class)
 	private Date timeValue;
 
 	@XmlElement

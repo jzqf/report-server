@@ -1,8 +1,6 @@
 package com.qfree.obo.report.dto;
 
 import java.text.SimpleDateFormat;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
 import java.time.format.DateTimeParseException;
 import java.util.Date;
 
@@ -10,6 +8,8 @@ import javax.xml.bind.annotation.adapters.XmlAdapter;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.qfree.obo.report.util.DateUtils;
 
 /**
  * Adapter class to serialize Java Date objects as strings that are formatted
@@ -38,7 +38,7 @@ public class DatetimeAdapter extends XmlAdapter<String, Date> {
 		 * difference from our client (or maybe server?) local time zone from 
 		 * UTC".
 		 */
-		//		format.setTimeZone(TimeZone.getTimeZone("UTC"));
+		// format.setTimeZone(TimeZone.getTimeZone("UTC"));
 		/* If we do not set "lenient" to false here, then the utcDateAsString 
 		 * "1958-05-06" will be parsed without throwing an exception even if 
 		 * the format string is set to "yyyyMMdd". However, in this case it will
@@ -47,7 +47,7 @@ public class DatetimeAdapter extends XmlAdapter<String, Date> {
 		 * date was specified.  The setLenient(false) call here ensures that the
 		 * date string strictly adheres to the specified format string.
 		 */
-		//		format.setLenient(false);
+		// format.setLenient(false);
 	}
 
 	@Override
@@ -137,14 +137,7 @@ public class DatetimeAdapter extends XmlAdapter<String, Date> {
 
 		if (utcDateAsString != null && !utcDateAsString.equals("")) {
 			try {
-				ZonedDateTime zonedDateTime = ZonedDateTime.parse(utcDateAsString);
-				logger.debug("zonedDateTime = {}", zonedDateTime);
-
-				Date unmarshalledDate = Date.from(zonedDateTime.withZoneSameLocal(ZoneId.systemDefault()).toInstant());
-				logger.debug("unmarshalledDate = {}", unmarshalledDate);
-
-				return unmarshalledDate;
-
+				return DateUtils.dateUtcFromIso8601String(utcDateAsString);
 			} catch (DateTimeParseException e) {
 				logger.error(
 						"Exception caught converting utcDateAsString to Date. utcDateAsString= \"{}\". Exception = ",

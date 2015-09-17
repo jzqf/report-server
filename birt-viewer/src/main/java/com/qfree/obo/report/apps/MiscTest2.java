@@ -1,9 +1,9 @@
 package com.qfree.obo.report.apps;
 
-import javax.ws.rs.core.UriBuilder;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.qfree.obo.report.util.DateUtils;
 
 public class MiscTest2 {
 
@@ -11,10 +11,14 @@ public class MiscTest2 {
 
 	public static void main(String[] args) {
 
-		String baseURI = "http:localhost:8080/report-server/rest";
+		System.out.println("DateUtils.nowUtc()  = " + DateUtils.nowUtc());
 
-		UriBuilder uriBuilder = UriBuilder.fromPath(baseURI).path("reportVersions");
+		System.out.println("DateUtils.dateUtcFromIso8601String(\"2015-05-30T12:00:00.000Z\")       = "
+				+ DateUtils.dateUtcFromIso8601String("2015-05-30T12:00:00.000Z"));
+		System.out.println("DateUtils.dateUtcFromIso8601String(\"2015-05-30T12:00:00.000+00:00\")  = "
+				+ DateUtils.dateUtcFromIso8601String("2015-05-30T12:00:00.000+00:00"));
+		System.out.println("DateUtils.dateUtcFromIso8601String(\"2015-05-30T12:00:00.000+02:00\")  = "
+				+ DateUtils.dateUtcFromIso8601String("2015-05-30T12:00:00.000+02:00"));
 
-		System.out.println("uriBuilder.toString() = " + uriBuilder.toString());
 	}
 }
