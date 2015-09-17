@@ -10,6 +10,8 @@ import com.qfree.obo.report.domain.ReportParameter;
 import com.qfree.obo.report.domain.ReportVersion;
 import com.qfree.obo.report.domain.Role;
 import com.qfree.obo.report.domain.SelectionListValue;
+import com.qfree.obo.report.domain.Subscription;
+import com.qfree.obo.report.domain.SubscriptionParameterValue;
 
 public enum ResourcePath {
 
@@ -52,7 +54,17 @@ public enum ResourcePath {
 			ResourcePath.SELECTIONLISTVALUES_PATH,
 			ResourcePath.SELECTIONLISTVALUE_EXPAND_PARAM,
 			ResourcePath.SELECTIONLISTVALUE_SHOWALL_PARAM,
-			SelectionListValue.class);
+			SelectionListValue.class),
+	SUBSCRIPTIONS(
+			ResourcePath.SUBSCRIPTIONS_PATH,
+			ResourcePath.SUBSCRIPTION_EXPAND_PARAM,
+			ResourcePath.SUBSCRIPTION_SHOWALL_PARAM,
+			Subscription.class),
+	SUBSCRIPTIONPARAMETERVALUES(
+			ResourcePath.SUBSCRIPTIONPARAMETERVALUES_PATH,
+			ResourcePath.SUBSCRIPTIONPARAMETERVALUE_EXPAND_PARAM,
+			ResourcePath.SUBSCRIPTIONPARAMETERVALUE_SHOWALL_PARAM,
+			SubscriptionParameterValue.class);
 
 	private static final String PATH_SEPARATOR = "/";
 
@@ -71,6 +83,9 @@ public enum ResourcePath {
 	public static final String REPORTS_PATH = ResourcePath.PATH_SEPARATOR + "reports";
 	public static final String ROLES_PATH = ResourcePath.PATH_SEPARATOR + "roles";
 	public static final String SELECTIONLISTVALUES_PATH = ResourcePath.PATH_SEPARATOR + "selectionListValues";
+	public static final String SUBSCRIPTIONS_PATH = ResourcePath.PATH_SEPARATOR + "subscriptions";
+	public static final String SUBSCRIPTIONPARAMETERVALUES_PATH = ResourcePath.PATH_SEPARATOR
+			+ "subscriptionParameterValues";
 
 	public static final String LOGINATTEMPTS_PATH = ResourcePath.PATH_SEPARATOR + "loginAttempts";
 
@@ -95,6 +110,8 @@ public enum ResourcePath {
 	public static final String REPORTVERSION_EXPAND_PARAM = "reportVersions";
 	public static final String ROLE_EXPAND_PARAM = "roles";
 	public static final String SELECTIONLISTVALUE_EXPAND_PARAM = "selectionListValues";
+	public static final String SUBSCRIPTION_EXPAND_PARAM = "subscriptions";
+	public static final String SUBSCRIPTIONPARAMETERVALUE_EXPAND_PARAM = "subscriptionParameterValues";
 	/*
 	 * Special "expand" parameter for the *field* ReportVersion.rptdesign.
 	 */
@@ -121,6 +138,8 @@ public enum ResourcePath {
 	public static final String REPORTVERSION_SHOWALL_PARAM = REPORTVERSION_EXPAND_PARAM;
 	public static final String ROLE_SHOWALL_PARAM = ROLE_EXPAND_PARAM;
 	public static final String SELECTIONLISTVALUE_SHOWALL_PARAM = SELECTIONLISTVALUE_EXPAND_PARAM;
+	public static final String SUBSCRIPTION_SHOWALL_PARAM = SUBSCRIPTION_EXPAND_PARAM;
+	public static final String SUBSCRIPTIONPARAMETERVALUE_SHOWALL_PARAM = SUBSCRIPTIONPARAMETERVALUE_EXPAND_PARAM;
 
 	/*
 	 * This is the name of query parameter used to specify the value(s) of

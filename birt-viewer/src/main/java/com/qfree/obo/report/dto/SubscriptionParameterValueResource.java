@@ -15,6 +15,7 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.qfree.obo.report.domain.Subscription;
 import com.qfree.obo.report.domain.SubscriptionParameterValue;
 import com.qfree.obo.report.rest.server.RestUtils.RestApiVersion;
 
@@ -194,5 +195,97 @@ public class SubscriptionParameterValueResource extends AbstractBaseResource {
 			this.durationToAddSeconds = subscriptionParameterValue.getDurationToAddSeconds();
 			this.createdOn = subscriptionParameterValue.getCreatedOn();
 		}
+	}
+
+	public static List<SubscriptionParameterValueResource> listFromSubscription(Subscription subscription,
+			UriInfo uriInfo, Map<String, List<String>> queryParams, RestApiVersion apiVersion) {
+		if (subscription.getSubscriptionParameterValues() != null) {
+			List<SubscriptionParameterValue> subscriptionParameterValues = subscription
+					.getSubscriptionParameterValues();
+			List<SubscriptionParameterValueResource> subscriptionParameterValueResources = new ArrayList<>(
+					subscriptionParameterValues.size());
+			for (SubscriptionParameterValue subscriptionParameterValue : subscriptionParameterValues) {
+				// List<String> showAll =
+				// queryParams.get(ResourcePath.SHOWALL_QP_KEY);
+				// if (subscriptionParameterValue.isActive() ||
+				// RestUtils.FILTER_INACTIVE_RECORDS == false ||
+				// ResourcePath.showAll(SubscriptionParameterValue.class,
+				// showAll)) {
+				subscriptionParameterValueResources.add(
+						new SubscriptionParameterValueResource(subscriptionParameterValue, uriInfo, queryParams,
+								apiVersion));
+				// }
+			}
+			return subscriptionParameterValueResources;
+		} else {
+			return null;
+		}
+	}
+
+	public static Logger getLogger() {
+		return logger;
+	}
+
+	@Override
+	public String toString() {
+		StringBuilder builder = new StringBuilder();
+		builder.append("SubscriptionParameterValueResource [subscriptionParameterValueId=");
+		builder.append(subscriptionParameterValueId);
+		builder.append(", subscriptionResource=");
+		builder.append(subscriptionResource);
+		builder.append(", reportParameterResource=");
+		builder.append(reportParameterResource);
+		builder.append(", booleanValue=");
+		builder.append(booleanValue);
+		builder.append(", dateValue=");
+		builder.append(dateValue);
+		builder.append(", datetimeValue=");
+		builder.append(datetimeValue);
+		builder.append(", floatValue=");
+		builder.append(floatValue);
+		builder.append(", integerValue=");
+		builder.append(integerValue);
+		builder.append(", stringValue=");
+		builder.append(stringValue);
+		builder.append(", timeValue=");
+		builder.append(timeValue);
+		builder.append(", yearNumber=");
+		builder.append(yearNumber);
+		builder.append(", yearsAgo=");
+		builder.append(yearsAgo);
+		builder.append(", monthNumber=");
+		builder.append(monthNumber);
+		builder.append(", monthsAgo=");
+		builder.append(monthsAgo);
+		builder.append(", weeksAgo=");
+		builder.append(weeksAgo);
+		builder.append(", dayOfWeekInMonthOrdinal=");
+		builder.append(dayOfWeekInMonthOrdinal);
+		builder.append(", dayOfWeekInMonthNumber=");
+		builder.append(dayOfWeekInMonthNumber);
+		builder.append(", dayOfWeekNumber=");
+		builder.append(dayOfWeekNumber);
+		builder.append(", dayOfMonthNumber=");
+		builder.append(dayOfMonthNumber);
+		builder.append(", daysAgo=");
+		builder.append(daysAgo);
+		builder.append(", durationToAddYears=");
+		builder.append(durationToAddYears);
+		builder.append(", durationToAddMonths=");
+		builder.append(durationToAddMonths);
+		builder.append(", durationToAddWeeks=");
+		builder.append(durationToAddWeeks);
+		builder.append(", durationToAddDays=");
+		builder.append(durationToAddDays);
+		builder.append(", durationToAddHours=");
+		builder.append(durationToAddHours);
+		builder.append(", durationToAddMinutes=");
+		builder.append(durationToAddMinutes);
+		builder.append(", durationToAddSeconds=");
+		builder.append(durationToAddSeconds);
+		builder.append(", createdOn=");
+		builder.append(createdOn);
+		builder.append("]");
+		return builder.toString();
 	}
 }

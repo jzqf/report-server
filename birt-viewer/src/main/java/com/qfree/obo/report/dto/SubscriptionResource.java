@@ -15,7 +15,9 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.qfree.obo.report.domain.DocumentFormat;
 import com.qfree.obo.report.domain.Subscription;
+import com.qfree.obo.report.rest.server.RestUtils;
 import com.qfree.obo.report.rest.server.RestUtils.RestApiVersion;
 
 @XmlRootElement
@@ -40,6 +42,7 @@ public class SubscriptionResource extends AbstractBaseResource {
 	private String cronSchedule;
 
 	@XmlElement
+	@XmlJavaTypeAdapter(DatetimeAdapter.class)
 	private Date runOnceAt;
 
 	@XmlElement
@@ -48,9 +51,8 @@ public class SubscriptionResource extends AbstractBaseResource {
 	@XmlElement
 	private String description;
 
-	// @XmlElement(name = "subscriptionParameterValues")
-	// private SubscriptionParameterValueCollectionResource
-	// subscriptionParameterValuesCollectionResource;
+	@XmlElement(name = "subscriptionParameterValues")
+	private SubscriptionParameterValueCollectionResource subscriptionParameterValuesCollectionResource;
 
 	@XmlElement
 	private Boolean active;
@@ -116,10 +118,148 @@ public class SubscriptionResource extends AbstractBaseResource {
 			this.description = subscription.getDescription();
 			this.active = subscription.getActive();
 			this.createdOn = subscription.getCreatedOn();
-			// this.subscriptionParameterValuesCollectionResource = new
-			// SubscriptionParameterValueCollectionResource(
-			// subscription, uriInfo, newQueryParams, apiVersion);
+			this.subscriptionParameterValuesCollectionResource = new SubscriptionParameterValueCollectionResource(
+					subscription, uriInfo, newQueryParams, apiVersion);
 		}
 	}
 
+	public static List<SubscriptionResource> listFromDocumentFormat(DocumentFormat documentFormat, UriInfo uriInfo,
+			Map<String, List<String>> queryParams, RestApiVersion apiVersion) {
+
+		if (documentFormat.getSubscriptions() != null) {
+			List<Subscription> subscriptions = documentFormat.getSubscriptions();
+			List<SubscriptionResource> subscriptionResources = new ArrayList<>(subscriptions.size());
+			for (Subscription subscription : subscriptions) {
+				List<String> showAll = queryParams.get(ResourcePath.SHOWALL_QP_KEY);
+				if (subscription.getActive() ||
+						RestUtils.FILTER_INACTIVE_RECORDS == false ||
+						ResourcePath.showAll(Subscription.class, showAll)) {
+					subscriptionResources.add(
+							new SubscriptionResource(subscription, uriInfo, queryParams, apiVersion));
+				}
+			}
+			return subscriptionResources;
+		} else {
+			return null;
+		}
+
+	}
+
+	public UUID getSubscriptionId() {
+		return subscriptionId;
+	}
+
+	public void setSubscriptionId(UUID subscriptionId) {
+		this.subscriptionId = subscriptionId;
+	}
+
+	public ReportVersionResource getReportVersionResource() {
+		return reportVersionResource;
+	}
+
+	public void setReportVersionResource(ReportVersionResource reportVersionResource) {
+		this.reportVersionResource = reportVersionResource;
+	}
+
+	public RoleResource getRoleResource() {
+		return roleResource;
+	}
+
+	public void setRoleResource(RoleResource roleResource) {
+		this.roleResource = roleResource;
+	}
+
+	public DocumentFormatResource getDocumentFormatResource() {
+		return documentFormatResource;
+	}
+
+	public void setDocumentFormatResource(DocumentFormatResource documentFormatResource) {
+		this.documentFormatResource = documentFormatResource;
+	}
+
+	public String getCronSchedule() {
+		return cronSchedule;
+	}
+
+	public void setCronSchedule(String cronSchedule) {
+		this.cronSchedule = cronSchedule;
+	}
+
+	public Date getRunOnceAt() {
+		return runOnceAt;
+	}
+
+	public void setRunOnceAt(Date runOnceAt) {
+		this.runOnceAt = runOnceAt;
+	}
+
+	public String getEmail() {
+		return email;
+	}
+
+	public void setEmail(String email) {
+		this.email = email;
+	}
+
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
+	}
+
+	public SubscriptionParameterValueCollectionResource getSubscriptionParameterValuesCollectionResource() {
+		return subscriptionParameterValuesCollectionResource;
+	}
+
+	public void setSubscriptionParameterValuesCollectionResource(
+			SubscriptionParameterValueCollectionResource subscriptionParameterValuesCollectionResource) {
+		this.subscriptionParameterValuesCollectionResource = subscriptionParameterValuesCollectionResource;
+	}
+
+	public Boolean getActive() {
+		return active;
+	}
+
+	public void setActive(Boolean active) {
+		this.active = active;
+	}
+
+	public Date getCreatedOn() {
+		return createdOn;
+	}
+
+	public void setCreatedOn(Date createdOn) {
+		this.createdOn = createdOn;
+	}
+
+	@Override
+	public String toString() {
+		StringBuilder builder = new StringBuilder();
+		builder.append("SubscriptionResource [subscriptionId=");
+		builder.append(subscriptionId);
+		builder.append(", reportVersionResource=");
+		builder.append(reportVersionResource);
+		builder.append(", roleResource=");
+		builder.append(roleResource);
+		builder.append(", documentFormatResource=");
+		builder.append(documentFormatResource);
+		builder.append(", cronSchedule=");
+		builder.append(cronSchedule);
+		builder.append(", runOnceAt=");
+		builder.append(runOnceAt);
+		builder.append(", email=");
+		builder.append(email);
+		builder.append(", description=");
+		builder.append(description);
+		builder.append(", subscriptionParameterValuesCollectionResource=");
+		builder.append(subscriptionParameterValuesCollectionResource);
+		builder.append(", active=");
+		builder.append(active);
+		builder.append(", createdOn=");
+		builder.append(createdOn);
+		builder.append("]");
+		return builder.toString();
+	}
 }

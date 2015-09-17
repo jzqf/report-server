@@ -50,8 +50,8 @@ public class DocumentFormatResource extends AbstractBaseResource {
 	@XmlJavaTypeAdapter(DatetimeAdapter.class)
 	private Date createdOn;
 
-	// @XmlElement(name = "subscriptions")
-	// private SubscriptionCollectionResource subscriptionCollectionResource;
+	@XmlElement(name = "subscriptions")
+	private SubscriptionCollectionResource subscriptionCollectionResource;
 
 	public DocumentFormatResource() {
 	}
@@ -96,11 +96,105 @@ public class DocumentFormatResource extends AbstractBaseResource {
 			this.binaryData = documentFormat.getBinaryData();
 			this.active = documentFormat.getActive();
 			this.createdOn = documentFormat.getCreatedOn();
-			// this.subscriptionCollectionResource = new
-			// SubscriptionCollectionResource(documentFormat,
-			// uriInfo, newQueryParams, apiVersion);
+			this.subscriptionCollectionResource = new SubscriptionCollectionResource(documentFormat,
+					uriInfo, newQueryParams, apiVersion);
 		}
 		logger.debug("this = {}", this);
+	}
+
+	public UUID getDocumentFormatId() {
+		return documentFormatId;
+	}
+
+	public void setDocumentFormatId(UUID documentFormatId) {
+		this.documentFormatId = documentFormatId;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public String getFileExtension() {
+		return fileExtension;
+	}
+
+	public void setFileExtension(String fileExtension) {
+		this.fileExtension = fileExtension;
+	}
+
+	public String getMediaType() {
+		return mediaType;
+	}
+
+	public void setMediaType(String mediaType) {
+		this.mediaType = mediaType;
+	}
+
+	public String getBirtFormat() {
+		return birtFormat;
+	}
+
+	public void setBirtFormat(String birtFormat) {
+		this.birtFormat = birtFormat;
+	}
+
+	public Boolean getBinaryData() {
+		return binaryData;
+	}
+
+	public void setBinaryData(Boolean binaryData) {
+		this.binaryData = binaryData;
+	}
+
+	public Boolean getActive() {
+		return active;
+	}
+
+	public void setActive(Boolean active) {
+		this.active = active;
+	}
+
+	public Date getCreatedOn() {
+		return createdOn;
+	}
+
+	public void setCreatedOn(Date createdOn) {
+		this.createdOn = createdOn;
+	}
+
+	public SubscriptionCollectionResource getSubscriptionCollectionResource() {
+		return subscriptionCollectionResource;
+	}
+
+	public void setSubscriptionCollectionResource(SubscriptionCollectionResource subscriptionCollectionResource) {
+		this.subscriptionCollectionResource = subscriptionCollectionResource;
+	}
+
+	@Override
+	public String toString() {
+		StringBuilder builder = new StringBuilder();
+		builder.append("DocumentFormatResource [documentFormatId=");
+		builder.append(documentFormatId);
+		builder.append(", name=");
+		builder.append(name);
+		builder.append(", fileExtension=");
+		builder.append(fileExtension);
+		builder.append(", mediaType=");
+		builder.append(mediaType);
+		builder.append(", birtFormat=");
+		builder.append(birtFormat);
+		builder.append(", binaryData=");
+		builder.append(binaryData);
+		builder.append(", active=");
+		builder.append(active);
+		builder.append(", createdOn=");
+		builder.append(createdOn);
+		builder.append("]");
+		return builder.toString();
 	}
 
 }

@@ -16,7 +16,6 @@ import com.qfree.obo.report.rest.server.RestUtils.RestApiVersion;
 
 @XmlRootElement
 public class ReportParameterCollectionResource extends AbstractCollectionResource<ReportParameterResource> {
-	//public class ReportParameterCollectionResource extends AbstractBaseResource {
 
 	private static final Logger logger = LoggerFactory.getLogger(ReportParameterCollectionResource.class);
 
@@ -38,14 +37,6 @@ public class ReportParameterCollectionResource extends AbstractCollectionResourc
 
 	public ReportParameterCollectionResource(List<ReportParameterResource> items, Class<?> entityClass,
 			UriInfo uriInfo, Map<String, List<String>> queryParams, RestApiVersion apiVersion) {
-		//
-		//		super(items, entityClass, uriInfo, expand, apiVersion);  // if class extends AbstractCollectionResource<ReportParameterResource>
-		//		//super(entityClass, null, uriInfo, expand, apiVersion);  // if class extends AbstractBaseResource
-		//
-		//		List<String> expand = queryParams.get(ResourcePath.EXPAND_QP_KEY);
-		//		if (ResourcePath.expand(entityClass, expand)) {
-		//			this.items = items;
-		//		}
 		this(items, entityClass, null, null, uriInfo, queryParams, apiVersion);
 	}
 
@@ -53,9 +44,7 @@ public class ReportParameterCollectionResource extends AbstractCollectionResourc
 			String baseResourceUri, String collectionPath,
 			UriInfo uriInfo, Map<String, List<String>> queryParams, RestApiVersion apiVersion) {
 
-		super(items, entityClass, baseResourceUri, collectionPath, uriInfo, queryParams, apiVersion);  // if class extends AbstractCollectionResource<ReportVersionResource>
-		//super(items, entityClass, uriInfo, expand, apiVersion);  // if class extends AbstractCollectionResource<ReportVersionResource>
-		//super(entityClass, null, uriInfo, expand, apiVersion);  // if class extends AbstractBaseResource
+		super(items, entityClass, baseResourceUri, collectionPath, uriInfo, queryParams, apiVersion);
 
 		List<String> expand = queryParams.get(ResourcePath.EXPAND_QP_KEY);
 		if (ResourcePath.expand(entityClass, expand)) {
