@@ -15,7 +15,8 @@ I.	===== Upgrading the report server database =====
 2.	Perform a backup of the report server database or of the entire PostgresQL 
 	cluster.
 
-3.	Log into the Tomcat host machine, either directly or via the ssh command.
+3.	Log into the PostgreSQL host machine, either directly or via the ssh 
+	command.
 
 4.	Execute the following in a bash shell from the upgrade_report_server 
 	directory:
