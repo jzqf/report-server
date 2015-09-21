@@ -1,8 +1,6 @@
 package com.qfree.obo.report.dto;
 
 import java.text.SimpleDateFormat;
-import java.time.LocalDate;
-import java.time.ZoneId;
 import java.time.format.DateTimeParseException;
 import java.util.Date;
 
@@ -10,6 +8,8 @@ import javax.xml.bind.annotation.adapters.XmlAdapter;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.qfree.obo.report.util.DateUtils;
 
 /**
  * Adapter class to serialize Java Date objects as strings that are formatted
@@ -102,17 +102,7 @@ public class DateAdapter extends XmlAdapter<String, Date> {
 
 		if (dateStringWithoutTime != null && !dateStringWithoutTime.isEmpty()) {
 			try {
-
-				LocalDate localDate = LocalDate.parse(dateStringWithoutTime);
-				logger.debug("localDate = {}", localDate);
-				/*
-				 * Convert LocalDate to Date, assuming the instant in time is
-				 * 
-				 */
-				Date unmarshalledDate = Date.from(localDate.atStartOfDay(ZoneId.of("Z")).toInstant());
-				logger.debug("unmarshalled java.util.Date = {}", unmarshalledDate);
-				return unmarshalledDate;
-
+				return DateUtils.dateFromDateStringWithoutTime(dateStringWithoutTime);
 			} catch (DateTimeParseException e) {
 				logger.error(
 						"Exception caught converting dateStringWithoutTime to Date. dateStringWithoutTime = \"{}\". Exception = ",

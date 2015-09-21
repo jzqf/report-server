@@ -1,10 +1,6 @@
 package com.qfree.obo.report.dto;
 
 import java.text.SimpleDateFormat;
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
 import java.time.format.DateTimeParseException;
 import java.util.Date;
 
@@ -12,6 +8,8 @@ import javax.xml.bind.annotation.adapters.XmlAdapter;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.qfree.obo.report.util.DateUtils;
 
 /**
  * Adapter class to serialize Java Date objects as strings that represent only
@@ -74,7 +72,7 @@ public class TimeAdapter extends XmlAdapter<String, Date> {
 
 	/**
 	 * This method unmarshals a String containing a time, e.g., "18:40:15" or
-	 * "18:40:15.123" to Java Date's.
+	 * "18:40:15.123" to Java Date objects.
 	 * 
 	 * The String comes from an attribute of a JSON resources. The JSON objects
 	 * are are submitted to this application via HTTP POST or PUT.
@@ -85,20 +83,7 @@ public class TimeAdapter extends XmlAdapter<String, Date> {
 
 		if (timeString != null && !timeString.equals("")) {
 			try {
-				LocalTime localTime = LocalTime.parse(timeString);
-				logger.debug("localTime = {}", localTime);
-
-				/*
-				 * Combine the local time with the LocalDate in the local time
-				 * zone. It seems to do the job.
-				 */
-				ZonedDateTime zonedDateTime = ZonedDateTime.of(LocalDate.now(), localTime, ZoneId.systemDefault());
-				logger.debug("zonedDateTime = {}", zonedDateTime);
-
-				Date unmarshalledDate = Date.from(zonedDateTime.toInstant());
-				logger.debug("unmarshalledDate = {}", unmarshalledDate);
-
-				return unmarshalledDate;
+				return DateUtils.dateFromTimeString(timeString);
 			} catch (DateTimeParseException e) {
 				logger.error("Exception caught converting timeString to Date. timeString = \"{}\". Exception = ",
 						timeString, e);

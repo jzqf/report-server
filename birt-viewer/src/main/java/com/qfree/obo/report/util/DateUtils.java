@@ -1,6 +1,7 @@
 package com.qfree.obo.report.util;
 
 import java.time.Instant;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.ZoneId;
@@ -112,9 +113,6 @@ public class DateUtils {
 		 *  2015-05-30T12:00Z             -> 2015-05-30T12:00
 		 *  2015-05-30T12:00Z             -> 2015-05-30T12:00
 		 *  2015-05-30T10:00Z             -> 2015-05-30T10:00
-		 *   
-		 * This LocalDateTime can now be expressed relative to the default
-		 * time zone.
 		 */
 		LocalDateTime localDateTimeUTC = zonedDateTimeAtUTC.toLocalDateTime();
 		logger.debug("localDateTimeUTC      = {}", localDateTimeUTC);
@@ -151,6 +149,93 @@ public class DateUtils {
 		// return
 		// org.joda.time.DateTime.parse(utcDateString).toDateTime(org.joda.time.DateTimeZone.UTC)
 		// .toLocalDateTime().toDate();
+	}
+
+	/**
+	 * Returns a {@link Date} by parsing an string that represents a date with
+	 * no time information.
+	 * 
+	 * <p>
+	 * <table>
+	 * <caption>Examples</caption> <thead>
+	 * <tr>
+	 * <td>String</td>
+	 * <td>{@link Date}</td>
+	 * </tr>
+	 * </thead> <tbody>
+	 * <tr>
+	 * <td>"1958-05-06"</td>
+	 * <td></td>
+	 * </tr>
+	 * </tbody>
+	 * </table>
+	 * 
+	 * @param dateStringWithoutTime
+	 * @return
+	 */
+	public static Date dateFromDateStringWithoutTime(String dateStringWithoutTime) throws DateTimeParseException {
+
+		logger.debug("-----------------------------------");
+		logger.debug("dateStringWithoutTime       = {}", dateStringWithoutTime);
+
+		LocalDate localDate = LocalDate.parse(dateStringWithoutTime);
+		logger.debug("localDate                   = {}", localDate);
+		/*
+		 * Convert LocalDate to Date, assuming the instant in time is
+		 * 
+		 */
+		// Date unmarshalledDate =
+		// Date.from(localDate.atStartOfDay(ZoneId.of("Z")).toInstant());
+		Date unmarshalledDate = Date.from(localDate.atStartOfDay(ZoneId.systemDefault()).toInstant());
+		logger.debug("unmarshalled java.util.Date = {}", unmarshalledDate);
+		return unmarshalledDate;
+	}
+
+	/**
+	 * Returns a {@link Date} by parsing an string that represents a time.
+	 * 
+	 * <p>
+	 * <table>
+	 * <caption>Examples</caption> <thead>
+	 * <tr>
+	 * <td>String</td>
+	 * <td>{@link Date}</td>
+	 * </tr>
+	 * </thead> <tbody>
+	 * <tr>
+	 * <td>"18:40:15"</td>
+	 * <td>Mon Sep 21 18:40:15 CEST 2015</td>
+	 * </tr>
+	 * <tr>
+	 * <td>"18:40:15.123"</td>
+	 * <td>Mon Sep 21 18:40:15 CEST 2015</td>
+	 * </tr>
+	 * </tbody>
+	 * </table>
+	 * 
+	 * @param timeString
+	 * @return
+	 */
+	public static Date dateFromTimeString(String timeString) throws DateTimeParseException {
+
+		logger.debug("-----------------------------------");
+		logger.debug("timeString         = {}", timeString);
+
+		LocalTime localTime = LocalTime.parse(timeString);
+		logger.debug("localTime          = {}", localTime);
+
+		 /*
+		 * Combine the local time with the LocalDate in the local time
+		 * zone. It seems to do the job.
+		 */
+		 ZonedDateTime zonedDateTime = ZonedDateTime.of(LocalDate.now(),
+		 localTime, ZoneId.systemDefault());
+		 logger.debug("zonedDateTime = {}", zonedDateTime);
+		
+		 Date unmarshalledDate = Date.from(zonedDateTime.toInstant());
+		 logger.debug("unmarshalledDate = {}", unmarshalledDate);
+
+		return unmarshalledDate;
 	}
 
 	/**
@@ -274,4 +359,24 @@ public class DateUtils {
 		// return lt1.equals(lt2);
 	}
 
+	public static void main(String[] args) {
+
+		System.out.println("DateUtils.nowUtc()  = " + DateUtils.nowUtc());
+
+		System.out.println("DateUtils.dateUtcFromIso8601String(\"2015-05-30T12:00:00.000Z\")       = "
+				+ DateUtils.dateUtcFromIso8601String("2015-05-30T12:00:00.000Z"));
+		System.out.println("DateUtils.dateUtcFromIso8601String(\"2015-05-30T12:00:00.000+00:00\")  = "
+				+ DateUtils.dateUtcFromIso8601String("2015-05-30T12:00:00.000+00:00"));
+		System.out.println("DateUtils.dateUtcFromIso8601String(\"2015-05-30T12:00:00.000+02:00\")  = "
+				+ DateUtils.dateUtcFromIso8601String("2015-05-30T12:00:00.000+02:00"));
+
+		System.out.println("DateUtils.dateFromDateStringWithoutTime(\"1958-05-06\")      = "
+				+ DateUtils.dateFromDateStringWithoutTime("1958-05-06"));
+
+		System.out.println("DateUtils.dateFromTimeString(\"18:40:15\")      = "
+				+ DateUtils.dateFromTimeString("18:40:15"));
+		System.out.println("DateUtils.dateFromTimeString(\"18:40:15.123\")  = "
+				+ DateUtils.dateFromTimeString("18:40:15.123"));
+
+	}
 }
