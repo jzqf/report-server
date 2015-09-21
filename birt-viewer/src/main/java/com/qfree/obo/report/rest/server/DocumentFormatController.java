@@ -20,6 +20,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.qfree.obo.report.db.DocumentFormatRepository;
 import com.qfree.obo.report.domain.DocumentFormat;
@@ -52,7 +53,12 @@ public class DocumentFormatController extends AbstractBaseController {
 	 *   $ mvn clean spring-boot:run
 	 *   $ curl -i -H "Accept: application/json;v=1" -X GET \
 	 *   http://localhost:8080/rest/documentFormats?expand=documentFormats
+	 *   
+	 * @Transactional is used to avoid org.hibernate.LazyInitializationException
+	 * being thrown when evaluating documentFormat.getSubscriptions() in
+	 * SubscriptionResource.listFromDocumentFormat(...).
 	 */
+	@Transactional
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	public DocumentFormatCollectionResource getList(
@@ -119,9 +125,14 @@ public class DocumentFormatController extends AbstractBaseController {
 	 * This endpoint can be tested with:
 	 * 
 	 *   $ mvn clean spring-boot:run
-	//	 *   $ curl -i -H "Accept: application/json;v=1" -X GET \
-	//	 *   http://localhost:8081/report-server/rest/documentFormats/7a482694-51d2-42d0-b0e2-19dd13bbbc64?expand=documentFormats
+	 *   $ curl -i -H "Accept: application/json;v=1" -X GET \
+	 *   http://localhost:8081/report-server/rest/documentFormats/7a482694-51d2-42d0-b0e2-19dd13bbbc64?expand=documentFormats
+	 *   
+	 * @Transactional is used to avoid org.hibernate.LazyInitializationException
+	 * being thrown when evaluating documentFormat.getSubscriptions() in
+	 * SubscriptionResource.listFromDocumentFormat(...).
 	 */
+	@Transactional
 	@Path("/{id}")
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
