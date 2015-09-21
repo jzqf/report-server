@@ -20,6 +20,7 @@ import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;
 import org.hibernate.validator.constraints.NotBlank;
 
+import com.qfree.obo.report.dto.DocumentFormatResource;
 import com.qfree.obo.report.util.DateUtils;
 
 /**
@@ -133,16 +134,30 @@ public class DocumentFormat implements Serializable {
 	}
 
 	public DocumentFormat(String name, String fileExtension, String mediaType, String birtFormat, Boolean binary) {
-		this(name, fileExtension, mediaType, birtFormat, binary, true, DateUtils.nowUtc());
+		this(null, name, fileExtension, mediaType, birtFormat, binary, true, DateUtils.nowUtc());
 	}
 
 	public DocumentFormat(String name, String fileExtension, String mediaType, String birtFormat, Boolean binary,
 			Boolean active) {
-		this(name, fileExtension, mediaType, birtFormat, binary, active, DateUtils.nowUtc());
+		this(null, name, fileExtension, mediaType, birtFormat, binary, active, DateUtils.nowUtc());
 	}
 
-	public DocumentFormat(String name, String fileExtension, String mediaType, String birtFormat, Boolean binary,
+	public DocumentFormat(DocumentFormatResource documentFormatResource) {
+		this(
+				documentFormatResource.getDocumentFormatId(),
+				documentFormatResource.getName(),
+				documentFormatResource.getFileExtension(),
+				documentFormatResource.getMediaType(),
+				documentFormatResource.getBirtFormat(),
+				documentFormatResource.getBinaryData(),
+				documentFormatResource.getActive(),
+				documentFormatResource.getCreatedOn());
+	}
+
+	public DocumentFormat(UUID documentFormatId, String name, String fileExtension, String mediaType, String birtFormat,
+			Boolean binary,
 			Boolean active, Date createdOn) {
+		this.documentFormatId = documentFormatId;
 		this.name = name;
 		this.fileExtension = fileExtension;
 		this.mediaType = mediaType;
