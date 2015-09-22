@@ -15,7 +15,8 @@ I.	===== Upgrading the report server database =====
 2.	Perform a backup of the report server database or of the entire PostgresQL 
 	cluster.
 
-3.	Log into the Tomcat host machine, either directly or via the ssh command.
+3.	Log into the PostgreSQL host machine, either directly or via the ssh 
+	command.
 
 4.	Execute the following in a bash shell from the upgrade_report_server 
 	directory:
@@ -44,7 +45,12 @@ I.	===== Upgrading the report server database =====
 	the default database name and TCP port, but these can be overridden, if 
 	necessary, using command line options.
 	
-5.	Start the report server application using the administrative HTML interface.
+5.	Do not restart the report server application yet. This will be done below
+	when the new application, packaged as report-server.war, is deployed. 
+	
+	If the application is started now, it will likely fail database validation 
+	tests because the old version of the application will not be aware of the 
+	new database structure.
 
 
 II.	===== Upgrading the report server application =====
