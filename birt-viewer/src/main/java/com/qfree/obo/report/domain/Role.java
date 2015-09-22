@@ -51,7 +51,7 @@ public class Role implements Serializable {
 
 	@NotNull
 	@Column(name = "login_role", nullable = false)
-	private boolean loginRole;
+	private Boolean loginRole;
 
 	@NotBlank
 	@Column(name = "username", nullable = false, length = 32)
@@ -66,6 +66,15 @@ public class Role implements Serializable {
 	@NotBlank
 	@Column(name = "encoded_password", nullable = false, length = 32)
 	private String encodedPassword;
+
+	/**
+	 * E-mail address to associate with the role. This can be used to
+	 * automatically set the email address for a newly created report
+	 * subscription.
+	 */
+	// @NotBlank
+	@Column(name = "email", nullable = true, length = 160)
+	private String email;
 
 	@OneToMany(targetEntity = RoleRole.class, mappedBy = "parentRole")
 	private List<RoleRole> parentRoleRoles;
@@ -116,13 +125,33 @@ public class Role implements Serializable {
 	private Role() {
 	}
 
-	public Role(String encodedPassword, String username, String fullName, boolean loginRole) {
-		this(encodedPassword, username, fullName, loginRole, DateUtils.nowUtc());
+	public Role(String encodedPassword, String username, String fullName, Boolean loginRole) {
+		this(
+				null,
+				encodedPassword,
+				username,
+				fullName,
+				loginRole,
+				null,
+				DateUtils.nowUtc());
 	}
 
-	public Role(String encodedPassword, String username, String fullName, boolean loginRole, Date createdOn) {
-		this(null, encodedPassword, username, fullName, loginRole, createdOn);
-	}
+	//	public Role(
+	//			String encodedPassword,
+	//			String username,
+	//			String fullName,
+	//			Boolean loginRole,
+	//			String email,
+	//			Date createdOn) {
+	//		this(
+	//				null,
+	//				encodedPassword,
+	//				username,
+	//				fullName,
+	//				loginRole,
+	//				email,
+	//				createdOn);
+	//	}
 
 	public Role(RoleResource roleResource) {
 		this(
@@ -131,15 +160,24 @@ public class Role implements Serializable {
 				roleResource.getUsername(),
 				roleResource.getFullName(),
 				roleResource.isLoginRole(),
+				roleResource.getEmail(),
 				roleResource.getCreatedOn());
 	}
 
-	public Role(UUID roleId, String encodedPassword, String username, String fullName, boolean loginRole, Date createdOn) {
+	public Role(
+			UUID roleId,
+			String encodedPassword,
+			String username,
+			String fullName,
+			Boolean loginRole,
+			String email,
+			Date createdOn) {
 		this.roleId = roleId;
 		this.loginRole = loginRole;
 		this.username = username;
 		this.fullName = fullName;
 		this.encodedPassword = encodedPassword;
+		this.email = email;
 		this.createdOn = (createdOn != null) ? createdOn : DateUtils.nowUtc();
 	}
 
@@ -171,12 +209,20 @@ public class Role implements Serializable {
 		this.fullName = fullName;
 	}
 
-	public boolean isLoginRole() {
+	public Boolean isLoginRole() {
 		return loginRole;
 	}
 
-	public void setLoginRole(boolean loginRole) {
+	public void setLoginRole(Boolean loginRole) {
 		this.loginRole = loginRole;
+	}
+
+	public String getEmail() {
+		return email;
+	}
+
+	public void setEmail(String email) {
+		this.email = email;
 	}
 
 	public Date getCreatedOn() {
@@ -252,9 +298,12 @@ public class Role implements Serializable {
 		builder.append(fullName);
 		builder.append(", encodedPassword=");
 		builder.append(encodedPassword);
+		builder.append(", email=");
+		builder.append(email);
 		builder.append(", createdOn=");
 		builder.append(createdOn);
 		builder.append("]");
 		return builder.toString();
 	}
+
 }
