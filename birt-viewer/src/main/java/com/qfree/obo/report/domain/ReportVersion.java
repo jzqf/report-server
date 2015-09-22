@@ -252,10 +252,6 @@ public class ReportVersion implements Serializable {
 		return createdOn;
 	}
 
-	public void setCreatedOn(Date createdOn) {
-		this.createdOn = createdOn;
-	}
-
 	@Override
 	public String toString() {
 		StringBuilder builder = new StringBuilder();

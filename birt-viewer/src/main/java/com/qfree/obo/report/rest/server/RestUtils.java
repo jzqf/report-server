@@ -101,22 +101,58 @@ public class RestUtils {
 	}
 
 	public static void ifAttrNullOrBlankThen403(Object object, Class<?> objectClass, String attrName) {
-		//TODO Create different messages based on which arguments are not null.
+		/*
+		 * Create different messages based on whether "object is null or blank,
+		 * and based on which which arguments passed to this method are not 
+		 * null.
+		 */
 		if (object == null || (object instanceof String && object.toString().isEmpty())) {
 			String message = null;
-			if (objectClass != null && attrName != null) {
-				message = String.format("Attribute '%s' of %s is null or blank",
-						attrName, objectClass.getSimpleName());
-			} else if (objectClass != null) {
-				message = String.format("An attribute %s is null or blank",
-						objectClass.getSimpleName());
-			} else if (attrName != null) {
-				message = String.format("'%s' is null or blank", attrName);
-			} else {
-				message = RestError.FORBIDDEN_ATTRIBUTE_NULL_OR_BLANK.getErrorMessage();
+			if (object == null) {
+				if (objectClass != null && attrName != null) {
+					message = String.format("Attribute '%s' of %s is null", attrName, objectClass.getSimpleName());
+				} else if (objectClass != null) {
+					message = String.format("An attribute %s is null", objectClass.getSimpleName());
+				} else if (attrName != null) {
+					message = String.format("'%s' is null", attrName);
+				} else {
+					message = RestError.FORBIDDEN_ATTRIBUTE_NULL.getErrorMessage();
+				}
+				throw new RestApiException(RestError.FORBIDDEN_ATTRIBUTE_NULL, message, objectClass, attrName,
+						null);
+			} else if (object instanceof String && object.toString().isEmpty()) {
+				if (objectClass != null && attrName != null) {
+					message = String.format("Attribute '%s' of %s is blank", attrName, objectClass.getSimpleName());
+				} else if (objectClass != null) {
+					message = String.format("An attribute %s is blank", objectClass.getSimpleName());
+				} else if (attrName != null) {
+					message = String.format("'%s' is blank", attrName);
+				} else {
+					message = RestError.FORBIDDEN_ATTRIBUTE_BLANK.getErrorMessage();
+				}
+				throw new RestApiException(RestError.FORBIDDEN_ATTRIBUTE_BLANK, message, objectClass, attrName,
+						null);
 			}
-			logger.debug("message = {}", message);
-			throw new RestApiException(RestError.FORBIDDEN_ATTRIBUTE_NULL_OR_BLANK, message, objectClass, attrName,
+		}
+	}
+
+	public static void ifAttrNullThen403(Object object, Class<?> objectClass, String attrName) {
+		/*
+		 * Create different messages based on on which which arguments passed to
+		 * this method are not null.
+		 */
+		if (object == null) {
+			String message = null;
+			if (objectClass != null && attrName != null) {
+				message = String.format("Attribute '%s' of %s is null", attrName, objectClass.getSimpleName());
+			} else if (objectClass != null) {
+				message = String.format("An attribute %s is null", objectClass.getSimpleName());
+			} else if (attrName != null) {
+				message = String.format("'%s' is null", attrName);
+			} else {
+				message = RestError.FORBIDDEN_ATTRIBUTE_NULL.getErrorMessage();
+			}
+			throw new RestApiException(RestError.FORBIDDEN_ATTRIBUTE_NULL, message, objectClass, attrName,
 					null);
 		}
 	}

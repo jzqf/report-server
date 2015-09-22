@@ -3,13 +3,15 @@ package com.qfree.obo.report.db;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
-import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertThat;
 
 import java.util.List;
 import java.util.UUID;
 
+import org.eclipse.birt.report.engine.api.IParameterDefn;
+import org.eclipse.birt.report.engine.api.IParameterDefnBase;
+import org.eclipse.birt.report.engine.api.IScalarParameterDefn;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
@@ -20,11 +22,10 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.qfree.obo.report.ApplicationConfig;
-import com.qfree.obo.report.domain.ParameterType;
+import com.qfree.obo.report.domain.ParameterGroup;
 import com.qfree.obo.report.domain.Report;
 import com.qfree.obo.report.domain.ReportParameter;
 import com.qfree.obo.report.domain.ReportVersion;
-import com.qfree.obo.report.domain.Widget;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = ApplicationConfig.class)
@@ -38,12 +39,6 @@ public class ReportParameterRepositoryTests {
 
 	@Autowired
 	ReportRepository reportRepository;
-
-	@Autowired
-	WidgetRepository widgetRepository;
-
-	@Autowired
-	ParameterTypeRepository parameterTypeRepository;
 
 	@Test
 	@Transactional
@@ -76,13 +71,6 @@ public class ReportParameterRepositoryTests {
 		ReportVersion report04Version01 = report04.getReportVersions().get(0);
 		assertThat(report04Version01, is(not(nullValue())));
 
-		UUID uuidOfWidget1 = UUID.fromString("b8e91527-8b0e-4ed2-8cba-8cb8989ba8e2");
-		Widget widget1 = widgetRepository.findOne(uuidOfWidget1);
-		assertThat(widget1, is(notNullValue()));
-
-		UUID uuidOfParameterTypeDate = UUID.fromString("12d3f4f8-468d-4faf-be3a-5c15eaba4eb6");
-		ParameterType parameterTypeDate = parameterTypeRepository.findOne(uuidOfParameterTypeDate);
-
 		/* Query for the current maximum value of orderIndex for all 
 		 * ReportParameter's for report04. This should be equal to the number of
 		 * ReportParameter's for report04 because orderIndex is 1-based and 
@@ -92,16 +80,46 @@ public class ReportParameterRepositoryTests {
 		Integer maxOrderIndex = reportParameterRepository.maxOrderIndex(report04Version01);
 		assertThat(maxOrderIndex, is(equalTo(1)));
 
+		Integer dataType_Date = IParameterDefn.TYPE_DATE;
+		Integer controlType_Checkbox = IScalarParameterDefn.CHECK_BOX;
 		Boolean required = true;
 		Boolean multivalued = false;
+		
+		String defaultValue=null;
+		String displayName= null;
+		String helpText= null;
+		String displayFormat=null;
+		Integer alignment=IScalarParameterDefn.AUTO;
+		Boolean hidden=false;
+		Boolean valueConcealed=false;
+		Boolean allowNewValues=false;
+		Boolean displayInFixedOrder=true;
+		Integer parameterType=IParameterDefnBase.SCALAR_PARAMETER;
+		Integer autoSuggestThreshold=100;
+		Integer selectionListType=IParameterDefn.TYPE_STRING;
+		//String typeName = ;
+		String valueExpr = null;
+		ParameterGroup parameterGroup=null;
 
-		//		ReportParameter unsavedReportParameter = new ReportParameter(
-		//				report04, "Some new parameter name", "Some new parameter description", parameterTypeDate, widget1,
-		//				required, multivalued, maxOrderIndex + 1);
 		ReportParameter unsavedReportParameter = new ReportParameter(
-				report04Version01, "Some new parameter name", "Some new parameter description", parameterTypeDate,
-				widget1,
-				required, multivalued, maxOrderIndex + 1);
+				report04Version01, maxOrderIndex + 1, dataType_Date, controlType_Checkbox,
+				"Some new parameter name", "Some new parameter prompt text",
+				required, multivalued,
+				defaultValue,
+				displayName,
+				helpText,
+				displayFormat,
+				alignment,
+				hidden,
+				valueConcealed,
+				allowNewValues,
+				displayInFixedOrder,
+				parameterType,
+				autoSuggestThreshold,
+				selectionListType,
+				//parameter.get("TypeName") != null ? (String) parameter.get("TypeName") : null,
+				valueExpr,
+				parameterGroup);
 		//		logger.info("unsavedReportParameter = {}", unsavedReportParameter);
 
 		ReportParameter savedReportParameter = reportParameterRepository.save(unsavedReportParameter);
@@ -126,7 +144,7 @@ public class ReportParameterRepositoryTests {
 		 * TODO Replace this code with a custom "assertReportParameter(...)" method.
 		 */
 		assertThat(foundReportParameter.getName(), is("Some new parameter name"));
-		assertThat(foundReportParameter.getDescription(), is("Some new parameter description"));
+		assertThat(foundReportParameter.getPromptText(), is("Some new parameter prompt text"));
 		assertThat(foundReportParameter.getRequired(), is(true));
 	}
 

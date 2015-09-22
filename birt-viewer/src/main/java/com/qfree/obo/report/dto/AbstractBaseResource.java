@@ -75,7 +75,7 @@ public abstract class AbstractBaseResource {
 		this.mediaType = mediaType;
 	}
 
-	protected static String createHref(
+	public static String createHref(
 			UriInfo uriInfo, Class<?> entityClass, Object instanceId, Map<String, List<String>> queryParams) {
 		return createHref(null, null, uriInfo, entityClass, instanceId, queryParams);
 	}

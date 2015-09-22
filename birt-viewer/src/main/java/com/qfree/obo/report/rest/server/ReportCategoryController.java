@@ -99,8 +99,8 @@ public class ReportCategoryController extends AbstractBaseController {
 	 * ReportCategory to create is given:
 	 * 
 	 *	curl -iH "Accept: application/json;v=1" -H "Content-Type: application/json" -X POST -d \
-	 *	'{"reportCategoryId":"71b3e8ae-bba8-45b7-a85f-12546bcc95b2",'\
-	 *	'"abbreviation":"RCABBREV","description":"ReportCategory description",'\
+	 *	'{"reportCategoryId":"71b3e8ae-bba8-45b7-a85f-12546bcc95b2",\
+	 *	'"abbreviation":"RCABBREV","description":"ReportCategory description",\
 	 *	'"active":true, "createdOn":"1958-05-06T12:00:00.000Z"}' \
 	 *	http://localhost:8080/rest/reportCategories
 	 */

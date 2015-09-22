@@ -29,10 +29,19 @@ public class ReportParameterResource extends AbstractBaseResource {
 	private UUID reportParameterId;
 
 	@XmlElement
+	private Integer orderIndex;
+
+	@XmlElement
 	private String name;
 
 	@XmlElement
-	private String description;
+	private Integer dataType;
+
+	@XmlElement
+	private Integer controlType;
+
+	@XmlElement
+	private String promptText;
 
 	@XmlElement
 	private Boolean required;
@@ -41,16 +50,55 @@ public class ReportParameterResource extends AbstractBaseResource {
 	private Boolean multivalued;
 
 	@XmlElement
-	private Integer orderIndex;
+	private String defaultValue;
+
+	@XmlElement
+	private String displayName;
+
+	@XmlElement
+	private String helpText;
+
+	@XmlElement
+	private String displayFormat;
+
+	@XmlElement
+	private Integer alignment;
+
+	@XmlElement
+	private Boolean hidden;
+
+	@XmlElement
+	private Boolean valueConcealed;
+
+	@XmlElement
+	private Boolean allowNewValues;
+
+	@XmlElement
+	private Boolean displayInFixedOrder;
+
+	@XmlElement
+	private Integer parameterType;
+
+	@XmlElement
+	private Integer autoSuggestThreshold;
+
+	@XmlElement
+	private Integer selectionListType;
+
+	//@XmlElement
+	//private String typeName;
+
+	@XmlElement
+	private String valueExpr;
 
 	@XmlElement(name = "reportVersion")
 	private ReportVersionResource reportVersionResource;
 
-	//	@XmlElement(name = "parameterType")
-	//	private ParameterTypeResource parameterTypeResource;
+	@XmlElement(name = "parameterGroup")
+	private ParameterGroupResource parameterGroupResource;
 
-	//	@XmlElement(name = "widget")
-	//	private WidgetResource widgetResource;
+	@XmlElement(name = "selectionListValues")
+	private SelectionListValueCollectionResource selectionListValues;
 
 	//	private List<RoleParameterValue> roleParameterValues;
 	//	private List<SubscriptionParameterValue> subscriptionParameterValues;
@@ -108,14 +156,54 @@ public class ReportParameterResource extends AbstractBaseResource {
 			apiVersion = null;
 
 			this.reportParameterId = reportParameter.getReportParameterId();
+			this.orderIndex = reportParameter.getOrderIndex();
+			this.dataType = reportParameter.getDataType();
+			this.controlType = reportParameter.getControlType();
 			this.name = reportParameter.getName();
-			this.description = reportParameter.getDescription();
+			this.promptText = reportParameter.getPromptText();
 			this.required = reportParameter.getRequired();
 			this.multivalued = reportParameter.getMultivalued();
-			this.orderIndex = reportParameter.getOrderIndex();
+			this.defaultValue = reportParameter.getDefaultValue();
+			this.displayName = reportParameter.getDisplayName();
+			this.helpText = reportParameter.getHelpText();
+			this.displayFormat = reportParameter.getDisplayFormat();
+			this.alignment = reportParameter.getAlignment();
+			this.hidden = reportParameter.getHidden();
+			this.valueConcealed = reportParameter.getValueConcealed();
+			this.allowNewValues = reportParameter.getAllowNewValues();
+			this.displayInFixedOrder = reportParameter.getDisplayInFixedOrder();
+			this.parameterType = reportParameter.getParameterType();
+			this.autoSuggestThreshold = reportParameter.getAutoSuggestThreshold();
+			this.selectionListType = reportParameter.getSelectionListType();
+			//this.typeName = reportParameter.getTypeName();
+			this.valueExpr = reportParameter.getValueExpr();
 			this.createdOn = reportParameter.getCreatedOn();
+
 			this.reportVersionResource = new ReportVersionResource(reportParameter.getReportVersion(),
 					uriInfo, newQueryParams, apiVersion);
+			/*
+			 * If there is no selection list for the parameter, no 
+			 * "selectionListValues" field will appear in the resource. The 
+			 * alternative would be to always include the field, but its value
+			 * will be an empty collection resource for the case when there is
+			 * no selection list for the parameter.
+			 */
+			logger.info("Parameter = {}: reportParameter.getSelectionListValues() = {}", this.name,
+					reportParameter.getSelectionListValues());
+			if (reportParameter.getSelectionListValues() != null
+					&& reportParameter.getSelectionListValues().size() > 0) {
+				this.selectionListValues = new SelectionListValueCollectionResource(reportParameter,
+						uriInfo, newQueryParams, apiVersion);
+			}
+			/*
+			 * A related ParameterGroup is optional (normal parameters that are
+			 * not part of a group do not have one), so we only create a related
+			 * ParameterGroupResource if necessary.
+			 */
+			if (reportParameter.getParameterGroup() != null) {
+				this.parameterGroupResource = new ParameterGroupResource(reportParameter.getParameterGroup(),
+						uriInfo, newQueryParams, apiVersion);
+			}
 		}
 	}
 
@@ -142,6 +230,14 @@ public class ReportParameterResource extends AbstractBaseResource {
 		this.reportParameterId = reportParameterId;
 	}
 
+	public Integer getOrderIndex() {
+		return orderIndex;
+	}
+
+	public void setOrderIndex(Integer orderIndex) {
+		this.orderIndex = orderIndex;
+	}
+
 	public String getName() {
 		return name;
 	}
@@ -150,12 +246,28 @@ public class ReportParameterResource extends AbstractBaseResource {
 		this.name = name;
 	}
 
-	public String getDescription() {
-		return description;
+	public Integer getDataType() {
+		return dataType;
 	}
 
-	public void setDescription(String description) {
-		this.description = description;
+	public void setDataType(Integer dataType) {
+		this.dataType = dataType;
+	}
+
+	public Integer getControlType() {
+		return controlType;
+	}
+
+	public void setControlType(Integer controlType) {
+		this.controlType = controlType;
+	}
+
+	public String getPromptText() {
+		return promptText;
+	}
+
+	public void setPromptText(String promptText) {
+		this.promptText = promptText;
 	}
 
 	public Boolean getRequired() {
@@ -174,12 +286,108 @@ public class ReportParameterResource extends AbstractBaseResource {
 		this.multivalued = multivalued;
 	}
 
-	public Integer getOrderIndex() {
-		return orderIndex;
+	public String getDefaultValue() {
+		return defaultValue;
 	}
 
-	public void setOrderIndex(Integer orderIndex) {
-		this.orderIndex = orderIndex;
+	public void setDefaultValue(String defaultValue) {
+		this.defaultValue = defaultValue;
+	}
+
+	public String getDisplayName() {
+		return displayName;
+	}
+
+	public void setDisplayName(String displayName) {
+		this.displayName = displayName;
+	}
+
+	public String getHelpText() {
+		return helpText;
+	}
+
+	public void setHelpText(String helpText) {
+		this.helpText = helpText;
+	}
+
+	public String getDisplayFormat() {
+		return displayFormat;
+	}
+
+	public void setDisplayFormat(String displayFormat) {
+		this.displayFormat = displayFormat;
+	}
+
+	public Integer getAlignment() {
+		return alignment;
+	}
+
+	public void setAlignment(Integer alignment) {
+		this.alignment = alignment;
+	}
+
+	public Boolean getHidden() {
+		return hidden;
+	}
+
+	public void setHidden(Boolean hidden) {
+		this.hidden = hidden;
+	}
+
+	public Boolean getValueConcealed() {
+		return valueConcealed;
+	}
+
+	public void setValueConcealed(Boolean valueConcealed) {
+		this.valueConcealed = valueConcealed;
+	}
+
+	public Boolean getAllowNewValues() {
+		return allowNewValues;
+	}
+
+	public void setAllowNewValues(Boolean allowNewValues) {
+		this.allowNewValues = allowNewValues;
+	}
+
+	public Boolean getDisplayInFixedOrder() {
+		return displayInFixedOrder;
+	}
+
+	public void setDisplayInFixedOrder(Boolean displayInFixedOrder) {
+		this.displayInFixedOrder = displayInFixedOrder;
+	}
+
+	public Integer getParameterType() {
+		return parameterType;
+	}
+
+	public void setParameterType(Integer parameterType) {
+		this.parameterType = parameterType;
+	}
+
+	public Integer getAutoSuggestThreshold() {
+		return autoSuggestThreshold;
+	}
+
+	public void setAutoSuggestThreshold(Integer autoSuggestThreshold) {
+		this.autoSuggestThreshold = autoSuggestThreshold;
+	}
+
+	public Integer getSelectionListType() {
+		return selectionListType;
+	}
+
+	public void setSelectionListType(Integer selectionListType) {
+		this.selectionListType = selectionListType;
+	}
+
+	public String getValueExpr() {
+		return valueExpr;
+	}
+
+	public void setValueExpr(String valueExpr) {
+		this.valueExpr = valueExpr;
 	}
 
 	public ReportVersionResource getReportVersionResource() {
@@ -188,6 +396,22 @@ public class ReportParameterResource extends AbstractBaseResource {
 
 	public void setReportVersionResource(ReportVersionResource reportVersionResource) {
 		this.reportVersionResource = reportVersionResource;
+	}
+
+	public ParameterGroupResource getParameterGroupResource() {
+		return parameterGroupResource;
+	}
+
+	public void setParameterGroupResource(ParameterGroupResource parameterGroupResource) {
+		this.parameterGroupResource = parameterGroupResource;
+	}
+
+	public SelectionListValueCollectionResource getSelectionListValues() {
+		return selectionListValues;
+	}
+
+	public void setSelectionListValues(SelectionListValueCollectionResource selectionListValues) {
+		this.selectionListValues = selectionListValues;
 	}
 
 	public Date getCreatedOn() {
@@ -205,8 +429,8 @@ public class ReportParameterResource extends AbstractBaseResource {
 		builder.append(reportParameterId);
 		builder.append(", name=");
 		builder.append(name);
-		builder.append(", description=");
-		builder.append(description);
+		builder.append(", promptText=");
+		builder.append(promptText);
 		builder.append(", required=");
 		builder.append(required);
 		builder.append(", multivalued=");

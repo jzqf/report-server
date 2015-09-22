@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -27,6 +28,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
+import org.eclipse.birt.core.exception.BirtException;
 import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
 import org.glassfish.jersey.media.multipart.FormDataParam;
 import org.slf4j.Logger;
@@ -47,7 +49,9 @@ import com.qfree.obo.report.dto.ReportVersionResource;
 import com.qfree.obo.report.dto.ResourcePath;
 import com.qfree.obo.report.dto.RestErrorResource.RestError;
 import com.qfree.obo.report.exceptions.RestApiException;
+import com.qfree.obo.report.exceptions.RptdesignOpenFromStreamException;
 import com.qfree.obo.report.rest.server.RestUtils.RestApiVersion;
+import com.qfree.obo.report.service.ReportParameterService;
 import com.qfree.obo.report.service.ReportSyncService;
 import com.qfree.obo.report.service.ReportVersionService;
 
@@ -61,17 +65,20 @@ public class ReportVersionController extends AbstractBaseController {
 	private final ReportVersionService reportVersionService;
 	private final ReportRepository reportRepository;
 	private final ReportSyncService reportSyncService;
+	private final ReportParameterService reportParameterService;
 
 	@Autowired
 	public ReportVersionController(
 			ReportVersionRepository reportVersionRepository,
 			ReportVersionService reportVersionService,
 			ReportRepository reportRepository,
-			ReportSyncService reportSyncService) {
+			ReportSyncService reportSyncService,
+			ReportParameterService reportParameterService) {
 		this.reportVersionRepository = reportVersionRepository;
 		this.reportVersionService = reportVersionService;
 		this.reportRepository = reportRepository;
 		this.reportSyncService = reportSyncService;
+		this.reportParameterService = reportParameterService;
 	}
 
 	/*
@@ -137,7 +144,7 @@ public class ReportVersionController extends AbstractBaseController {
 			@QueryParam(ResourcePath.EXPAND_QP_NAME) final List<String> expand,
 			@QueryParam(ResourcePath.SHOWALL_QP_NAME) final List<String> showAll,
 			@Context final ServletContext servletContext,
-			@Context final UriInfo uriInfo) {
+			@Context final UriInfo uriInfo) throws IOException, BirtException, RptdesignOpenFromStreamException {
 		Map<String, List<String>> queryParams = new HashMap<>();
 		queryParams.put(ResourcePath.EXPAND_QP_KEY, expand);
 		queryParams.put(ResourcePath.SHOWALL_QP_KEY, showAll);
@@ -173,8 +180,13 @@ public class ReportVersionController extends AbstractBaseController {
 		if (RestUtils.AUTO_EXPAND_PRIMARY_RESOURCES) {
 			addToExpandList(expand, ReportVersion.class);
 		}
-		ReportVersionResource newReportVersionResource =
-				new ReportVersionResource(reportVersion, uriInfo, queryParams, apiVersion);
+
+		/*
+		 * Parse report parameters here and for each report parameter, create a 
+		 * ReportParameter entity which is stored in the report server database.
+		 */
+		Map<String, Map<String, Serializable>> parameters = reportParameterService
+				.createParametersForReport(reportVersion);
 
 		/*
 		 * Write uploaded rptdesign file to the file system of the report 
@@ -182,6 +194,9 @@ public class ReportVersionController extends AbstractBaseController {
 		 */
 		java.nio.file.Path rptdesignFilePath = reportSyncService.writeRptdesignFile(reportVersion,
 				servletContext.getRealPath(""));
+
+		ReportVersionResource newReportVersionResource = new ReportVersionResource(reportVersion, uriInfo, queryParams,
+				apiVersion);
 
 		return created(newReportVersionResource);
 	}
@@ -224,7 +239,7 @@ public class ReportVersionController extends AbstractBaseController {
 			@QueryParam(ResourcePath.SHOWALL_QP_NAME) final List<String> showAll,
 			@Context final ServletContext servletContext,
 			@Context final ServletConfig servletConfig,
-			@Context final UriInfo uriInfo) {
+			@Context final UriInfo uriInfo) throws BirtException, RptdesignOpenFromStreamException {
 		Map<String, List<String>> queryParams = new HashMap<>();
 		queryParams.put(ResourcePath.EXPAND_QP_KEY, expand);
 		queryParams.put(ResourcePath.SHOWALL_QP_KEY, showAll);
@@ -244,6 +259,11 @@ public class ReportVersionController extends AbstractBaseController {
 			String servletContextInitParamName = servletContextinitParamEnum.nextElement();
 			logger.debug("servletContextInitParamName = {}", servletContextInitParamName);
 		}
+		/*
+		 * This returns null if this application ius run via:
+		 *  
+		 *     mvn clean spring-boot:run
+		 */
 		logger.debug("BIRT_VIEWER_WORKING_FOLDER = {}", servletContext.getInitParameter("BIRT_VIEWER_WORKING_FOLDER"));
 
 		Enumeration<String> servletConfigInitParamEnum = servletConfig.getInitParameterNames();
@@ -302,8 +322,13 @@ public class ReportVersionController extends AbstractBaseController {
 			if (RestUtils.AUTO_EXPAND_PRIMARY_RESOURCES) {
 				addToExpandList(expand, ReportVersion.class);
 			}
-			reportVersionResource = new ReportVersionResource(reportVersion, uriInfo, queryParams, apiVersion);
-			logger.info("reportVersionResource = {}", reportVersionResource);
+
+			/*
+			 * Parse report parameters here and for each report parameter, create a 
+			 * ReportParameter entity which is stored in the report server database.
+			 */
+			Map<String, Map<String, Serializable>> parameters = reportParameterService
+					.createParametersForReport(reportVersion);
 
 			/*
 			 * Write uploaded rptdesign file to the file system of the report 
@@ -313,9 +338,21 @@ public class ReportVersionController extends AbstractBaseController {
 			java.nio.file.Path rptdesignFilePath = reportSyncService.writeRptdesignFile(reportVersion,
 					servletContext.getRealPath(""));
 
+			reportVersionResource = new ReportVersionResource(reportVersion, uriInfo, queryParams, apiVersion);
+			logger.debug("reportVersionResource = {}", reportVersionResource);
+
 			//} catch (InvalidPathException e) {
 			//	throw new RestApiException(RestError.INTERNAL_SERVER_ERROR_REPORT_FOLDER_MISSING, e);
 		} catch (IOException e) {
+			/*
+			 * TODO Treat IOException better:
+			 * This exception can be thrown either when working with the 
+			 * BufferedReader above or from the call to 
+			 * reportParameterService.createParametersForReport(reportVersion)
+			 * above. Consider catching the IOException from 
+			 * createParametersForReport in such a way that I can report a
+			 * more detailed description of the error?
+			 */
 			throw new RestApiException(RestError.INTERNAL_SERVER_ERROR_RPTDESIGN_SYNC, e);
 		}
 
@@ -406,6 +443,45 @@ public class ReportVersionController extends AbstractBaseController {
 		 */
 		ReportVersion reportVersion = reportVersionRepository.findOne(id);
 		RestUtils.ifNullThen404(reportVersion, ReportVersion.class, "reportVersionId", id.toString());
+
+		// TODO Uncomment and finish this (see ReportParameterController):
+
+		// /*
+		// * Treat attributes of reportVersionResource that are effectively
+		// * required. These attributes can be omitted in the PUT data, but in
+		// * that case they are then set here to the CURRENT values from the
+		// * reportVersion entity. These are that attributes that are required,
+		// * but if their value does not need to be changed, they do not need to
+		// * be included in the PUT data.
+		// */
+		// if (reportVersionResource.getReportResource() == null) {
+		// /*
+		// * Construct a ReportResource to specify the CURRENTLY
+		// * selected Report.
+		// */
+		// UUID currentReportId = reportVersion.getReport().getReportId();
+		// ReportResource reportResource = new ReportResource();
+		// reportResource.setReportId(currentReportId);
+		// reportVersionResource.setReportResource(reportResource);
+		// } else {
+		// /*
+		// * If a "reportVersionResource" attribute *is* supplied in the PUT
+		// * data, it *must* have a value set for its "reportId"
+		// * attribute...
+		// */
+		// RestUtils.ifAttrNullOrBlankThen403(reportVersionResource.getReportResource().getReportId(),
+		// Report.class, "reportId");
+		// /*
+		// * ... and the value for "reportId" must correspond to an
+		// * existing Report entity.
+		// */
+		// UUID
+		// reportId=reportVersionResource.getReportResource().getReportId();
+		// RestUtils.ifNullThen404(reportRepository.findOne(reportId),
+		// Report.class,
+		// "reportId", reportId.toString());
+		// }
+
 		/*
 		 * Ensure that the entity's "id" and "CreatedOn" are not changed.
 		 */
@@ -476,9 +552,6 @@ public class ReportVersionController extends AbstractBaseController {
 		queryParams.put(ResourcePath.SHOWALL_QP_KEY, showAll);
 		RestApiVersion apiVersion = RestUtils.extractAPIVersion(acceptHeader, RestApiVersion.v1);
 
-		if (RestUtils.AUTO_EXPAND_PRIMARY_RESOURCES) {
-			addToExpandList(expand, Report.class);
-		}
 		ReportVersion reportVersion = reportVersionRepository.findOne(id);
 		RestUtils.ifNullThen404(reportVersion, ReportVersion.class, "reportVersionId", id.toString());
 		return new ReportParameterCollectionResource(reportVersion, uriInfo, queryParams, apiVersion);

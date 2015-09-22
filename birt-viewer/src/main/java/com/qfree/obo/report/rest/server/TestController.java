@@ -1,5 +1,10 @@
 package com.qfree.obo.report.rest.server;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.List;
+
 import javax.ws.rs.Consumes;
 import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
@@ -8,7 +13,9 @@ import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.UriInfo;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,6 +24,7 @@ import org.springframework.stereotype.Component;
 
 import com.qfree.obo.report.domain.Configuration.ParamName;
 import com.qfree.obo.report.rest.server.RestUtils.RestApiVersion;
+import com.qfree.obo.report.service.BirtService;
 import com.qfree.obo.report.service.ConfigurationService;
 
 @Component
@@ -26,10 +34,14 @@ public class TestController extends AbstractBaseController {
 	private static final Logger logger = LoggerFactory.getLogger(TestController.class);
 
 	private final ConfigurationService configurationService;
+	private final BirtService birtService;
 
 	@Autowired
-	public TestController(ConfigurationService configurationService) {
+	public TestController(
+			ConfigurationService configurationService,
+			BirtService birtService) {
 		this.configurationService = configurationService;
+		this.birtService = birtService;
 	}
 
 	@GET
@@ -202,5 +214,42 @@ public class TestController extends AbstractBaseController {
 
 	//TODO USE @PUT TO accept a JSON object, e.g., a new Configuration and then later a new Role?
 	//		Insert into DB and then RETURN A JSON object?????????????????
+
+	@GET
+	@Path("/parse_report_params")
+	@Produces(MediaType.TEXT_PLAIN)
+	public String parseReportParamsTest(
+			@HeaderParam("Accept") final String acceptHeader,
+			@Context final UriInfo uriInfo) {
+		RestApiVersion apiVersion = RestUtils.extractAPIVersion(acceptHeader, RestApiVersion.v1);
+
+		try {
+
+			/*
+			 * Load rptdesign file into a String.
+			 */
+			//java.nio.file.Path rptdesignPath = Paths
+			//		.get("/home/jeffreyz/git/obo-birt-reports/birt-reports/tests/400-TestReport04_v1.1.rptdesign");
+			java.nio.file.Path rptdesignPath = Paths.get("/home/jeffreyz/Desktop/cascade_v3.2.23.rptdesign");
+			//java.nio.file.Path rptdesignPath = Paths.get("/home/jeffreyz/Desktop/cascade_v3.2.6.rptdesign");
+			List<String> rptdesignLines = null;
+			try {
+				rptdesignLines = Files.readAllLines(rptdesignPath);// assumes UTF-8 encoding
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			String rptdesignXml = String.join("\n", rptdesignLines);
+			//logger.info("rptdesignXml = \n{}", rptdesignXml);
+
+			//ReportUtils.parseReportParams(rptdesignXml);
+			birtService.parseReportParams(rptdesignXml);
+
+		} catch (Exception e) {
+			logger.error("Parsing the report parameters failed with the following exception:", e);
+		}
+
+		return "Please work!!!";
+	}
 
 }
