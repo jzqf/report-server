@@ -1,3 +1,44 @@
+===== Extracting the files from the installation package archive =====
+
+The script that is packaged in this archive is written to be executed by the 
+"postgres" operating system user. The reason for this approach is that this 
+"postgres" user automatically has super-user access to the PostgreSQL cluster. 
+This simplifies creating and initializing the report server database since no 
+special super-user needs to first be created in order to bootstrap the process.
+A operating system account for the "postgres" user is created automatically when
+PostgreSQL is installed, and this user can log into the local PostgreSQL cluster
+using the PostgreSQL role of the same name, "postgres".
+
+In order for the installation script to be executed successfully by the 
+"postgres" user, the files in this archive must be extracted to a location where
+the "postgres" user has the appropriate permissions to access these files. This
+can be done easily by following these simple steps:
+
+1.	Move the installation archive:
+
+		install_report_server-***.tar.gz
+	
+	to a directory that the "postgres" user has access to. The simplest choice 
+	is:
+	
+		/tmp
+	
+	Do not use your own user account because it is unlikely that the "postgres"
+	user will have the necessary permissions to access files there.
+
+2.	Extract the files from this archive using:
+
+		tar -xvzpf install_report_server-***.tar.gz
+
+The "-p" option is essential. If you do not follow these instructions, the 
+installation may fail. You may also see lines similar to the following in the
+ log file:	
+	
+		could not change directory to "...": Permission denied
+
+
+===== Installation instructions =====
+
 Before the report server can be installed, both a Tomcat 8.x server and a 
 PostgreSQL 9.x server must be installed in a Debian or Ubuntu GNU/Linux 
 operating system. This document assumes that standard installation of both of
@@ -83,37 +124,17 @@ order they appear here:
 
 1.	Close all connections to the report server database. 
 
-	If this is the first time that the create-report_server_db-and-role.sh
-	script is run for the PostgreSQL cluster, then the report server database
-	will not yet exist and there is nothing to do here. 
+	If this is the first time that the create-report_server_db.sh script is run
+	for the PostgreSQL cluster, then the report server database will not yet 
+	exist and there is nothing to do here. 
 	
-	However, this script can by run to also drop an existing report server 
+	However, this script can be run to also drop an existing report server 
 	database and then recreate a fresh, empty one (using the -D option). Under 
 	this condition, there could be existing connections to the database. If
 	the report server application is running, it must be shut down because it
 	maintains an open connection to the database.
 
-2.	Create report server database and a PostgreSQL role to own it:
-
-	From a shell on the database host, execute the following:
-
-		sudo -u postgres ./create-report_server_db-and-role.sh
-
-	To see a list of all options that this script provides, type:
-
-		./create-report_server_db-and-role.sh -h
-
-	This script should be executed from a directory where the OS user "postgres"
-	has the permission to write because the script writes errors and other 
-	messages to a log file named "logfile" in the script's directory.
-	
-	You may see lines in the log file of the form:
-	
-		could not change directory to "...": Permission denied
-		
-	These lines are emitted by the tool "psql" and can be ignored.
-
-3.	Configure psql so that it does not prompt for a password when connecting to 
+2.	Configure psql so that it does not prompt for a password when connecting to 
 	the report server database. This step is optional and only for convenience:
 	
 	Add an entry for "report_server_app" in the .pgpass file in the home 
@@ -122,7 +143,7 @@ order they appear here:
 
 		localhost:5432:*:report_server_app:sA5gfH7tng*125Z6f
 
-4.	Configure PostgreSQL security to allow role "report_server_app" to log in 
+3.	Configure PostgreSQL security to allow role "report_server_app" to log in 
 	and connect to the "report_server_db" database:
 	
 	Edit PostgreSQL's pg_hba.conf file and make the following changes:
@@ -155,33 +176,31 @@ order they appear here:
 	parameter is read only on startup. On Ubuntu/Debian this can be done with:
 	
 		sudo service postgresql restart
+
+4.	Create the report server database. This will also:
+
+		* Create a PostgreSQL role "report_server_app" to own the database.
+		* Create the database tables and other database objects.
+		* Populate the database with initial data.
+
+	From a shell on the database host, execute the following from the directory
+	containing the script create-report_server_db.sh:
+
+		sudo -u postgres ./create-report_server_db.sh
+
+	To see a list of all options that this script provides, type:
+
+		./create-report_server_db.sh -h
 	
-	After these changes, it should be possible to make a local connection from 
-	the PostgreSQL server host to the database "report_server_db" using the 
-	PostgreSQL role "report_server_app" by executing:
+It should now be possible to make a local connection from the PostgreSQL server
+host to the database "report_server_db" using the PostgreSQL role 
+"report_server_app" by executing in a shell (on the PostgreSQL server host):
 	
-		psql report_server_db report_server_app
+	psql report_server_db report_server_app
 
-5.	Create database tables and other objects:
-
-	From a shell on the database host, execute the following:
-
-		psql -d report_server_db -U report_server_app -a -f schema.sql
-	
-	If you have not placed an entry in .pgpass for PostgreSQL role 
-	report_server_app, then you will be prompted for this role's password. The 
-	password is documented above in the .pgpass entry.
-
-6.	Populate database with initial data:
-
-	From a shell on the database host, execute the following:
-
-		psql -d report_server_db -U report_server_app -a -f initial-data.sql
-	
-	If you have not placed an entry in .pgpass for PostgreSQL role 
-	report_server_app, then you will be prompted for this role's password. The 
-	password is documented above in the .pgpass entry.
-
+If you have not placed an entry for "report_server_app" in your .pgpass file,
+you will be prompted for the password here.
+																	
 
 II.	===== Installing the report server application =====
 
