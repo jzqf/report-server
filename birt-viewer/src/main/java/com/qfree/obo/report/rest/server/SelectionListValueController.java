@@ -127,7 +127,9 @@ public class SelectionListValueController extends AbstractBaseController {
 		SelectionListValue selectionListValue = selectionListValueService
 				.saveNewFromResource(selectionListValueResource);
 		//	if (RestUtils.AUTO_EXPAND_PRIMARY_RESOURCES) {
-		addToExpandList(expand, SelectionListValue.class);// Force primary resource to be "expanded"
+		addToExpandList(expand, SelectionListValue.class);// Force primary
+															// resource to be
+															// "expanded"
 		//	}
 
 		SelectionListValueResource resource = new SelectionListValueResource(selectionListValue, uriInfo, queryParams,
@@ -195,6 +197,15 @@ public class SelectionListValueController extends AbstractBaseController {
 		RestApiVersion apiVersion = RestUtils.extractAPIVersion(acceptHeader, RestApiVersion.v1);
 
 		/*
+		 * TODO Move most of the code here to saveExistingFromResource(...)?
+		 * 
+		 * To do this,I would need to pass another parameter to 
+		 * saveExistingFromResource(...) so that that method has access to the
+		 * entity being updated, selectionListValue. So we could pass either 
+		 * "id" or selectionListValue or ...
+		 */
+
+		/*
 		 * Retrieve SelectionListValue entity to be updated.
 		 */
 		SelectionListValue selectionListValue = selectionListValueRepository.findOne(id);
@@ -240,7 +251,7 @@ public class SelectionListValueController extends AbstractBaseController {
 		 * Save updated entity.
 		 */
 		selectionListValue = selectionListValueService.saveExistingFromResource(selectionListValueResource);
-		logger.debug("selectionListValue = {}", selectionListValue);
+
 		return Response.status(Response.Status.OK).build();
 	}
 

@@ -179,6 +179,18 @@ public class RestErrorResource {
 				"Wrong number of parent key values passed for a cascading parameter dynamic list", null),
 		FORBIDDEN_ATTRIBUTE_BLANK(Response.Status.FORBIDDEN, "403.12",
 				"An attribute is blank when it should not be", null),
+		FORBIDDEN_SUBSCRIPTION_DOCUMENTFORMAT_NULL(
+				Response.Status.FORBIDDEN, "403.13",
+				"documentFormatId is null for a subscription being saved", null),
+		FORBIDDEN_SUBSCRIPTION_REPORTVERSION_NULL(
+				Response.Status.FORBIDDEN, "403.14",
+				"reportVersionId is null for a subscription being saved", null),
+		FORBIDDEN_SUBSCRIPTION_ROLE_NULL(
+				Response.Status.FORBIDDEN, "403.15",
+				"roleId is null for a subscription being saved", null),
+		FORBIDDEN_NEW_SUBSCRIPTION_ACTIVE(
+				Response.Status.FORBIDDEN, "403.16",
+				"A new subscription cannot be created with active=true", null),
 		/**
 		 * {@code 404 Not Found}.
 		 * @see <a href="http://tools.ietf.org/html/rfc2616#section-10.4.5">HTTP/1.1</a>

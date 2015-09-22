@@ -22,8 +22,8 @@ import javax.validation.constraints.NotNull;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;
-import org.hibernate.validator.constraints.NotBlank;
 
+import com.qfree.obo.report.dto.SubscriptionResource;
 import com.qfree.obo.report.util.DateUtils;
 
 /**
@@ -43,7 +43,7 @@ public class Subscription implements Serializable {
 
 	@Id
 	@Type(type = "uuid-custom")
-	//	@Type(type = "pg-uuid")
+	// @Type(type = "pg-uuid")
 	@GeneratedValue(generator = "uuid2")
 	@GenericGenerator(name = "uuid2", strategy = "uuid2")
 	@Column(name = "subscription_id", unique = true, nullable = false,
@@ -59,7 +59,7 @@ public class Subscription implements Serializable {
 	 */
 	@NotNull
 	@JoinColumn(name = "role_id", nullable = false,
-			foreignKey = @ForeignKey(name = "fk_subscription_role"),
+			foreignKey = @ForeignKey(name = "fk_subscription_role") ,
 			columnDefinition = "uuid")
 	private Role role;
 
@@ -70,14 +70,14 @@ public class Subscription implements Serializable {
 	 * PostgreSQL column definition includes "DEFAULT uuid_generate_v4()", which
 	 * is not what is wanted.
 	 */
-	//	@NotNull
-	//	@JoinColumn(name = "report_id", nullable = false,
-	//			foreignKey = @ForeignKey(name = "fk_subscription_report"),
-	//			columnDefinition = "uuid")
-	//	private Report report;
+	// @NotNull
+	// @JoinColumn(name = "report_id", nullable = false,
+	// foreignKey = @ForeignKey(name = "fk_subscription_report"),
+	// columnDefinition = "uuid")
+	// private Report report;
 	@NotNull
 	@JoinColumn(name = "report_version_id", nullable = false,
-			foreignKey = @ForeignKey(name = "fk_subscription_reportversion"),
+			foreignKey = @ForeignKey(name = "fk_subscription_reportversion") ,
 			columnDefinition = "uuid")
 	private ReportVersion reportVersion;
 
@@ -90,17 +90,17 @@ public class Subscription implements Serializable {
 	 */
 	@NotNull
 	@JoinColumn(name = "document_format_id", nullable = false,
-			foreignKey = @ForeignKey(name = "fk_subscription_documentformat"),
+			foreignKey = @ForeignKey(name = "fk_subscription_documentformat") ,
 			columnDefinition = "uuid")
 	private DocumentFormat documentFormat;
 
 	/**
-	 * "cron" expression used to specify the delivery schedule for the 
-	 * subscription. This can be specified instead of (or in addition to?) 
-	 * runOnceAt, which is used to schedule a single delivery at a specified 
+	 * "cron" expression used to specify the delivery schedule for the
+	 * subscription. This can be specified instead of (or in addition to?)
+	 * runOnceAt, which is used to schedule a single delivery at a specified
 	 * date and time.
 	 */
-	@Column(name = "cron_schedule", nullable = true, length = 80)
+	@Column(name = "cron_schedule", nullable = true, length = 160)
 	private String cronSchedule;
 
 	/**
@@ -117,16 +117,16 @@ public class Subscription implements Serializable {
 	 * subscription to be set up that delivers reports to other than a role's
 	 * primary e-mail address store with the Role entity.
 	 */
-	@NotBlank
-	@Column(name = "email", nullable = false, length = 80)
+	// @NotBlank
+	@Column(name = "email", nullable = true, length = 160)
 	private String email;
 
 	/**
 	 * Optional short description of the subscription. This can be useful if the
-	 * same report is used with multiple subscriptions but with different 
+	 * same report is used with multiple subscriptions but with different
 	 * schedules or different report parameters.
 	 */
-	@Column(name = "description", nullable = true, length = 80)
+	@Column(name = "description", nullable = true, length = 1024)
 	private String description;
 
 	@NotNull
@@ -168,6 +168,24 @@ public class Subscription implements Serializable {
 				description,
 				true,
 				DateUtils.nowUtc());
+	}
+
+	public Subscription(
+			SubscriptionResource subscriptionResource,
+			DocumentFormat documentFormat,
+			ReportVersion reportVersion,
+			Role role) {
+		this(
+				subscriptionResource.getSubscriptionId(),
+				role,
+				reportVersion,
+				documentFormat,
+				subscriptionResource.getCronSchedule(),
+				subscriptionResource.getRunOnceAt(),
+				subscriptionResource.getEmail(),
+				subscriptionResource.getDescription(),
+				subscriptionResource.getActive(),
+				subscriptionResource.getCreatedOn());
 	}
 
 	public Subscription(

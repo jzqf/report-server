@@ -147,9 +147,10 @@ public class DocumentFormatController extends AbstractBaseController {
 		queryParams.put(ResourcePath.SHOWALL_QP_KEY, showAll);
 		RestApiVersion apiVersion = RestUtils.extractAPIVersion(acceptHeader, RestApiVersion.v1);
 
-		if (RestUtils.AUTO_EXPAND_PRIMARY_RESOURCES) {
-			addToExpandList(expand, DocumentFormat.class);
-		}
+		// if (RestUtils.AUTO_EXPAND_PRIMARY_RESOURCES) {
+		addToExpandList(expand, DocumentFormat.class);// Force primary resource
+														// to be "expanded"
+		// }
 		DocumentFormat documentFormat = documentFormatRepository.findOne(id);
 		RestUtils.ifNullThen404(documentFormat, DocumentFormat.class, "documentFormatId", id.toString());
 		DocumentFormatResource documentFormatResource = new DocumentFormatResource(documentFormat, uriInfo, queryParams,
