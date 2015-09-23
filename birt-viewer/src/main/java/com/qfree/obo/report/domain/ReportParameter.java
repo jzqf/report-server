@@ -293,11 +293,10 @@ public class ReportParameter implements Serializable {
 
 	/*
 	 * cascade = CascadeType.ALL:
-	 *     Deleting a ReportParameter will delete all of its 
-	 *     RoleParameterValue's.
+	 *     Deleting a ReportParameter will delete all of its RoleParameter's.
 	 */
 	@OneToMany(mappedBy = "reportParameter", cascade = CascadeType.ALL)
-	private List<RoleParameterValue> roleParameterValues;
+	private List<RoleParameter> roleParameters;
 
 	/*
 	 * cascade = CascadeType.ALL:
@@ -429,12 +428,12 @@ public class ReportParameter implements Serializable {
 		this.reportVersion = reportVersion;
 	}
 
-	public List<RoleParameterValue> getRoleParameterValues() {
-		return roleParameterValues;
+	public List<RoleParameter> getRoleParameters() {
+		return roleParameters;
 	}
 
-	public void setRoleParameterValues(List<RoleParameterValue> roleParameterValuess) {
-		this.roleParameterValues = roleParameterValuess;
+	public void setRoleParameters(List<RoleParameter> roleParameters) {
+		this.roleParameters = roleParameters;
 	}
 
 	public Integer getDataType() {

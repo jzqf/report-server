@@ -98,10 +98,10 @@ public class Role implements Serializable {
 
 	/*
 	 * cascade = CascadeType.ALL:
-	 *     Deleting a Role will delete all of its RoleParameterValue's.
+	 *     Deleting a Role will delete all of its RoleParameter's.
 	 */
 	@OneToMany(mappedBy = "role", cascade = CascadeType.ALL)
-	private List<RoleParameterValue> roleParameterValues;
+	private List<RoleParameter> roleParameters;
 
 	/*
 	 * cascade = CascadeType.ALL:
@@ -261,12 +261,12 @@ public class Role implements Serializable {
 		this.roleSubscriptions = roleSubscriptions;
 	}
 
-	public List<RoleParameterValue> getRoleParameterValues() {
-		return roleParameterValues;
+	public List<RoleParameter> getRoleParameters() {
+		return roleParameters;
 	}
 
-	public void setRoleParameterValues(List<RoleParameterValue> roleParameterValues) {
-		this.roleParameterValues = roleParameterValues;
+	public void setRoleParameters(List<RoleParameter> roleParameters) {
+		this.roleParameters = roleParameters;
 	}
 
 	public List<Job> getJobs() {
