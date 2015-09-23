@@ -66,6 +66,11 @@ public enum ResourcePath {
 			ResourcePath.SUBSCRIPTION_EXPAND_PARAM,
 			ResourcePath.SUBSCRIPTION_SHOWALL_PARAM,
 			Subscription.class),
+	SUBSCRIPTIONPARAMETERS(
+			ResourcePath.SUBSCRIPTIONPARAMETERS_PATH,
+			ResourcePath.SUBSCRIPTIONPARAMETER_EXPAND_PARAM,
+			ResourcePath.SUBSCRIPTIONPARAMETER_SHOWALL_PARAM,
+			Subscription.class),
 	SUBSCRIPTIONPARAMETERVALUES(
 			ResourcePath.SUBSCRIPTIONPARAMETERVALUES_PATH,
 			ResourcePath.SUBSCRIPTIONPARAMETERVALUE_EXPAND_PARAM,
@@ -91,6 +96,7 @@ public enum ResourcePath {
 	public static final String ROLES_PATH = ResourcePath.PATH_SEPARATOR + "roles";
 	public static final String SELECTIONLISTVALUES_PATH = ResourcePath.PATH_SEPARATOR + "selectionListValues";
 	public static final String SUBSCRIPTIONS_PATH = ResourcePath.PATH_SEPARATOR + "subscriptions";
+	public static final String SUBSCRIPTIONPARAMETERS_PATH = ResourcePath.PATH_SEPARATOR + "subscriptionParameters";
 	public static final String SUBSCRIPTIONPARAMETERVALUES_PATH = ResourcePath.PATH_SEPARATOR
 			+ "subscriptionParameterValues";
 
@@ -119,6 +125,7 @@ public enum ResourcePath {
 	public static final String ROLE_EXPAND_PARAM = "roles";
 	public static final String SELECTIONLISTVALUE_EXPAND_PARAM = "selectionListValues";
 	public static final String SUBSCRIPTION_EXPAND_PARAM = "subscriptions";
+	public static final String SUBSCRIPTIONPARAMETER_EXPAND_PARAM = "subscriptionParameters";
 	public static final String SUBSCRIPTIONPARAMETERVALUE_EXPAND_PARAM = "subscriptionParameterValues";
 	/*
 	 * Special "expand" parameter for the *field* ReportVersion.rptdesign.
@@ -148,6 +155,7 @@ public enum ResourcePath {
 	public static final String ROLE_SHOWALL_PARAM = ROLE_EXPAND_PARAM;
 	public static final String SELECTIONLISTVALUE_SHOWALL_PARAM = SELECTIONLISTVALUE_EXPAND_PARAM;
 	public static final String SUBSCRIPTION_SHOWALL_PARAM = SUBSCRIPTION_EXPAND_PARAM;
+	public static final String SUBSCRIPTIONPARAMETER_SHOWALL_PARAM = SUBSCRIPTIONPARAMETER_EXPAND_PARAM;
 	public static final String SUBSCRIPTIONPARAMETERVALUE_SHOWALL_PARAM = SUBSCRIPTIONPARAMETERVALUE_EXPAND_PARAM;
 
 	/*

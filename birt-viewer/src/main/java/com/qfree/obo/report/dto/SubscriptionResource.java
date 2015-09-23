@@ -51,8 +51,8 @@ public class SubscriptionResource extends AbstractBaseResource {
 	@XmlElement
 	private String description;
 
-	@XmlElement(name = "subscriptionParameterValues")
-	private SubscriptionParameterValueCollectionResource subscriptionParameterValuesCollectionResource;
+	@XmlElement(name = "subscriptionParameter")
+	private SubscriptionParameterCollectionResource subscriptionParameterCollectionResource;
 
 	@XmlElement
 	private Boolean active;
@@ -118,7 +118,7 @@ public class SubscriptionResource extends AbstractBaseResource {
 			this.description = subscription.getDescription();
 			this.active = subscription.getActive();
 			this.createdOn = subscription.getCreatedOn();
-			this.subscriptionParameterValuesCollectionResource = new SubscriptionParameterValueCollectionResource(
+			this.subscriptionParameterCollectionResource = new SubscriptionParameterCollectionResource(
 					subscription, uriInfo, newQueryParams, apiVersion);
 		}
 	}
@@ -209,13 +209,13 @@ public class SubscriptionResource extends AbstractBaseResource {
 		this.description = description;
 	}
 
-	public SubscriptionParameterValueCollectionResource getSubscriptionParameterValuesCollectionResource() {
-		return subscriptionParameterValuesCollectionResource;
+	public SubscriptionParameterCollectionResource getSubscriptionParameterCollectionResource() {
+		return subscriptionParameterCollectionResource;
 	}
 
-	public void setSubscriptionParameterValuesCollectionResource(
-			SubscriptionParameterValueCollectionResource subscriptionParameterValuesCollectionResource) {
-		this.subscriptionParameterValuesCollectionResource = subscriptionParameterValuesCollectionResource;
+	public void setSubscriptionParameterCollectionResource(
+			SubscriptionParameterCollectionResource subscriptionParameterCollectionResource) {
+		this.subscriptionParameterCollectionResource = subscriptionParameterCollectionResource;
 	}
 
 	public Boolean getActive() {
@@ -253,8 +253,6 @@ public class SubscriptionResource extends AbstractBaseResource {
 		builder.append(email);
 		builder.append(", description=");
 		builder.append(description);
-		builder.append(", subscriptionParameterValuesCollectionResource=");
-		builder.append(subscriptionParameterValuesCollectionResource);
 		builder.append(", active=");
 		builder.append(active);
 		builder.append(", createdOn=");
@@ -262,4 +260,5 @@ public class SubscriptionResource extends AbstractBaseResource {
 		builder.append("]");
 		return builder.toString();
 	}
+
 }

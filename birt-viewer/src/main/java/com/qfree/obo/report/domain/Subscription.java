@@ -140,10 +140,11 @@ public class Subscription implements Serializable {
 
 	/*
 	 * cascade = CascadeType.ALL:
-	 *     Deleting a Role will delete all of its SubscriptionParameterValue's.
+	 *     Deleting a Subscription will delete all of its 
+	 *     SubscriptionParameter's.
 	 */
 	@OneToMany(mappedBy = "subscription", cascade = CascadeType.ALL)
-	private List<SubscriptionParameterValue> subscriptionParameterValues;
+	private List<SubscriptionParameter> subscriptionParameters;
 
 	private Subscription() {
 	}
@@ -284,12 +285,12 @@ public class Subscription implements Serializable {
 		this.createdOn = createdOn;
 	}
 
-	public List<SubscriptionParameterValue> getSubscriptionParameterValues() {
-		return subscriptionParameterValues;
+	public List<SubscriptionParameter> getSubscriptionParameters() {
+		return subscriptionParameters;
 	}
 
-	public void setSubscriptionParameterValues(List<SubscriptionParameterValue> subscriptionParameterValues) {
-		this.subscriptionParameterValues = subscriptionParameterValues;
+	public void setSubscriptionParameters(List<SubscriptionParameter> subscriptionParameters) {
+		this.subscriptionParameters = subscriptionParameters;
 	}
 
 	public UUID getSubscriptionId() {

@@ -27,20 +27,20 @@ import org.hibernate.annotations.TypeDef;
 import com.qfree.obo.report.util.DateUtils;
 
 /**
- * The persistent class for the "role_parameter" database table.
+ * The persistent class for the "subscription_parameter" database table.
  * 
- * Instances/rows are used to manage role-specific "last used" or default values
- * for report parameters.
+ * Instances/rows represent report parameters for a report subscription, and
+ * they are used to associate one or more values with a parameter..
  * 
  * @author Jeffrey Zelt
  * 
  */
 @Entity
-@Table(name = "role_parameter", schema = "reporting",
-		uniqueConstraints = { @UniqueConstraint(columnNames = { "role_id", "report_parameter_id" },
-				name = "uc_roleparameter_role_parameter") })
+@Table(name = "subscription_parameter", schema = "reporting",
+		uniqueConstraints = { @UniqueConstraint(columnNames = { "subscription_id", "report_parameter_id" },
+				name = "uc_subscriptionparameter_subscription_parameter") })
 @TypeDef(name = "uuid-custom", defaultForType = UUID.class, typeClass = UuidCustomType.class)
-public class RoleParameter implements Serializable {
+public class SubscriptionParameter implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
@@ -49,9 +49,9 @@ public class RoleParameter implements Serializable {
 	//	@Type(type = "pg-uuid")
 	@GeneratedValue(generator = "uuid2")
 	@GenericGenerator(name = "uuid2", strategy = "uuid2")
-	@Column(name = "role_parameter_id", unique = true, nullable = false,
+	@Column(name = "subscription_parameter_id", unique = true, nullable = false,
 			columnDefinition = "uuid DEFAULT uuid_generate_v4()")
-	private UUID roleParameterId;
+	private UUID subscriptionParameterId;
 
 	@ManyToOne
 	/*
@@ -61,10 +61,10 @@ public class RoleParameter implements Serializable {
 	 * is not what is wanted.
 	 */
 	@NotNull
-	@JoinColumn(name = "role_id", nullable = false,
-			foreignKey = @ForeignKey(name = "fk_roleparameter_role") ,
+	@JoinColumn(name = "subscription_id", nullable = false,
+			foreignKey = @ForeignKey(name = "fk_subscriptionparameter_subscription") ,
 			columnDefinition = "uuid")
-	private Role role;
+	private Subscription subscription;
 
 	@ManyToOne
 	/*
@@ -75,42 +75,42 @@ public class RoleParameter implements Serializable {
 	 */
 	@NotNull
 	@JoinColumn(name = "report_parameter_id", nullable = false,
-			foreignKey = @ForeignKey(name = "fk_roleparameter_reportparameter") ,
+			foreignKey = @ForeignKey(name = "fk_subscriptionparameter_reportparameter") ,
 			columnDefinition = "uuid")
 	private ReportParameter reportParameter;
 
 	/*
 	 * cascade = CascadeType.ALL:
-	 *     Deleting a RoleParameter will delete all of its 
-	 *     RoleParameterValue's.
+	 *     Deleting a SubscriptionParameter will delete all of its 
+	 *     SubscriptionParameterValue's.
 	 */
-	@OneToMany(mappedBy = "roleParameter", cascade = CascadeType.ALL)
-	private List<RoleParameterValue> roleParameterValues;
+	@OneToMany(mappedBy = "subscriptionParameter", cascade = CascadeType.ALL)
+	private List<SubscriptionParameterValue> subscriptionParameterValues;
 
 	@NotNull
 	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name = "created_on", nullable = false)
 	private Date createdOn;
 
-	private RoleParameter() {
+	private SubscriptionParameter() {
 	}
 
-	public RoleParameter(Role role, ReportParameter reportParameter) {
-		this(role, reportParameter, DateUtils.nowUtc());
+	public SubscriptionParameter(Subscription subscription, ReportParameter reportParameter) {
+		this(subscription, reportParameter, DateUtils.nowUtc());
 	}
 
-	public RoleParameter(Role role, ReportParameter reportParameter, Date createdOn) {
-		this.role = role;
+	public SubscriptionParameter(Subscription subscription, ReportParameter reportParameter, Date createdOn) {
+		this.subscription = subscription;
 		this.reportParameter = reportParameter;
 		this.createdOn = (createdOn != null) ? createdOn : DateUtils.nowUtc();
 	}
 
-	public Role getRole() {
-		return role;
+	public Subscription getSubscription() {
+		return subscription;
 	}
 
-	public void setRole(Role role) {
-		this.role = role;
+	public void setSubscription(Subscription subscription) {
+		this.subscription = subscription;
 	}
 
 	public ReportParameter getReportParameter() {
@@ -121,16 +121,16 @@ public class RoleParameter implements Serializable {
 		this.reportParameter = reportParameter;
 	}
 
-	public List<RoleParameterValue> getRoleParameterValues() {
-		return roleParameterValues;
+	public List<SubscriptionParameterValue> getSubscriptionParameterValues() {
+		return subscriptionParameterValues;
 	}
 
-	public void setRoleParameterValues(List<RoleParameterValue> roleParameterValues) {
-		this.roleParameterValues = roleParameterValues;
+	public void setSubscriptionParameterValues(List<SubscriptionParameterValue> subscriptionParameterValues) {
+		this.subscriptionParameterValues = subscriptionParameterValues;
 	}
 
-	public UUID getRoleParameterId() {
-		return roleParameterId;
+	public UUID getSubscriptionParameterId() {
+		return subscriptionParameterId;
 	}
 
 	public Date getCreatedOn() {
@@ -140,14 +140,14 @@ public class RoleParameter implements Serializable {
 	@Override
 	public String toString() {
 		StringBuilder builder = new StringBuilder();
-		builder.append("RoleParameter [roleParameterId=");
-		builder.append(roleParameterId);
-		builder.append(", role=");
-		builder.append(role);
+		builder.append("SubscriptionParameter [subscriptionParameterId=");
+		builder.append(subscriptionParameterId);
+		builder.append(", subscription=");
+		builder.append(subscription);
 		builder.append(", reportParameter=");
 		builder.append(reportParameter);
-		builder.append(", roleParameterValues=");
-		builder.append(roleParameterValues);
+		builder.append(", subscriptionParameterValues=");
+		builder.append(subscriptionParameterValues);
 		builder.append(", createdOn=");
 		builder.append(createdOn);
 		builder.append("]");

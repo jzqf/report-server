@@ -15,7 +15,7 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.qfree.obo.report.domain.Subscription;
+import com.qfree.obo.report.domain.SubscriptionParameter;
 import com.qfree.obo.report.domain.SubscriptionParameterValue;
 import com.qfree.obo.report.rest.server.RestUtils.RestApiVersion;
 
@@ -28,11 +28,8 @@ public class SubscriptionParameterValueResource extends AbstractBaseResource {
 	@XmlJavaTypeAdapter(UuidAdapter.class)
 	private UUID subscriptionParameterValueId;
 
-	@XmlElement(name = "subscription")
-	private SubscriptionResource subscriptionResource;
-
-	@XmlElement(name = "reportParameter")
-	private ReportParameterResource reportParameterResource;
+	@XmlElement(name = "subscriptionParameter")
+	private SubscriptionParameterResource subscriptionParameterResource;
 
 	@XmlElement
 	private Boolean booleanValue;
@@ -163,10 +160,8 @@ public class SubscriptionParameterValueResource extends AbstractBaseResource {
 
 			this.subscriptionParameterValueId = subscriptionParameterValue.getSubscriptionParameterValueId();
 
-			this.subscriptionResource = new SubscriptionResource(subscriptionParameterValue.getSubscription(),
-					uriInfo, newQueryParams, apiVersion);
-
-			this.reportParameterResource = new ReportParameterResource(subscriptionParameterValue.getReportParameter(),
+			this.subscriptionParameterResource = new SubscriptionParameterResource(
+					subscriptionParameterValue.getSubscriptionParameter(),
 					uriInfo, newQueryParams, apiVersion);
 
 			this.booleanValue = subscriptionParameterValue.getBooleanValue();
@@ -197,10 +192,10 @@ public class SubscriptionParameterValueResource extends AbstractBaseResource {
 		}
 	}
 
-	public static List<SubscriptionParameterValueResource> listFromSubscription(Subscription subscription,
+	public static List<SubscriptionParameterValueResource> listFromSubscriptionParameter(SubscriptionParameter subscriptionParameter,
 			UriInfo uriInfo, Map<String, List<String>> queryParams, RestApiVersion apiVersion) {
-		if (subscription.getSubscriptionParameterValues() != null) {
-			List<SubscriptionParameterValue> subscriptionParameterValues = subscription
+		if (subscriptionParameter.getSubscriptionParameterValues() != null) {
+			List<SubscriptionParameterValue> subscriptionParameterValues = subscriptionParameter
 					.getSubscriptionParameterValues();
 			List<SubscriptionParameterValueResource> subscriptionParameterValueResources = new ArrayList<>(
 					subscriptionParameterValues.size());
@@ -222,8 +217,220 @@ public class SubscriptionParameterValueResource extends AbstractBaseResource {
 		}
 	}
 
-	public static Logger getLogger() {
-		return logger;
+	public UUID getSubscriptionParameterValueId() {
+		return subscriptionParameterValueId;
+	}
+
+	public void setSubscriptionParameterValueId(UUID subscriptionParameterValueId) {
+		this.subscriptionParameterValueId = subscriptionParameterValueId;
+	}
+
+	public SubscriptionParameterResource getSubscriptionParameterResource() {
+		return subscriptionParameterResource;
+	}
+
+	public void setSubscriptionParameterResource(SubscriptionParameterResource subscriptionParameterResource) {
+		this.subscriptionParameterResource = subscriptionParameterResource;
+	}
+
+	public Boolean getBooleanValue() {
+		return booleanValue;
+	}
+
+	public void setBooleanValue(Boolean booleanValue) {
+		this.booleanValue = booleanValue;
+	}
+
+	public Date getDateValue() {
+		return dateValue;
+	}
+
+	public void setDateValue(Date dateValue) {
+		this.dateValue = dateValue;
+	}
+
+	public Date getDatetimeValue() {
+		return datetimeValue;
+	}
+
+	public void setDatetimeValue(Date datetimeValue) {
+		this.datetimeValue = datetimeValue;
+	}
+
+	public Double getFloatValue() {
+		return floatValue;
+	}
+
+	public void setFloatValue(Double floatValue) {
+		this.floatValue = floatValue;
+	}
+
+	public Integer getIntegerValue() {
+		return integerValue;
+	}
+
+	public void setIntegerValue(Integer integerValue) {
+		this.integerValue = integerValue;
+	}
+
+	public String getStringValue() {
+		return stringValue;
+	}
+
+	public void setStringValue(String stringValue) {
+		this.stringValue = stringValue;
+	}
+
+	public Date getTimeValue() {
+		return timeValue;
+	}
+
+	public void setTimeValue(Date timeValue) {
+		this.timeValue = timeValue;
+	}
+
+	public Integer getYearNumber() {
+		return yearNumber;
+	}
+
+	public void setYearNumber(Integer yearNumber) {
+		this.yearNumber = yearNumber;
+	}
+
+	public Integer getYearsAgo() {
+		return yearsAgo;
+	}
+
+	public void setYearsAgo(Integer yearsAgo) {
+		this.yearsAgo = yearsAgo;
+	}
+
+	public Integer getMonthNumber() {
+		return monthNumber;
+	}
+
+	public void setMonthNumber(Integer monthNumber) {
+		this.monthNumber = monthNumber;
+	}
+
+	public Integer getMonthsAgo() {
+		return monthsAgo;
+	}
+
+	public void setMonthsAgo(Integer monthsAgo) {
+		this.monthsAgo = monthsAgo;
+	}
+
+	public Integer getWeeksAgo() {
+		return weeksAgo;
+	}
+
+	public void setWeeksAgo(Integer weeksAgo) {
+		this.weeksAgo = weeksAgo;
+	}
+
+	public Integer getDayOfWeekInMonthOrdinal() {
+		return dayOfWeekInMonthOrdinal;
+	}
+
+	public void setDayOfWeekInMonthOrdinal(Integer dayOfWeekInMonthOrdinal) {
+		this.dayOfWeekInMonthOrdinal = dayOfWeekInMonthOrdinal;
+	}
+
+	public Integer getDayOfWeekInMonthNumber() {
+		return dayOfWeekInMonthNumber;
+	}
+
+	public void setDayOfWeekInMonthNumber(Integer dayOfWeekInMonthNumber) {
+		this.dayOfWeekInMonthNumber = dayOfWeekInMonthNumber;
+	}
+
+	public Integer getDayOfWeekNumber() {
+		return dayOfWeekNumber;
+	}
+
+	public void setDayOfWeekNumber(Integer dayOfWeekNumber) {
+		this.dayOfWeekNumber = dayOfWeekNumber;
+	}
+
+	public Integer getDayOfMonthNumber() {
+		return dayOfMonthNumber;
+	}
+
+	public void setDayOfMonthNumber(Integer dayOfMonthNumber) {
+		this.dayOfMonthNumber = dayOfMonthNumber;
+	}
+
+	public Integer getDaysAgo() {
+		return daysAgo;
+	}
+
+	public void setDaysAgo(Integer daysAgo) {
+		this.daysAgo = daysAgo;
+	}
+
+	public Integer getDurationToAddYears() {
+		return durationToAddYears;
+	}
+
+	public void setDurationToAddYears(Integer durationToAddYears) {
+		this.durationToAddYears = durationToAddYears;
+	}
+
+	public Integer getDurationToAddMonths() {
+		return durationToAddMonths;
+	}
+
+	public void setDurationToAddMonths(Integer durationToAddMonths) {
+		this.durationToAddMonths = durationToAddMonths;
+	}
+
+	public Integer getDurationToAddWeeks() {
+		return durationToAddWeeks;
+	}
+
+	public void setDurationToAddWeeks(Integer durationToAddWeeks) {
+		this.durationToAddWeeks = durationToAddWeeks;
+	}
+
+	public Integer getDurationToAddDays() {
+		return durationToAddDays;
+	}
+
+	public void setDurationToAddDays(Integer durationToAddDays) {
+		this.durationToAddDays = durationToAddDays;
+	}
+
+	public Integer getDurationToAddHours() {
+		return durationToAddHours;
+	}
+
+	public void setDurationToAddHours(Integer durationToAddHours) {
+		this.durationToAddHours = durationToAddHours;
+	}
+
+	public Integer getDurationToAddMinutes() {
+		return durationToAddMinutes;
+	}
+
+	public void setDurationToAddMinutes(Integer durationToAddMinutes) {
+		this.durationToAddMinutes = durationToAddMinutes;
+	}
+
+	public Integer getDurationToAddSeconds() {
+		return durationToAddSeconds;
+	}
+
+	public void setDurationToAddSeconds(Integer durationToAddSeconds) {
+		this.durationToAddSeconds = durationToAddSeconds;
+	}
+
+	public Date getCreatedOn() {
+		return createdOn;
+	}
+
+	public void setCreatedOn(Date createdOn) {
+		this.createdOn = createdOn;
 	}
 
 	@Override
@@ -231,10 +438,8 @@ public class SubscriptionParameterValueResource extends AbstractBaseResource {
 		StringBuilder builder = new StringBuilder();
 		builder.append("SubscriptionParameterValueResource [subscriptionParameterValueId=");
 		builder.append(subscriptionParameterValueId);
-		builder.append(", subscriptionResource=");
-		builder.append(subscriptionResource);
-		builder.append(", reportParameterResource=");
-		builder.append(reportParameterResource);
+		builder.append(", subscriptionParameterResource=");
+		builder.append(subscriptionParameterResource);
 		builder.append(", booleanValue=");
 		builder.append(booleanValue);
 		builder.append(", dateValue=");
@@ -288,4 +493,5 @@ public class SubscriptionParameterValueResource extends AbstractBaseResource {
 		builder.append("]");
 		return builder.toString();
 	}
+
 }

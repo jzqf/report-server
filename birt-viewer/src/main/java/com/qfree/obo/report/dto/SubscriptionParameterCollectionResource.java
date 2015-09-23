@@ -10,45 +10,43 @@ import javax.xml.bind.annotation.XmlRootElement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.qfree.obo.report.domain.Subscription;
 import com.qfree.obo.report.domain.SubscriptionParameter;
-import com.qfree.obo.report.domain.SubscriptionParameterValue;
 import com.qfree.obo.report.rest.server.RestUtils.RestApiVersion;
 
 @XmlRootElement
-public class SubscriptionParameterValueCollectionResource
-		extends AbstractCollectionResource<SubscriptionParameterValueResource> {
+public class SubscriptionParameterCollectionResource
+		extends AbstractCollectionResource<SubscriptionParameterResource> {
 
-	private static final Logger logger = LoggerFactory.getLogger(SubscriptionParameterValueCollectionResource.class);
+	private static final Logger logger = LoggerFactory.getLogger(SubscriptionParameterCollectionResource.class);
 
 	@XmlElement
-	private List<SubscriptionParameterValueResource> items;
+	private List<SubscriptionParameterResource> items;
 
-	public SubscriptionParameterValueCollectionResource() {
+	public SubscriptionParameterCollectionResource() {
 	}
 
-	public SubscriptionParameterValueCollectionResource(SubscriptionParameter subscriptionParameter, UriInfo uriInfo,
+	public SubscriptionParameterCollectionResource(Subscription subscription, UriInfo uriInfo,
 			Map<String, List<String>> queryParams, RestApiVersion apiVersion) {
 		this(
-				SubscriptionParameterValueResource.listFromSubscriptionParameter(subscriptionParameter, uriInfo,
-						queryParams,
-						apiVersion),
-				SubscriptionParameterValue.class,
+				SubscriptionParameterResource.listFromSubscription(subscription, uriInfo,
+						queryParams, apiVersion),
+				SubscriptionParameter.class,
 				AbstractBaseResource.createHref(uriInfo, SubscriptionParameter.class,
-						subscriptionParameter.getSubscriptionParameterId(),
-						null),
-				ResourcePath.SUBSCRIPTIONPARAMETERVALUES_PATH,
+						subscription.getSubscriptionId(), null),
+				ResourcePath.SUBSCRIPTIONPARAMETERS_PATH,
 				uriInfo, queryParams, apiVersion);
 	}
 
-	public SubscriptionParameterValueCollectionResource(
-			List<SubscriptionParameterValueResource> items,
+	public SubscriptionParameterCollectionResource(
+			List<SubscriptionParameterResource> items,
 			Class<?> entityClass,
 			UriInfo uriInfo, Map<String, List<String>> queryParams, RestApiVersion apiVersion) {
 		this(items, entityClass, null, null, uriInfo, queryParams, apiVersion);
 	}
 
-	public SubscriptionParameterValueCollectionResource(
-			List<SubscriptionParameterValueResource> items,
+	public SubscriptionParameterCollectionResource(
+			List<SubscriptionParameterResource> items,
 			Class<?> entityClass,
 			String baseResourceUri, String collectionPath,
 			UriInfo uriInfo, Map<String, List<String>> queryParams, RestApiVersion apiVersion) {
@@ -61,11 +59,11 @@ public class SubscriptionParameterValueCollectionResource
 		}
 	}
 
-	public List<SubscriptionParameterValueResource> getItems() {
+	public List<SubscriptionParameterResource> getItems() {
 		return items;
 	}
 
-	public void setItems(List<SubscriptionParameterValueResource> items) {
+	public void setItems(List<SubscriptionParameterResource> items) {
 		this.items = items;
 	}
 

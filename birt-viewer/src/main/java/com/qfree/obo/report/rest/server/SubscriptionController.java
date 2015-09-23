@@ -36,14 +36,14 @@ import com.qfree.obo.report.domain.ReportParameter;
 import com.qfree.obo.report.domain.ReportVersion;
 import com.qfree.obo.report.domain.Role;
 import com.qfree.obo.report.domain.Subscription;
-import com.qfree.obo.report.domain.SubscriptionParameterValue;
+import com.qfree.obo.report.domain.SubscriptionParameter;
 import com.qfree.obo.report.dto.DocumentFormatResource;
 import com.qfree.obo.report.dto.ReportVersionResource;
 import com.qfree.obo.report.dto.ResourcePath;
 import com.qfree.obo.report.dto.RestErrorResource.RestError;
 import com.qfree.obo.report.dto.RoleResource;
 import com.qfree.obo.report.dto.SubscriptionCollectionResource;
-import com.qfree.obo.report.dto.SubscriptionParameterValueCollectionResource;
+import com.qfree.obo.report.dto.SubscriptionParameterCollectionResource;
 import com.qfree.obo.report.dto.SubscriptionResource;
 import com.qfree.obo.report.exceptions.RestApiException;
 import com.qfree.obo.report.rest.server.RestUtils.RestApiVersion;
@@ -189,7 +189,7 @@ public class SubscriptionController extends AbstractBaseController {
 
 		// if (RestUtils.AUTO_EXPAND_PRIMARY_RESOURCES) {
 		addToExpandList(expand, Subscription.class); // Force primary resource to be "expanded"
-		addToExpandList(expand, SubscriptionParameterValue.class); // Also force children to be "expanded"
+		addToExpandList(expand, SubscriptionParameter.class); // Also force children to be "expanded"
 		// }
 		SubscriptionResource resource = new SubscriptionResource(subscription, uriInfo, queryParams, apiVersion);
 
@@ -371,13 +371,13 @@ public class SubscriptionController extends AbstractBaseController {
 	}
 
 	/*
-	 * Return the SubscriptionParameterValues associated with a single 
+	 * Return the SubscriptionParameter entities associated with a single 
 	 * Subscription that is specified by its id. This endpoint can be tested 
 	 * with:
 	 * 
 	 *   $ mvn clean spring-boot:run
 	 *   $ curl -i -H "Accept: application/json;v=1" -X GET \
-	 *   http://localhost:8080/rest/subscriptions/c7f1d394-9814-4ede-bb01-2700187d79ca/subscriptionParameterValues
+	 *   http://localhost:8080/rest/subscriptions/c7f1d394-9814-4ede-bb01-2700187d79ca/subscriptionParameters
 	 * 
 	 * @Transactional is used to avoid org.hibernate.LazyInitializationException
 	 * being thrown.
@@ -386,7 +386,7 @@ public class SubscriptionController extends AbstractBaseController {
 	@Path("/{id}" + ResourcePath.SUBSCRIPTIONPARAMETERVALUES_PATH)
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
-	public SubscriptionParameterValueCollectionResource getSubscriptionParameterValuesBySubscriptionId(
+	public SubscriptionParameterCollectionResource getSubscriptionParametersBySubscriptionId(
 			@PathParam("id") final UUID id,
 			@HeaderParam("Accept") final String acceptHeader,
 			@QueryParam(ResourcePath.EXPAND_QP_NAME) final List<String> expand,
@@ -399,6 +399,6 @@ public class SubscriptionController extends AbstractBaseController {
 
 		Subscription subscription = subscriptionRepository.findOne(id);
 		RestUtils.ifNullThen404(subscription, Subscription.class, "subscriptionId", id.toString());
-		return new SubscriptionParameterValueCollectionResource(subscription, uriInfo, queryParams, apiVersion);
+		return new SubscriptionParameterCollectionResource(subscription, uriInfo, queryParams, apiVersion);
 	}
 }

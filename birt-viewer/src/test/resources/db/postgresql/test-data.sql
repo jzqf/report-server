@@ -506,10 +506,13 @@ insert into reporting.configuration (configuration_id, param_name, role_id, para
 insert into reporting.subscription (subscription_id, role_id, report_version_id, document_format_id, run_once_at, cron_schedule, email, description, active, created_on) values ('7f68e31c-2884-4638-b3e5-c64697a28bd1', 'ee56f34d-dbb4-41c1-9d30-ce29cf973820', 'dbc0883b-afe3-4147-87b4-0ed35869cd35', '30800d77-5fdd-44bc-94a3-1502bd307c1d', '2016-01-01T03:00:00', '00 6 * * 1', 'jeffreyz@q-free.com', 'Description for Subscription #1', true, '2015-06-06T15:45:30');
 
 
--- [subscription_parameter_value] rows for [report_parameter]'s associated with 
+-- [subscription_parameter] rows for [report_parameter]'s associated with 
 -- [report] "Report name #01" for [subscription] "Description for Subscription #1":
-insert into reporting.subscription_parameter_value (subscription_parameter_value_id, subscription_id, report_parameter_id, string_value, time_value, year_number, years_ago, month_number, months_ago, weeks_ago, day_of_month_number, day_of_week_number, days_ago, created_on) VALUES ('a5159f31-1c2b-496f-af04-bcb02cc04cfb', '7f68e31c-2884-4638-b3e5-c64697a28bd1', '206723d6-50e7-4f4a-85c0-cb679e92ad6b', 'integer value for Report01Param01 for subscription #1', null, null, null, null, null, null, null, null, null, '2015-03-15T11:00:01');
+insert into reporting.subscription_parameter (subscription_parameter_id, subscription_id, report_parameter_id, created_on) VALUES ('4e490877-0803-47e2-a74e-61865aadf9a9', '7f68e31c-2884-4638-b3e5-c64697a28bd1', '206723d6-50e7-4f4a-85c0-cb679e92ad6b', '2015-03-15T11:00:00');
 
+-- [subscription_parameter_value] rows for [subscription_parameter]'s associated with 
+-- [subscription] "Description for Subscription #1":
+insert into reporting.subscription_parameter_value (subscription_parameter_value_id, subscription_parameter_id, boolean_value, date_value, datetime_value, float_value, integer_value, string_value, time_value, year_number, years_ago, month_number, months_ago, weeks_ago, day_of_week_in_month_ordinal, day_of_week_in_month_number, day_of_week_number, day_of_month_number, days_ago, duration_to_add_years, duration_to_add_months, duration_to_add_weeks, duration_to_add_days, duration_to_add_hours, duration_to_add_minutes, duration_to_add_seconds, created_on) VALUES ('a5159f31-1c2b-496f-af04-bcb02cc04cfb', '4e490877-0803-47e2-a74e-61865aadf9a9', null, null, null, null, 12321, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, '2015-03-15T11:00:01');
 
 --------------------------------------------------------------------------------
 -- [job]'s with relation to [report]:

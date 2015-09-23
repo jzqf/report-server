@@ -25,11 +25,12 @@ import com.qfree.obo.report.util.DateUtils;
 /**
  * The persistent class for the "subscription_parameter_value" database table.
  * 
- * Instances/rows represent templates for how to generate JobParameterValue's
- * for a Subscription when the Subscription's report is run. There can be only a
- * single SubscriptionParameterValue for single-valued related ReportParameter 
- * for a Subscription. There can be multiple SubscriptionParameterValue's for 
- * multi-valued related ReportParameter for a Subscription.
+ * Instances/rows represent values or templates for how to generate
+ * JobParameterValue's for a Subscription when the Subscription's report is run
+ * and a Job is created. There can be only a single SubscriptionParameterValue
+ * for single-valued related ReportParameter for a Subscription. There can be
+ * multiple SubscriptionParameterValue's for multi-valued related
+ * ReportParameter for a Subscription.
  * 
  * @author Jeffrey Zelt
  * 
@@ -59,23 +60,10 @@ public class SubscriptionParameterValue implements Serializable {
 	 * is not what is wanted.
 	 */
 	@NotNull
-	@JoinColumn(name = "subscription_id", nullable = false,
-			foreignKey = @ForeignKey(name = "fk_subscriptionparametervalue_subscription"),
+	@JoinColumn(name = "subscription_parameter_id", nullable = false,
+			foreignKey = @ForeignKey(name = "fk_subscriptionparametervalue_subscriptionparameter") ,
 			columnDefinition = "uuid")
-	private Subscription subscription;
-
-	@ManyToOne
-	/*
-	 * If columnDefinition="uuid" is omitted here and the database schema is 
-	 * created by Hibernate (via hibernate.hbm2ddl.auto="create"), then the 
-	 * PostgreSQL column definition includes "DEFAULT uuid_generate_v4()", which
-	 * is not what is wanted.
-	 */
-	@NotNull
-	@JoinColumn(name = "report_parameter_id", nullable = false,
-			foreignKey = @ForeignKey(name = "fk_subscriptionparametervalue_reportparameter"),
-			columnDefinition = "uuid")
-	private ReportParameter reportParameter;
+	private SubscriptionParameter subscriptionParameter;
 
 	/**
 	 * The parameter value to use, if its data type is "Boolean".
@@ -327,8 +315,7 @@ public class SubscriptionParameterValue implements Serializable {
 	}
 
 	public SubscriptionParameterValue(
-			Subscription subscription,
-			ReportParameter reportParameter,
+			SubscriptionParameter subscriptionParameter,
 			Boolean booleanValue,
 			Date dateValue,
 			Date datetimeValue,
@@ -355,8 +342,7 @@ public class SubscriptionParameterValue implements Serializable {
 			Integer durationToAddSeconds) {
 		this(
 				null,
-				subscription,
-				reportParameter,
+				subscriptionParameter,
 				booleanValue,
 				dateValue,
 				datetimeValue,
@@ -386,8 +372,7 @@ public class SubscriptionParameterValue implements Serializable {
 
 	public SubscriptionParameterValue(
 			UUID subscriptionParameterValueId,
-			Subscription subscription,
-			ReportParameter reportParameter,
+			SubscriptionParameter subscriptionParameter,
 			Boolean booleanValue,
 			Date dateValue,
 			Date datetimeValue,
@@ -415,8 +400,7 @@ public class SubscriptionParameterValue implements Serializable {
 			Date createdOn) {
 		super();
 		this.subscriptionParameterValueId = subscriptionParameterValueId;
-		this.subscription = subscription;
-		this.reportParameter = reportParameter;
+		this.subscriptionParameter = subscriptionParameter;
 		this.booleanValue = booleanValue;
 		this.dateValue = dateValue;
 		this.datetimeValue = datetimeValue;
@@ -444,20 +428,12 @@ public class SubscriptionParameterValue implements Serializable {
 		this.createdOn = (createdOn != null) ? createdOn : DateUtils.nowUtc();
 	}
 
-	public Subscription getSubscription() {
-		return subscription;
+	public SubscriptionParameter getSubscriptionParameter() {
+		return subscriptionParameter;
 	}
 
-	public void setSubscription(Subscription subscription) {
-		this.subscription = subscription;
-	}
-
-	public ReportParameter getReportParameter() {
-		return reportParameter;
-	}
-
-	public void setReportParameter(ReportParameter reportParameter) {
-		this.reportParameter = reportParameter;
+	public void setSubscriptionParameter(SubscriptionParameter subscriptionParameter) {
+		this.subscriptionParameter = subscriptionParameter;
 	}
 
 	public Boolean getBooleanValue() {
@@ -652,16 +628,12 @@ public class SubscriptionParameterValue implements Serializable {
 		this.durationToAddSeconds = durationToAddSeconds;
 	}
 
-	public Date getCreatedOn() {
-		return createdOn;
-	}
-
-	public void setCreatedOn(Date createdOn) {
-		this.createdOn = createdOn;
-	}
-
 	public UUID getSubscriptionParameterValueId() {
 		return subscriptionParameterValueId;
+	}
+
+	public Date getCreatedOn() {
+		return createdOn;
 	}
 
 	@Override
@@ -669,14 +641,59 @@ public class SubscriptionParameterValue implements Serializable {
 		StringBuilder builder = new StringBuilder();
 		builder.append("SubscriptionParameterValue [subscriptionParameterValueId=");
 		builder.append(subscriptionParameterValueId);
-		builder.append(", subscription=");
-		builder.append(subscription);
-		builder.append(", reportParameter=");
-		builder.append(reportParameter);
+		builder.append(", subscriptionParameter=");
+		builder.append(subscriptionParameter);
+		builder.append(", booleanValue=");
+		builder.append(booleanValue);
+		builder.append(", dateValue=");
+		builder.append(dateValue);
+		builder.append(", datetimeValue=");
+		builder.append(datetimeValue);
+		builder.append(", floatValue=");
+		builder.append(floatValue);
+		builder.append(", integerValue=");
+		builder.append(integerValue);
+		builder.append(", stringValue=");
+		builder.append(stringValue);
+		builder.append(", timeValue=");
+		builder.append(timeValue);
+		builder.append(", yearNumber=");
+		builder.append(yearNumber);
+		builder.append(", yearsAgo=");
+		builder.append(yearsAgo);
+		builder.append(", monthNumber=");
+		builder.append(monthNumber);
+		builder.append(", monthsAgo=");
+		builder.append(monthsAgo);
+		builder.append(", weeksAgo=");
+		builder.append(weeksAgo);
+		builder.append(", dayOfWeekInMonthOrdinal=");
+		builder.append(dayOfWeekInMonthOrdinal);
+		builder.append(", dayOfWeekInMonthNumber=");
+		builder.append(dayOfWeekInMonthNumber);
+		builder.append(", dayOfWeekNumber=");
+		builder.append(dayOfWeekNumber);
+		builder.append(", dayOfMonthNumber=");
+		builder.append(dayOfMonthNumber);
+		builder.append(", daysAgo=");
+		builder.append(daysAgo);
+		builder.append(", durationToAddYears=");
+		builder.append(durationToAddYears);
+		builder.append(", durationToAddMonths=");
+		builder.append(durationToAddMonths);
+		builder.append(", durationToAddWeeks=");
+		builder.append(durationToAddWeeks);
+		builder.append(", durationToAddDays=");
+		builder.append(durationToAddDays);
+		builder.append(", durationToAddHours=");
+		builder.append(durationToAddHours);
+		builder.append(", durationToAddMinutes=");
+		builder.append(durationToAddMinutes);
+		builder.append(", durationToAddSeconds=");
+		builder.append(durationToAddSeconds);
 		builder.append(", createdOn=");
 		builder.append(createdOn);
 		builder.append("]");
 		return builder.toString();
 	}
-
 }
