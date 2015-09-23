@@ -32,9 +32,11 @@ import com.qfree.obo.report.db.ReportVersionRepository;
 import com.qfree.obo.report.db.RoleRepository;
 import com.qfree.obo.report.db.SubscriptionRepository;
 import com.qfree.obo.report.domain.DocumentFormat;
+import com.qfree.obo.report.domain.ReportParameter;
 import com.qfree.obo.report.domain.ReportVersion;
 import com.qfree.obo.report.domain.Role;
 import com.qfree.obo.report.domain.Subscription;
+import com.qfree.obo.report.domain.SubscriptionParameterValue;
 import com.qfree.obo.report.dto.DocumentFormatResource;
 import com.qfree.obo.report.dto.ReportVersionResource;
 import com.qfree.obo.report.dto.ResourcePath;
@@ -114,11 +116,29 @@ public class SubscriptionController extends AbstractBaseController {
 	 * This endpoint can be tested with:
 	 * 
 	 *   $ mvn clean spring-boot:run
-	 *   $ curl -iH "Accept: application/json;v=1" -H "Content-Type: application/json" -X POST -d \
-	 *   '{"reportCategory":{"reportCategoryId":"72d7cb27-1770-4cc7-b301-44d39ccf1e76"},\
-	 *   "name":"Report name (created by POST)","number":666}' \
+	 *   
+	 *   $ curl -iH "Accept: application/json;v=1" -H "Content-Type: application/json" -X POST -d '{\
+	 *   "reportVersion":{"reportVersionId":"afd8777f-b6a2-4cb8-8dc2-887c47af3644"},\
+	 *   "role":{"roleId":"b85fd129-17d9-40e7-ac11-7541040f8627"},\
+	 *   "documentFormat":{"documentFormatId":"30800d77-5fdd-44bc-94a3-1502bd307c1d"}}' \
 	 *   http://localhost:8080/rest/subscriptions
+	 *   
+	 *   This will throw an exception because we are attempting to create a new
+	 *   Subscription with active=true:
+	 *   
+	 *   $ curl -iH "Accept: application/json;v=1" -H "Content-Type: application/json" -X POST -d '{\
+	 *   "reportVersion":{"reportVersionId":"afd8777f-b6a2-4cb8-8dc2-887c47af3644"},\
+	 *   "role":{"roleId":"b85fd129-17d9-40e7-ac11-7541040f8627"},\
+	 *   "documentFormat":{"documentFormatId":"30800d77-5fdd-44bc-94a3-1502bd307c1d"},"active":true}' \
+	 *   http://localhost:8080/rest/subscriptions
+	 *   
+	 * @Transactional is used to avoid org.hibernate.LazyInitializationException
+	 * being thrown when evaluating entity fields that represent related 
+	 * entities or entity collections. In addition, we create here multiple
+	 * record in the database from different tables and we want everything 
+	 * wrapped in a transaction so that we create everything or nothing.
 	 */
+	@Transactional
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
@@ -134,11 +154,45 @@ public class SubscriptionController extends AbstractBaseController {
 		RestApiVersion apiVersion = RestUtils.extractAPIVersion(acceptHeader, RestApiVersion.v1);
 
 		Subscription subscription = subscriptionService.saveNewFromResource(subscriptionResource);
+
+		/*
+		 * Create one SubscriptionParameterValue for each ReportParameter that
+		 * is related to the specified ReportVersion for this new Subscription.
+		 * These SubscriptionParameterValue objects will be used by the
+		 * reporting user to specify values for the report parameters, or to 
+		 * specify how the values will be set when the report is run.
+		 * 
+		 * subscription.getReportVersion() will return a non-null ReportVersion
+		 * here because this is enforced when 
+		 * subscriptionService.saveNewFromResource(...) is called above (it 
+		 * enforces that the Subscription that is created has a many-to-one
+		 * relation to a ReportVersion.
+		 * 
+		 * TODO Should this code be moved somewhere else, e.g., subscriptionService.saveNewFromResource(...)?
+		 * I will leave it here for now.
+		 */
+		List<ReportParameter> reportParameters = subscription.getReportVersion().getReportParameters();
+		logger.info("reportParameters = {}", reportParameters);
+		for (ReportParameter reportParameter : reportParameters) {
+			//SubscriptionParameterValue subscriptionParameterValue = new SubscriptionParameterValue(subscription,
+			//		reportParameter);
+			/*
+			 * Check if there exists one or more RoleParameterValue entities for
+			 * this Role / ReportParameter combination. There can be more than 
+			 * one if the parameter is multi-valued. If so, we can use it (or
+			 * possibly them) to set the value for one or more 
+			 * SubscriptionParameterValue entities that we create here.
+			 */
+		}
+
+
+
 		// if (RestUtils.AUTO_EXPAND_PRIMARY_RESOURCES) {
-		addToExpandList(expand, Subscription.class); // Force primary resource
-														// to be "expanded"
+		addToExpandList(expand, Subscription.class); // Force primary resource to be "expanded"
+		addToExpandList(expand, SubscriptionParameterValue.class); // Also force children to be "expanded"
 		// }
 		SubscriptionResource resource = new SubscriptionResource(subscription, uriInfo, queryParams, apiVersion);
+
 		return created(resource);
 	}
 
