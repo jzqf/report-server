@@ -314,6 +314,37 @@ public class SubscriptionParameterValue implements Serializable {
 	public SubscriptionParameterValue() {
 	}
 
+	public SubscriptionParameterValue(SubscriptionParameter subscriptionParameter) {
+		this(
+				null,
+				subscriptionParameter,
+				null,
+				null,
+				null,
+				null,
+				null,
+				null,
+				null,
+				null,
+				null,
+				null,
+				null,
+				null,
+				null,
+				null,
+				null,
+				null,
+				null,
+				null,
+				null,
+				null,
+				null,
+				null,
+				null,
+				null,
+				DateUtils.nowUtc());
+	}
+
 	public SubscriptionParameterValue(
 			SubscriptionParameter subscriptionParameter,
 			Boolean booleanValue,
@@ -367,6 +398,39 @@ public class SubscriptionParameterValue implements Serializable {
 				durationToAddHours,
 				durationToAddMinutes,
 				durationToAddSeconds,
+				DateUtils.nowUtc());
+	}
+
+	public SubscriptionParameterValue(
+			SubscriptionParameter subscriptionParameter,
+			RoleParameterValue roleParameterValue) {
+		this(
+				null,
+				subscriptionParameter,
+				roleParameterValue.getBooleanValue(),
+				roleParameterValue.getDateValue(),
+				roleParameterValue.getDatetimeValue(),
+				roleParameterValue.getFloatValue(),
+				roleParameterValue.getIntegerValue(),
+				roleParameterValue.getStringValue(),
+				roleParameterValue.getTimeValue(),
+				null,
+				null,
+				null,
+				null,
+				null,
+				null,
+				null,
+				null,
+				null,
+				null,
+				null,
+				null,
+				null,
+				null,
+				null,
+				null,
+				null,
 				DateUtils.nowUtc());
 	}
 

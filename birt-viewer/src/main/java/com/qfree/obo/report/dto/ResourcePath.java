@@ -12,6 +12,7 @@ import com.qfree.obo.report.domain.ReportVersion;
 import com.qfree.obo.report.domain.Role;
 import com.qfree.obo.report.domain.SelectionListValue;
 import com.qfree.obo.report.domain.Subscription;
+import com.qfree.obo.report.domain.SubscriptionParameter;
 import com.qfree.obo.report.domain.SubscriptionParameterValue;
 
 public enum ResourcePath {
@@ -70,7 +71,7 @@ public enum ResourcePath {
 			ResourcePath.SUBSCRIPTIONPARAMETERS_PATH,
 			ResourcePath.SUBSCRIPTIONPARAMETER_EXPAND_PARAM,
 			ResourcePath.SUBSCRIPTIONPARAMETER_SHOWALL_PARAM,
-			Subscription.class),
+			SubscriptionParameter.class),
 	SUBSCRIPTIONPARAMETERVALUES(
 			ResourcePath.SUBSCRIPTIONPARAMETERVALUES_PATH,
 			ResourcePath.SUBSCRIPTIONPARAMETERVALUE_EXPAND_PARAM,

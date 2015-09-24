@@ -29,14 +29,19 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.qfree.obo.report.db.DocumentFormatRepository;
 import com.qfree.obo.report.db.ReportVersionRepository;
+import com.qfree.obo.report.db.RoleParameterRepository;
+import com.qfree.obo.report.db.RoleParameterValueRepository;
 import com.qfree.obo.report.db.RoleRepository;
 import com.qfree.obo.report.db.SubscriptionRepository;
 import com.qfree.obo.report.domain.DocumentFormat;
 import com.qfree.obo.report.domain.ReportParameter;
 import com.qfree.obo.report.domain.ReportVersion;
 import com.qfree.obo.report.domain.Role;
+import com.qfree.obo.report.domain.RoleParameter;
+import com.qfree.obo.report.domain.RoleParameterValue;
 import com.qfree.obo.report.domain.Subscription;
 import com.qfree.obo.report.domain.SubscriptionParameter;
+import com.qfree.obo.report.domain.SubscriptionParameterValue;
 import com.qfree.obo.report.dto.DocumentFormatResource;
 import com.qfree.obo.report.dto.ReportVersionResource;
 import com.qfree.obo.report.dto.ResourcePath;
@@ -60,6 +65,8 @@ public class SubscriptionController extends AbstractBaseController {
 	private final DocumentFormatRepository documentFormatRepository;
 	private final ReportVersionRepository reportVersionRepository;
 	private final RoleRepository roleRepository;
+	private final RoleParameterRepository roleParameterRepository;
+	private final RoleParameterValueRepository roleParameterValueRepository;
 
 	@Autowired
 	public SubscriptionController(
@@ -67,12 +74,16 @@ public class SubscriptionController extends AbstractBaseController {
 			SubscriptionService subscriptionService,
 			DocumentFormatRepository documentFormatRepository,
 			ReportVersionRepository reportVersionRepository,
-			RoleRepository roleRepository) {
+			RoleRepository roleRepository,
+			RoleParameterRepository roleParameterRepository,
+			RoleParameterValueRepository roleParameterValueRepository) {
 		this.subscriptionRepository = subscriptionRepository;
 		this.subscriptionService = subscriptionService;
 		this.documentFormatRepository = documentFormatRepository;
 		this.reportVersionRepository = reportVersionRepository;
 		this.roleRepository = roleRepository;
+		this.roleParameterRepository = roleParameterRepository;
+		this.roleParameterValueRepository = roleParameterValueRepository;
 	}
 
 	/*
@@ -156,6 +167,21 @@ public class SubscriptionController extends AbstractBaseController {
 		Subscription subscription = subscriptionService.saveNewFromResource(subscriptionResource);
 
 		/*
+		 * If the Role associated with the subscription has an e-mail address,
+		 * assign it to the new Subscriptions email field.
+		 * 
+		 * TODO Should this code be moved somewhere else, e.g., subscriptionService.saveNewFromResource(...)?
+		 * I will leave it here for now.
+		 */
+		String roleEmail = subscription.getRole().getEmail();
+		if (roleEmail != null && !roleEmail.isEmpty()) {
+			String currentEmail = subscription.getEmail();
+			if (currentEmail == null || currentEmail.isEmpty()) {
+				subscription.setEmail(roleEmail);
+			}
+		}
+
+		/*
 		 * Create one SubscriptionParameter for each ReportParameter that
 		 * is related to the specified ReportVersion for this new Subscription.
 		 * 
@@ -170,30 +196,75 @@ public class SubscriptionController extends AbstractBaseController {
 		 * here because this is enforced when 
 		 * subscriptionService.saveNewFromResource(...) is called above (it 
 		 * enforces that the Subscription that is created has a many-to-one
-		 * relation to a ReportVersion.
+		 * relation to a ReportVersion).
 		 * 
 		 * TODO Should this code be moved somewhere else, e.g., subscriptionService.saveNewFromResource(...)?
 		 * I will leave it here for now.
 		 */
 		List<ReportParameter> reportParameters = subscription.getReportVersion().getReportParameters();
 		logger.info("reportParameters = {}", reportParameters);
+		/*
+		 * This list will hold all SubscriptionParameter entities that are 
+		 * created for the subscription.
+		 */
+		List<SubscriptionParameter> subscriptionParameters = new ArrayList<>();
+		subscription.setSubscriptionParameters(subscriptionParameters);
 		for (ReportParameter reportParameter : reportParameters) {
-			//SubscriptionParameterValue subscriptionParameterValue = new SubscriptionParameterValue(subscription,
-			//		reportParameter);
+			logger.info("reportParameter = {}", reportParameter);
+			SubscriptionParameter subscriptionParameter = new SubscriptionParameter(subscription, reportParameter);
+			subscriptionParameters.add(subscriptionParameter);
+			/*
+			 * This list will hold all SubscriptionParameterValue entities that
+			 * are created for the report parameter that is currently being 
+			 * treated.
+			 */
+			List<SubscriptionParameterValue> subscriptionParameterValues = new ArrayList<>();
+			subscriptionParameter.setSubscriptionParameterValues(subscriptionParameterValues);
 			/*
 			 * Check if there exists one or more RoleParameterValue entities for
 			 * this Role / ReportParameter combination. There can be more than 
-			 * one if the parameter is multi-valued. If so, we can use it (or
-			 * possibly them) to set the value for one or more 
-			 * SubscriptionParameterValue entities that we create here.
+			 * one if the parameter is multi-valued. 
+			 * 
+			 * If there _does_ exist one or more such RoleParameterValue 
+			 * entities, we create one SubscriptionParameterValue for each of 
+			 * them, copying the details from each RoleParameterValue to each 
+			 * SubscriptionParameterValue.
+			 * 
+			 * If there do not exist any such RoleParameterValue entities, we
+			 * create a single SubscriptionParameterValue with none of its
+			 * optional fields defined.
 			 */
+			// TODO Test this query thoroughly! In fact, write an integration test, if possible.
+			RoleParameter roleParameter = roleParameterRepository.findByRoleAndReportParameter(
+					subscription.getRole().getRoleId(), reportParameter.getReportParameterId());
+			List<RoleParameterValue> roleParameterValues = new ArrayList<>();
+			if (roleParameter != null) {
+				roleParameterValues = roleParameterValueRepository.findByRoleParameter(roleParameter);
+				logger.info("roleParameterValues = {}", roleParameterValues);
+			}
+			if (!roleParameterValues.isEmpty()) {
+				/*
+				 * Create one SubscriptionParameterValue per RoleParameterValue.
+				 */
+				for (RoleParameterValue roleParameterValue : roleParameterValues) {
+					SubscriptionParameterValue subscriptionParameterValue = new SubscriptionParameterValue(
+							subscriptionParameter, roleParameterValue);
+					logger.info("subscriptionParameterValue = {}", subscriptionParameterValue);
+					subscriptionParameterValues.add(subscriptionParameterValue);
+				}
+			} else {
+				/*
+				 * Create a single "empty" SubscriptionParameterValue.
+				 */
+				logger.info("Creating empty SubscriptionParameterValue");
+				subscriptionParameterValues.add(new SubscriptionParameterValue(subscriptionParameter));
+			}
 		}
-
-
 
 		// if (RestUtils.AUTO_EXPAND_PRIMARY_RESOURCES) {
 		addToExpandList(expand, Subscription.class); // Force primary resource to be "expanded"
 		addToExpandList(expand, SubscriptionParameter.class); // Also force children to be "expanded"
+		addToExpandList(expand, SubscriptionParameterValue.class); // Also force children to be "expanded"
 		// }
 		SubscriptionResource resource = new SubscriptionResource(subscription, uriInfo, queryParams, apiVersion);
 
@@ -373,6 +444,8 @@ public class SubscriptionController extends AbstractBaseController {
 
 		return Response.status(Response.Status.OK).build();
 	}
+
+	// Add DELETE endpoint????????????????
 
 	/*
 	 * Return the SubscriptionParameter entities associated with a single 
