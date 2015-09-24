@@ -30,7 +30,7 @@ import com.qfree.obo.report.util.DateUtils;
  * The persistent class for the "subscription_parameter" database table.
  * 
  * Instances/rows represent report parameters for a report subscription, and
- * they are used to associate one or more values with a parameter..
+ * they are used to associate one or more values with a parameter.
  * 
  * @author Jeffrey Zelt
  * 

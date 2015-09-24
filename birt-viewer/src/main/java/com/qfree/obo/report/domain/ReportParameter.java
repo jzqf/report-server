@@ -309,10 +309,10 @@ public class ReportParameter implements Serializable {
 	/*
 	 * cascade = CascadeType.ALL:
 	 *     Deleting a ReportParameter will delete all of its 
-	 *     JobParameterValue's.
+	 *     JobParameter's.
 	 */
 	@OneToMany(mappedBy = "reportParameter", cascade = CascadeType.ALL)
-	private List<JobParameterValue> jobParameterValues;
+	private List<JobParameter> jobParameters;
 
 	@NotNull
 	@Temporal(TemporalType.TIMESTAMP)
@@ -637,12 +637,12 @@ public class ReportParameter implements Serializable {
 		this.subscriptionParameters = subscriptionParameters;
 	}
 
-	public List<JobParameterValue> getJobParameterValues() {
-		return jobParameterValues;
+	public List<JobParameter> getJobParameters() {
+		return jobParameters;
 	}
 
-	public void setJobParameterValues(List<JobParameterValue> jobParameterValues) {
-		this.jobParameterValues = jobParameterValues;
+	public void setJobParameters(List<JobParameter> jobParameters) {
+		this.jobParameters = jobParameters;
 	}
 
 	@Override

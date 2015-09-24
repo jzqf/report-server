@@ -156,11 +156,15 @@ public class SubscriptionController extends AbstractBaseController {
 		Subscription subscription = subscriptionService.saveNewFromResource(subscriptionResource);
 
 		/*
-		 * Create one SubscriptionParameterValue for each ReportParameter that
+		 * Create one SubscriptionParameter for each ReportParameter that
 		 * is related to the specified ReportVersion for this new Subscription.
-		 * These SubscriptionParameterValue objects will be used by the
-		 * reporting user to specify values for the report parameters, or to 
-		 * specify how the values will be set when the report is run.
+		 * 
+		 * For each SubscriptionParameter created for the new Subscription, one 
+		 * or more SubscriptionParameterValue entities will be created to 
+		 * represent the value or values specified by a reporting user for the
+		 * corresponding report parameter. A single SubscriptionParameterValue
+		 * entity can also be used as a sort of template for datetime parameters
+		 * to specify how the values will be set when the report is run.
 		 * 
 		 * subscription.getReportVersion() will return a non-null ReportVersion
 		 * here because this is enforced when 

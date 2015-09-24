@@ -163,4 +163,103 @@ public class RoleParameterValue implements Serializable {
 		this.createdOn = (createdOn != null) ? createdOn : DateUtils.nowUtc();
 	}
 
+	public RoleParameter getRoleParameter() {
+		return roleParameter;
+	}
+
+	public void setRoleParameter(RoleParameter roleParameter) {
+		this.roleParameter = roleParameter;
+	}
+
+	public Boolean getBooleanValue() {
+		return booleanValue;
+	}
+
+	public void setBooleanValue(Boolean booleanValue) {
+		this.booleanValue = booleanValue;
+	}
+
+	public Date getDateValue() {
+		return dateValue;
+	}
+
+	public void setDateValue(Date dateValue) {
+		this.dateValue = dateValue;
+	}
+
+	public Date getDatetimeValue() {
+		return datetimeValue;
+	}
+
+	public void setDatetimeValue(Date datetimeValue) {
+		this.datetimeValue = datetimeValue;
+	}
+
+	public Double getFloatValue() {
+		return floatValue;
+	}
+
+	public void setFloatValue(Double floatValue) {
+		this.floatValue = floatValue;
+	}
+
+	public Integer getIntegerValue() {
+		return integerValue;
+	}
+
+	public void setIntegerValue(Integer integerValue) {
+		this.integerValue = integerValue;
+	}
+
+	public String getStringValue() {
+		return stringValue;
+	}
+
+	public void setStringValue(String stringValue) {
+		this.stringValue = stringValue;
+	}
+
+	public Date getTimeValue() {
+		return timeValue;
+	}
+
+	public void setTimeValue(Date timeValue) {
+		this.timeValue = timeValue;
+	}
+
+	public UUID getRoleParameterValueId() {
+		return roleParameterValueId;
+	}
+
+	public Date getCreatedOn() {
+		return createdOn;
+	}
+
+	@Override
+	public String toString() {
+		StringBuilder builder = new StringBuilder();
+		builder.append("RoleParameterValue [roleParameterValueId=");
+		builder.append(roleParameterValueId);
+		builder.append(", roleParameter=");
+		builder.append(roleParameter);
+		builder.append(", booleanValue=");
+		builder.append(booleanValue);
+		builder.append(", dateValue=");
+		builder.append(dateValue);
+		builder.append(", datetimeValue=");
+		builder.append(datetimeValue);
+		builder.append(", floatValue=");
+		builder.append(floatValue);
+		builder.append(", integerValue=");
+		builder.append(integerValue);
+		builder.append(", stringValue=");
+		builder.append(stringValue);
+		builder.append(", timeValue=");
+		builder.append(timeValue);
+		builder.append(", createdOn=");
+		builder.append(createdOn);
+		builder.append("]");
+		return builder.toString();
+	}
+
 }

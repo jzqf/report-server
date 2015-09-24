@@ -2745,18 +2745,14 @@ insert into reporting.role_report (role_report_id, role_id, report_id, created_o
 --insert into reporting.subscription_parameter_value (subscription_parameter_value_id, subscription_parameter_id, boolean_value, date_value, datetime_value, float_value, integer_value, string_value, time_value, year_number, years_ago, month_number, months_ago, weeks_ago, day_of_week_in_month_ordinal, day_of_week_in_month_number, day_of_week_number, day_of_month_number, days_ago, duration_to_add_years, duration_to_add_months, duration_to_add_weeks, duration_to_add_days, duration_to_add_hours, duration_to_add_minutes, duration_to_add_seconds, created_on) VALUES ('a5159f31-1c2b-496f-af04-bcb02cc04cfb', '4e490877-0803-47e2-a74e-61865aadf9a9', null, null, null, null, 12321, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, '2015-03-15T11:00:01');
 --
 --
-----------------------------------------------------------------------------------
----- [job]'s with relation to [report]:
------- job for report "Test Report #01" run by role "aabb":
-----insert into reporting.job (report_id, role_id, created_on) VALUES ('d65f3d9c-f67d-4beb-9936-9dfa19aa1407', 'ee56f34d-dbb4-41c1-9d30-ce29cf973820', '2015-06-06T00:00:15');
------- job for report "Test Report #01" run by role "aabb":
-----insert into reporting.job (report_id, role_id, created_on) VALUES ('d65f3d9c-f67d-4beb-9936-9dfa19aa1407', 'ee56f34d-dbb4-41c1-9d30-ce29cf973820', '2015-06-07T00:00:15');
-----------------------------------------------------------------------------------
----- [job]'s with relation to [report_version]:
----- job for [report_version] "version 1" of report "Test Report #01" run by role "aabb". [document_format]: PDF:
---insert into reporting.job (report_version_id, role_id, document_format_id, created_on) VALUES ('dbc0883b-afe3-4147-87b4-0ed35869cd35', 'ee56f34d-dbb4-41c1-9d30-ce29cf973820', '30800d77-5fdd-44bc-94a3-1502bd307c1d', '2015-06-06T00:00:15');
----- job for [report_version] "version 1" of report "Test Report #01" run by role "aabb". [document_format]: OpenDocument Spreadsheet:
---insert into reporting.job (report_version_id, role_id, document_format_id, created_on) VALUES ('dbc0883b-afe3-4147-87b4-0ed35869cd35', 'ee56f34d-dbb4-41c1-9d30-ce29cf973820', '05a4ad8d-6f30-4d6d-83d5-995345a8dc58', '2015-06-07T00:00:15');
+---- Create [job] rows. We cannot specifiy job_id because its data type is bigint;
+---- hence, it may not be unique. Therefore, we let PostgreSQL create the job_id
+---- values for us (the DDL for this column includes: "default nextval('job_job_id_seq'::regclass)"
+----
+---- job for [report_version] "version 1" of report "Report name #01" run by role "aabb". [document_format]: PDF:
+--insert into reporting.job (report_version_id, role_id, document_format_id, url, file_name, document, encoded, created_on) VALUES ('dbc0883b-afe3-4147-87b4-0ed35869cd35', 'ee56f34d-dbb4-41c1-9d30-ce29cf973820', '30800d77-5fdd-44bc-94a3-1502bd307c1d', null, null, null, null, '2015-06-06T00:00:15');
+---- job for [report_version] "version 1" of report "Report name #01" run by role "aabb". [document_format]: OpenDocument Spreadsheet:
+--insert into reporting.job (report_version_id, role_id, document_format_id, url, file_name, document, encoded, created_on) VALUES ('dbc0883b-afe3-4147-87b4-0ed35869cd35', 'ee56f34d-dbb4-41c1-9d30-ce29cf973820', '05a4ad8d-6f30-4d6d-83d5-995345a8dc58', null, null, null, null, '2015-06-07T00:00:15');
 ----------------------------------------------------------------------------------
 --
 

@@ -24,6 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.qfree.obo.report.ApplicationConfig;
 import com.qfree.obo.report.domain.DocumentFormat;
 import com.qfree.obo.report.domain.Job;
+import com.qfree.obo.report.domain.JobParameter;
 import com.qfree.obo.report.domain.JobParameterValue;
 import com.qfree.obo.report.domain.Report;
 import com.qfree.obo.report.domain.ReportParameter;
@@ -39,6 +40,9 @@ public class JobParameterValueRepositoryTests {
 
 	@Autowired
 	JobParameterValueRepository jobParameterValueRepository;
+
+	@Autowired
+	JobParameterRepository jobParameterRepository;
 
 	@Autowired
 	JobRepository jobRepository;
@@ -73,9 +77,10 @@ public class JobParameterValueRepositoryTests {
 
 	@Test
 	@Transactional
-	public void save_newJobParameterValue_singlevalued() {
+	public void save_newJobParameterValues_multivalued() {
 
 		assertThat(jobRepository.count(), is(2L));
+		assertThat(jobParameterRepository.count(), is(0L));
 		assertThat(jobParameterValueRepository.count(), is(0L));
 
 		UUID uuidOfReport04 = UUID.fromString("702d5daa-e23d-4f00-b32b-67b44c06d8f6");
@@ -100,7 +105,13 @@ public class JobParameterValueRepositoryTests {
 		Job newJob = new Job(report04Version01, role_aabb, pdfFormat);
 
 		/*
-		 * Get all the parameters.
+		 * Get all the parameters for the report. There should be only one with
+		 * attributes:
+		 *     data_type    = 6
+		 *     control_type = 0
+		 *     required     = true
+		 *     multivalued  = true
+		 *     ...   
 		 */
 		//		List<ReportParameter> reportParameters = report04.getReportParameters();
 		//		assertThat(reportParameters, hasSize(equalTo(1)));
@@ -108,86 +119,59 @@ public class JobParameterValueRepositoryTests {
 		assertThat(reportParameters, hasSize(equalTo(1)));
 
 		/*
-		 * Create three JobParameterValue's for each multi-valued report 
+		 * Create three JobParameterValue's for the multi-valued report 
 		 * parameter for report "Report name #04". There should only be one 
 		 * report parameter for report  "Report name #04" and it should be 
-		 * multi-valued.
+		 * multi-valued, but I write this code as a loop in case this changes
+		 * in the future.
 		 */
-		for (ReportParameter rp : reportParameters) {
-			JobParameterValue jpv;
-			List<JobParameterValue> jpvs = new ArrayList<>();
-			if (rp.getMultivalued()) {
-				//				logger.info("newJob.getJobParameterValues() = {}", newJob.getJobParameterValues());
-				jpv = new JobParameterValue(newJob, rp, "multi-value #1");
-				jpvs.add(jpv);
-				jpv = new JobParameterValue(newJob, rp, "multi-value #2");
-				jpvs.add(jpv);
-				jpv = new JobParameterValue(newJob, rp, "multi-value #3");
-				jpvs.add(jpv);
-				newJob.setJobParameterValues(jpvs);
+		List<JobParameter> jobParameters = new ArrayList<>();
+		newJob.setJobParameters(jobParameters);
+		for (ReportParameter reportParameter : reportParameters) {
+
+			JobParameter jobParameter = new JobParameter(newJob, reportParameter);
+			jobParameters.add(jobParameter);
+
+			/*
+			 * Create 3 JobParameterValue entities for jobParameter.
+			 */
+			JobParameterValue jobParameterValue;
+			List<JobParameterValue> jobParameterValues = new ArrayList<>();
+			jobParameter.setJobParameterValues(jobParameterValues);
+			if (reportParameter.getMultivalued()) {
+				jobParameterValue = new JobParameterValue(jobParameter, null, null, null, null, 123, null, null);
+				jobParameterValues.add(jobParameterValue);
+				jobParameterValue = new JobParameterValue(jobParameter, null, null, null, null, 321, null, null);
+				jobParameterValues.add(jobParameterValue);
+				jobParameterValue = new JobParameterValue(jobParameter, null, null, null, null, 0, null, null);
+				jobParameterValues.add(jobParameterValue);
 			} else {
 				// This case should not occur.
-				jpv = new JobParameterValue(newJob, rp, "single value");
-				jpvs.add(jpv);
-				newJob.setJobParameterValues(jpvs);
+				jobParameterValue = new JobParameterValue(jobParameter, null, null, null, null, -666, null, null);
+				jobParameterValues.add(jobParameterValue);
 			}
 		}
 
 		/*
-		 * Save the new Job and its JobParameterValue's.
+		 * Save the new Job, its JobParameter's (one one) and the JobParameter's
+		 * related JobParameterValue's (3 of them).
 		 */
 		Job savedJob = jobRepository.save(newJob);
-		//		logger.info("savedJob = {}", savedJob);
-		//		logger.info("savedJob.getjobId() = {}", savedJob.getJobId());
-		//		logger.info("After save: unsavedJob.getJobId() = {}", unsavedJob.getJobId());
+		logger.info("savedJob = {}", savedJob);
 
 		assertThat(jobRepository.count(), is(3L));
+		assertThat(jobParameterRepository.count(), is(1L));
 		assertThat(jobParameterValueRepository.count(), is(3L));
 
-		//TODO Need to write a LOT more tests
-	}
+		assertThat(savedJob.getJobParameters(), hasSize(1));
 
-	@Test
-	@Transactional
-	public void save_newJobParameterValue_multivalued() {
+		JobParameter savedJob_JobParameter1 = savedJob.getJobParameters().get(0);
+		assertThat(savedJob_JobParameter1.getJobParameterValues(), hasSize(3));
 
-		assertThat(jobRepository.count(), is(2L));
-
-		UUID uuidOfReport04 = UUID.fromString("702d5daa-e23d-4f00-b32b-67b44c06d8f6");
-		Report report04 = reportRepository.findOne(uuidOfReport04);
-		assertThat(report04, is(not(nullValue())));
-
-		ReportVersion report04Version01 = report04.getReportVersions().get(0);
-		assertThat(report04Version01, is(not(nullValue())));
-
-		UUID uuidOfRole_aabb = UUID.fromString("ee56f34d-dbb4-41c1-9d30-ce29cf973820");
-		Role role_aabb = roleRepository.findOne(uuidOfRole_aabb);
-		assertThat(role_aabb, is(notNullValue()));
-
-		UUID uuidOfPdfFormat = UUID.fromString("30800d77-5fdd-44bc-94a3-1502bd307c1d");
-		DocumentFormat pdfFormat = documentFormatRepository.findOne(uuidOfPdfFormat);
-		assertThat(pdfFormat, is(not(nullValue())));
-
-		//		Job unsavedJob = new Job(report04, role_aabb);
-		Job unsavedJob = new Job(report04Version01, role_aabb, pdfFormat);
-		//		logger.info("unsavedJob = {}", unsavedJob);
-
-		Job savedJob = jobRepository.save(unsavedJob);
-		//		logger.info("savedJob = {}", savedJob);
 		//		logger.info("savedJob.getjobId() = {}", savedJob.getJobId());
-		//		logger.info("After save: unsavedJob.getJobId() = {}", unsavedJob.getJobId());
+		//		logger.info("After save: newJob.getJobId() = {}", newJob.getJobId());
 
-		assertThat(jobRepository.count(), is(3L));
-
-		Long uuidFromSavedJob = savedJob.getJobId();
-		Job foundJob = jobRepository.findOne(uuidFromSavedJob);
-
-		/*
-		 * TODO Replace this code with a custom "assertJob(...)" method.
-		 */
-		//		assertThat(foundJob.getName(), is("Some new parameter name"));
-		//		assertThat(foundJob.getDescription(), is("Some new parameter description"));
-		//		assertThat(foundJob.getRequired(), is(true));
+		//TODO Need to write a LOT more tests
 	}
 
 }
