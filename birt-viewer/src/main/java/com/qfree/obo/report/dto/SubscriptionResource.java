@@ -51,7 +51,7 @@ public class SubscriptionResource extends AbstractBaseResource {
 	@XmlElement
 	private String description;
 
-	@XmlElement(name = "subscriptionParameter")
+	@XmlElement(name = "subscriptionParameters")
 	private SubscriptionParameterCollectionResource subscriptionParameterCollectionResource;
 
 	@XmlElement

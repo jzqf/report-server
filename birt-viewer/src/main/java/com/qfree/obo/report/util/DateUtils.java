@@ -1,11 +1,13 @@
 package com.qfree.obo.report.util;
 
+import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.Calendar;
 import java.util.Date;
@@ -152,6 +154,93 @@ public class DateUtils {
 	}
 
 	/**
+	 * Converts a string that represents a datetime to a java.util.Date.
+	 * 
+	 * This assumes that the string was obtained from a BIRT rptdesign file via
+	 * the BIRT API. in such a way that information is not lost in the
+	 * conversion and the original string can be recovered, if necessary.
+	 * 
+	 * This datetime will probably used as a report parameter value. As such The
+	 * report will make its own assumption regarding time zone to associate with
+	 * it. For example, the query that the report uses to generate the data set
+	 * might assume that it is expressed relative to UTC or something else.
+	 * 
+	 * The most important thing is probably that when the Date is converted back
+	 * to a string, then the original string passed to this method should be
+	 * recovered.
+	 * 
+	 * @param defaultValue
+	 * @return
+	 */
+	public static Date dateFromBirtDatetimeString(String birtDatetimeString) {
+
+		//TODO Convert these to static final fields
+		DateTimeFormatter dateTimeFormatter1 = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+		DateTimeFormatter dateTimeFormatter2 = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS");
+		DateTimeFormatter dateTimeFormatter3 = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.S");
+		DateTimeFormatter dateTimeFormatter4 = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SS");
+
+		logger.debug("----------------------------------------");
+		logger.debug("birtDatetimeString         = {}", birtDatetimeString);
+
+		/*
+		 * This is a crude way to support this range of formats, but it works
+		 * fine.
+		 */
+		LocalDateTime localDateTime;
+		try {
+			localDateTime = LocalDateTime.parse(birtDatetimeString, dateTimeFormatter1);
+		} catch (DateTimeParseException e) {
+			try {
+				localDateTime = LocalDateTime.parse(birtDatetimeString, dateTimeFormatter2);
+			} catch (DateTimeParseException e2) {
+
+				try {
+					localDateTime = LocalDateTime.parse(birtDatetimeString, dateTimeFormatter3);
+				} catch (DateTimeParseException e3) {
+					localDateTime = LocalDateTime.parse(birtDatetimeString, dateTimeFormatter4);
+				}
+			}
+		}
+
+		logger.debug("localDateTime         = {}", localDateTime);
+
+		ZonedDateTime zonedDateTimeAtSysDef = localDateTime.atZone(ZoneId.systemDefault());
+		logger.debug("zonedDateTimeAtSysDef = {}", zonedDateTimeAtSysDef);
+
+		Date date = Date.from(zonedDateTimeAtSysDef.toInstant());
+		logger.debug("unmarshalledDate      = {}", date);
+
+		return date;
+	}
+
+	/**
+	 * Performs the opposite operation as {@link #dateFromBirtDatetimeString}.
+	 * 
+	 * This method take the output of {@link #dateFromBirtDatetimeString} and
+	 * return a string that is equivalent to that originally used.
+	 * 
+	 * @param date
+	 * @return
+	 */
+	public static String birtDatetimeStringFromDate(Date date) {
+
+		//TOODO Make this a static final field.
+		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+		if (date != null) {
+			//try {
+			return format.format(date);
+			//} catch (Exception e) {
+			//	logger.error("Exception caught formatting date '{}'. Exception: ", date.toString(), e);
+			//	return (String) null;
+			//}
+		} else {
+			return (String) null;
+		}
+
+	}
+
+	/**
 	 * Returns a {@link Date} by parsing an string that represents a date with
 	 * no time information.
 	 * 
@@ -189,6 +278,36 @@ public class DateUtils {
 		Date unmarshalledDate = Date.from(localDate.atStartOfDay(ZoneId.systemDefault()).toInstant());
 		logger.debug("unmarshalled java.util.Date = {}", unmarshalledDate);
 		return unmarshalledDate;
+	}
+
+	public static Date dateFromBirtDateString(String dateStringWithoutTime) {
+		return dateFromDateStringWithoutTime(dateStringWithoutTime);
+	}
+
+	/**
+	 * Performs the opposite operation as {@link #dateFromBirtDateString}.
+	 * 
+	 * This method take the output of {@link #dateFromBirtDateString} and return
+	 * a string that is equivalent to that originally used.
+	 * 
+	 * @param date
+	 * @return
+	 */
+	public static String birtDateStringFromDate(Date date) {
+
+		//TOODO Make this a static final field.
+		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+		if (date != null) {
+			//try {
+			return format.format(date);
+			//} catch (Exception e) {
+			//	logger.error("Exception caught formatting date '{}'. Exception: ", date.toString(), e);
+			//	return (String) null;
+			//}
+		} else {
+			return (String) null;
+		}
+
 	}
 
 	/**
@@ -238,15 +357,49 @@ public class DateUtils {
 		return unmarshalledDate;
 	}
 
+	public static Date dateFromBirtTimeString(String timeString) {
+		return dateFromTimeString(timeString);
+	}
+
+	/**
+	 * Performs the opposite operation as {@link #dateFromBirtDateString}.
+	 * 
+	 * This method take the output of {@link #dateFromBirtDateString} and return
+	 * a string that is equivalent to that originally used.
+	 * 
+	 * @param date
+	 * @return
+	 */
+	public static String birtTimeStringFromDate(Date date) {
+
+		//TOODO Make this a static final field.
+		SimpleDateFormat format = new SimpleDateFormat("HH:mm:ss.SSS");
+		if (date != null) {
+			//try {
+			return format.format(date);
+			//} catch (Exception e) {
+			//	logger.error("Exception caught formatting date '{}'. Exception: ", date.toString(), e);
+			//	return (String) null;
+			//}
+		} else {
+			return (String) null;
+		}
+
+	}
+
 	/**
 	 * Oddly, the string representation of an Entity Date field annotated with
-	 * {@literal @}Temporal(TemporalType.TIMESTAMP) is quite different than the 
-	 * string representation of a "normal" Java Date instance. Somehow, the 
+	 * {@literal @}Temporal(TemporalType.TIMESTAMP) is quite different than the
+	 * string representation of a "normal" Java Date instance. Somehow, the
 	 * underlying Date objects are different, but the details are not clear. Th
-	 * STRING REPRESENTATION of such a Date returned from an entity has no time 
+	 * STRING REPRESENTATION of such a Date returned from an entity has no time
 	 * zone information at all, but a "normal" Java does. Examples of each are
-	 * <pre><code>timestampFromEntity.toString()  -> "2015-05-30 22:00:00.0"
-	 *normalDate.toString()      -> "Sat May 30 22:00:00 CEST 2015"</code></pre>
+	 * 
+	 * <pre>
+	 * <code>timestampFromEntity.toString()  -> "2015-05-30 22:00:00.0"
+	 *normalDate.toString()      -> "Sat May 30 22:00:00 CEST 2015"</code>
+	 * </pre>
+	 * 
 	 * In order to compare objects of these "types" (technically, they are the
 	 * same Java type) and assert that they are "equal" in a test, the Date
 	 * returned from the entity should be converted to a more "normal" Java Date
@@ -378,5 +531,38 @@ public class DateUtils {
 		System.out.println("DateUtils.dateFromTimeString(\"18:40:15.123\")  = "
 				+ DateUtils.dateFromTimeString("18:40:15.123"));
 
+		System.out.println("");
+		Date date1 = DateUtils.dateFromBirtDatetimeString("1958-05-06 12:30:59");
+		System.out.println("DateUtils.dateFromBirtDatetimeString(\"1958-05-06 12:30:59\")        = " + date1);
+		System.out.println("DateUtils.birtDatetimeStringFromDate(" + date1 + ") = "
+				+ DateUtils.birtDatetimeStringFromDate(date1));
+		Date date7 = DateUtils.dateFromBirtDatetimeString("1958-05-06 12:30:59.9");
+		System.out.println("DateUtils.dateFromBirtDatetimeString(\"1958-05-06 12:30:59:9\")      = " + date7);
+		System.out.println("DateUtils.birtDatetimeStringFromDate(" + date7 + ") = "
+				+ DateUtils.birtDatetimeStringFromDate(date7));
+		Date date2 = DateUtils.dateFromBirtDatetimeString("1958-05-06 12:30:59.999");
+		System.out.println("DateUtils.dateFromBirtDatetimeString(\"1958-05-06 12:30:59:999\")    = " + date2);
+		System.out.println("DateUtils.birtDatetimeStringFromDate(" + date2 + ") = "
+				+ DateUtils.birtDatetimeStringFromDate(date2));
+
+		System.out.println("");
+		Date date3 = DateUtils.dateFromBirtDateString("1958-05-06");
+		System.out.println("DateUtils.dateFromBirtDateString(\"1958-05-06\")                 = " + date3);
+		System.out.println("DateUtils.birtDateStringFromDate(" + date3 + ") = "
+				+ DateUtils.birtDateStringFromDate(date3));
+
+		System.out.println("");
+		Date date4 = DateUtils.dateFromBirtTimeString("12:30:59");
+		System.out.println("DateUtils.dateFromBirtTimeString(\"12:30:59\")                    = " + date4);
+		System.out.println("DateUtils.birtTimeStringFromDate(" + date4 + ") = "
+				+ DateUtils.birtTimeStringFromDate(date4));
+		Date date6 = DateUtils.dateFromBirtTimeString("12:30:59.9");
+		System.out.println("DateUtils.dateFromBirtTimeString(\"12:30:59:9\")                  = " + date6);
+		System.out.println("DateUtils.birtTimeStringFromDate(" + date6 + ") = "
+				+ DateUtils.birtTimeStringFromDate(date6));
+		Date date5 = DateUtils.dateFromBirtTimeString("12:30:59.999");
+		System.out.println("DateUtils.dateFromBirtTimeString(\"12:30:59:999\")                = " + date5);
+		System.out.println("DateUtils.birtTimeStringFromDate(" + date5 + ") = "
+				+ DateUtils.birtTimeStringFromDate(date5));
 	}
 }

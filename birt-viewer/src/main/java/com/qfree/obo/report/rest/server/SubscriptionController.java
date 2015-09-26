@@ -22,6 +22,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
+import org.eclipse.birt.report.engine.api.IParameterDefn;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,6 +55,7 @@ import com.qfree.obo.report.dto.SubscriptionResource;
 import com.qfree.obo.report.exceptions.RestApiException;
 import com.qfree.obo.report.rest.server.RestUtils.RestApiVersion;
 import com.qfree.obo.report.service.SubscriptionService;
+import com.qfree.obo.report.util.DateUtils;
 
 @Component
 @Path(ResourcePath.SUBSCRIPTIONS_PATH)
@@ -235,7 +237,6 @@ public class SubscriptionController extends AbstractBaseController {
 			 * create a single SubscriptionParameterValue with none of its
 			 * optional fields defined.
 			 */
-			// TODO Test this query thoroughly! In fact, write an integration test, if possible.
 			RoleParameter roleParameter = roleParameterRepository.findByRoleAndReportParameter(
 					subscription.getRole().getRoleId(), reportParameter.getReportParameterId());
 			List<RoleParameterValue> roleParameterValues = new ArrayList<>();
@@ -253,18 +254,123 @@ public class SubscriptionController extends AbstractBaseController {
 					logger.info("subscriptionParameterValue = {}", subscriptionParameterValue);
 					subscriptionParameterValues.add(subscriptionParameterValue);
 				}
+			} else if (reportParameter.getDefaultValue() != null) {
+
+				logger.info("reportParameter.getDefaultValue() = {}", reportParameter.getDefaultValue());
+
+				SubscriptionParameterValue subscriptionParameterValue = new SubscriptionParameterValue(
+						subscriptionParameter);
+
+				/*
+				 * The report parameter has a default value, so we use it to
+				 * set the appropriate field of the new 
+				 * SubscriptionParameterValue entity based on the parameter's
+				 * data type. The default values is always a String, so it needs
+				 * to be converted to the appropriate data type.
+				 */
+				switch (subscriptionParameter.getReportParameter().getDataType()) {
+				case IParameterDefn.TYPE_ANY:
+					/*
+					 * Will this case occur? I don't know what is the 
+					 * appropriate way to treat this case, so I will ignore it,
+					 * although I do log it. This will not cause any serious 
+					 * problem - it just means that the user will be forced to
+					 * provide a value for this parameter before the 
+					 * subscription can be made active.
+					 */
+					logger.error("Report parameter '{}' of report '{}' has type = IParameterDefn.TYPE_ANY",
+							subscriptionParameter.getReportParameter().getName(),
+							subscriptionParameter.getSubscription().getReportVersion().getFileName());
+					break;
+				case IParameterDefn.TYPE_STRING:
+					subscriptionParameterValue.setStringValue(reportParameter.getDefaultValue());
+					break;
+				case IParameterDefn.TYPE_FLOAT:
+					try {
+						subscriptionParameterValue.setFloatValue(Double.parseDouble(reportParameter.getDefaultValue()));
+					} catch (Exception e) {
+						logger.warn("Could not parse '{}' as a Double", reportParameter.getDefaultValue());
+					}
+					logger.info("subscriptionParameterValue.getFloatValue() = {}",
+							subscriptionParameterValue.getFloatValue());
+					break;
+				case IParameterDefn.TYPE_DECIMAL:
+					/*
+					 * Assume that we can treat parameters of data type
+					 * "decimal" as floats. This may not be so, but we will
+					 * give this a try.
+					 */
+					try {
+						subscriptionParameterValue.setFloatValue(Double.parseDouble(reportParameter.getDefaultValue()));
+					} catch (Exception e) {
+						logger.warn("Could not parse '{}' as a Double", reportParameter.getDefaultValue());
+					}
+					logger.info("subscriptionParameterValue.getFloatValue() = {}",
+							subscriptionParameterValue.getFloatValue());
+					break;
+				case IParameterDefn.TYPE_DATE_TIME:
+					try {
+						subscriptionParameterValue
+								.setDatetimeValue(
+										DateUtils.dateFromBirtDatetimeString(reportParameter.getDefaultValue()));
+					} catch (Exception e) {
+						logger.warn("Could not parse '{}' as a 'datetime' Date", reportParameter.getDefaultValue());
+					}
+					logger.info("subscriptionParameterValue.getDatetimeValue() = {}",
+							subscriptionParameterValue.getDatetimeValue());
+					break;
+				case IParameterDefn.TYPE_BOOLEAN:
+					try {
+						subscriptionParameterValue
+								.setBooleanValue(Boolean.parseBoolean(reportParameter.getDefaultValue()));
+					} catch (Exception e) {
+						logger.warn("Could not parse '{}' as an Boolean", reportParameter.getDefaultValue());
+					}
+					logger.info("subscriptionParameterValue.getBooleanValue() = {}",
+							subscriptionParameterValue.getBooleanValue());
+					break;
+				case IParameterDefn.TYPE_INTEGER:
+					try {
+						subscriptionParameterValue.setIntegerValue(Integer.parseInt(reportParameter.getDefaultValue()));
+					} catch (Exception e) {
+						logger.warn("Could not parse '{}' as an Integer", reportParameter.getDefaultValue());
+					}
+					logger.info("subscriptionParameterValue.getIntegerValue() = {}",
+							subscriptionParameterValue.getIntegerValue());
+					break;
+				case IParameterDefn.TYPE_DATE:
+					try {
+						subscriptionParameterValue
+								.setDateValue(DateUtils.dateFromBirtDateString(reportParameter.getDefaultValue()));
+					} catch (Exception e) {
+						logger.warn("Could not parse '{}' as a 'date' Date", reportParameter.getDefaultValue());
+					}
+					logger.info("subscriptionParameterValue.getDateValue() = {}",
+							subscriptionParameterValue.getDateValue());
+					break;
+				case IParameterDefn.TYPE_TIME:
+					try {
+						subscriptionParameterValue
+								.setTimeValue(DateUtils.dateFromBirtTimeString(reportParameter.getDefaultValue()));
+					} catch (Exception e) {
+						logger.warn("Could not parse '{}' as a 'time' Date", reportParameter.getDefaultValue());
+					}
+					logger.info("subscriptionParameterValue.getTimeValue() = {}",
+							subscriptionParameterValue.getTimeValue());
+					break;
+				default:
+					String errorMessage = String.format(
+							"subscriptionParameter.getReportParameter().getDataType() = %s",
+							subscriptionParameter.getReportParameter().getDataType());
+					throw new RestApiException(RestError.INTERNAL_SERVER_ERROR_UNTREATED_CASE, errorMessage);
+				}
+				subscriptionParameterValues.add(subscriptionParameterValue);
+
 			} else {
 				/*
 				 * Create a single "empty" SubscriptionParameterValue.
 				 */
-				logger.info(
-						"Creating empty SubscriptionParameterValue. MUST CHECK FOR DEFAULT VALUE AND THEN USE IT, IF ONE EXISTS!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
 				subscriptionParameterValues.add(new SubscriptionParameterValue(subscriptionParameter));
-				/*
-				 * TODO If there is a default value for the report parameter, update
-				 * the SubscriptionParameterValue to hold its value.
-				 * TODO Can we handle datetime, date & time default values? Will datetimes be in UTC? Does it matter?
-				 */
 			}
 		}
 
@@ -325,11 +431,12 @@ public class SubscriptionController extends AbstractBaseController {
 	 * This updates the subscription with UUID 702d5daa-e23d-4f00-b32b-67b44c06d8f6
 	 * with the following changes:
 	 * 
-	 * report category:	"Q-Free internal"	-> "Traffic"
-	 * name:			"Test Report #04"	-> "Test Report #04 (modified by PUT)"
-	 * number:			400					-> 1400
-	 * sortOrder:		400					-> 1400
-	 * active:			true				-> false
+	 * document format:	-> ""
+	 * active:			-> true
+	 * cronSchedule:	-> ""
+	 * runOnceAt:		-> ""
+	 * email:			-> ""
+	 * description:		-> ""
 	 */
 	@Path("/{id}")
 	@PUT
