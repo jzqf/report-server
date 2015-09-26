@@ -85,7 +85,15 @@ public class JobParameter implements Serializable {
 	/*
 	 * cascade = CascadeType.ALL:
 	 *     Deleting a JobParameter will delete all of its 
-	 *     JobParameterValue's.
+	 *     JobParameterValue's. In order to delete individual
+	 *     JobParameterValue' entities, it is necessary to first
+	 *     remove them from this list.
+	 *     
+	 * orphanRemoval = true:
+	 *     DO NOT CHANGE THIS SETTING. Removing JobParameterValue entities from
+	 *     the list "JobParameterValues" will automatically delete the 
+	 *     corresponding rows from the [sjob_parameter_values] underlying 
+	 *     database table.
 	 */
 	@OneToMany(mappedBy = "jobParameter", cascade = CascadeType.ALL)
 	private List<JobParameterValue> jobParameterValues;

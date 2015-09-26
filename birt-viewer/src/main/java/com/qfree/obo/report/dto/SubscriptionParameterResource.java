@@ -126,4 +126,62 @@ public class SubscriptionParameterResource extends AbstractBaseResource {
 		}
 	}
 
+	public UUID getSubscriptionParameterId() {
+		return subscriptionParameterId;
+	}
+
+	public void setSubscriptionParameterId(UUID subscriptionParameterId) {
+		this.subscriptionParameterId = subscriptionParameterId;
+	}
+
+	public SubscriptionResource getSubscriptionResource() {
+		return subscriptionResource;
+	}
+
+	public void setSubscriptionResource(SubscriptionResource subscriptionResource) {
+		this.subscriptionResource = subscriptionResource;
+	}
+
+	public ReportParameterResource getReportParameterResource() {
+		return reportParameterResource;
+	}
+
+	public void setReportParameterResource(ReportParameterResource reportParameterResource) {
+		this.reportParameterResource = reportParameterResource;
+	}
+
+	public SubscriptionParameterValueCollectionResource getSubscriptionParameterValuesCollectionResource() {
+		return subscriptionParameterValuesCollectionResource;
+	}
+
+	public void setSubscriptionParameterValuesCollectionResource(
+			SubscriptionParameterValueCollectionResource subscriptionParameterValuesCollectionResource) {
+		this.subscriptionParameterValuesCollectionResource = subscriptionParameterValuesCollectionResource;
+	}
+
+	public Date getCreatedOn() {
+		return createdOn;
+	}
+
+	public void setCreatedOn(Date createdOn) {
+		this.createdOn = createdOn;
+	}
+
+	@Override
+	public String toString() {
+		StringBuilder builder = new StringBuilder();
+		builder.append("SubscriptionParameterResource [subscriptionParameterId=");
+		builder.append(subscriptionParameterId);
+		builder.append(", subscriptionResource=");
+		builder.append(subscriptionResource);
+		builder.append(", reportParameterResource=");
+		builder.append(reportParameterResource);
+		builder.append(", subscriptionParameterValuesCollectionResource=");
+		builder.append(subscriptionParameterValuesCollectionResource);
+		builder.append(", createdOn=");
+		builder.append(createdOn);
+		builder.append("]");
+		return builder.toString();
+	}
+
 }

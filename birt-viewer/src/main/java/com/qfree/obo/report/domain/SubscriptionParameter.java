@@ -82,9 +82,19 @@ public class SubscriptionParameter implements Serializable {
 	/*
 	 * cascade = CascadeType.ALL:
 	 *     Deleting a SubscriptionParameter will delete all of its 
-	 *     SubscriptionParameterValue's.
+	 *     SubscriptionParameterValue's. In order to delete individual
+	 *     SubscriptionParameterValue entities, it is necessary to first
+	 *     remove them from this list.
+	 *     
+	 * orphanRemoval = true:
+	 *     DO NOT CHANGE THIS SETTING. This is made use of in
+	 *     SubscriptionParameterController.updateSubscriptionParameterValuesBySubscriptionParameterId(...)
+	 *     In that method, SubscriptionParameterValue entities are removed from
+	 *     the list "subscriptionParameterValues". Doing this deletes the 
+	 *     rows from the [subscription_parameter_values] underlying database
+	 *     table.
 	 */
-	@OneToMany(mappedBy = "subscriptionParameter", cascade = CascadeType.ALL)
+	@OneToMany(mappedBy = "subscriptionParameter", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<SubscriptionParameterValue> subscriptionParameterValues;
 
 	@NotNull
@@ -142,10 +152,10 @@ public class SubscriptionParameter implements Serializable {
 		StringBuilder builder = new StringBuilder();
 		builder.append("SubscriptionParameter [subscriptionParameterId=");
 		builder.append(subscriptionParameterId);
-		builder.append(", subscription=");
-		builder.append(subscription);
-		builder.append(", reportParameter=");
-		builder.append(reportParameter);
+		builder.append(", subscriptionId=");
+		builder.append(subscription.getSubscriptionId());
+		builder.append(", reportParameterId=");
+		builder.append(reportParameter.getReportParameterId());
 		builder.append(", subscriptionParameterValues=");
 		builder.append(subscriptionParameterValues);
 		builder.append(", createdOn=");

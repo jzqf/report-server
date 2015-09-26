@@ -302,10 +302,10 @@ public class Subscription implements Serializable {
 		StringBuilder builder = new StringBuilder();
 		builder.append("Subscription [subscriptionId=");
 		builder.append(subscriptionId);
-		builder.append(", role=");
-		builder.append(role);
-		builder.append(", reportVersion=");
-		builder.append(reportVersion);
+		builder.append(", roleId=");
+		builder.append(role.getRoleId());
+		builder.append(", reportVersionId=");
+		builder.append(reportVersion.getReportVersionId());
 		builder.append(", documentFormat=");
 		builder.append(documentFormat);
 		builder.append(", cronSchedule=");

@@ -20,6 +20,7 @@ import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;
 
+import com.qfree.obo.report.dto.SubscriptionParameterValueResource;
 import com.qfree.obo.report.util.DateUtils;
 
 /**
@@ -435,6 +436,39 @@ public class SubscriptionParameterValue implements Serializable {
 	}
 
 	public SubscriptionParameterValue(
+			SubscriptionParameter subscriptionParameter,
+			SubscriptionParameterValueResource subscriptionParameterValueResource) {
+		this(
+				null,
+				subscriptionParameter,
+				subscriptionParameterValueResource.getBooleanValue(),
+				subscriptionParameterValueResource.getDateValue(),
+				subscriptionParameterValueResource.getDatetimeValue(),
+				subscriptionParameterValueResource.getFloatValue(),
+				subscriptionParameterValueResource.getIntegerValue(),
+				subscriptionParameterValueResource.getStringValue(),
+				subscriptionParameterValueResource.getTimeValue(),
+				subscriptionParameterValueResource.getYearNumber(),
+				subscriptionParameterValueResource.getYearsAgo(),
+				subscriptionParameterValueResource.getMonthNumber(),
+				subscriptionParameterValueResource.getMonthsAgo(),
+				subscriptionParameterValueResource.getWeeksAgo(),
+				subscriptionParameterValueResource.getDayOfWeekInMonthOrdinal(),
+				subscriptionParameterValueResource.getDayOfWeekInMonthNumber(),
+				subscriptionParameterValueResource.getDayOfWeekNumber(),
+				subscriptionParameterValueResource.getDayOfMonthNumber(),
+				subscriptionParameterValueResource.getDaysAgo(),
+				subscriptionParameterValueResource.getDurationToAddYears(),
+				subscriptionParameterValueResource.getDurationToAddMonths(),
+				subscriptionParameterValueResource.getDurationToAddWeeks(),
+				subscriptionParameterValueResource.getDurationToAddDays(),
+				subscriptionParameterValueResource.getDurationToAddHours(),
+				subscriptionParameterValueResource.getDurationToAddMinutes(),
+				subscriptionParameterValueResource.getDurationToAddSeconds(),
+				subscriptionParameterValueResource.getCreatedOn());
+	}
+
+	public SubscriptionParameterValue(
 			UUID subscriptionParameterValueId,
 			SubscriptionParameter subscriptionParameter,
 			Boolean booleanValue,
@@ -705,8 +739,8 @@ public class SubscriptionParameterValue implements Serializable {
 		StringBuilder builder = new StringBuilder();
 		builder.append("SubscriptionParameterValue [subscriptionParameterValueId=");
 		builder.append(subscriptionParameterValueId);
-		builder.append(", subscriptionParameter=");
-		builder.append(subscriptionParameter);
+		builder.append(", subscriptionParameterId=");
+		builder.append(subscriptionParameter.getSubscriptionParameterId());
 		builder.append(", booleanValue=");
 		builder.append(booleanValue);
 		builder.append(", dateValue=");

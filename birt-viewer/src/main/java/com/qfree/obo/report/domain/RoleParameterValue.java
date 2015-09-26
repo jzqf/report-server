@@ -123,6 +123,21 @@ public class RoleParameterValue implements Serializable {
 
 	public RoleParameterValue(
 			RoleParameter roleParameter,
+			SubscriptionParameterValue subscriptionParameterValue) {
+		this(
+				roleParameter,
+				subscriptionParameterValue.getBooleanValue(),
+				subscriptionParameterValue.getDateValue(),
+				subscriptionParameterValue.getDatetimeValue(),
+				subscriptionParameterValue.getFloatValue(),
+				subscriptionParameterValue.getIntegerValue(),
+				subscriptionParameterValue.getStringValue(),
+				subscriptionParameterValue.getTimeValue(),
+				DateUtils.nowUtc());
+	}
+
+	public RoleParameterValue(
+			RoleParameter roleParameter,
 			Boolean booleanValue,
 			Date dateValue,
 			Date datetimeValue,
@@ -240,8 +255,8 @@ public class RoleParameterValue implements Serializable {
 		StringBuilder builder = new StringBuilder();
 		builder.append("RoleParameterValue [roleParameterValueId=");
 		builder.append(roleParameterValueId);
-		builder.append(", roleParameter=");
-		builder.append(roleParameter);
+		builder.append(", roleParameterId=");
+		builder.append(roleParameter.getRoleParameterId());
 		builder.append(", booleanValue=");
 		builder.append(booleanValue);
 		builder.append(", dateValue=");

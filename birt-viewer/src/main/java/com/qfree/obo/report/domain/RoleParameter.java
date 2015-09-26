@@ -82,9 +82,18 @@ public class RoleParameter implements Serializable {
 	/*
 	 * cascade = CascadeType.ALL:
 	 *     Deleting a RoleParameter will delete all of its 
-	 *     RoleParameterValue's.
+	 *     RoleParameterValue's. In order to delete individual
+	 *     RoleParameterValue entities, it is necessary to first
+	 *     remove them from this list.
+	 *     
+	 * orphanRemoval = true:
+	 *     DO NOT CHANGE THIS SETTING. This is made use of in
+	 *     SubscriptionParameterController.updateSubscriptionParameterValuesBySubscriptionParameterId(...)
+	 *     In that method, RoleParameterValue entities are removed from
+	 *     the list "roleParameterValues". Doing this deletes the 
+	 *     rows from the [role_parameter_values] underlying database table.
 	 */
-	@OneToMany(mappedBy = "roleParameter", cascade = CascadeType.ALL)
+	@OneToMany(mappedBy = "roleParameter", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<RoleParameterValue> roleParameterValues;
 
 	@NotNull
@@ -142,10 +151,10 @@ public class RoleParameter implements Serializable {
 		StringBuilder builder = new StringBuilder();
 		builder.append("RoleParameter [roleParameterId=");
 		builder.append(roleParameterId);
-		builder.append(", role=");
-		builder.append(role);
-		builder.append(", reportParameter=");
-		builder.append(reportParameter);
+		builder.append(", roleId=");
+		builder.append(role.getRoleId());
+		builder.append(", reportParameterId=");
+		builder.append(reportParameter.getReportParameterId());
 		builder.append(", roleParameterValues=");
 		builder.append(roleParameterValues);
 		builder.append(", createdOn=");

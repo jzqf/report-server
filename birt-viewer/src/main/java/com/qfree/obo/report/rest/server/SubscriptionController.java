@@ -8,6 +8,7 @@ import java.util.UUID;
 
 import javax.servlet.ServletContext;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.HeaderParam;
 import javax.ws.rs.POST;
@@ -256,8 +257,14 @@ public class SubscriptionController extends AbstractBaseController {
 				/*
 				 * Create a single "empty" SubscriptionParameterValue.
 				 */
-				logger.info("Creating empty SubscriptionParameterValue");
+				logger.info(
+						"Creating empty SubscriptionParameterValue. MUST CHECK FOR DEFAULT VALUE AND THEN USE IT, IF ONE EXISTS!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
 				subscriptionParameterValues.add(new SubscriptionParameterValue(subscriptionParameter));
+				/*
+				 * TODO If there is a default value for the report parameter, update
+				 * the SubscriptionParameterValue to hold its value.
+				 * TODO Can we handle datetime, date & time default values? Will datetimes be in UTC? Does it matter?
+				 */
 			}
 		}
 
@@ -409,33 +416,33 @@ public class SubscriptionController extends AbstractBaseController {
 		 * selected ReportVersion. We also check that an existing ReportVersion
 		 * entity exists for "subscription".
 		 */
-		if (subscription.getReportVersion() != null) {
-			UUID currentReportVersionId = subscription.getReportVersion().getReportVersionId();
-			ReportVersion reportVersion = reportVersionRepository.findOne(currentReportVersionId);
-			RestUtils.ifNullThen404(reportVersion, ReportVersion.class, "reportVersionId",
-					currentReportVersionId.toString());
-			ReportVersionResource reportVersionResource = new ReportVersionResource();
-			reportVersionResource.setReportVersionId(currentReportVersionId);
-			subscriptionResource.setReportVersionResource(reportVersionResource);
-		} else {
-			throw new RestApiException(RestError.FORBIDDEN_SUBSCRIPTION_REPORTVERSION_NULL,
-					Subscription.class, "reportVersionId");
-		}
+		//if (subscription.getReportVersion() != null) {
+		UUID currentReportVersionId = subscription.getReportVersion().getReportVersionId();
+		ReportVersion reportVersion = reportVersionRepository.findOne(currentReportVersionId);
+		RestUtils.ifNullThen404(reportVersion, ReportVersion.class, "reportVersionId",
+				currentReportVersionId.toString());
+		ReportVersionResource reportVersionResource = new ReportVersionResource();
+		reportVersionResource.setReportVersionId(currentReportVersionId);
+		subscriptionResource.setReportVersionResource(reportVersionResource);
+		//} else {
+		//	throw new RestApiException(RestError.FORBIDDEN_SUBSCRIPTION_REPORTVERSION_NULL,
+		//			Subscription.class, "reportVersionId");
+		//}
 		/*
 		 * Construct a RoleResource to specify the CURRENTLY selected Role. We 
 		 * also check that an existing Role entity exists for "subscription".
 		 */
-		if (subscription.getRole() != null) {
-			UUID currentRoleId = subscription.getRole().getRoleId();
-			Role role = roleRepository.findOne(currentRoleId);
-			RestUtils.ifNullThen404(role, Role.class, "roleId", currentRoleId.toString());
-			RoleResource roleResource = new RoleResource();
-			roleResource.setRoleId(currentRoleId);
-			subscriptionResource.setRoleResource(roleResource);
-		} else {
-			throw new RestApiException(RestError.FORBIDDEN_SUBSCRIPTION_ROLE_NULL,
-					Subscription.class, "roleId");
-		}
+		//if (subscription.getRole() != null) {
+		UUID currentRoleId = subscription.getRole().getRoleId();
+		Role role = roleRepository.findOne(currentRoleId);
+		RestUtils.ifNullThen404(role, Role.class, "roleId", currentRoleId.toString());
+		RoleResource roleResource = new RoleResource();
+		roleResource.setRoleId(currentRoleId);
+		subscriptionResource.setRoleResource(roleResource);
+		//} else {
+		//	throw new RestApiException(RestError.FORBIDDEN_SUBSCRIPTION_ROLE_NULL,
+		//			Subscription.class, "roleId");
+		//}
 
 		/*
 		 * Save updated entity.
@@ -445,7 +452,69 @@ public class SubscriptionController extends AbstractBaseController {
 		return Response.status(Response.Status.OK).build();
 	}
 
-	// Add DELETE endpoint????????????????
+	/*
+	 * This endpoint can be tested with:
+	 * 
+	 *   $ mvn clean spring-boot:run
+	 *   $ curl -iH "Accept: application/json;v=1" -H "Content-Type: application/json" -X DELETE \
+	 *   http://localhost:8080/rest/subscriptions/0b986fd2-6d6b-46c3-9be7-5c1831a563ca
+	 */
+	@Path("/{id}")
+	@DELETE
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	@Transactional
+	public SubscriptionResource deleteById(
+			//public Response updateById(
+			@PathParam("id") final UUID id,
+			@HeaderParam("Accept") final String acceptHeader,
+			@QueryParam(ResourcePath.EXPAND_QP_NAME) final List<String> expand,
+			@QueryParam(ResourcePath.SHOWALL_QP_NAME) final List<String> showAll,
+			@Context final UriInfo uriInfo) {
+		Map<String, List<String>> queryParams = new HashMap<>();
+		queryParams.put(ResourcePath.EXPAND_QP_KEY, expand);
+		queryParams.put(ResourcePath.SHOWALL_QP_KEY, showAll);
+		RestApiVersion apiVersion = RestUtils.extractAPIVersion(acceptHeader, RestApiVersion.v1);
+
+		/*
+		 * Retrieve Subscription entity to be deleted.
+		 */
+		Subscription subscription = subscriptionRepository.findOne(id);
+		logger.debug("subscription = {}", subscription);
+		RestUtils.ifNullThen404(subscription, Subscription.class, "subscriptionId", id.toString());
+
+		/*
+		 * If the Subscription entity is successfully deleted, it is 
+		 * returned as the entity body so it is clear to the caller precisely
+		 * which entity was deleted. Here, the resource to be returned is 
+		 * created before the entity is deleted.
+		 */
+		//	if (RestUtils.AUTO_EXPAND_PRIMARY_RESOURCES) {
+		addToExpandList(expand, Subscription.class);// Force primary resource to be "expanded"
+		//	}
+		SubscriptionResource subscriptionResource = new SubscriptionResource(subscription,
+				uriInfo, queryParams, apiVersion);
+		logger.debug("subscriptionResource = {}", subscriptionResource);
+		/*
+		 * Delete entity.
+		 */
+		subscriptionRepository.delete(subscription);
+		logger.debug("subscription (after deletion) = {}", subscription);
+		/*
+		 * Confirm that the entity was, indeed, deleted. subscription here
+		 * should be null. Currently, I don't do anything based on this check.
+		 * I assume that the delete call above with throw some sort of 
+		 * RuntimeException if that happens, or some other exception will be
+		 * thrown by the back-end database (PostgreSQL) code when the 
+		 * transaction is eventually committed. I don't have the time to look 
+		 * into this at the moment.
+		 */
+		subscription = subscriptionRepository.findOne(subscriptionResource.getSubscriptionId());
+		logger.debug("subscription (after find()) = {}", subscription);
+
+		//return Response.status(Response.Status.OK).build();
+		return subscriptionResource;
+	}
 
 	/*
 	 * Return the SubscriptionParameter entities associated with a single 
