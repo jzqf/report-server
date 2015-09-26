@@ -16,6 +16,8 @@ import com.qfree.obo.report.domain.DocumentFormat;
 import com.qfree.obo.report.domain.ReportVersion;
 import com.qfree.obo.report.domain.Role;
 import com.qfree.obo.report.domain.Subscription;
+import com.qfree.obo.report.domain.SubscriptionParameter;
+import com.qfree.obo.report.domain.SubscriptionParameterValue;
 import com.qfree.obo.report.dto.DocumentFormatResource;
 import com.qfree.obo.report.dto.ReportVersionResource;
 import com.qfree.obo.report.dto.RestErrorResource.RestError;
@@ -168,6 +170,7 @@ public class SubscriptionService {
 
 		Subscription subscription = new Subscription(subscriptionResource, documentFormat, reportVersion, role);
 		logger.debug("subscription = {}", subscription);
+
 		/*
 		 * This "save" method will persist or merge the given entity using the
 		 * underlying JPA EntityManager. If the entity has not been persisted 
@@ -181,5 +184,50 @@ public class SubscriptionService {
 		logger.debug("subscription (created/updated) = {}", subscription);
 
 		return subscription;
+	}
+
+	/**
+	 * Performs whatever actions are appropriate when a subscription is
+	 * deactivated.
+	 * 
+	 * <p>
+	 * The most important action is to disable any scheduling that is active for
+	 * the subscription.
+	 * 
+	 * @param subscription
+	 */
+	public void deactivate(Subscription subscription) {
+
+		// TODO Write me!
+
+	}
+
+	/**
+	 * Performs whatever actions are appropriate when a subscription is
+	 * activated.
+	 * 
+	 * <p>
+	 * The most important action is to enable scheduling for the subscription,
+	 * but this can only be done if certain details have been provided:
+	 * 
+	 * <ul>
+	 * <li>There must be at least one {@link SubscriptionParameterValue} per
+	 * {@link SubscriptionParameter}, and each
+	 * {@link SubscriptionParameterValue} needs to have non-null values
+	 * assigned.
+	 * <li>There can be more than one {@link SubscriptionParameterValue} per
+	 * {@link SubscriptionParameter}, but only if the associated
+	 * {@link ReportParameter} has <code>multivalued=true</code>.
+	 * <li>The {@link Subscription} must have a usable value for either
+	 * <code>cronSchedule</code> or <code>runOnceAt</code>.
+	 * <li>The {@link Subscription} must have a value for <code>email</code>.
+	 * </ul>
+	 * 
+	 * @param subscription
+	 */
+	public void activate(Subscription subscription) {
+
+		// TODO Write me!
+
 	}
 }

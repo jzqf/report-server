@@ -432,19 +432,19 @@ public class SubscriptionController extends AbstractBaseController {
 	 * 
 	 *   $ mvn clean spring-boot:run
 	 *   $ curl -iH "Accept: application/json;v=1" -H "Content-Type: application/json" -X PUT -d \
-	 *   '{"reportCategory":{"reportCategoryId":"72d7cb27-1770-4cc7-b301-44d39ccf1e76"},\
-	 *   "name":"Test Report #04 (modified by PUT)","number":1400,"sortOrder":1400,"active":false}' \
-	 *   http://localhost:8080/rest/subscriptions/702d5daa-e23d-4f00-b32b-67b44c06d8f6
+	 *   '{"documentFormat":{"documentFormatId":"05a4ad8d-6f30-4d6d-83d5-995345a8dc58"},\
+	 *   "runOnceAt":"2015-11-04T06:00:00.000Z","email":"bozo@clown.net","description":"New description",\
+	 *   "active":true}' http://localhost:8080/rest/subscriptions/1778cb69-0561-42b9-889f-cfe8c66978db
 	 *   
-	 * This updates the subscription with UUID 702d5daa-e23d-4f00-b32b-67b44c06d8f6
+	 * This updates the subscription with UUID 1778cb69-0561-42b9-889f-cfe8c66978db
 	 * with the following changes:
 	 * 
-	 * document format:	-> ""
+	 * document format:	-> "OpenDocument Spreadsheet"
+	 * cronSchedule:	-> null
+	 * runOnceAt:		-> "2015-11-04T06:00:00.000Z"
+	 * email:			-> "bozo@clown.net"
+	 * description:		-> "New description"
 	 * active:			-> true
-	 * cronSchedule:	-> ""
-	 * runOnceAt:		-> ""
-	 * email:			-> ""
-	 * description:		-> ""
 	 */
 	@Path("/{id}")
 	@PUT
@@ -559,10 +559,29 @@ public class SubscriptionController extends AbstractBaseController {
 		//			Subscription.class, "roleId");
 		//}
 
+		Boolean previousActive = subscription.getActive();
+
 		/*
 		 * Save updated entity.
 		 */
 		subscription = subscriptionService.saveExistingFromResource(subscriptionResource);
+
+		/*
+		 * If "active" is changing from true to false, we need to disable any
+		 * scheduling that is active for the subscription.
+		 */
+		if (previousActive && !subscription.getActive()) {
+			subscriptionService.deactivate(subscription);
+		}
+
+		/*
+		 * If "active" is changing from false to true, we need to check if the
+		 * necessary details have been provided and if so, enable scheduling
+		 * for the subscription.
+		 */
+		if (!previousActive && subscription.getActive()) {
+			subscriptionService.activate(subscription);
+		}
 
 		return Response.status(Response.Status.OK).build();
 	}
@@ -599,13 +618,23 @@ public class SubscriptionController extends AbstractBaseController {
 		RestUtils.ifNullThen404(subscription, Subscription.class, "subscriptionId", id.toString());
 
 		/*
+		 * If the subscription is currently "active", we need to disable any
+		 * scheduling that is active for the subscription before the 
+		 * subscription is deleted.
+		 */
+		if (subscription.getActive()) {
+			subscription.setActive(Boolean.FALSE); // this does not do much because we do not save this entity
+			subscriptionService.deactivate(subscription);
+		}
+
+		/*
 		 * If the Subscription entity is successfully deleted, it is 
 		 * returned as the entity body so it is clear to the caller precisely
 		 * which entity was deleted. Here, the resource to be returned is 
 		 * created before the entity is deleted.
 		 */
 		//	if (RestUtils.AUTO_EXPAND_PRIMARY_RESOURCES) {
-		addToExpandList(expand, Subscription.class);// Force primary resource to be "expanded"
+		addToExpandList(expand, Subscription.class); // Force primary resource to be "expanded"
 		//	}
 		SubscriptionResource subscriptionResource = new SubscriptionResource(subscription,
 				uriInfo, queryParams, apiVersion);
@@ -644,7 +673,7 @@ public class SubscriptionController extends AbstractBaseController {
 	 * being thrown.
 	 */
 	@Transactional
-	@Path("/{id}" + ResourcePath.SUBSCRIPTIONPARAMETERVALUES_PATH)
+	@Path("/{id}" + ResourcePath.SUBSCRIPTIONPARAMETERS_PATH)
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	public SubscriptionParameterCollectionResource getSubscriptionParametersBySubscriptionId(
