@@ -205,7 +205,6 @@ public class SubscriptionController extends AbstractBaseController {
 		 * I will leave it here for now.
 		 */
 		List<ReportParameter> reportParameters = subscription.getReportVersion().getReportParameters();
-		logger.info("reportParameters = {}", reportParameters);
 		/*
 		 * This list will hold all SubscriptionParameter entities that are 
 		 * created for the subscription.
@@ -213,7 +212,7 @@ public class SubscriptionController extends AbstractBaseController {
 		List<SubscriptionParameter> subscriptionParameters = new ArrayList<>();
 		subscription.setSubscriptionParameters(subscriptionParameters);
 		for (ReportParameter reportParameter : reportParameters) {
-			logger.info("reportParameter = {}", reportParameter);
+			logger.debug("reportParameter = {}", reportParameter);
 			SubscriptionParameter subscriptionParameter = new SubscriptionParameter(subscription, reportParameter);
 			subscriptionParameters.add(subscriptionParameter);
 			/*
@@ -234,15 +233,17 @@ public class SubscriptionController extends AbstractBaseController {
 			 * SubscriptionParameterValue.
 			 * 
 			 * If there do not exist any such RoleParameterValue entities, we
-			 * create a single SubscriptionParameterValue with none of its
-			 * optional fields defined.
+			 * create a single SubscriptionParameterValue. If the report 
+			 * parameter has a default value, then we use it; otherwise the
+			 * single SubscriptionParameterValue entity will not have any of
+			 * its optional fields defined.
 			 */
 			RoleParameter roleParameter = roleParameterRepository.findByRoleAndReportParameter(
 					subscription.getRole().getRoleId(), reportParameter.getReportParameterId());
 			List<RoleParameterValue> roleParameterValues = new ArrayList<>();
 			if (roleParameter != null) {
 				roleParameterValues = roleParameterValueRepository.findByRoleParameter(roleParameter);
-				logger.info("roleParameterValues = {}", roleParameterValues);
+				logger.debug("roleParameterValues = {}", roleParameterValues);
 			}
 			if (!roleParameterValues.isEmpty()) {
 				/*
@@ -251,13 +252,21 @@ public class SubscriptionController extends AbstractBaseController {
 				for (RoleParameterValue roleParameterValue : roleParameterValues) {
 					SubscriptionParameterValue subscriptionParameterValue = new SubscriptionParameterValue(
 							subscriptionParameter, roleParameterValue);
-					logger.info("subscriptionParameterValue = {}", subscriptionParameterValue);
+					logger.debug("subscriptionParameterValue = {}", subscriptionParameterValue);
 					subscriptionParameterValues.add(subscriptionParameterValue);
 				}
 			} else if (reportParameter.getDefaultValue() != null) {
 
-				logger.info("reportParameter.getDefaultValue() = {}", reportParameter.getDefaultValue());
+				/*
+				 * There are no RoleParameterValue entities ("last-used" 
+				 * values), but the report parameter does have a default value.
+				 */
+				logger.debug("reportParameter.getDefaultValue() = {}", reportParameter.getDefaultValue());
 
+				/*
+				 * Create a SubscriptionParameterValue to hold the report 
+				 * parameter default value.
+				 */
 				SubscriptionParameterValue subscriptionParameterValue = new SubscriptionParameterValue(
 						subscriptionParameter);
 
@@ -291,7 +300,7 @@ public class SubscriptionController extends AbstractBaseController {
 					} catch (Exception e) {
 						logger.warn("Could not parse '{}' as a Double", reportParameter.getDefaultValue());
 					}
-					logger.info("subscriptionParameterValue.getFloatValue() = {}",
+					logger.debug("subscriptionParameterValue.getFloatValue() = {}",
 							subscriptionParameterValue.getFloatValue());
 					break;
 				case IParameterDefn.TYPE_DECIMAL:
@@ -305,18 +314,17 @@ public class SubscriptionController extends AbstractBaseController {
 					} catch (Exception e) {
 						logger.warn("Could not parse '{}' as a Double", reportParameter.getDefaultValue());
 					}
-					logger.info("subscriptionParameterValue.getFloatValue() = {}",
+					logger.debug("subscriptionParameterValue.getFloatValue() = {}",
 							subscriptionParameterValue.getFloatValue());
 					break;
 				case IParameterDefn.TYPE_DATE_TIME:
 					try {
-						subscriptionParameterValue
-								.setDatetimeValue(
-										DateUtils.dateFromBirtDatetimeString(reportParameter.getDefaultValue()));
+						subscriptionParameterValue.setDatetimeValue(
+								DateUtils.dateFromBirtDatetimeString(reportParameter.getDefaultValue()));
 					} catch (Exception e) {
 						logger.warn("Could not parse '{}' as a 'datetime' Date", reportParameter.getDefaultValue());
 					}
-					logger.info("subscriptionParameterValue.getDatetimeValue() = {}",
+					logger.debug("subscriptionParameterValue.getDatetimeValue() = {}",
 							subscriptionParameterValue.getDatetimeValue());
 					break;
 				case IParameterDefn.TYPE_BOOLEAN:
@@ -326,7 +334,7 @@ public class SubscriptionController extends AbstractBaseController {
 					} catch (Exception e) {
 						logger.warn("Could not parse '{}' as an Boolean", reportParameter.getDefaultValue());
 					}
-					logger.info("subscriptionParameterValue.getBooleanValue() = {}",
+					logger.debug("subscriptionParameterValue.getBooleanValue() = {}",
 							subscriptionParameterValue.getBooleanValue());
 					break;
 				case IParameterDefn.TYPE_INTEGER:
@@ -335,7 +343,7 @@ public class SubscriptionController extends AbstractBaseController {
 					} catch (Exception e) {
 						logger.warn("Could not parse '{}' as an Integer", reportParameter.getDefaultValue());
 					}
-					logger.info("subscriptionParameterValue.getIntegerValue() = {}",
+					logger.debug("subscriptionParameterValue.getIntegerValue() = {}",
 							subscriptionParameterValue.getIntegerValue());
 					break;
 				case IParameterDefn.TYPE_DATE:
@@ -345,7 +353,7 @@ public class SubscriptionController extends AbstractBaseController {
 					} catch (Exception e) {
 						logger.warn("Could not parse '{}' as a 'date' Date", reportParameter.getDefaultValue());
 					}
-					logger.info("subscriptionParameterValue.getDateValue() = {}",
+					logger.debug("subscriptionParameterValue.getDateValue() = {}",
 							subscriptionParameterValue.getDateValue());
 					break;
 				case IParameterDefn.TYPE_TIME:
@@ -355,7 +363,7 @@ public class SubscriptionController extends AbstractBaseController {
 					} catch (Exception e) {
 						logger.warn("Could not parse '{}' as a 'time' Date", reportParameter.getDefaultValue());
 					}
-					logger.info("subscriptionParameterValue.getTimeValue() = {}",
+					logger.debug("subscriptionParameterValue.getTimeValue() = {}",
 							subscriptionParameterValue.getTimeValue());
 					break;
 				default:
@@ -485,7 +493,7 @@ public class SubscriptionController extends AbstractBaseController {
 		if (subscriptionResource.getActive() == null) {
 			subscriptionResource.setActive(subscription.getActive());
 		}
-		if(subscriptionResource.getDocumentFormatResource()==null){
+		if (subscriptionResource.getDocumentFormatResource() == null) {
 			/*
 			 * Construct a DocumentFormatResource to specify the CURRENTLY
 			 * selected DocumentFormat.
