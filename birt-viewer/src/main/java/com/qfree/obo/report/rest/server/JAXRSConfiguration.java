@@ -80,6 +80,7 @@ public class JAXRSConfiguration extends ResourceConfig {
 		register(RootController.class);
 		register(SubscriptionController.class);
 		register(SubscriptionParameterController.class);
+		register(SubscriptionParameterValueController.class);
 		/*
 		 * TODO Decide whether to register *packages* here (not type-safe) or *classes* (type-safe and refactor-safe, but more tedious).
 		 */

@@ -395,17 +395,6 @@ public class SubscriptionParameterController extends AbstractBaseController {
 					 * Check that the data type of the supplied values agree 
 					 * with the report parameter data type.
 					 */
-					/**
-					 * The data type of the report parameter.
-					 * 
-					 * <p>
-					 * Possible values for "DataType" are:
-					 * 
-					 * <ul>
-					 * <li>{@link } = 1
-					 * <li>{@link IParameterDefn#} = 2
-					 * </ul>
-					 */
 					switch (subscriptionParameter.getReportParameter().getDataType()) {
 					case IParameterDefn.TYPE_ANY:
 						/*
