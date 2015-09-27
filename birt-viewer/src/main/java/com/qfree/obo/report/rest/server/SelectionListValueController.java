@@ -127,7 +127,9 @@ public class SelectionListValueController extends AbstractBaseController {
 		SelectionListValue selectionListValue = selectionListValueService
 				.saveNewFromResource(selectionListValueResource);
 		//	if (RestUtils.AUTO_EXPAND_PRIMARY_RESOURCES) {
-		addToExpandList(expand, SelectionListValue.class);// Force primary resource to be "expanded"
+		addToExpandList(expand, SelectionListValue.class);// Force primary
+															// resource to be
+															// "expanded"
 		//	}
 
 		SelectionListValueResource resource = new SelectionListValueResource(selectionListValue, uriInfo, queryParams,
@@ -195,6 +197,15 @@ public class SelectionListValueController extends AbstractBaseController {
 		RestApiVersion apiVersion = RestUtils.extractAPIVersion(acceptHeader, RestApiVersion.v1);
 
 		/*
+		 * TODO Move most of the code here to saveExistingFromResource(...)?
+		 * 
+		 * To do this,I would need to pass another parameter to 
+		 * saveExistingFromResource(...) so that that method has access to the
+		 * entity being updated, selectionListValue. So we could pass either 
+		 * "id" or selectionListValue or ...
+		 */
+
+		/*
 		 * Retrieve SelectionListValue entity to be updated.
 		 */
 		SelectionListValue selectionListValue = selectionListValueRepository.findOne(id);
@@ -240,7 +251,7 @@ public class SelectionListValueController extends AbstractBaseController {
 		 * Save updated entity.
 		 */
 		selectionListValue = selectionListValueService.saveExistingFromResource(selectionListValueResource);
-		logger.debug("selectionListValue = {}", selectionListValue);
+
 		return Response.status(Response.Status.OK).build();
 	}
 
@@ -269,7 +280,7 @@ public class SelectionListValueController extends AbstractBaseController {
 		RestApiVersion apiVersion = RestUtils.extractAPIVersion(acceptHeader, RestApiVersion.v1);
 
 		/*
-		 * Retrieve SelectionListValue entity to be updated.
+		 * Retrieve SelectionListValue entity to be deleted.
 		 */
 		SelectionListValue selectionListValue = selectionListValueRepository.findOne(id);
 		logger.info("selectionListValue = {}", selectionListValue);
@@ -294,13 +305,14 @@ public class SelectionListValueController extends AbstractBaseController {
 		logger.info("selectionListValue (after deletion) = {}", selectionListValue);
 		/*
 		 * Confirm that the entity was, indeed, deleted. selectionListValue here
-		 * should be null. Currently, I don't do anything based on this check.
-		 * I assume that the delete call above with throw some sort of 
+		 * should be null. Currently, I don't do anything based on this check. I
+		 * assume that the delete call above with throw some sort of 
 		 * RuntimeException if that happens, or some other exception will be
-		 * thrown by the back-end databse (PostgreSQL) code when the transaction
-		 * is eventually committed. I don't have the time to look into this at
-		 * the moment, but I doubt that this deletion will encounter problems
-		 * often, if ever, since it will never violate a foreign key constraint.
+		 * thrown by the back-end database (PostgreSQL) code when the 
+		 * transaction is eventually committed. I don't have the time to look 
+		 * into this at the moment, but I doubt that this deletion will 
+		 * encounter problems often, if ever, since it will never violate a 
+		 * foreign key constraint.
 		 */
 		selectionListValue = selectionListValueRepository.findOne(selectionListValueResource.getSelectionListValueId());
 		logger.info("selectionListValue (after find()) = {}", selectionListValue);

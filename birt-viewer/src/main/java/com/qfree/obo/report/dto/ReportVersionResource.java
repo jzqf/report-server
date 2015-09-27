@@ -53,7 +53,7 @@ public class ReportVersionResource extends AbstractBaseResource {
 	private Boolean active;
 
 	@XmlElement
-	@XmlJavaTypeAdapter(DateAdapter.class)
+	@XmlJavaTypeAdapter(DatetimeAdapter.class)
 	private Date createdOn;
 
 	@XmlElement(name = "reportParameters")

@@ -22,8 +22,8 @@ import javax.validation.constraints.NotNull;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;
-import org.hibernate.validator.constraints.NotBlank;
 
+import com.qfree.obo.report.dto.SubscriptionResource;
 import com.qfree.obo.report.util.DateUtils;
 
 /**
@@ -43,7 +43,7 @@ public class Subscription implements Serializable {
 
 	@Id
 	@Type(type = "uuid-custom")
-	//	@Type(type = "pg-uuid")
+	// @Type(type = "pg-uuid")
 	@GeneratedValue(generator = "uuid2")
 	@GenericGenerator(name = "uuid2", strategy = "uuid2")
 	@Column(name = "subscription_id", unique = true, nullable = false,
@@ -59,7 +59,7 @@ public class Subscription implements Serializable {
 	 */
 	@NotNull
 	@JoinColumn(name = "role_id", nullable = false,
-			foreignKey = @ForeignKey(name = "fk_subscription_role"),
+			foreignKey = @ForeignKey(name = "fk_subscription_role") ,
 			columnDefinition = "uuid")
 	private Role role;
 
@@ -70,14 +70,14 @@ public class Subscription implements Serializable {
 	 * PostgreSQL column definition includes "DEFAULT uuid_generate_v4()", which
 	 * is not what is wanted.
 	 */
-	//	@NotNull
-	//	@JoinColumn(name = "report_id", nullable = false,
-	//			foreignKey = @ForeignKey(name = "fk_subscription_report"),
-	//			columnDefinition = "uuid")
-	//	private Report report;
+	// @NotNull
+	// @JoinColumn(name = "report_id", nullable = false,
+	// foreignKey = @ForeignKey(name = "fk_subscription_report"),
+	// columnDefinition = "uuid")
+	// private Report report;
 	@NotNull
 	@JoinColumn(name = "report_version_id", nullable = false,
-			foreignKey = @ForeignKey(name = "fk_subscription_reportversion"),
+			foreignKey = @ForeignKey(name = "fk_subscription_reportversion") ,
 			columnDefinition = "uuid")
 	private ReportVersion reportVersion;
 
@@ -90,24 +90,17 @@ public class Subscription implements Serializable {
 	 */
 	@NotNull
 	@JoinColumn(name = "document_format_id", nullable = false,
-			foreignKey = @ForeignKey(name = "fk_subscription_documentformat"),
+			foreignKey = @ForeignKey(name = "fk_subscription_documentformat") ,
 			columnDefinition = "uuid")
 	private DocumentFormat documentFormat;
 
-	/*
-	 * cascade = CascadeType.ALL:
-	 *     Deleting a Role will delete all of its SubscriptionParameterValue's.
-	 */
-	@OneToMany(mappedBy = "subscription", cascade = CascadeType.ALL)
-	private List<SubscriptionParameterValue> subscriptionParameterValues;
-
 	/**
-	 * "cron" expression used to specify the delivery schedule for the 
-	 * subscription. This can be specified instead of (or in addition to?) 
-	 * runOnceAt, which is used to schedule a single delivery at a specified 
+	 * "cron" expression used to specify the delivery schedule for the
+	 * subscription. This can be specified instead of (or in addition to?)
+	 * runOnceAt, which is used to schedule a single delivery at a specified
 	 * date and time.
 	 */
-	@Column(name = "cron_schedule", nullable = true, length = 80)
+	@Column(name = "cron_schedule", nullable = true, length = 160)
 	private String cronSchedule;
 
 	/**
@@ -124,35 +117,91 @@ public class Subscription implements Serializable {
 	 * subscription to be set up that delivers reports to other than a role's
 	 * primary e-mail address store with the Role entity.
 	 */
-	@NotBlank
-	@Column(name = "email", nullable = false, length = 80)
+	// @NotBlank
+	@Column(name = "email", nullable = true, length = 160)
 	private String email;
 
 	/**
 	 * Optional short description of the subscription. This can be useful if the
-	 * same report is used with multiple subscriptions but with different 
+	 * same report is used with multiple subscriptions but with different
 	 * schedules or different report parameters.
 	 */
-	@Column(name = "description", nullable = true, length = 80)
+	@Column(name = "description", nullable = true, length = 1024)
 	private String description;
+
+	@NotNull
+	@Column(name = "active", nullable = false)
+	private Boolean active;
 
 	@NotNull
 	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name = "created_on", nullable = false)
 	private Date createdOn;
 
+	/*
+	 * cascade = CascadeType.ALL:
+	 *     Deleting a Subscription will delete all of its 
+	 *     SubscriptionParameter's.
+	 */
+	@OneToMany(mappedBy = "subscription", cascade = CascadeType.ALL)
+	private List<SubscriptionParameter> subscriptionParameters;
+
 	private Subscription() {
 	}
 
-	public Subscription(Role role, ReportVersion reportVersion, DocumentFormat documentFormat, String cronSchedule,
+	public Subscription(
+			Role role,
+			ReportVersion reportVersion,
+			DocumentFormat documentFormat,
+			String cronSchedule,
 			Date runOnceAt,
-			String email, String description) {
-		this(role, reportVersion, documentFormat, cronSchedule, runOnceAt, email, description, DateUtils.nowUtc());
+			String email,
+			String description,
+			Boolean active) {
+		this(
+				null,
+				role,
+				reportVersion,
+				documentFormat,
+				cronSchedule,
+				runOnceAt,
+				email,
+				description,
+				true,
+				DateUtils.nowUtc());
 	}
 
-	public Subscription(Role role, ReportVersion reportVersion, DocumentFormat documentFormat, String cronSchedule,
+	public Subscription(
+			SubscriptionResource subscriptionResource,
+			DocumentFormat documentFormat,
+			ReportVersion reportVersion,
+			Role role) {
+		this(
+				subscriptionResource.getSubscriptionId(),
+				role,
+				reportVersion,
+				documentFormat,
+				subscriptionResource.getCronSchedule(),
+				subscriptionResource.getRunOnceAt(),
+				subscriptionResource.getEmail(),
+				subscriptionResource.getDescription(),
+				subscriptionResource.getActive(),
+				subscriptionResource.getCreatedOn());
+	}
+
+	public Subscription(
+			UUID subscriptionId,
+			Role role,
+			ReportVersion reportVersion,
+			DocumentFormat documentFormat,
+			String cronSchedule,
 			Date runOnceAt,
-			String email, String description, Date createdOn) {
+			String email,
+			String description,
+			Boolean active,
+			Date createdOn) {
+		super();
+		this.subscriptionId = subscriptionId;
 		this.role = role;
 		this.reportVersion = reportVersion;
 		this.documentFormat = documentFormat;
@@ -160,31 +209,24 @@ public class Subscription implements Serializable {
 		this.runOnceAt = runOnceAt;
 		this.email = email;
 		this.description = description;
+		this.active = (active != null) ? active : true;
 		this.createdOn = (createdOn != null) ? createdOn : DateUtils.nowUtc();
 	}
 
-	public UUID getSubscriptionId() {
-		return this.subscriptionId;
-	}
-
-	public Date getCreatedOn() {
-		return this.createdOn;
-	}
-
-	public ReportVersion getReportVersion() {
-		return this.reportVersion;
-	}
-
-	public void setReportVersion(ReportVersion reportVersion) {
-		this.reportVersion = reportVersion;
-	}
-
 	public Role getRole() {
-		return this.role;
+		return role;
 	}
 
 	public void setRole(Role role) {
 		this.role = role;
+	}
+
+	public ReportVersion getReportVersion() {
+		return reportVersion;
+	}
+
+	public void setReportVersion(ReportVersion reportVersion) {
+		this.reportVersion = reportVersion;
 	}
 
 	public DocumentFormat getDocumentFormat() {
@@ -193,14 +235,6 @@ public class Subscription implements Serializable {
 
 	public void setDocumentFormat(DocumentFormat documentFormat) {
 		this.documentFormat = documentFormat;
-	}
-
-	public List<SubscriptionParameterValue> getSubscriptionParameterValues() {
-		return subscriptionParameterValues;
-	}
-
-	public void setSubscriptionParameterValues(List<SubscriptionParameterValue> subscriptionParameterValues) {
-		this.subscriptionParameterValues = subscriptionParameterValues;
 	}
 
 	public String getCronSchedule() {
@@ -235,13 +269,57 @@ public class Subscription implements Serializable {
 		this.description = description;
 	}
 
+	public Boolean getActive() {
+		return active;
+	}
+
+	public void setActive(Boolean active) {
+		this.active = active;
+	}
+
+	public Date getCreatedOn() {
+		return createdOn;
+	}
+
+	public void setCreatedOn(Date createdOn) {
+		this.createdOn = createdOn;
+	}
+
+	public List<SubscriptionParameter> getSubscriptionParameters() {
+		return subscriptionParameters;
+	}
+
+	public void setSubscriptionParameters(List<SubscriptionParameter> subscriptionParameters) {
+		this.subscriptionParameters = subscriptionParameters;
+	}
+
+	public UUID getSubscriptionId() {
+		return subscriptionId;
+	}
+
 	@Override
 	public String toString() {
 		StringBuilder builder = new StringBuilder();
-		builder.append("RoleReport [role=");
-		builder.append(role);
-		builder.append(", reportVersion=");
-		builder.append(reportVersion);
+		builder.append("Subscription [subscriptionId=");
+		builder.append(subscriptionId);
+		builder.append(", roleId=");
+		builder.append(role.getRoleId());
+		builder.append(", reportVersionId=");
+		builder.append(reportVersion.getReportVersionId());
+		builder.append(", documentFormat=");
+		builder.append(documentFormat);
+		builder.append(", cronSchedule=");
+		builder.append(cronSchedule);
+		builder.append(", runOnceAt=");
+		builder.append(runOnceAt);
+		builder.append(", email=");
+		builder.append(email);
+		builder.append(", description=");
+		builder.append(description);
+		builder.append(", active=");
+		builder.append(active);
+		builder.append(", createdOn=");
+		builder.append(createdOn);
 		builder.append("]");
 		return builder.toString();
 	}

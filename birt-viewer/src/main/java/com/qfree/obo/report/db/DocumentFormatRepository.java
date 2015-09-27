@@ -1,5 +1,6 @@
 package com.qfree.obo.report.db;
 
+import java.util.List;
 import java.util.UUID;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -15,5 +16,7 @@ import com.qfree.obo.report.domain.DocumentFormat;
  * @author Jeffrey Zelt
  */
 public interface DocumentFormatRepository extends JpaRepository<DocumentFormat, UUID> {
-	  
+
+	List<DocumentFormat> findByActiveTrue();
+
 }

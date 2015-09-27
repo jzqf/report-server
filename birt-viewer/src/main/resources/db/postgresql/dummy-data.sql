@@ -12,17 +12,38 @@ insert into reporting.parameter_type (parameter_type_id, description, abbreviati
 insert into reporting.parameter_type (parameter_type_id, description, abbreviation, active, created_on) values ('2bc62461-6ddb-4e86-b46d-080cd5e9cf83', 'Any'                    , 'any'      , true, '2015-05-01T12:00:01');
 
 
---insert into reporting.document_format (document_format_id, name, file_extension, media_type, binary_data, birt_format, active, created_on) values ('bc5169e0-3d36-483c-a7b5-a76766587991', 'Microsoft Word'               , 'doc' , 'application/msword'                                                       , true , 'doc' , true , '2015-06-30T11:59:00');
---insert into reporting.document_format (document_format_id, name, file_extension, media_type, binary_data, birt_format, active, created_on) values ('d0225349-1642-46e3-a949-4ce39795907f', 'Office Open XML Document'     , 'docx', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'  , true , 'docx', true , '2015-06-30T11:59:00');
---insert into reporting.document_format (document_format_id, name, file_extension, media_type, binary_data, birt_format, active, created_on) values ('e1d0b3f2-f639-4521-a055-d5465dce29a2', 'HTML'                         , 'html', 'text/html'                                                                , false, 'html', false, '2015-06-30T11:59:00');
---insert into reporting.document_format (document_format_id, name, file_extension, media_type, binary_data, birt_format, active, created_on) values ('38b73b21-cb66-42cf-932b-1cdf7937525c', 'OpenDocument Presentation'    , 'odp' , 'application/vnd.oasis.opendocument.presentation'                          , true , 'odp' , true , '2015-06-30T11:59:00');
---insert into reporting.document_format (document_format_id, name, file_extension, media_type, binary_data, birt_format, active, created_on) values ('05a4ad8d-6f30-4d6d-83d5-995345a8dc58', 'OpenDocument Spreadsheet'     , 'ods' , 'application/vnd.oasis.opendocument.spreadsheet'                           , true , 'ods' , true , '2015-06-30T11:59:00');
---insert into reporting.document_format (document_format_id, name, file_extension, media_type, binary_data, birt_format, active, created_on) values ('b4f2249d-f52e-47e2-871c-daf35f4ba78e', 'OpenDocument Text'            , 'odt' , 'application/vnd.oasis.opendocument.text'                                  , true , 'odt' , true , '2015-06-30T11:59:00');
---insert into reporting.document_format (document_format_id, name, file_extension, media_type, binary_data, birt_format, active, created_on) values ('30800d77-5fdd-44bc-94a3-1502bd307c1d', 'PDF'                          , 'pdf' , 'application/pdf'                                                          , true , 'pdf' , true , '2015-06-30T11:59:00');
---insert into reporting.document_format (document_format_id, name, file_extension, media_type, binary_data, birt_format, active, created_on) values ('597f34fb-10d8-4408-971a-1b67472ac588', 'PowerPoint'                   , 'ppt' , 'application/vnd.ms-powerpoint'                                            , true , 'ppt' , true , '2015-06-30T11:59:00');
---insert into reporting.document_format (document_format_id, name, file_extension, media_type, binary_data, birt_format, active, created_on) values ('d7ccb194-91c6-4dce-bbfe-6424f079dc07', 'Office Open XML Presentation' , 'pptx', 'application/vnd.openxmlformats-officedocument.presentationml.presentation', true , 'pptx', true , '2015-06-30T11:59:00');
---insert into reporting.document_format (document_format_id, name, file_extension, media_type, binary_data, birt_format, active, created_on) values ('25762ba8-1688-4100-b323-b9e74eba396c', 'Microsoft Excel'              , 'xls' , 'application/vnd.ms-excel'                                                 , true , 'xls' , true , '2015-06-30T11:59:00');
---insert into reporting.document_format (document_format_id, name, file_extension, media_type, binary_data, birt_format, active, created_on) values ('c78ac922-2f37-4855-83ae-b708d453b005', 'Office Open XML Workbook'     , 'xlsx', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'        , true , 'xlsx', true , '2015-06-30T11:59:00');
+---- [role_parameter] records:
+----
+---- Role "aabb", report parameter "Report01Param01" (integer - multi-valued):
+--insert into reporting.role_parameter (role_parameter_id, role_id, report_parameter_id, created_on) values ('81e23dae-9fb9-4862-9b66-de8d0c5a91f0', 'ee56f34d-dbb4-41c1-9d30-ce29cf973820', '206723d6-50e7-4f4a-85c0-cb679e92ad6b', '2015-05-31T13:00:00');
+---- Role "aabb", report parameter "Report02Param01" (datetime - single-valued):
+--insert into reporting.role_parameter (role_parameter_id, role_id, report_parameter_id, created_on) values ('21c59fa8-0e5b-429c-b78e-b2f0e0f0940d', 'ee56f34d-dbb4-41c1-9d30-ce29cf973820', '36fc0de4-cc4c-4efa-8c47-73e0e254e449', '2015-05-31T13:00:00');
+---- Role "aabb", report parameter "Report03Param01" (integer - multi-valued):
+--insert into reporting.role_parameter (role_parameter_id, role_id, report_parameter_id, created_on) values ('65d6219d-d115-4715-8e9a-206e3b576135', 'ee56f34d-dbb4-41c1-9d30-ce29cf973820', '5a201251-b04f-406e-b07c-c6d55dc3dc85', '2015-05-31T13:00:00');
+---- Role "aabb", report parameter "Report04Param01" (boolean - single-valued):
+--insert into reporting.role_parameter (role_parameter_id, role_id, report_parameter_id, created_on) values ('9c42ad18-4d21-4161-b3d2-80f0ad0982eb', 'ee56f34d-dbb4-41c1-9d30-ce29cf973820', '4c2bd07e-c7d7-451a-8c07-c8f589959382', '2015-05-31T13:00:00');
+---- Role "acca", report parameter "Report05Param01" (datetime - multi-valued):
+--insert into reporting.role_parameter (role_parameter_id, role_id, report_parameter_id, created_on) values ('2445d793-909f-467d-83de-257375ef3155', '39bc8737-b9eb-4cb5-9765-1c33dd5ee40c', '73792710-8d69-477a-8d44-fe646507eaf8', '2015-05-31T13:00:00');
+---- Role "acca", report parameter "Report04Param01" (integer - single-valued):
+--insert into reporting.role_parameter (role_parameter_id, role_id, report_parameter_id, created_on) values ('bab4fe25-3f7f-463b-8615-2752010d769d', '39bc8737-b9eb-4cb5-9765-1c33dd5ee40c', '86e93f08-86fd-4aed-99c2-1f4af29382d3', '2015-05-31T13:00:00');
+--
+--
+---- [role_parameter_value] records:
+----
+---- Role "aabb", report parameter "Report01Param01" (integer - multi-valued):
+--insert into reporting.role_parameter_value (role_parameter_value_id, role_parameter_id, boolean_value, date_value, datetime_value, float_value, integer_value, string_value, time_value, created_on) values ('7e7f2284-efcd-447b-b0fd-07b841400666', '81e23dae-9fb9-4862-9b66-de8d0c5a91f0', null, null, null                     , null, 666 , null, null, '2015-05-31T13:00:00');
+---- Role "aabb", report parameter "Report02Param01" (datetime - single-valued):
+--insert into reporting.role_parameter_value (role_parameter_value_id, role_parameter_id, boolean_value, date_value, datetime_value, float_value, integer_value, string_value, time_value, created_on) values ('c0b449cc-4b87-4733-8648-a1b0168a1925', '21c59fa8-0e5b-429c-b78e-b2f0e0f0940d', null, null, '2015-07-14T11:11:11.011', null, null, null, null, '2015-05-31T13:00:00');
+---- Role "aabb", report parameter "Report03Param01" (integer - multi-valued):
+--insert into reporting.role_parameter_value (role_parameter_value_id, role_parameter_id, boolean_value, date_value, datetime_value, float_value, integer_value, string_value, time_value, created_on) values ('967147d0-24e2-46a5-8423-e18a87bf13c1', '65d6219d-d115-4715-8e9a-206e3b576135', null, null, null                     , null, 100 , null, null, '2015-05-31T13:00:00');
+--insert into reporting.role_parameter_value (role_parameter_value_id, role_parameter_id, boolean_value, date_value, datetime_value, float_value, integer_value, string_value, time_value, created_on) values ('7fe51a01-c311-46e3-9a8b-70346a71b47f', '65d6219d-d115-4715-8e9a-206e3b576135', null, null, null                     , null, 400 , null, null, '2015-05-31T13:00:00');
+--insert into reporting.role_parameter_value (role_parameter_value_id, role_parameter_id, boolean_value, date_value, datetime_value, float_value, integer_value, string_value, time_value, created_on) values ('58d7d22d-620d-474e-aae5-a57620229110', '65d6219d-d115-4715-8e9a-206e3b576135', null, null, null                     , null, 200 , null, null, '2015-05-31T13:00:00');
+---- Role "aabb", report parameter "Report04Param01" (boolean - single-valued):
+--insert into reporting.role_parameter_value (role_parameter_value_id, role_parameter_id, boolean_value, date_value, datetime_value, float_value, integer_value, string_value, time_value, created_on) values ('80546b03-0e32-46c2-abe8-4b7f3e34d90b', '9c42ad18-4d21-4161-b3d2-80f0ad0982eb', true, null, null                     , null, null, null, null, '2015-05-31T13:00:00');
+---- Role "acca", report parameter "Report05Param01" (datetime - multi-valued):
+--insert into reporting.role_parameter_value (role_parameter_value_id, role_parameter_id, boolean_value, date_value, datetime_value, float_value, integer_value, string_value, time_value, created_on) values ('213fac69-8424-4d88-a55d-90ac43e18832', '2445d793-909f-467d-83de-257375ef3155', null, null, '1961-11-04T00:00:00'    , null, null, null, null, '2015-05-31T13:00:00');
+---- Role "acca", report parameter "Report04Param01" (integer - single-valued):
+--insert into reporting.role_parameter_value (role_parameter_value_id, role_parameter_id, boolean_value, date_value, datetime_value, float_value, integer_value, string_value, time_value, created_on) values ('558f3ecb-15dc-4eec-951a-eedc6ebf3fb0', 'bab4fe25-3f7f-463b-8615-2752010d769d', null, null, null                     , null, -99 , null, null, '2015-05-31T13:00:00');
 
 
 insert into reporting.report_category (report_category_id, description, abbreviation, active, created_on) values ('7a482694-51d2-42d0-b0e2-19dd13bbbc64', 'Accounting'       , 'ACCT' , true, '2015-04-30T12:00:00');
@@ -2336,13 +2357,13 @@ delete from tmp_rptdesign;
 -- Insert  tree of [role] records:
 
 -- encoded_password '44rSFJQ9qtHWTBAvrsKd5K/p2j0=' is Base64(SHA-1('password1'))
-INSERT INTO reporting.role (role_id, username, login_role, encoded_password, full_name, created_on) VALUES ('29fe8a1f-7826-4df0-8bfd-151b54198655', 'user1', true , '44rSFJQ9qtHWTBAvrsKd5K/p2j0=', 'User Number 1', '2015-05-07T09:10:00');
+INSERT INTO reporting.role (role_id, username, login_role, encoded_password, full_name, email, created_on) VALUES ('29fe8a1f-7826-4df0-8bfd-151b54198655', 'user1', true , '44rSFJQ9qtHWTBAvrsKd5K/p2j0=', 'User Number 1', 'user1@somedomain.com', '2015-05-07T09:10:00');
 -- encoded_password 'KqYKj/f81HPTIeAUav2eJt85UUc=' is Base64(SHA-1('password2'))
-INSERT INTO reporting.role (role_id, username, login_role, encoded_password, full_name, created_on) VALUES ('fa06393a-d341-4bf6-b047-1a8c6a383483', 'user2', false, 'KqYKj/f81HPTIeAUav2eJt85UUc=', 'User Number 2', '2015-05-07T09:12:01');
+INSERT INTO reporting.role (role_id, username, login_role, encoded_password, full_name, email, created_on) VALUES ('fa06393a-d341-4bf6-b047-1a8c6a383483', 'user2', false, 'KqYKj/f81HPTIeAUav2eJt85UUc=', 'User Number 2', 'user2@somedomain.com', '2015-05-07T09:12:01');
 -- encoded_password 'ERnP037iRzV+A0oI2ETuol9v0g8=' is Base64(SHA-1('password3'))
-INSERT INTO reporting.role (role_id, username, login_role, encoded_password, full_name, created_on) VALUES ('b85fd129-17d9-40e7-ac11-7541040f8627', 'user3', true , 'ERnP037iRzV+A0oI2ETuol9v0g8=', 'User Number 3', '2015-05-07T09:13:22');
+INSERT INTO reporting.role (role_id, username, login_role, encoded_password, full_name, email, created_on) VALUES ('b85fd129-17d9-40e7-ac11-7541040f8627', 'user3', true , 'ERnP037iRzV+A0oI2ETuol9v0g8=', 'User Number 3', 'user3@somedomain.com', '2015-05-07T09:13:22');
 -- encoded_password 'oddYTarKRzjUma1wgohrARFyddg=' is Base64(SHA-1('password4'))
-INSERT INTO reporting.role (role_id, username, login_role, encoded_password, full_name, created_on) VALUES ('46e477dc-085f-4714-a24f-742428579fcc', 'user4', true , 'oddYTarKRzjUma1wgohrARFyddg=', 'User Number 4', '2015-05-07T09:14:09');
+INSERT INTO reporting.role (role_id, username, login_role, encoded_password, full_name, email, created_on) VALUES ('46e477dc-085f-4714-a24f-742428579fcc', 'user4', true , 'oddYTarKRzjUma1wgohrARFyddg=', 'User Number 4', 'user4@somedomain.com', '2015-05-07T09:14:09');
 
 --INSERT INTO reporting.role (role_id, username, login_role, encoded_password, full_name, created_on) VALUES ('e73ee6a5-5236-4630-aba1-de18e76b8105', 'a', false, '', '', '2015-04-13T08:00:00');
 --
@@ -2712,33 +2733,26 @@ insert into reporting.role_report (role_report_id, role_id, report_id, created_o
 --insert into reporting.configuration (configuration_id, param_name, role_id, param_type, time_value    , created_on) VALUES ('96a86f9a-da4e-4173-9267-94a68176bff0', 'TEST_TIME'     , 'ee56f34d-dbb4-41c1-9d30-ce29cf973820', 'TIME'     , '00:00:01'                , '2015-07-14T00:00:00');
 --
 --
-----------------------------------------------------------------------------------
----- [subscription]'s with relation to [report]:
------- Subscription #1:  Deliver report "Test Report #01" to role "aabb" in format "PDF":
-----insert into reporting.subscription (subscription_id, role_id, report_id, document_format_id, run_once_at, cron_schedule, email, description, created_on) values ('7f68e31c-2884-4638-b3e5-c64697a28bd1', 'ee56f34d-dbb4-41c1-9d30-ce29cf973820', 'd65f3d9c-f67d-4beb-9936-9dfa19aa1407', '30800d77-5fdd-44bc-94a3-1502bd307c1d', '2016-01-01T03:00:00', '00 6 * * 1', 'jeffreyz@q-free.com', 'Description for Subscription #1', '2015-06-06T15:45:30');
-----------------------------------------------------------------------------------
----- [subscription]'s with relation to [report_version]:
---insert into reporting.subscription (subscription_id, role_id, report_version_id, document_format_id, run_once_at, cron_schedule, email, description, created_on) values ('7f68e31c-2884-4638-b3e5-c64697a28bd1', 'ee56f34d-dbb4-41c1-9d30-ce29cf973820', 'dbc0883b-afe3-4147-87b4-0ed35869cd35', '30800d77-5fdd-44bc-94a3-1502bd307c1d', '2016-01-01T03:00:00', '00 6 * * 1', 'jeffreyz@q-free.com', 'Description for Subscription #1', '2015-06-06T15:45:30');
-----------------------------------------------------------------------------------
+--insert into reporting.subscription (subscription_id, role_id, report_version_id, document_format_id, run_once_at, cron_schedule, email, description, active, created_on) values ('7f68e31c-2884-4638-b3e5-c64697a28bd1', 'ee56f34d-dbb4-41c1-9d30-ce29cf973820', 'dbc0883b-afe3-4147-87b4-0ed35869cd35', '30800d77-5fdd-44bc-94a3-1502bd307c1d', '2016-01-01T03:00:00', '00 6 * * 1', 'jeffreyz@q-free.com', 'Description for Subscription #1', true, '2015-06-06T15:45:30');
 --
 --
----- [subscription_parameter_value] rows for [report_parameter]'s associated with 
----- [report] "Test Report #01" for [subscription] "Description for Subscription #1":
---insert into reporting.subscription_parameter_value (subscription_parameter_value_id, subscription_id, report_parameter_id, string_value, time_value, year_number, years_relative, month_number, months_relative, week_of_month_number, week_of_year_number, weeks_relative, day_of_month_number, day_of_week_number, days_relative, created_on) VALUES ('a5159f31-1c2b-496f-af04-bcb02cc04cfb', '7f68e31c-2884-4638-b3e5-c64697a28bd1', '206723d6-50e7-4f4a-85c0-cb679e92ad6b', 'integer value for Report01Param01 for subscription #1', null, null, null, null, null, null, null, null, null, null, null, '2015-03-15T11:00:01');
+---- [subscription_parameter] rows for [report_parameter]'s associated with 
+---- [report] "Report name #01" for [subscription] "Description for Subscription #1":
+--insert into reporting.subscription_parameter (subscription_parameter_id, subscription_id, report_parameter_id, created_on) VALUES ('4e490877-0803-47e2-a74e-61865aadf9a9', '7f68e31c-2884-4638-b3e5-c64697a28bd1', '206723d6-50e7-4f4a-85c0-cb679e92ad6b', '2015-03-15T11:00:00');
+--
+---- [subscription_parameter_value] rows for [subscription_parameter]'s associated with 
+---- [subscription] "Description for Subscription #1":
+--insert into reporting.subscription_parameter_value (subscription_parameter_value_id, subscription_parameter_id, boolean_value, date_value, datetime_value, float_value, integer_value, string_value, time_value, year_number, years_ago, month_number, months_ago, weeks_ago, day_of_week_in_month_ordinal, day_of_week_in_month_number, day_of_week_number, day_of_month_number, days_ago, duration_to_add_years, duration_to_add_months, duration_to_add_weeks, duration_to_add_days, duration_to_add_hours, duration_to_add_minutes, duration_to_add_seconds, created_on) VALUES ('a5159f31-1c2b-496f-af04-bcb02cc04cfb', '4e490877-0803-47e2-a74e-61865aadf9a9', null, null, null, null, 12321, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, '2015-03-15T11:00:01');
 --
 --
-----------------------------------------------------------------------------------
----- [job]'s with relation to [report]:
------- job for report "Test Report #01" run by role "aabb":
-----insert into reporting.job (report_id, role_id, created_on) VALUES ('d65f3d9c-f67d-4beb-9936-9dfa19aa1407', 'ee56f34d-dbb4-41c1-9d30-ce29cf973820', '2015-06-06T00:00:15');
------- job for report "Test Report #01" run by role "aabb":
-----insert into reporting.job (report_id, role_id, created_on) VALUES ('d65f3d9c-f67d-4beb-9936-9dfa19aa1407', 'ee56f34d-dbb4-41c1-9d30-ce29cf973820', '2015-06-07T00:00:15');
-----------------------------------------------------------------------------------
----- [job]'s with relation to [report_version]:
----- job for [report_version] "version 1" of report "Test Report #01" run by role "aabb". [document_format]: PDF:
---insert into reporting.job (report_version_id, role_id, document_format_id, created_on) VALUES ('dbc0883b-afe3-4147-87b4-0ed35869cd35', 'ee56f34d-dbb4-41c1-9d30-ce29cf973820', '30800d77-5fdd-44bc-94a3-1502bd307c1d', '2015-06-06T00:00:15');
----- job for [report_version] "version 1" of report "Test Report #01" run by role "aabb". [document_format]: OpenDocument Spreadsheet:
---insert into reporting.job (report_version_id, role_id, document_format_id, created_on) VALUES ('dbc0883b-afe3-4147-87b4-0ed35869cd35', 'ee56f34d-dbb4-41c1-9d30-ce29cf973820', '05a4ad8d-6f30-4d6d-83d5-995345a8dc58', '2015-06-07T00:00:15');
+---- Create [job] rows. We cannot specifiy job_id because its data type is bigint;
+---- hence, it may not be unique. Therefore, we let PostgreSQL create the job_id
+---- values for us (the DDL for this column includes: "default nextval('job_job_id_seq'::regclass)"
+----
+---- job for [report_version] "version 1" of report "Report name #01" run by role "aabb". [document_format]: PDF:
+--insert into reporting.job (report_version_id, role_id, document_format_id, url, file_name, document, encoded, created_on) VALUES ('dbc0883b-afe3-4147-87b4-0ed35869cd35', 'ee56f34d-dbb4-41c1-9d30-ce29cf973820', '30800d77-5fdd-44bc-94a3-1502bd307c1d', null, null, null, null, '2015-06-06T00:00:15');
+---- job for [report_version] "version 1" of report "Report name #01" run by role "aabb". [document_format]: OpenDocument Spreadsheet:
+--insert into reporting.job (report_version_id, role_id, document_format_id, url, file_name, document, encoded, created_on) VALUES ('dbc0883b-afe3-4147-87b4-0ed35869cd35', 'ee56f34d-dbb4-41c1-9d30-ce29cf973820', '05a4ad8d-6f30-4d6d-83d5-995345a8dc58', null, null, null, null, '2015-06-07T00:00:15');
 ----------------------------------------------------------------------------------
 --
 

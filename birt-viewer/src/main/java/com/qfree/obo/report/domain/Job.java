@@ -99,10 +99,10 @@ public class Job implements Serializable {
 
 	/*
 	 * cascade = CascadeType.ALL:
-	 *     Deleting a Job will delete all of its JobParameterValue's.
+	 *     Deleting a Job will delete all of its JobParameter's.
 	 */
 	@OneToMany(mappedBy = "job", cascade = CascadeType.ALL)
-	private List<JobParameterValue> jobParameterValues;
+	private List<JobParameter> jobParameters;
 
 	/**
 	 * The URL used to request the report from the report server.
@@ -159,17 +159,49 @@ public class Job implements Serializable {
 	private Job() {
 	}
 
-	public Job(ReportVersion report_version, Role role, DocumentFormat documentFormat) {
-		this(report_version, role, documentFormat, null, null, null, null, DateUtils.nowUtc());
+	public Job(
+			ReportVersion report_version,
+			Role role,
+			DocumentFormat documentFormat) {
+		this(
+				report_version,
+				role,
+				documentFormat,
+				null,
+				null,
+				null,
+				null,
+				DateUtils.nowUtc());
 	}
 
-	public Job(ReportVersion report_version, Role role, DocumentFormat documentFormat,
-			String url, String fileName, String document, Boolean encoded) {
-		this(report_version, role, documentFormat, url, fileName, document, encoded, DateUtils.nowUtc());
+	public Job(
+			ReportVersion report_version,
+			Role role,
+			DocumentFormat documentFormat,
+			String url,
+			String fileName,
+			String document,
+			Boolean encoded) {
+		this(
+				report_version,
+				role,
+				documentFormat,
+				url,
+				fileName,
+				document,
+				encoded,
+				DateUtils.nowUtc());
 	}
 
-	public Job(ReportVersion report_version, Role role, DocumentFormat documentFormat,
-			String url, String fileName, String document, Boolean encoded, Date createdOn) {
+	public Job(
+			ReportVersion report_version,
+			Role role,
+			DocumentFormat documentFormat,
+			String url,
+			String fileName,
+			String document,
+			Boolean encoded,
+			Date createdOn) {
 		this.reportVersion = report_version;
 		this.role = role;
 		this.documentFormat = documentFormat;
@@ -212,12 +244,12 @@ public class Job implements Serializable {
 		this.documentFormat = documentformat;
 	}
 
-	public List<JobParameterValue> getJobParameterValues() {
-		return jobParameterValues;
+	public List<JobParameter> getJobParameters() {
+		return jobParameters;
 	}
 
-	public void setJobParameterValues(List<JobParameterValue> jobParameterValues) {
-		this.jobParameterValues = jobParameterValues;
+	public void setJobParameters(List<JobParameter> jobParameters) {
+		this.jobParameters = jobParameters;
 	}
 
 	public String getUrl() {

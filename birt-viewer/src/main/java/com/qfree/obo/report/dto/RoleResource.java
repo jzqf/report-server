@@ -40,7 +40,10 @@ public class RoleResource extends AbstractBaseResource {
 	private Boolean loginRole;
 
 	@XmlElement
-	@XmlJavaTypeAdapter(DateAdapter.class)
+	private String email;
+
+	@XmlElement
+	@XmlJavaTypeAdapter(DatetimeAdapter.class)
 	private Date createdOn;
 
 	public RoleResource() {
@@ -91,6 +94,7 @@ public class RoleResource extends AbstractBaseResource {
 			this.fullName = role.getFullName();
 			this.encodedPassword = role.getEncodedPassword();
 			this.loginRole = role.isLoginRole();
+			this.email = role.getEmail();
 			this.createdOn = role.getCreatedOn();
 		}
 		logger.debug("this = {}", this);
@@ -136,6 +140,14 @@ public class RoleResource extends AbstractBaseResource {
 		this.loginRole = loginRole;
 	}
 
+	public String getEmail() {
+		return email;
+	}
+
+	public void setEmail(String email) {
+		this.email = email;
+	}
+
 	public Date getCreatedOn() {
 		return createdOn;
 	}
@@ -157,14 +169,11 @@ public class RoleResource extends AbstractBaseResource {
 		builder.append(encodedPassword);
 		builder.append(", loginRole=");
 		builder.append(loginRole);
+		builder.append(", email=");
+		builder.append(email);
 		builder.append(", createdOn=");
 		builder.append(createdOn);
-		builder.append(", href=");
-		builder.append(href);
-		builder.append(", mediaType=");
-		builder.append(mediaType);
 		builder.append("]");
 		return builder.toString();
 	}
-
 }

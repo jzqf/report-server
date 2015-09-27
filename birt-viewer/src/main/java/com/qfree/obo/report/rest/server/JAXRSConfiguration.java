@@ -66,6 +66,7 @@ public class JAXRSConfiguration extends ResourceConfig {
 		 * ReST controllers (to manage ReST resources):
 		 */
 		register(ConfigurationController.class);
+		register(DocumentFormatController.class);
 		register(LoginAttemptController.class);
 		register(ParameterGroupController.class);
 		register(ReportController.class);
@@ -77,6 +78,9 @@ public class JAXRSConfiguration extends ResourceConfig {
 		register(SelectionListValueController.class);
 		register(TestController.class);
 		register(RootController.class);
+		register(SubscriptionController.class);
+		register(SubscriptionParameterController.class);
+		register(SubscriptionParameterValueController.class);
 		/*
 		 * TODO Decide whether to register *packages* here (not type-safe) or *classes* (type-safe and refactor-safe, but more tedious).
 		 */

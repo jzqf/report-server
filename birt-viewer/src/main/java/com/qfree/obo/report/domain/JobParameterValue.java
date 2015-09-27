@@ -15,11 +15,9 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
-import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.NotNull;
 
 import org.hibernate.annotations.TypeDef;
-import org.hibernate.validator.constraints.NotBlank;
 
 import com.qfree.obo.report.util.DateUtils;
 
@@ -35,10 +33,7 @@ import com.qfree.obo.report.util.DateUtils;
  * 
  */
 @Entity
-@Table(name = "job_parameter_value", schema = "reporting",
-		uniqueConstraints = {
-				@UniqueConstraint(columnNames = { "job_id", "report_parameter_id", "string_value" },
-						name = "uc_jobparametervalue_job_parameter_value") })
+@Table(name = "job_parameter_value", schema = "reporting")
 @TypeDef(name = "uuid-custom", defaultForType = UUID.class, typeClass = UuidCustomType.class)
 public class JobParameterValue implements Serializable {
 
@@ -65,36 +60,65 @@ public class JobParameterValue implements Serializable {
 	 * is not what is wanted.
 	 */
 	@NotNull
-	@JoinColumn(name = "job_id", nullable = false,
-			foreignKey = @ForeignKey(name = "fk_jobparametervalue_job"))
+	@JoinColumn(name = "job_parameter_id", nullable = false,
+			foreignKey = @ForeignKey(name = "fk_jobparametervalue_jobparameter") )
 	//			columnDefinition = "uuid")
-	private Job job;
-
-	@ManyToOne
-	/*
-	 * If columnDefinition="uuid" is omitted here and the database schema is 
-	 * created by Hibernate (via hibernate.hbm2ddl.auto="create"), then the 
-	 * PostgreSQL column definition includes "DEFAULT uuid_generate_v4()", which
-	 * is not what is wanted.
-	 */
-	@NotNull
-	@JoinColumn(name = "report_parameter_id", nullable = false,
-			foreignKey = @ForeignKey(name = "fk_jobparametervalue_reportparameter"))
-	//			columnDefinition = "uuid")
-	private ReportParameter reportParameter;
+	private JobParameter jobParameter;
 
 	/**
-	 * The value used for the specified report parameter by the specified job.
-	 * role. This value cannot be null. Instead, if a value was not specified 
-	 * for a parameter (or specified null), then no {@link JobParameterValue} 
-	 * entity should be created for that job/parameter combination. This should 
-	 * only be possible for report parameters with required=false.
+	 * Value used for a Job for a report parameters of data type = Boolean.
+	 */
+	@Column(name = "boolean_value", nullable = true)
+	private Boolean booleanValue;
+
+	/**
+	 * Value used for a Job for a report parameters of data type = Date.
+	 */
+	@Temporal(TemporalType.DATE)
+	@Column(name = "date_value", nullable = true)
+	private Date dateValue;
+
+	/**
+	 * Value used for a Job for a report parameters of data type = Datetime.
+	 */
+	@Temporal(TemporalType.TIMESTAMP)
+	@Column(name = "datetime_value", nullable = true)
+	private Date datetimeValue;
+
+	/**
+	 * Value used for a Job for a report parameters of data type = Float.
+	 */
+	/*
+	 * TODO Can this also be used for report parameters of type "Decimal"?
+	 */
+	@Column(name = "float_value", nullable = true)
+	private Double floatValue;
+
+	/**
+	 * Value used for a Job for a report parameters of data type = Integer.
+	 */
+	@Column(name = "integer_value", nullable = true)
+	private Integer integerValue;
+
+	/**
+	 * Value used for a Job for a report parameters of data type = String.
+	 * 
+	 * TODO Store string version of other data types in this field? This will
+	 * allow us to always examine a value that was used by looking at this
+	 * field.
 	 * 
 	 * The value is stored as text, regardless of its native data type.
 	 */
-	@NotBlank
-	@Column(name = "string_value", nullable = false, length = 80)
+	//@NotBlank
+	@Column(name = "string_value", nullable = true, length = 80)
 	private String stringValue;
+
+	/**
+	 * Value used for a Job for a report parameters of data type = Time.
+	 */
+	@Temporal(TemporalType.TIME)
+	@Column(name = "time_value", nullable = true)
+	private Date timeValue;
 
 	@NotNull
 	@Temporal(TemporalType.TIMESTAMP)
@@ -104,54 +128,148 @@ public class JobParameterValue implements Serializable {
 	public JobParameterValue() {
 	}
 
-	public JobParameterValue(Job job, ReportParameter reportParameter, String stringValue) {
-		this(job, reportParameter, stringValue, DateUtils.nowUtc());
+	public JobParameterValue(
+			JobParameter jobParameter,
+			Boolean booleanValue,
+			Date dateValue,
+			Date datetimeValue,
+			Double floatValue,
+			Integer integerValue,
+			String stringValue,
+			Date timeValue) {
+		this(
+				jobParameter,
+				booleanValue,
+				dateValue,
+				datetimeValue,
+				floatValue,
+				integerValue,
+				stringValue,
+				timeValue,
+				DateUtils.nowUtc());
 	}
 
-	public JobParameterValue(Job job, ReportParameter reportParameter, String stringValue, Date createdOn) {
-		this.job = job;
-		this.reportParameter = reportParameter;
+	public JobParameterValue(
+			JobParameter jobParameter,
+			Boolean booleanValue,
+			Date dateValue,
+			Date datetimeValue,
+			Double floatValue,
+			Integer integerValue,
+			String stringValue,
+			Date timeValue,
+			Date createdOn) {
+		/*
+		 * TODO Check that only one *Value parameter is not null?
+		 * TODO Set stringValue based on the parameter that is not-null (if that parameter is not itself stringValue)?
+		 */
+		this.jobParameter = jobParameter;
+		this.booleanValue = booleanValue;
+		this.dateValue = dateValue;
+		this.datetimeValue = datetimeValue;
+		this.floatValue = floatValue;
+		this.integerValue = integerValue;
 		this.stringValue = stringValue;
+		this.timeValue = timeValue;
+		this.createdOn = (createdOn != null) ? createdOn : DateUtils.nowUtc();
 		this.createdOn = (createdOn != null) ? createdOn : DateUtils.nowUtc();
 	}
 
-	public Job getJob() {
-		return job;
+	public JobParameter getJobParameter() {
+		return jobParameter;
 	}
 
-	public void setJob(Job job) {
-		this.job = job;
+	public void setJobParameter(JobParameter jobParameter) {
+		this.jobParameter = jobParameter;
 	}
 
-	public Long getJobParameterValueId() {
-		return this.jobParameterValueId;
+	public Boolean getBooleanValue() {
+		return booleanValue;
 	}
 
-	public ReportParameter getReportParameter() {
-		return reportParameter;
+	public void setBooleanValue(Boolean booleanValue) {
+		this.booleanValue = booleanValue;
 	}
 
-	public void setReportParameter(ReportParameter reportParameter) {
-		this.reportParameter = reportParameter;
+	public Date getDateValue() {
+		return dateValue;
+	}
+
+	public void setDateValue(Date dateValue) {
+		this.dateValue = dateValue;
+	}
+
+	public Date getDatetimeValue() {
+		return datetimeValue;
+	}
+
+	public void setDatetimeValue(Date datetimeValue) {
+		this.datetimeValue = datetimeValue;
+	}
+
+	public Double getFloatValue() {
+		return floatValue;
+	}
+
+	public void setFloatValue(Double floatValue) {
+		this.floatValue = floatValue;
+	}
+
+	public Integer getIntegerValue() {
+		return integerValue;
+	}
+
+	public void setIntegerValue(Integer integerValue) {
+		this.integerValue = integerValue;
 	}
 
 	public String getStringValue() {
-		return this.stringValue;
+		return stringValue;
 	}
 
-	public void setStringValue(String description) {
-		this.stringValue = description;
+	public void setStringValue(String stringValue) {
+		this.stringValue = stringValue;
+	}
+
+	public Date getTimeValue() {
+		return timeValue;
+	}
+
+	public void setTimeValue(Date timeValue) {
+		this.timeValue = timeValue;
+	}
+
+	public Long getJobParameterValueId() {
+		return jobParameterValueId;
+	}
+
+	public Date getCreatedOn() {
+		return createdOn;
 	}
 
 	@Override
 	public String toString() {
 		StringBuilder builder = new StringBuilder();
-		builder.append("JobParameterValue [job=");
-		builder.append(job);
-		builder.append(", reportParameter=");
-		builder.append(reportParameter);
+		builder.append("JobParameterValue [jobParameterValueId=");
+		builder.append(jobParameterValueId);
+		builder.append(", jobParameter=");
+		builder.append(jobParameter);
+		builder.append(", booleanValue=");
+		builder.append(booleanValue);
+		builder.append(", dateValue=");
+		builder.append(dateValue);
+		builder.append(", datetimeValue=");
+		builder.append(datetimeValue);
+		builder.append(", floatValue=");
+		builder.append(floatValue);
+		builder.append(", integerValue=");
+		builder.append(integerValue);
 		builder.append(", stringValue=");
 		builder.append(stringValue);
+		builder.append(", timeValue=");
+		builder.append(timeValue);
+		builder.append(", createdOn=");
+		builder.append(createdOn);
 		builder.append("]");
 		return builder.toString();
 	}

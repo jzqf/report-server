@@ -12,7 +12,7 @@
 
 	<!-- <groupId>com.qfree.obo</groupId> -->
 	<artifactId>birt-viewer</artifactId>
-	<version>0.7-RELEASE</version>
+	<version>0.8-SNAPSHOT</version>
 	<packaging>war</packaging>
 	<name>OBO Report Viewer</name>
 	<description>Web project for displaying OBO reports that integrates the BIRT Viewer and that can be deployed in a servlet container such as Tomcat</description>
@@ -348,12 +348,12 @@
 			<!-- <version>1.4.186</version> -->
 		</dependency>
 		
-		<!-- Replace with LocalDate, LocalTime, ... when we move to Java 8 -->
+		<!-- Replace with LocalDate, LocalTime, ... when we move to Java 8 
 		<dependency>
 			<groupId>joda-time</groupId>
 			<artifactId>joda-time</artifactId>
-			<!-- <version>2.7</version> -->
 		</dependency>
+		-->
 
 	</dependencies>
 

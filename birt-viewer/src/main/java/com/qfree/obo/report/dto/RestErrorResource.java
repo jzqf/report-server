@@ -179,6 +179,21 @@ public class RestErrorResource {
 				"Wrong number of parent key values passed for a cascading parameter dynamic list", null),
 		FORBIDDEN_ATTRIBUTE_BLANK(Response.Status.FORBIDDEN, "403.12",
 				"An attribute is blank when it should not be", null),
+		FORBIDDEN_SUBSCRIPTION_DOCUMENTFORMAT_NULL(
+				Response.Status.FORBIDDEN, "403.13",
+				"documentFormatId is null for a subscription being saved", null),
+		FORBIDDEN_SUBSCRIPTION_REPORTVERSION_NULL(
+				Response.Status.FORBIDDEN, "403.14",
+				"reportVersionId is null for a subscription being saved", null),
+		FORBIDDEN_SUBSCRIPTION_ROLE_NULL(
+				Response.Status.FORBIDDEN, "403.15",
+				"roleId is null for a subscription being saved", null),
+		FORBIDDEN_NEW_SUBSCRIPTION_ACTIVE(
+				Response.Status.FORBIDDEN, "403.16",
+				"A new subscription cannot be created with active=true", null),
+		FORBIDDEN_MULTIPLE_VALUES_FOR_PARAM(
+				Response.Status.FORBIDDEN, "403.17",
+				"Multiple values provided for a single-valued report parameter", null),
 		/**
 		 * {@code 404 Not Found}.
 		 * @see <a href="http://tools.ietf.org/html/rfc2616#section-10.4.5">HTTP/1.1</a>
@@ -309,6 +324,8 @@ public class RestErrorResource {
 				"500.4",
 				"InterruptedException thrown while waiting to acquire semaphore permit.",
 				null),
+		INTERNAL_SERVER_ERROR_UNTREATED_CASE(Response.Status.INTERNAL_SERVER_ERROR, "500.5",
+				"Untreated case", null),
 		/**
 		 * {@code 501 Not Implemented}.
 		 * @see <a href="http://tools.ietf.org/html/rfc2616#section-10.5.2">HTTP/1.1</a>
@@ -411,11 +428,11 @@ public class RestErrorResource {
 	private String errorCode;
 	@XmlElement
 	private String errorMessage;
-	@XmlTransient
+	@XmlElement //@XmlTransient
 	private String resourceName;// @XmlTransient means this will not be serialized to JSON
-	@XmlTransient
+	@XmlElement //@XmlTransient
 	private String attrName;// @XmlTransient means this will not be serialized to JSON
-	@XmlTransient
+	@XmlElement //@XmlTransient
 	private String attrValue;// @XmlTransient means this will not be serialized to JSON
 	@XmlElement
 	private String moreInfoUrl;

@@ -368,6 +368,7 @@ public class ReportParameterController extends AbstractBaseController {
 		Map<String, List<String>> queryParams = new HashMap<>();
 		queryParams.put(ResourcePath.EXPAND_QP_KEY, expand);
 		queryParams.put(ResourcePath.SHOWALL_QP_KEY, showAll);
+		queryParams.put(ResourcePath.PARENTPARAMVALUE_QP_NAME, parentParamValues);
 		RestApiVersion apiVersion = RestUtils.extractAPIVersion(acceptHeader, RestApiVersion.v1);
 
 		ReportParameter reportParameter = reportParameterRepository.findOne(id);
