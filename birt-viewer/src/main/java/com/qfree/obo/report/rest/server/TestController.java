@@ -3,7 +3,12 @@ package com.qfree.obo.report.rest.server;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.text.ParseException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.FormParam;
@@ -17,13 +22,25 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.UriInfo;
 
+import org.quartz.JobKey;
+import org.quartz.Scheduler;
+import org.quartz.SchedulerException;
+import org.quartz.impl.matchers.GroupMatcher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.quartz.CronTriggerFactoryBean;
+import org.springframework.scheduling.quartz.JobDetailFactoryBean;
+import org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean;
+import org.springframework.scheduling.quartz.SchedulerFactoryBean;
+import org.springframework.scheduling.quartz.SimpleTriggerFactoryBean;
 import org.springframework.stereotype.Component;
 
 import com.qfree.obo.report.domain.Configuration.ParamName;
 import com.qfree.obo.report.rest.server.RestUtils.RestApiVersion;
+import com.qfree.obo.report.scheduling.AnotherBean;
+import com.qfree.obo.report.scheduling.MyBean;
+import com.qfree.obo.report.scheduling.ScheduledJob;
 import com.qfree.obo.report.service.BirtService;
 import com.qfree.obo.report.service.ConfigurationService;
 
@@ -36,12 +53,22 @@ public class TestController extends AbstractBaseController {
 	private final ConfigurationService configurationService;
 	private final BirtService birtService;
 
+	private final SchedulerFactoryBean schedulerFactoryBean;
+	private final MyBean myBean;
+	private final AnotherBean anotherBean;
+
 	@Autowired
 	public TestController(
 			ConfigurationService configurationService,
-			BirtService birtService) {
+			BirtService birtService,
+			SchedulerFactoryBean schedulerFactoryBean,
+			MyBean myBean,
+			AnotherBean anotherBean) {
 		this.configurationService = configurationService;
 		this.birtService = birtService;
+		this.schedulerFactoryBean = schedulerFactoryBean;
+		this.myBean = myBean;
+		this.anotherBean = anotherBean;
 	}
 
 	@GET
@@ -250,6 +277,162 @@ public class TestController extends AbstractBaseController {
 		}
 
 		return "Please work!!!";
+	}
+
+	@GET
+	@Path("/scheduleTask")
+	@Produces(MediaType.TEXT_PLAIN)
+	public String scheduleTask(
+			@HeaderParam("Accept") final String acceptHeader,
+			@Context final UriInfo uriInfo) {
+		RestApiVersion apiVersion = RestUtils.extractAPIVersion(acceptHeader, RestApiVersion.v1);
+
+		/*
+		 * Get the underlying Quartz Scheduler. According to the Javadoc for
+		 * org.springframework.scheduling.quartz.SchedulerFactoryBean :
+		 * 
+		 *   For dynamic registration of jobs at runtime, use a bean reference 
+		 *   to this SchedulerFactoryBean to get direct access to the Quartz 
+		 *   Scheduler (org.quartz.Scheduler). This allows you to create new 
+		 *   jobs and triggers, and also to control and monitor the entire 
+		 *   Scheduler.
+		 * 
+		 * So it seems that in order to scedule jobs dynamically (which is what
+		 * we are doing here), one *must* go use the Quartz Scheduler object
+		 * obtained here.
+		 */
+		Scheduler scheduler = schedulerFactoryBean.getScheduler();
+
+		String jobGroupName = "ReportSubscriptions";
+		String jobName = "SubscriptionUUID";
+
+		MethodInvokingJobDetailFactoryBean methodInvokingJobDetail = new MethodInvokingJobDetailFactoryBean();
+		methodInvokingJobDetail.setTargetObject(myBean);
+		methodInvokingJobDetail.setTargetMethod("printMessage");
+		methodInvokingJobDetail.setGroup(jobGroupName);
+		methodInvokingJobDetail.setName(jobName);
+		methodInvokingJobDetail.setConcurrent(false);
+		try {
+			methodInvokingJobDetail.afterPropertiesSet();
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		} catch (NoSuchMethodException e) {
+			e.printStackTrace();
+		}
+
+		/*
+		 * Create trigger for methodInvokingJobDetail.
+		 */
+		SimpleTriggerFactoryBean simpleTrigger = new SimpleTriggerFactoryBean();
+		simpleTrigger.setJobDetail(methodInvokingJobDetail.getObject());
+		simpleTrigger.setName("SomeTriggerNameChosenByJeff");
+		simpleTrigger.setStartDelay(1000L);
+		simpleTrigger.setRepeatCount(50);
+		simpleTrigger.setRepeatInterval(2L * 1000L); // ms
+		simpleTrigger.afterPropertiesSet();
+
+
+		String complexJobGroupName = "ReportSubscriptions";
+		String complexJobName = "complexSubscriptionUUID";
+
+		UUID subscriptionUuid = UUID.randomUUID();
+
+		Map<String, Object> jobDataAsMap = new HashMap<>();
+		jobDataAsMap.put("anotherBean", anotherBean);
+		jobDataAsMap.put("subscriptionUuid", subscriptionUuid);
+
+		JobDetailFactoryBean complexJobDetail = new JobDetailFactoryBean();
+		complexJobDetail.setJobClass(ScheduledJob.class);
+		complexJobDetail.setJobDataAsMap(jobDataAsMap);
+		complexJobDetail.setDurability(true); // ????????????????????????????????????? TRY REMOVING OR SET TO false???????????????????????????????????
+		complexJobDetail.setGroup(complexJobGroupName);
+		complexJobDetail.setName(complexJobName);
+		//		try {
+		complexJobDetail.afterPropertiesSet();
+		//		} catch (ClassNotFoundException e) {
+		//			e.printStackTrace();
+		//		} catch (NoSuchMethodException e) {
+		//			e.printStackTrace();
+		//		}
+
+		/*
+		 * Create trigger for methodInvokingJobDetail.
+		 */
+		CronTriggerFactoryBean cronTrigger = new CronTriggerFactoryBean();
+		cronTrigger.setJobDetail(complexJobDetail.getObject());
+		cronTrigger.setName("cronTriggerCreatedByJeff");
+		cronTrigger.setStartDelay(1000L);
+		cronTrigger.setCronExpression("0/5 * * ? * MON-FRI"); // Run the job every 5 seconds only on weekdays
+		try {
+			cronTrigger.afterPropertiesSet();
+		} catch (ParseException e2) {
+			// TODO Auto-generated catch block
+			e2.printStackTrace();
+		}
+
+		try {
+			scheduler.scheduleJob(methodInvokingJobDetail.getObject(), simpleTrigger.getObject());
+			scheduler.scheduleJob(complexJobDetail.getObject(), cronTrigger.getObject());
+		} catch (SchedulerException e) {
+			e.printStackTrace();
+		}
+
+		try {
+			logger.info("scheduler.getTriggerGroupNames() = {}", scheduler.getTriggerGroupNames());
+		} catch (SchedulerException e) {
+			e.printStackTrace();
+		}
+
+		JobKey myJobKey = JobKey.jobKey(jobName, jobGroupName);
+		logger.info("myJobKey = {}", myJobKey);
+
+		try {
+			Set<JobKey> jobKeySet = scheduler.getJobKeys(GroupMatcher.anyGroup());
+			logger.debug("scheduler.getJobKeys(GroupMatcher.anyGroup()) = {}", jobKeySet);
+			JobKey[] jobKeys = jobKeySet.toArray(new JobKey[] {});
+			logger.info("{} JobKeys:", jobKeys.length);
+			for (JobKey jobKey : jobKeys) {
+				logger.info("    {}", jobKey);
+			}
+		} catch (SchedulerException e1) {
+			e1.printStackTrace();
+		}
+
+		try {
+			logger.info("scheduler.checkExists(myJobKey)) = {}", scheduler.checkExists(myJobKey));
+		} catch (SchedulerException e1) {
+			e1.printStackTrace();
+		}
+
+		logger.info("schedulerFactoryBean.isRunning() = {}", schedulerFactoryBean.isRunning());
+
+		try {
+			logger.info("scheduler.isStarted() = {}", scheduler.isStarted());
+		} catch (SchedulerException e) {
+			e.printStackTrace();
+		}
+
+		return "Return something here after scheduling the task?";
+	}
+
+	@GET
+	@Path("/unscheduleTask")
+	@Produces(MediaType.TEXT_PLAIN)
+	public String unscheduleTask(
+			@HeaderParam("Accept") final String acceptHeader,
+			@Context final UriInfo uriInfo) {
+		RestApiVersion apiVersion = RestUtils.extractAPIVersion(acceptHeader, RestApiVersion.v1);
+
+		logger.info("schedulerFactoryBean.stop()");
+		schedulerFactoryBean.stop();
+
+		/*
+		 * This will start the scheduler again, so "stop()" is really like "pause()".
+		 */
+		//		logger.info("schedulerFactoryBean.start()");
+		//		schedulerFactoryBean.start();
+
+		return "Return something here after unscheduling the task";
 	}
 
 }
