@@ -138,12 +138,12 @@ public class SubscriptionController extends AbstractBaseController {
 	 *   http://localhost:8080/rest/subscriptions
 	 *   
 	 *   This will throw an exception because we are attempting to create a new
-	 *   Subscription with active=true:
+	 *   Subscription with enabled=true:
 	 *   
 	 *   $ curl -iH "Accept: application/json;v=1" -H "Content-Type: application/json" -X POST -d '{\
 	 *   "reportVersion":{"reportVersionId":"afd8777f-b6a2-4cb8-8dc2-887c47af3644"},\
 	 *   "role":{"roleId":"b85fd129-17d9-40e7-ac11-7541040f8627"},\
-	 *   "documentFormat":{"documentFormatId":"30800d77-5fdd-44bc-94a3-1502bd307c1d"},"active":true}' \
+	 *   "documentFormat":{"documentFormatId":"30800d77-5fdd-44bc-94a3-1502bd307c1d"},"enabled":true}' \
 	 *   http://localhost:8080/rest/subscriptions
 	 *   
 	 * @Transactional is used to avoid org.hibernate.LazyInitializationException
@@ -285,7 +285,7 @@ public class SubscriptionController extends AbstractBaseController {
 					 * although I do log it. This will not cause any serious 
 					 * problem - it just means that the user will be forced to
 					 * provide a value for this parameter before the 
-					 * subscription can be made active.
+					 * subscription can be enabled.
 					 */
 					logger.error("Report parameter '{}' of report '{}' has type = IParameterDefn.TYPE_ANY",
 							subscriptionParameter.getReportParameter().getName(),
@@ -434,7 +434,7 @@ public class SubscriptionController extends AbstractBaseController {
 	 *   $ curl -iH "Accept: application/json;v=1" -H "Content-Type: application/json" -X PUT -d \
 	 *   '{"documentFormat":{"documentFormatId":"05a4ad8d-6f30-4d6d-83d5-995345a8dc58"},\
 	 *   "runOnceAt":"2015-11-04T06:00:00.000Z","email":"bozo@clown.net","description":"New description",\
-	 *   "active":true}' http://localhost:8080/rest/subscriptions/1778cb69-0561-42b9-889f-cfe8c66978db
+	 *   "enabled":true}' http://localhost:8080/rest/subscriptions/1778cb69-0561-42b9-889f-cfe8c66978db
 	 *   
 	 * This updates the subscription with UUID 1778cb69-0561-42b9-889f-cfe8c66978db
 	 * with the following changes:
@@ -444,7 +444,7 @@ public class SubscriptionController extends AbstractBaseController {
 	 * runOnceAt:		-> "2015-11-04T06:00:00.000Z"
 	 * email:			-> "bozo@clown.net"
 	 * description:		-> "New description"
-	 * active:			-> true
+	 * enabled:			-> true
 	 */
 	@Path("/{id}")
 	@PUT
@@ -492,6 +492,9 @@ public class SubscriptionController extends AbstractBaseController {
 		// }
 		if (subscriptionResource.getActive() == null) {
 			subscriptionResource.setActive(subscription.getActive());
+		}
+		if (subscriptionResource.getEnabled() == null) {
+			subscriptionResource.setEnabled(subscription.getEnabled());
 		}
 		if (subscriptionResource.getDocumentFormatResource() == null) {
 			/*
@@ -559,28 +562,25 @@ public class SubscriptionController extends AbstractBaseController {
 		//			Subscription.class, "roleId");
 		//}
 
-		Boolean previousActive = subscription.getActive();
-
 		/*
 		 * Save updated entity.
 		 */
 		subscription = subscriptionService.saveExistingFromResource(subscriptionResource);
 
 		/*
-		 * If "active" is changing from true to false, we need to disable any
-		 * scheduling that is active for the subscription.
+		 * If the"enabled" field of the subscription is "true", we make sure 
+		 * that the subscription is scheduled.
 		 */
-		if (previousActive && !subscription.getActive()) {
-			subscriptionService.deactivate(subscription);
+		if (subscription.getEnabled()) {
+			subscriptionService.enable(subscription);
 		}
 
 		/*
-		 * If "active" is changing from false to true, we need to check if the
-		 * necessary details have been provided and if so, enable scheduling
-		 * for the subscription.
+		 * If the"enabled" field of the subscription is "False", we make sure 
+		 * that the subscription is *not* scheduled.
 		 */
-		if (!previousActive && subscription.getActive()) {
-			subscriptionService.activate(subscription);
+		if (!subscription.getEnabled()) {
+			subscriptionService.disable(subscription);
 		}
 
 		return Response.status(Response.Status.OK).build();
@@ -618,14 +618,9 @@ public class SubscriptionController extends AbstractBaseController {
 		RestUtils.ifNullThen404(subscription, Subscription.class, "subscriptionId", id.toString());
 
 		/*
-		 * If the subscription is currently "active", we need to disable any
-		 * scheduling that is active for the subscription before the 
-		 * subscription is deleted.
+		 * If the subscription is currently scheduled, we need to unschedule it.
 		 */
-		if (subscription.getActive()) {
-			subscription.setActive(Boolean.FALSE); // this does not do much because we do not save this entity
-			subscriptionService.deactivate(subscription);
-		}
+		subscriptionService.disable(subscription);
 
 		/*
 		 * If the Subscription entity is successfully deleted, it is 

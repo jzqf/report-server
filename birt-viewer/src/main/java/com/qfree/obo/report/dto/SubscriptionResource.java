@@ -55,6 +55,9 @@ public class SubscriptionResource extends AbstractBaseResource {
 	private SubscriptionParameterCollectionResource subscriptionParameterCollectionResource;
 
 	@XmlElement
+	private Boolean enabled;
+
+	@XmlElement
 	private Boolean active;
 
 	@XmlElement
@@ -116,6 +119,7 @@ public class SubscriptionResource extends AbstractBaseResource {
 			this.runOnceAt = subscription.getRunOnceAt();
 			this.email = subscription.getEmail();
 			this.description = subscription.getDescription();
+			this.enabled = subscription.getEnabled();
 			this.active = subscription.getActive();
 			this.createdOn = subscription.getCreatedOn();
 			this.subscriptionParameterCollectionResource = new SubscriptionParameterCollectionResource(
@@ -209,6 +213,14 @@ public class SubscriptionResource extends AbstractBaseResource {
 		this.description = description;
 	}
 
+	public Boolean getEnabled() {
+		return enabled;
+	}
+
+	public void setEnabled(Boolean enabled) {
+		this.enabled = enabled;
+	}
+
 	public SubscriptionParameterCollectionResource getSubscriptionParameterCollectionResource() {
 		return subscriptionParameterCollectionResource;
 	}
@@ -253,6 +265,8 @@ public class SubscriptionResource extends AbstractBaseResource {
 		builder.append(email);
 		builder.append(", description=");
 		builder.append(description);
+		builder.append(", enabled=");
+		builder.append(enabled);
 		builder.append(", active=");
 		builder.append(active);
 		builder.append(", createdOn=");
