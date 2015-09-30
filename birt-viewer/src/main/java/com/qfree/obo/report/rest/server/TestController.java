@@ -479,4 +479,18 @@ public class TestController extends AbstractBaseController {
 		return "Hopefully, we retrieved a new instance of a Spring-managed bean";
 	}
 
+	@GET
+	@Path("/scheduleAllJobs")
+	@Produces(MediaType.TEXT_PLAIN)
+	public String scheduleAllJobs(
+			@HeaderParam("Accept") final String acceptHeader,
+			@Context final UriInfo uriInfo) throws SchedulerException {
+		RestApiVersion apiVersion = RestUtils.extractAPIVersion(acceptHeader, RestApiVersion.v1);
+
+		logger.info("Executing subscriptionScheduler.scheduleAllJobs()");
+		subscriptionScheduler.scheduleAllJobs();
+
+		return "Executed subscriptionScheduler.scheduleAllJobs()";
+	}
+
 }

@@ -1,5 +1,6 @@
 package com.qfree.obo.report.scheduling.schedulers;
 
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
@@ -15,7 +16,8 @@ import org.springframework.core.env.Environment;
 import org.springframework.scheduling.quartz.SchedulerFactoryBean;
 import org.springframework.stereotype.Component;
 
-import com.qfree.obo.report.scheduling.jobs.SubscriptionJobProcessorScheduledJob;
+import com.qfree.obo.report.db.SubscriptionRepository;
+import com.qfree.obo.report.domain.Subscription;
 import com.qfree.obo.report.scheduling.jobs.SubscriptionScheduledJob;
 
 /**
@@ -45,20 +47,25 @@ public class SubscriptionScheduler {
 	private static final String TRIGGER_GROUP = "Subscription_TriggerGroup";
 	//	private static final TriggerKey TRIGGER_KEY = TriggerKey.triggerKey(TRIGGER_NAME, TRIGGER_GROUP);
 
+	/*
+	 * The UUID keys of this map will be the id's of the Subscription entities
+	 * for which a SubscriptionScheduledJob has been scheduled. The 
+	 * SubscriptionScheduledJob instance is stored as the map value.
+	 */
 	private final Map<UUID, SubscriptionScheduledJob> scheduledSubscriptions = new ConcurrentHashMap<>();
 
-	@Autowired
-	private ObjectFactory<SubscriptionScheduledJob> subscriptionScheduledJobFactory;
-
 	private final SchedulerFactoryBean schedulerFactoryBean;
-	private final SubscriptionJobProcessorScheduledJob subscriptionJobProcessorScheduledJob;
+	private final ObjectFactory<SubscriptionScheduledJob> subscriptionScheduledJobFactory;
+	private final SubscriptionRepository subscriptionRepository;
 
 	@Autowired
 	public SubscriptionScheduler(
 			SchedulerFactoryBean schedulerFactoryBean,
-			SubscriptionJobProcessorScheduledJob subscriptionJobProcessorScheduledJob) {
+			ObjectFactory<SubscriptionScheduledJob> subscriptionScheduledJobFactory,
+			SubscriptionRepository subscriptionRepository) {
 		this.schedulerFactoryBean = schedulerFactoryBean;
-		this.subscriptionJobProcessorScheduledJob = subscriptionJobProcessorScheduledJob;
+		this.subscriptionScheduledJobFactory = subscriptionScheduledJobFactory;
+		this.subscriptionRepository = subscriptionRepository;
 	}
 
 	/*
@@ -116,6 +123,12 @@ public class SubscriptionScheduler {
 	}
 
 	public void scheduleAllJobs() {
+
+		/*
+		 * Only active Subscription entities are considered for scheduling.
+		 */
+		List<Subscription> subscriptions = subscriptionRepository.findByActiveTrue();
+		logger.info("Considering {} subscriptions to be scheduled", subscriptions.size());
 
 	}
 

@@ -66,7 +66,7 @@ public class SubscriptionService {
 		if (subscriptionResource.getActive() == null) {
 			subscriptionResource.setActive(Boolean.FALSE);
 		} else if (subscriptionResource.getActive()) {
-			throw new RestApiException(RestError.FORBIDDEN_NEW_SUBSCRIPTION_ACTIVE, Subscription.class);
+			throw new RestApiException(RestError.FORBIDDEN_NEW_SUBSCRIPTION_ENABLED, Subscription.class);
 		}
 
 		// /*

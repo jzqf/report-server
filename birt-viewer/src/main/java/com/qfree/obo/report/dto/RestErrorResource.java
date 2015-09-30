@@ -188,9 +188,9 @@ public class RestErrorResource {
 		FORBIDDEN_SUBSCRIPTION_ROLE_NULL(
 				Response.Status.FORBIDDEN, "403.15",
 				"roleId is null for a subscription being saved", null),
-		FORBIDDEN_NEW_SUBSCRIPTION_ACTIVE(
+		FORBIDDEN_NEW_SUBSCRIPTION_ENABLED(
 				Response.Status.FORBIDDEN, "403.16",
-				"A new subscription cannot be created with active=true", null),
+				"A new subscription cannot be created with enabled=true", null),
 		FORBIDDEN_MULTIPLE_VALUES_FOR_PARAM(
 				Response.Status.FORBIDDEN, "403.17",
 				"Multiple values provided for a single-valued report parameter", null),
