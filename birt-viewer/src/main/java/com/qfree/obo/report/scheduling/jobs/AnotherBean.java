@@ -1,4 +1,4 @@
-package com.qfree.obo.report.scheduling;
+package com.qfree.obo.report.scheduling.jobs;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

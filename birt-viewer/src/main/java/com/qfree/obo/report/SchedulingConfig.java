@@ -11,10 +11,12 @@ import org.springframework.core.env.Environment;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.quartz.SchedulerFactoryBean;
 
+import com.qfree.obo.report.scheduling.schedulers.SubscriptionJobProcessorScheduler;
+
 @Configuration
 @EnableScheduling
 @ComponentScan(basePackageClasses = {
-		com.qfree.obo.report.scheduling.ComponentScanPackageMarker.class,
+		com.qfree.obo.report.scheduling.jobs.ComponentScanPackageMarker.class,
 })
 @PropertySource("classpath:config.properties")
 //This is for *multiple* properties files. The @PropertySource elements must be
@@ -71,8 +73,23 @@ public class SchedulingConfig {
 	@Bean
 	public SchedulerFactoryBean schedulerFactory() {
 		SchedulerFactoryBean schedulerFactory = new SchedulerFactoryBean();
-		//		schedulerFactory.setTriggers(simpleTriggerFactoryBean().getObject());
 		return schedulerFactory;
+	}
+
+	//TODO Eliminate this, add a ComponentScanPackageMarker to its package, reference above in @ComponentScan.
+	//TODO Uncomment constructor in class.
+	/*
+	 * This bean manages the scheduling of SubscriptionJobProcessorScheduledJob.
+	 * 
+	 * This bean has @PostConstruct and @PreDestroy methods, which will get 
+	 * called because Spring uses "eager" loading/initialization of beans. 
+	 * Hence, this @Bean declaration is what starts the life cycle of this bean.
+	 * In other words, it is not necessary for this bean to get injected 
+	 * somewhere in order for the @PostConstruct and @PreDestroy methods to run.
+	 */
+	@Bean
+	public SubscriptionJobProcessorScheduler subscriptionJobProcessorScheduler() {
+		return new SubscriptionJobProcessorScheduler();
 	}
 
 }

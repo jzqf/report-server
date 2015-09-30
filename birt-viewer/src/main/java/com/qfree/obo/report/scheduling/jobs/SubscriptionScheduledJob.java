@@ -1,4 +1,4 @@
-package com.qfree.obo.report.scheduling;
+package com.qfree.obo.report.scheduling.jobs;
 
 import java.util.UUID;
 
@@ -8,9 +8,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.quartz.QuartzJobBean;
 
-public class ScheduledJob extends QuartzJobBean{
+// TODO Should this be annotated with @Component ???????????????????????????????
+public class SubscriptionScheduledJob extends QuartzJobBean{
 
-	private static final Logger logger = LoggerFactory.getLogger(ScheduledJob.class);
+	private static final Logger logger = LoggerFactory.getLogger(SubscriptionScheduledJob.class);
 
 	/*
 	 * In a final implementation:
