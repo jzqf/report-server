@@ -31,17 +31,14 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.quartz.CronTriggerFactoryBean;
 import org.springframework.scheduling.quartz.JobDetailFactoryBean;
-import org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean;
 import org.springframework.scheduling.quartz.SchedulerFactoryBean;
-import org.springframework.scheduling.quartz.SimpleTriggerFactoryBean;
 import org.springframework.stereotype.Component;
 
 import com.qfree.obo.report.domain.Configuration.ParamName;
 import com.qfree.obo.report.rest.server.RestUtils.RestApiVersion;
-import com.qfree.obo.report.scheduling.jobs.AnotherBean;
-import com.qfree.obo.report.scheduling.jobs.SubscriptionJobProcessorScheduledJob;
 import com.qfree.obo.report.scheduling.jobs.SubscriptionScheduledJob;
 import com.qfree.obo.report.scheduling.schedulers.SubscriptionJobProcessorScheduler;
+import com.qfree.obo.report.scheduling.schedulers.SubscriptionScheduler;
 import com.qfree.obo.report.service.BirtService;
 import com.qfree.obo.report.service.ConfigurationService;
 
@@ -55,24 +52,24 @@ public class TestController extends AbstractBaseController {
 	private final BirtService birtService;
 
 	private final SchedulerFactoryBean schedulerFactoryBean;
-	private final SubscriptionJobProcessorScheduledJob subscriptionJobProcessorScheduledJob;
+	//	private final SubscriptionJobProcessorScheduledJob subscriptionJobProcessorScheduledJob;
 	private final SubscriptionJobProcessorScheduler subscriptionJobProcessorScheduler;
-	private final AnotherBean anotherBean;
+	private final SubscriptionScheduler subscriptionScheduler;
 
 	@Autowired
 	public TestController(
 			ConfigurationService configurationService,
 			BirtService birtService,
 			SchedulerFactoryBean schedulerFactoryBean,
-			SubscriptionJobProcessorScheduledJob subscriptionJobProcessorScheduledJob,
+			//			SubscriptionJobProcessorScheduledJob subscriptionJobProcessorScheduledJob,
 			SubscriptionJobProcessorScheduler subscriptionJobProcessorScheduler,
-			AnotherBean anotherBean) {
+			SubscriptionScheduler subscriptionScheduler) {
 		this.configurationService = configurationService;
 		this.birtService = birtService;
 		this.schedulerFactoryBean = schedulerFactoryBean;
-		this.subscriptionJobProcessorScheduledJob = subscriptionJobProcessorScheduledJob;
+		//		this.subscriptionJobProcessorScheduledJob = subscriptionJobProcessorScheduledJob;
 		this.subscriptionJobProcessorScheduler = subscriptionJobProcessorScheduler;
-		this.anotherBean = anotherBean;
+		this.subscriptionScheduler = subscriptionScheduler;
 	}
 
 	@GET
@@ -307,42 +304,12 @@ public class TestController extends AbstractBaseController {
 		 */
 		Scheduler scheduler = schedulerFactoryBean.getScheduler();
 
-		String jobGroupName = "ReportSubscriptions";
-		String jobName = "SubscriptionUUID";
-
-		MethodInvokingJobDetailFactoryBean methodInvokingJobDetail = new MethodInvokingJobDetailFactoryBean();
-		methodInvokingJobDetail.setTargetObject(subscriptionJobProcessorScheduledJob);
-		methodInvokingJobDetail.setTargetMethod("run");
-		methodInvokingJobDetail.setGroup(jobGroupName);
-		methodInvokingJobDetail.setName(jobName);
-		methodInvokingJobDetail.setConcurrent(false);
-		try {
-			methodInvokingJobDetail.afterPropertiesSet();
-		} catch (ClassNotFoundException e) {
-			e.printStackTrace();
-		} catch (NoSuchMethodException e) {
-			e.printStackTrace();
-		}
-
-		/*
-		 * Create trigger for methodInvokingJobDetail.
-		 */
-		SimpleTriggerFactoryBean simpleTrigger = new SimpleTriggerFactoryBean();
-		simpleTrigger.setJobDetail(methodInvokingJobDetail.getObject());
-		simpleTrigger.setName("SomeTriggerNameChosenByJeff");
-		simpleTrigger.setStartDelay(1000L);
-		simpleTrigger.setRepeatCount(50);
-		simpleTrigger.setRepeatInterval(2L * 1000L); // ms
-		simpleTrigger.afterPropertiesSet();
-
-
 		String complexJobGroupName = "ReportSubscriptions";
 		String complexJobName = "complexSubscriptionUUID";
 
 		UUID subscriptionUuid = UUID.randomUUID();
 
 		Map<String, Object> jobDataAsMap = new HashMap<>();
-		jobDataAsMap.put("anotherBean", anotherBean);
 		jobDataAsMap.put("subscriptionUuid", subscriptionUuid);
 
 		/*
@@ -362,13 +329,7 @@ public class TestController extends AbstractBaseController {
 		complexJobDetail.setDurability(true); // ????????????????????????????????????? TRY REMOVING OR SET TO false???????????????????????????????????
 		complexJobDetail.setGroup(complexJobGroupName);
 		complexJobDetail.setName(complexJobName);
-		//		try {
 		complexJobDetail.afterPropertiesSet();
-		//		} catch (ClassNotFoundException e) {
-		//			e.printStackTrace();
-		//		} catch (NoSuchMethodException e) {
-		//			e.printStackTrace();
-		//		}
 
 		/*
 		 * Create trigger for complexJobDetail.
@@ -380,13 +341,11 @@ public class TestController extends AbstractBaseController {
 		cronTrigger.setCronExpression("0/5 * * ? * MON-FRI"); // Run the job every 5 seconds only on weekdays
 		try {
 			cronTrigger.afterPropertiesSet();
-		} catch (ParseException e2) {
-			// TODO Auto-generated catch block
-			e2.printStackTrace();
+		} catch (ParseException e) {
+			e.printStackTrace();
 		}
 
 		try {
-			scheduler.scheduleJob(methodInvokingJobDetail.getObject(), simpleTrigger.getObject());
 			scheduler.scheduleJob(complexJobDetail.getObject(), cronTrigger.getObject());
 		} catch (SchedulerException e) {
 			e.printStackTrace();
@@ -397,9 +356,6 @@ public class TestController extends AbstractBaseController {
 		} catch (SchedulerException e) {
 			e.printStackTrace();
 		}
-
-		JobKey myJobKey = JobKey.jobKey(jobName, jobGroupName);
-		logger.info("myJobKey = {}", myJobKey);
 
 		try {
 			Set<JobKey> jobKeySet = scheduler.getJobKeys(GroupMatcher.anyGroup());
@@ -412,14 +368,6 @@ public class TestController extends AbstractBaseController {
 		} catch (SchedulerException e1) {
 			e1.printStackTrace();
 		}
-
-		try {
-			logger.info("scheduler.checkExists(myJobKey)) = {}", scheduler.checkExists(myJobKey));
-		} catch (SchedulerException e1) {
-			e1.printStackTrace();
-		}
-
-		logger.info("schedulerFactoryBean.isRunning() = {}", schedulerFactoryBean.isRunning());
 
 		try {
 			logger.info("scheduler.isStarted() = {}", scheduler.isStarted());
@@ -515,6 +463,20 @@ public class TestController extends AbstractBaseController {
 		subscriptionJobProcessorScheduler.unscheduleJob();
 
 		return "Job processor unscheduled";
+	}
+
+	@GET
+	@Path("/testGetInstance")
+	@Produces(MediaType.TEXT_PLAIN)
+	public String testGetInstance(
+			@HeaderParam("Accept") final String acceptHeader,
+			@Context final UriInfo uriInfo) throws SchedulerException {
+		RestApiVersion apiVersion = RestUtils.extractAPIVersion(acceptHeader, RestApiVersion.v1);
+
+		logger.info("Retrieving a new instance of a Spring-managed bean (I hope)...");
+		subscriptionScheduler.testGetInstance();
+
+		return "Hopefully, we retrieved a new instance of a Spring-managed bean";
 	}
 
 }

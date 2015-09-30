@@ -6,35 +6,34 @@ import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.annotation.Scope;
 import org.springframework.scheduling.quartz.QuartzJobBean;
+import org.springframework.stereotype.Component;
 
-// TODO Should this be annotated with @Component ???????????????????????????????
+/*
+ * The scope of this bean is "prototype" because a new instance is required for
+ * each value assigned to subscriptionUuid.
+ */
+@Component
+@Scope(value = "prototype")
 public class SubscriptionScheduledJob extends QuartzJobBean{
 
 	private static final Logger logger = LoggerFactory.getLogger(SubscriptionScheduledJob.class);
-
-	/*
-	 * In a final implementation:
-	 *   1.	This will be a UUID object that contains the id of a Subscription?
-	 *   2.	We need to test that the Subscription still exists when this job runs.
-	 *   	If it does not, we should try to cancel/delete this job so that it
-	 *   	never runs again.
-	 *   3.	Should we test if the Subscription is inactive when this job runs?
-	 *   	If it is inactive, do the same as if the Subscription was deleted?
-	 */
-	private AnotherBean anotherBean; 
 
 	private UUID subscriptionUuid;
 
 	@Override
 	protected void executeInternal(JobExecutionContext arg0)
 			throws JobExecutionException {
-		anotherBean.printAnotherMessage();
 		logger.info("subscriptionUuid = {}", subscriptionUuid);
-	}
 
-	public void setAnotherBean(AnotherBean anotherBean) {
-		this.anotherBean = anotherBean;
+		logger.info("********** Write me! Sleeping for 0s **********");
+		//		try {
+		//			Thread.sleep(30L * 1000L);
+		//		} catch (InterruptedException e) {
+		//			e.printStackTrace();
+		//		}
+		//		logger.info("Running again");
 	}
 
 	public UUID getSubscriptionUuid() {

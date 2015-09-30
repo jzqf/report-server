@@ -15,42 +15,47 @@ import org.springframework.core.env.Environment;
 import org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean;
 import org.springframework.scheduling.quartz.SchedulerFactoryBean;
 import org.springframework.scheduling.quartz.SimpleTriggerFactoryBean;
+import org.springframework.stereotype.Component;
 
 import com.qfree.obo.report.scheduling.jobs.SubscriptionJobProcessorScheduledJob;
 
-/*
- * @Component <- not needed because bean is explicitly created in
- * SchedulingConfig.java.
+/**
+ * This bean manages the scheduling of SubscriptionJobProcessorScheduledJob.
+ * 
+ * This bean has @PostConstruct and @PreDestroy methods, which will get called
+ * because Spring uses "eager" loading/initialization of beans. This class's
+ * package is "component scanned" from SchedulingConfig.java, which causes a
+ * bean to be created due to the @Component annotation here. That starts the
+ * life cycle of this bean. In other words, it is not necessary for this bean to
+ * get injected somewhere in order for the @PostConstruct method to run.
+ * 
+ * @author jeffreyz
+ *
  */
+@Component
 @PropertySource("classpath:config.properties")
 public class SubscriptionJobProcessorScheduler {
 
 	private static final Logger logger = LoggerFactory.getLogger(SubscriptionJobProcessorScheduler.class);
 
-	public static final String JOB_NAME = "JobProcessor_JobName";
-	public static final String JOB_GROUP = "JobProcessor_JobGroup";
-	public static final JobKey JOB_KEY = JobKey.jobKey(JOB_NAME, JOB_GROUP);
+	private static final String JOB_NAME = "JobProcessor_JobName";
+	private static final String JOB_GROUP = "JobProcessor_JobGroup";
+	private static final JobKey JOB_KEY = JobKey.jobKey(JOB_NAME, JOB_GROUP);
 
-	public static final String TRIGGER_NAME = "JobProcessor_TriggerName";
-	public static final String TRIGGER_GROUP = "JobProcessor_TriggerGroup";
-	public static final TriggerKey TRIGGER_KEY = TriggerKey.triggerKey(TRIGGER_NAME, TRIGGER_GROUP);
+	private static final String TRIGGER_NAME = "JobProcessor_TriggerName";
+	private static final String TRIGGER_GROUP = "JobProcessor_TriggerGroup";
+	private static final TriggerKey TRIGGER_KEY = TriggerKey.triggerKey(TRIGGER_NAME, TRIGGER_GROUP);
+
+	private final SchedulerFactoryBean schedulerFactoryBean;
+	private final SubscriptionJobProcessorScheduledJob subscriptionJobProcessorScheduledJob;
 
 	@Autowired
-	private SchedulerFactoryBean schedulerFactoryBean;
-
-	@Autowired
-	private SubscriptionJobProcessorScheduledJob subscriptionJobProcessorScheduledJob;
-
-	//	private final SchedulerFactoryBean schedulerFactoryBean;
-	//	private final SubscriptionJobProcessorScheduledJob subscriptionJobProcessorScheduledJob;
-	//
-	//	@Autowired
-	//	public SubscriptionJobProcessorScheduler(
-	//			SchedulerFactoryBean schedulerFactoryBean,
-	//			SubscriptionJobProcessorScheduledJob subscriptionJobProcessorScheduledJob) {
-	//		this.schedulerFactoryBean = schedulerFactoryBean;
-	//		this.subscriptionJobProcessorScheduledJob = subscriptionJobProcessorScheduledJob;
-	//	}
+	public SubscriptionJobProcessorScheduler(
+			SchedulerFactoryBean schedulerFactoryBean,
+			SubscriptionJobProcessorScheduledJob subscriptionJobProcessorScheduledJob) {
+		this.schedulerFactoryBean = schedulerFactoryBean;
+		this.subscriptionJobProcessorScheduledJob = subscriptionJobProcessorScheduledJob;
+	}
 
 	/*
 	 * The injected "env" object here will contain key/value pairs for each 
@@ -101,7 +106,10 @@ public class SubscriptionJobProcessorScheduler {
 				logger.error("Could not start the subscription job processor during application startup", e);
 			}
 
+		} else {
+			logger.info("Scheduling of the subscription job processor is disabled in config.properties.");
 		}
+
 	}
 
 	public void scheduleJob() throws ClassNotFoundException, NoSuchMethodException, SchedulerException {
