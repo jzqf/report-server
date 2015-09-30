@@ -56,16 +56,16 @@ public class SubscriptionService {
 				Subscription.class, "subscriptionId", subscriptionResource.getSubscriptionId());
 
 		/*
-		 * Do not allow Active=true for a new Subscription. Normally, additional 
+		 * Do not allow enabled=true for a new Subscription. Normally, additional 
 		 * information must be specified before a subscription can be enabled. 
 		 * If there is not sufficient information to allow the subscription to 
 		 * be enabled and we did allow active=true to be specified, there is no 
 		 * easy way to both create the Subscription entity AND return an error 
 		 * message describing why the subscription could not be activated. 
 		 */
-		if (subscriptionResource.getActive() == null) {
-			subscriptionResource.setActive(Boolean.FALSE);
-		} else if (subscriptionResource.getActive()) {
+		if (subscriptionResource.getEnabled() == null) {
+			subscriptionResource.setEnabled(Boolean.FALSE);
+		} else if (subscriptionResource.getEnabled()) {
 			throw new RestApiException(RestError.FORBIDDEN_NEW_SUBSCRIPTION_ACTIVE, Subscription.class);
 		}
 
@@ -188,7 +188,8 @@ public class SubscriptionService {
 
 	/**
 	 * Performs whatever actions are appropriate when a subscription is
-	 * deactivated.
+	 * deactivated. This code may also run when the subscription was already
+	 * disabled, so this is taken into account.
 	 * 
 	 * <p>
 	 * The most important action is to disable any scheduling that is active for
@@ -196,15 +197,27 @@ public class SubscriptionService {
 	 * 
 	 * @param subscription
 	 */
-	public void deactivate(Subscription subscription) {
+	public void disable(Subscription subscription) {
+
+		/*
+		 * The subscription may not be scheduled, so we check for that first.
+		 */
+		//TODO Check if the subscription NOT currently scheduled - here or in the called code.
+		// Write method "unscheduleIfNecessary? No, just "unschedule", but it should make this check.
+
+		/*
+		 * If subscription.getEnabled() = true, execute subscription.setEnabled(Boolean.FALSE)
+		 * and then save the Subscription.
+		 */
 
 		// TODO Write me!
 
 	}
 
 	/**
-	 * Performs whatever actions are appropriate when a subscription is
-	 * activated.
+	 * Performs whatever actions are appropriate when a subscription is enabled.
+	 * This code may also run when the subscription was already enabled, so this
+	 * is taken into account.
 	 * 
 	 * <p>
 	 * The most important action is to enable scheduling for the subscription,
@@ -225,7 +238,25 @@ public class SubscriptionService {
 	 * 
 	 * @param subscription
 	 */
-	public void activate(Subscription subscription) {
+	public void enable(Subscription subscription) {
+
+		/*
+		 * The subscription may already be scheduled, so we check for that 
+		 * first.
+		 */
+		//TODO Check if the subscription is already be scheduled - here or in the called code.
+		// Write method "scheduleIfNecessary? No, just "schedule", but it should make this check.
+		// Don't report any error if this occurs. Use logger.info, not logger.warn.
+
+		/*
+		 * If the subscription is not in a state to be scheduled, then we need
+		 * to execute subscription.setEnabled(Boolean.FALSE) and then save the Subscription.
+		 * 
+		 * Otherwise:
+		 * 
+		 * If subscription.getEnabled() = false, execute subscription.setEnabled(Boolean.TRUE)
+		 * and then save the Subscription. Then schedule it.
+		 */
 
 		// TODO Write me!
 

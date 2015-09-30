@@ -130,6 +130,10 @@ public class Subscription implements Serializable {
 	private String description;
 
 	@NotNull
+	@Column(name = "enabled", nullable = false)
+	private Boolean enabled;
+
+	@NotNull
 	@Column(name = "active", nullable = false)
 	private Boolean active;
 
@@ -157,6 +161,7 @@ public class Subscription implements Serializable {
 			Date runOnceAt,
 			String email,
 			String description,
+			Boolean enabled,
 			Boolean active) {
 		this(
 				null,
@@ -167,7 +172,8 @@ public class Subscription implements Serializable {
 				runOnceAt,
 				email,
 				description,
-				true,
+				enabled,
+				active,
 				DateUtils.nowUtc());
 	}
 
@@ -185,6 +191,7 @@ public class Subscription implements Serializable {
 				subscriptionResource.getRunOnceAt(),
 				subscriptionResource.getEmail(),
 				subscriptionResource.getDescription(),
+				subscriptionResource.getEnabled(),
 				subscriptionResource.getActive(),
 				subscriptionResource.getCreatedOn());
 	}
@@ -198,6 +205,7 @@ public class Subscription implements Serializable {
 			Date runOnceAt,
 			String email,
 			String description,
+			Boolean enabled,
 			Boolean active,
 			Date createdOn) {
 		super();
@@ -209,7 +217,15 @@ public class Subscription implements Serializable {
 		this.runOnceAt = runOnceAt;
 		this.email = email;
 		this.description = description;
+		this.enabled = enabled;
 		this.active = (active != null) ? active : true;
+		/*
+		 * We cannot have an "enabled" Subscription that is inactive because
+		 * it does not make sense to schedule inactive subscriptions.
+		 */
+		if (!this.active) {
+			this.enabled = false;
+		}
 		this.createdOn = (createdOn != null) ? createdOn : DateUtils.nowUtc();
 	}
 
@@ -269,6 +285,14 @@ public class Subscription implements Serializable {
 		this.description = description;
 	}
 
+	public Boolean getEnabled() {
+		return enabled;
+	}
+
+	public void setEnabled(Boolean enabled) {
+		this.enabled = enabled;
+	}
+
 	public Boolean getActive() {
 		return active;
 	}
@@ -316,6 +340,8 @@ public class Subscription implements Serializable {
 		builder.append(email);
 		builder.append(", description=");
 		builder.append(description);
+		builder.append(", enabled=");
+		builder.append(enabled);
 		builder.append(", active=");
 		builder.append(active);
 		builder.append(", createdOn=");
