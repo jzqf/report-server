@@ -18,5 +18,7 @@ import com.qfree.obo.report.domain.Subscription;
 public interface SubscriptionRepository extends JpaRepository<Subscription, UUID> {
 
 	List<Subscription> findByActiveTrue();
-	  
+
+	List<Subscription> findByActiveTrueAndEnabledTrue();
+
 }

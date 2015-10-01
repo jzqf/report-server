@@ -207,7 +207,7 @@ public class SubscriptionJobProcessorScheduler {
 				logger.warn(
 						"Attempt to schedule the subscription job processor, but it is already registered with the scheduler");
 				/*
-				 * TODO At this point we could try resuming the job in case it was paused
+				 * TODO At this point we could try resuming the job IN CASE it was paused
 				 * However, it is not clear at this point if that is the best behaviour to 
 				 * implement, so I will do nothing for now.
 				 */

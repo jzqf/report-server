@@ -307,10 +307,10 @@ public class TestController extends AbstractBaseController {
 		String complexJobGroupName = "ReportSubscriptions";
 		String complexJobName = "complexSubscriptionUUID";
 
-		UUID subscriptionUuid = UUID.randomUUID();
+		UUID subscriptionId = UUID.randomUUID();
 
-		Map<String, Object> jobDataAsMap = new HashMap<>();
-		jobDataAsMap.put("subscriptionUuid", subscriptionUuid);
+		Map<String, Object> jobDataMap = new HashMap<>();
+		jobDataMap.put("subscriptionId", subscriptionId);
 
 		/*
 		 * Also set a field to be a singleton bean that is injected into the
@@ -325,8 +325,8 @@ public class TestController extends AbstractBaseController {
 
 		JobDetailFactoryBean complexJobDetail = new JobDetailFactoryBean();
 		complexJobDetail.setJobClass(SubscriptionScheduledJob.class);
-		complexJobDetail.setJobDataAsMap(jobDataAsMap);
-		complexJobDetail.setDurability(true); // ????????????????????????????????????? TRY REMOVING OR SET TO false???????????????????????????????????
+		complexJobDetail.setJobDataAsMap(jobDataMap);
+		complexJobDetail.setDurability(true); // ?????????????????????????????????????
 		complexJobDetail.setGroup(complexJobGroupName);
 		complexJobDetail.setName(complexJobName);
 		complexJobDetail.afterPropertiesSet();

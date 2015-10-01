@@ -99,8 +99,8 @@ public class SubscriptionController extends AbstractBaseController {
 	 * @Transactional is used to avoid org.hibernate.LazyInitializationException
 	 * being thrown.
 	 */
-	@Transactional
 	@GET
+	@Transactional
 	@Produces(MediaType.APPLICATION_JSON)
 	public SubscriptionCollectionResource getList(
 			@HeaderParam("Accept") final String acceptHeader,
@@ -152,8 +152,8 @@ public class SubscriptionController extends AbstractBaseController {
 	 * record in the database from different tables and we want everything 
 	 * wrapped in a transaction so that we create everything or nothing.
 	 */
-	@Transactional
 	@POST
+	@Transactional
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response create(
@@ -395,9 +395,9 @@ public class SubscriptionController extends AbstractBaseController {
 	 * @Transactional is used to avoid org.hibernate.LazyInitializationException
 	 * being thrown when evaluating subscription.get...s().
 	 */
-	@Transactional
 	@Path("/{id}")
 	@GET
+	@Transactional
 	@Produces(MediaType.APPLICATION_JSON)
 	public SubscriptionResource getById(
 			@PathParam("id") final UUID id,
@@ -441,6 +441,7 @@ public class SubscriptionController extends AbstractBaseController {
 	 */
 	@Path("/{id}")
 	@PUT
+	@Transactional
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response updateById(
@@ -596,9 +597,9 @@ public class SubscriptionController extends AbstractBaseController {
 	 */
 	@Path("/{id}")
 	@DELETE
+	@Transactional
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	@Transactional
 	public SubscriptionResource deleteById(
 			//public Response updateById(
 			@PathParam("id") final UUID id,
@@ -668,9 +669,9 @@ public class SubscriptionController extends AbstractBaseController {
 	 * @Transactional is used to avoid org.hibernate.LazyInitializationException
 	 * being thrown.
 	 */
-	@Transactional
 	@Path("/{id}" + ResourcePath.SUBSCRIPTIONPARAMETERS_PATH)
 	@GET
+	@Transactional
 	@Produces(MediaType.APPLICATION_JSON)
 	public SubscriptionParameterCollectionResource getSubscriptionParametersBySubscriptionId(
 			@PathParam("id") final UUID id,
