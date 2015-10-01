@@ -64,8 +64,10 @@ public class ReportVersionService {
 		 */
 		ReportResource reportResource = reportVersionResource.getReportResource();
 		logger.debug("reportResource = {}", reportResource);
-
-		UUID reportId = reportResource.getReportId();
+		UUID reportId = null;
+		if (reportResource != null) {
+			reportId = reportResource.getReportId();
+		}
 		logger.debug("reportId = {}", reportId);
 		Report report = null;
 		if (reportId != null) {

@@ -194,6 +194,9 @@ public class RestErrorResource {
 		FORBIDDEN_MULTIPLE_VALUES_FOR_PARAM(
 				Response.Status.FORBIDDEN, "403.17",
 				"Multiple values provided for a single-valued report parameter", null),
+		FORBIDDEN_SUBSCRIPTION_INACTIVE_ENABLED(
+				Response.Status.FORBIDDEN, "403.18",
+				"A subscription cannot be made inactive while it is enabled. It must first be disabled.", null),
 		/**
 		 * {@code 404 Not Found}.
 		 * @see <a href="http://tools.ietf.org/html/rfc2616#section-10.4.5">HTTP/1.1</a>

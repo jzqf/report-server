@@ -75,6 +75,35 @@ public class SubscriptionService {
 		// RestUtils.ifAttrNullThen403(subscriptionResource.getEmail(),
 		// Subscription.class, "email");
 
+		/*
+		 * If no email address has been specified, but the Role associated with
+		 * the subscription has an e-mail address, use it. This requires that a 
+		 * Role has been specified.
+		 */
+		String currentEmail = subscriptionResource.getEmail();
+		if (currentEmail == null || currentEmail.isEmpty()) {
+
+			RoleResource roleResource = subscriptionResource.getRoleResource();
+			UUID roleId = null;
+			if (roleResource != null) {
+				roleId = roleResource.getRoleId();
+			}
+			Role role = null;
+			if (roleId != null) {
+				role = roleRepository.findOne(roleId);
+				RestUtils.ifNullThen404(role, Role.class, "roleId",
+						roleId.toString());
+			} else {
+				throw new RestApiException(RestError.FORBIDDEN_SUBSCRIPTION_ROLE_NULL,
+						Subscription.class, "roleId");
+			}
+
+			String roleEmail = role.getEmail();
+			if (roleEmail != null && !roleEmail.isEmpty()) {
+				subscriptionResource.setEmail(roleEmail);
+			}
+		}
+
 		return saveOrUpdateFromResource(subscriptionResource);
 	}
 
@@ -102,7 +131,10 @@ public class SubscriptionService {
 		 */
 		DocumentFormatResource documentFormatResource = subscriptionResource.getDocumentFormatResource();
 		logger.debug("documentFormatResource = {}", documentFormatResource);
-		UUID documentFormatId = documentFormatResource.getDocumentFormatId();
+		UUID documentFormatId = null;
+		if (documentFormatResource != null) {
+			documentFormatId = documentFormatResource.getDocumentFormatId();
+		}
 		logger.debug("documentFormatId = {}", documentFormatId);
 		DocumentFormat documentFormat = null;
 		if (documentFormatId != null) {
@@ -129,7 +161,10 @@ public class SubscriptionService {
 		 */
 		ReportVersionResource reportVersionResource = subscriptionResource.getReportVersionResource();
 		logger.debug("reportVersionResource = {}", reportVersionResource);
-		UUID reportVersionId = reportVersionResource.getReportVersionId();
+		UUID reportVersionId = null;
+		if (reportVersionResource != null) {
+			reportVersionId = reportVersionResource.getReportVersionId();
+		}
 		logger.debug("reportVersionId = {}", reportVersionId);
 		ReportVersion reportVersion = null;
 		if (reportVersionId != null) {
@@ -156,7 +191,10 @@ public class SubscriptionService {
 		 */
 		RoleResource roleResource = subscriptionResource.getRoleResource();
 		logger.debug("roleResource = {}", roleResource);
-		UUID roleId = roleResource.getRoleId();
+		UUID roleId = null;
+		if (roleResource != null) {
+			roleId = roleResource.getRoleId();
+		}
 		logger.debug("roleId = {}", roleId);
 		Role role = null;
 		if (roleId != null) {

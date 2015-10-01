@@ -217,15 +217,15 @@ public class Subscription implements Serializable {
 		this.runOnceAt = runOnceAt;
 		this.email = email;
 		this.description = description;
-		this.enabled = enabled;
+		this.enabled = (enabled != null) ? enabled : false;
 		this.active = (active != null) ? active : true;
-		/*
-		 * We cannot have an "enabled" Subscription that is inactive because
-		 * it does not make sense to schedule inactive subscriptions.
-		 */
-		if (!this.active) {
-			this.enabled = false;
-		}
+		///*
+		// * We cannot have an "enabled" Subscription that is inactive because
+		// * it does not make sense to schedule inactive subscriptions.
+		// */
+		//if (!this.active) {
+		//	this.enabled = false;
+		//}
 		this.createdOn = (createdOn != null) ? createdOn : DateUtils.nowUtc();
 	}
 

@@ -86,7 +86,10 @@ public class SelectionListValueService {
 		 */
 		ReportParameterResource reportParameterResource = selectionListValueResource.getReportParameterResource();
 		logger.debug("reportParameterResource = {}", reportParameterResource);
-		UUID reportParameterId = reportParameterResource.getReportParameterId();
+		UUID reportParameterId = null;
+		if (reportParameterResource != null) {
+			reportParameterId = reportParameterResource.getReportParameterId();
+		}
 		logger.debug("reportParameterId = {}", reportParameterId);
 		ReportParameter reportParameter = null;
 		if (reportParameterId != null) {

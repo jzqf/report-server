@@ -167,22 +167,15 @@ public class SubscriptionController extends AbstractBaseController {
 		queryParams.put(ResourcePath.SHOWALL_QP_KEY, showAll);
 		RestApiVersion apiVersion = RestUtils.extractAPIVersion(acceptHeader, RestApiVersion.v1);
 
-		Subscription subscription = subscriptionService.saveNewFromResource(subscriptionResource);
-
 		/*
-		 * If the Role associated with the subscription has an e-mail address,
-		 * assign it to the new Subscriptions email field.
+		 * Any checks or constraints that must be enforced need to be placed in
+		 * subscriptionService.saveNewFromResource(...) method. If necessary,
+		 * this method can thrown an exception that is caught here in order to:
 		 * 
-		 * TODO Should this code be moved somewhere else, e.g., subscriptionService.saveNewFromResource(...)?
-		 * I will leave it here for now.
+		 *   1. Abort the saving of a new Subscription.
+		 *   2.	Return an appropriate 4xx HTTP status with other error details.
 		 */
-		String roleEmail = subscription.getRole().getEmail();
-		if (roleEmail != null && !roleEmail.isEmpty()) {
-			String currentEmail = subscription.getEmail();
-			if (currentEmail == null || currentEmail.isEmpty()) {
-				subscription.setEmail(roleEmail);
-			}
-		}
+		Subscription subscription = subscriptionService.saveNewFromResource(subscriptionResource);
 
 		/*
 		 * Create one SubscriptionParameter for each ReportParameter that
@@ -561,6 +554,14 @@ public class SubscriptionController extends AbstractBaseController {
 		//	throw new RestApiException(RestError.FORBIDDEN_SUBSCRIPTION_ROLE_NULL,
 		//			Subscription.class, "roleId");
 		//}
+
+		/*
+		 * We cannot have an "enabled" Subscription that is inactive because
+		 * it does not make sense to schedule inactive subscriptions.
+		 */
+		if (!subscription.getActive() && subscription.getEnabled()) {
+			throw new RestApiException(RestError.FORBIDDEN_SUBSCRIPTION_INACTIVE_ENABLED, Subscription.class);
+		}
 
 		/*
 		 * Save updated entity.
