@@ -215,13 +215,13 @@ public class SubscriptionScheduler {
 				/*
 				 * Create a factory for obtaining a Quartz JobDetail.
 				 */
-				JobDetailFactoryBean subscriptionJobDetail = new JobDetailFactoryBean();
-				subscriptionJobDetail.setJobClass(SubscriptionScheduledJob.class);
-				subscriptionJobDetail.setJobDataAsMap(jobDataMap);
-				subscriptionJobDetail.setDurability(false);
-				subscriptionJobDetail.setName(subscription.getSubscriptionId().toString());
-				subscriptionJobDetail.setGroup(JOB_GROUP);
-				subscriptionJobDetail.afterPropertiesSet();
+				JobDetailFactoryBean subscriptionJobDetailFactory = new JobDetailFactoryBean();
+				subscriptionJobDetailFactory.setJobClass(SubscriptionScheduledJob.class);
+				subscriptionJobDetailFactory.setJobDataAsMap(jobDataMap);
+				subscriptionJobDetailFactory.setDurability(false);
+				subscriptionJobDetailFactory.setName(subscription.getSubscriptionId().toString());
+				subscriptionJobDetailFactory.setGroup(JOB_GROUP);
+				subscriptionJobDetailFactory.afterPropertiesSet();
 
 				if (subscription.getCronSchedule() != null) {
 
@@ -230,7 +230,7 @@ public class SubscriptionScheduler {
 					 * be used for subscriptionJobDetail.
 					 */
 					CronTriggerFactoryBean cronTrigger = new CronTriggerFactoryBean();
-					cronTrigger.setJobDetail(subscriptionJobDetail.getObject());
+					cronTrigger.setJobDetail(subscriptionJobDetailFactory.getObject());
 					cronTrigger.setName(subscription.getSubscriptionId().toString());
 					cronTrigger.setGroup(TRIGGER_GROUP);
 					//cronTrigger.setStartDelay(1000L);
@@ -242,7 +242,7 @@ public class SubscriptionScheduler {
 					 * defined by its trigger.
 					 */
 					scheduler.scheduleJob(
-							subscriptionJobDetail.getObject(),
+							subscriptionJobDetailFactory.getObject(),
 							cronTrigger.getObject());
 
 				} else if (subscription.getRunOnceAt() != null) {

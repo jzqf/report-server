@@ -14,19 +14,33 @@ import com.qfree.obo.report.db.SubscriptionRepository;
 
 /*
  * This class is instantiated by Quartz and therefore Spring-based dependency
- * injection will not work. There are two work-arounds to this:
+ * injection will not work. There are three work-arounds to this:
  * 
- * 1. The Spring-managed beans that you need in this class can be passed to it
- * in the "job data map" that is passed to JobDetailFactoryBean when setting up
- * this job. The can be beans of any type: Spring Data-generated repositories,
- * custom service classes, etc.
+ * 1. Use JobDetailFactoryBean to create a JobDetail: The job bean class, i.e.,
+ *    this class, SubscriptionScheduledJob, is passed to the 
+ *    JobDetailFactoryBean via a call to setJobClass(...). In order for an 
+ *    instance of SubscriptionScheduledJob to have access to Spring-managed 
+ *    beans, they can be passed to it in the "job data map" that is passed to 
+ *    the JobDetailFactoryBean when setting up the scheduled job. They can be 
+ *    beans of any type: Spring Data-generated repositories, custom service 
+ *    classes, etc.
  * 
- * 2. Create a SpringBeanJobFactory that supports Spring's @Autowired dependency
- * injection. The Quartz scheduler can be configured to be aware of this
- * factory. Then @Autowired DI will just work in any Quartz- instantiated job
- * beans. This is the approach used in this application.
+ * 2. Use JobDetailFactoryBean to create a JobDetail: Create a 
+ *    SpringBeanJobFactory that supports Spring's @Autowired dependency 
+ *    injection. The Quartz scheduler can be configured to be aware of this 
+ *    factory. Then @Autowired DI will just work in any Quartz-instantiated job 
+ *    beans created from a JobDetailFactoryBean. This is the approach used in 
+ *    this application.
  * 
- * Since this class is not managed by Spring, it makes no sense to annotate it
+ * 3. Use a MethodInvokingJobDetailFactoryBean to create a scheduled job: For
+ *    this to work this SubscriptionScheduledJob class must be a prototype-
+ *    scoped  Spring bean and the instance of this class that is passed to the
+ *    MethodInvokingJobDetailFactoryBean must be created from an ObjectFactory 
+ *    (so we get a new instance for each subscription job). This approach 
+ *    produces a Quartz scheduled job bean that is fully Spring-managed (I 
+ *    think).
+ * 
+ * Since this class is not managed by Spring, it makes no sense to annotate it   <-- MOVE BLOCK UP UNDER #2
  * with @Component. If it _were_ a Spring-managed class, it would probably need
  * to be given a scope of "prototype" because we need separate instances to
  * maintain the state, in particular the field "subscriptionId". But since this
@@ -59,9 +73,17 @@ public class SubscriptionScheduledJob extends QuartzJobBean {
 	protected void executeInternal(JobExecutionContext arg0) throws JobExecutionException {
 
 		logger.info("subscriptionId = {}", subscriptionId);
+
+		/*
+		 * TODO Inject a service ban instead of Repository beans so that the job will
+		 * be transactional (annotate service method with @Transactional) and I 
+		 * won't have to worry about lazy instaniation exceptions.
+		 */
 		logger.info("subscriptionRepository.findOne(subscriptionId) = {}",
 				subscriptionRepository.findOne(subscriptionId));
 		logger.info("jobRepository.count() = {}", jobRepository.count());
+
+		//TODO After creating a Job, force the job processor to run with triggerJob(),
 
 	}
 
