@@ -28,7 +28,6 @@ import org.springframework.scheduling.quartz.SchedulerFactoryBean;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.qfree.obo.report.db.JobRepository;
 import com.qfree.obo.report.db.SubscriptionRepository;
 import com.qfree.obo.report.domain.Subscription;
 import com.qfree.obo.report.scheduling.jobs.SubscriptionScheduledJob;
@@ -70,18 +69,15 @@ public class SubscriptionScheduler {
 	private final SchedulerFactoryBean schedulerFactoryBean;
 	private final ObjectFactory<SubscriptionScheduledJob> subscriptionScheduledJobFactory;
 	private final SubscriptionRepository subscriptionRepository;
-	private final JobRepository jobRepository;
 
 	@Autowired
 	public SubscriptionScheduler(
 			SchedulerFactoryBean schedulerFactoryBean,
 			ObjectFactory<SubscriptionScheduledJob> subscriptionScheduledJobFactory,
-			SubscriptionRepository subscriptionRepository,
-			JobRepository jobRepository) {
+			SubscriptionRepository subscriptionRepository) {
 		this.schedulerFactoryBean = schedulerFactoryBean;
 		this.subscriptionScheduledJobFactory = subscriptionScheduledJobFactory;
 		this.subscriptionRepository = subscriptionRepository;
-		this.jobRepository = jobRepository;
 	}
 
 	/*
@@ -215,8 +211,6 @@ public class SubscriptionScheduler {
 				 */
 				Map<String, Object> jobDataMap = new HashMap<>();
 				jobDataMap.put("subscriptionId", subscription.getSubscriptionId());
-				jobDataMap.put("subscriptionRepository", subscriptionRepository);
-				jobDataMap.put("jobRepository", jobRepository);
 
 				/*
 				 * Create a factory for obtaining a Quartz JobDetail.
