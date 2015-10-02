@@ -130,91 +130,89 @@ public class SubscriptionJobProcessorScheduler {
 	public void scheduleJob(long repeatIntervalSeconds, long startDelaySeconds)
 			throws ClassNotFoundException, NoSuchMethodException, SchedulerException {
 
-		if (schedulerFactoryBean.isRunning()) {
+		if (!schedulerFactoryBean.isRunning()) {
+			logger.warn("Attempt to schedule the subscription job processor, but the scheduler is not running");
+		}
+
+		/*
+		 * Get the underlying Quartz Scheduler. According to the Javadoc for
+		 * org.springframework.scheduling.quartz.SchedulerFactoryBean :
+		 * 
+		 *   For dynamic registration of jobs at runtime, use a bean reference 
+		 *   to this SchedulerFactoryBean to get direct access to the Quartz 
+		 *   Scheduler (org.quartz.Scheduler). This allows you to create new 
+		 *   jobs and triggers, and also to control and monitor the entire 
+		 *   Scheduler.
+		 * 
+		 * So it seems that in order to schedule jobs dynamically (which is what
+		 * we are doing here), one *must* use the Quartz Scheduler object
+		 * obtained here.
+		 */
+		Scheduler scheduler = schedulerFactoryBean.getScheduler();
+
+		/*
+		 * Do not re-schedule the subscription job processor if it is already
+		 * scheduled.
+		 */
+		if (!scheduler.checkExists(JOB_KEY)) {
 
 			/*
-			 * Get the underlying Quartz Scheduler. According to the Javadoc for
-			 * org.springframework.scheduling.quartz.SchedulerFactoryBean :
-			 * 
-			 *   For dynamic registration of jobs at runtime, use a bean reference 
-			 *   to this SchedulerFactoryBean to get direct access to the Quartz 
-			 *   Scheduler (org.quartz.Scheduler). This allows you to create new 
-			 *   jobs and triggers, and also to control and monitor the entire 
-			 *   Scheduler.
-			 * 
-			 * So it seems that in order to schedule jobs dynamically (which is what
-			 * we are doing here), one *must* use the Quartz Scheduler object
-			 * obtained here.
+			 * Create a factory for obtaining a Quartz JobDetail.
 			 */
-			Scheduler scheduler = schedulerFactoryBean.getScheduler();
+			MethodInvokingJobDetailFactoryBean subscriptionJobProcessorJobDetailFactory = new MethodInvokingJobDetailFactoryBean();
+			subscriptionJobProcessorJobDetailFactory.setTargetObject(subscriptionJobProcessorScheduledJob);
+			subscriptionJobProcessorJobDetailFactory.setTargetMethod("run");
+			subscriptionJobProcessorJobDetailFactory.setName(JOB_NAME);
+			subscriptionJobProcessorJobDetailFactory.setGroup(JOB_GROUP);
+			/*
+			 * This is important. Without it, the "run" method of the bean
+			 * "subscriptionJobProcessorScheduledJob" might run simultaneously in 
+			 * multiple threads. This would happen if:
+			 * 
+			 *   1. The "run" method runs for a time interval that is longer than
+			 *      repeatIntervalSeconds. In this case, another copy of the
+			 *      job scheduler will still be started "repeatIntervalSeconds"
+			 *      after the previous invocation, even if the previous invocation
+			 *      is still running.
+			 *      
+			 *   2. The subscription job processor is forced to run immediately
+			 *      with triggerJob() just before the job is scheduled to run anyway
+			 *      according to its trigger. In this case, the trigger will start 
+			 *      another copy, even though we *just* forced a copy to run 
+			 *      immediately with triggerJob().
+			 */
+			subscriptionJobProcessorJobDetailFactory.setConcurrent(false);
+			subscriptionJobProcessorJobDetailFactory.afterPropertiesSet();
 
 			/*
-			 * Do not re-schedule the subscription job processor if it is already
-			 * scheduled.
+			 * Create a factory for obtaining a Quartz SimpleTrigger, to be used for
+			 * subscriptionJobProcessorJobDetailFactory.
 			 */
-			if (!scheduler.checkExists(JOB_KEY)) {
+			SimpleTriggerFactoryBean subscriptionJobProcessorTriggerFactory = new SimpleTriggerFactoryBean();
+			subscriptionJobProcessorTriggerFactory
+					.setJobDetail(subscriptionJobProcessorJobDetailFactory.getObject());
+			subscriptionJobProcessorTriggerFactory.setName(TRIGGER_NAME);
+			subscriptionJobProcessorTriggerFactory.setGroup(TRIGGER_GROUP);
+			subscriptionJobProcessorTriggerFactory.setStartDelay(startDelaySeconds * 1000L);
+			subscriptionJobProcessorTriggerFactory.setRepeatInterval(repeatIntervalSeconds * 1000L);
+			subscriptionJobProcessorTriggerFactory.afterPropertiesSet();
 
-				/*
-				 * Create a factory for obtaining a Quartz JobDetail.
-				 */
-				MethodInvokingJobDetailFactoryBean subscriptionJobProcessorJobDetailFactory = new MethodInvokingJobDetailFactoryBean();
-				subscriptionJobProcessorJobDetailFactory.setTargetObject(subscriptionJobProcessorScheduledJob);
-				subscriptionJobProcessorJobDetailFactory.setTargetMethod("run");
-				subscriptionJobProcessorJobDetailFactory.setName(JOB_NAME);
-				subscriptionJobProcessorJobDetailFactory.setGroup(JOB_GROUP);
-				/*
-				 * This is important. Without it, the "run" method of the bean
-				 * "subscriptionJobProcessorScheduledJob" might run simultaneously in 
-				 * multiple threads. This would happen if:
-				 * 
-				 *   1. The "run" method runs for a time interval that is longer than
-				 *      repeatIntervalSeconds. In this case, another copy of the
-				 *      job scheduler will still be started "repeatIntervalSeconds"
-				 *      after the previous invocation, even if the previous invocation
-				 *      is still running.
-				 *      
-				 *   2. The subscription job processor is forced to run immediately
-				 *      with triggerJob() just before the job is scheduled to run anyway
-				 *      according to its trigger. In this case, the trigger will start 
-				 *      another copy, even though we *just* forced a copy to run 
-				 *      immediately with triggerJob().
-				 */
-				subscriptionJobProcessorJobDetailFactory.setConcurrent(false);
-				subscriptionJobProcessorJobDetailFactory.afterPropertiesSet();
+			/*
+			 * Schedule the subscription job processor to run according the schedule
+			 * defined by its trigger.
+			 */
+			scheduler.scheduleJob(
+					subscriptionJobProcessorJobDetailFactory.getObject(),
+					subscriptionJobProcessorTriggerFactory.getObject());
 
-				/*
-				 * Create a factory for obtaining a Quartz SimpleTrigger, to be used for
-				 * subscriptionJobProcessorJobDetailFactory.
-				 */
-				SimpleTriggerFactoryBean subscriptionJobProcessorTriggerFactory = new SimpleTriggerFactoryBean();
-				subscriptionJobProcessorTriggerFactory
-						.setJobDetail(subscriptionJobProcessorJobDetailFactory.getObject());
-				subscriptionJobProcessorTriggerFactory.setName(TRIGGER_NAME);
-				subscriptionJobProcessorTriggerFactory.setGroup(TRIGGER_GROUP);
-				subscriptionJobProcessorTriggerFactory.setStartDelay(startDelaySeconds * 1000L);
-				subscriptionJobProcessorTriggerFactory.setRepeatInterval(repeatIntervalSeconds * 1000L);
-				subscriptionJobProcessorTriggerFactory.afterPropertiesSet();
-
-				/*
-				 * Schedule the subscription job processor to run according the schedule
-				 * defined by its trigger.
-				 */
-				scheduler.scheduleJob(
-						subscriptionJobProcessorJobDetailFactory.getObject(),
-						subscriptionJobProcessorTriggerFactory.getObject());
-
-			} else {
-				logger.warn(
-						"Attempt to schedule the subscription job processor, but it is already registered with the scheduler");
-				/*
-				 * TODO At this point we could try resuming the job IN CASE it was paused
-				 * However, it is not clear at this point if that is the best behaviour to 
-				 * implement, so I will do nothing for now.
-				 */
-			}
 		} else {
 			logger.warn(
-					"Attempt to schedule the subscription job processor, but the scheduler is not running");
+					"Attempt to schedule the subscription job processor, but it is already registered with the scheduler");
+			/*
+			 * TODO At this point we could try resuming the job IN CASE it was paused
+			 * However, it is not clear at this point if that is the best behaviour to 
+			 * implement, so I will do nothing for now.
+			 */
 		}
 
 	}
@@ -241,22 +239,6 @@ public class SubscriptionJobProcessorScheduler {
 		} else {
 			logger.warn(
 					"Attempt to trigger the subscription job processor, but the scheduler is not running");
-		}
-	}
-
-	public void unscheduleJob() throws SchedulerException {
-		if (schedulerFactoryBean.isRunning()) {
-			Scheduler scheduler = schedulerFactoryBean.getScheduler();
-			if (scheduler.checkExists(JOB_KEY)) {
-				logger.info("Deleting the subscription job processor from the Quartz scheduler");
-				scheduler.deleteJob(JOB_KEY);
-			} else {
-				logger.warn(
-						"Attempt to unschedule the subscription job processor, but it is not registered with the scheduler");
-			}
-		} else {
-			logger.warn(
-					"Attempt to unschedule the subscription job processor, but the scheduler is not running");
 		}
 	}
 
@@ -290,6 +272,23 @@ public class SubscriptionJobProcessorScheduler {
 			logger.warn(
 					"Attempt to resume the subscription job processor, but the scheduler is not running");
 		}
+	}
+
+	public void unscheduleJob() throws SchedulerException {
+		//if (schedulerFactoryBean.isRunning()) {
+
+		Scheduler scheduler = schedulerFactoryBean.getScheduler();
+		if (scheduler.checkExists(JOB_KEY)) {
+			logger.info("Deleting the subscription job processor from the Quartz scheduler");
+			scheduler.deleteJob(JOB_KEY);
+		} else {
+			logger.warn(
+					"Attempt to unschedule the subscription job processor, but it is not registered with the scheduler");
+		}
+
+		//} else {
+		//	logger.warn("Attempt to unschedule the subscription job processor, but the scheduler is not running");
+		//	}
 	}
 
 	@PreDestroy

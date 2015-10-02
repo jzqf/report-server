@@ -3,9 +3,6 @@ package com.qfree.obo.report.scheduling.schedulers;
 import java.text.ParseException;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
-import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -25,7 +22,6 @@ import org.springframework.scheduling.quartz.CronTriggerFactoryBean;
 import org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean;
 import org.springframework.scheduling.quartz.SchedulerFactoryBean;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 
 import com.qfree.obo.report.db.SubscriptionRepository;
 import com.qfree.obo.report.domain.Subscription;
@@ -50,20 +46,8 @@ public class SubscriptionScheduler {
 
 	private static final Logger logger = LoggerFactory.getLogger(SubscriptionScheduler.class);
 
-	//	private static final String JOB_NAME = "JobProcessor_JobName";
 	private static final String JOB_GROUP = "Subscription_JobGroup";
-	//	private static final JobKey JOB_KEY = JobKey.jobKey(JOB_NAME, JOB_GROUP);
-
-	//	private static final String TRIGGER_NAME = "JobProcessor_TriggerName";
 	private static final String TRIGGER_GROUP = "Subscription_TriggerGroup";
-	//	private static final TriggerKey TRIGGER_KEY = TriggerKey.triggerKey(TRIGGER_NAME, TRIGGER_GROUP);
-
-	/*
-	 * The UUID keys of this map will be the id's of the Subscription entities
-	 * for which a SubscriptionScheduledJob has been scheduled. The 
-	 * SubscriptionScheduledJob instance is stored as the map value.
-	 */
-	private final Map<UUID, SubscriptionScheduledJob> scheduledSubscriptions = new ConcurrentHashMap<>();
 
 	private final SchedulerFactoryBean schedulerFactoryBean;
 	private final ObjectFactory<SubscriptionScheduledJob> subscriptionScheduledJobFactory;
@@ -130,9 +114,7 @@ public class SubscriptionScheduler {
 	}
 
 	//TODO Add synchronized here?
-	@Transactional
 	public void scheduleAllJobs() {
-
 		/*
 		 * Only "active" and "enabled" Subscription entities are considered for
 		 * scheduling.
@@ -164,153 +146,133 @@ public class SubscriptionScheduler {
 	 * @throws ClassNotFoundException
 	 */
 	//TODO Add synchronized here?
-	@Transactional
 	public void scheduleJob(Subscription subscription)
 			throws SchedulerException, ParseException, ClassNotFoundException, NoSuchMethodException {
 
-		if (schedulerFactoryBean.isRunning()) {
+		if (!schedulerFactoryBean.isRunning()) {
+			logger.warn("Attempt to schedule subscription {}, but the scheduler is not running", subscription);
+		}
+
+		/*
+		 * Get the underlying Quartz Scheduler. According to the Javadoc for
+		 * org.springframework.scheduling.quartz.SchedulerFactoryBean :
+		 * 
+		 *   For dynamic registration of jobs at runtime, use a bean 
+		 *   reference to this SchedulerFactoryBean to get direct access to
+		 *   the Quartz Scheduler (org.quartz.Scheduler). This allows you to
+		 *   create new jobs and triggers, and also to control and monitor 
+		 *   the entire Scheduler.
+		 * 
+		 * So it seems that in order to schedule jobs dynamically (which is
+		 * what  we are doing here), one *must* use the Quartz Scheduler 
+		 * object obtained here.
+		 */
+		Scheduler scheduler = schedulerFactoryBean.getScheduler();
+
+		JobKey jobKey = subscriptionJobKey(subscription);
+
+		/*
+		 * Do not re-schedule the subscription if it is already scheduled.
+		 */
+		if (!scheduler.checkExists(jobKey)) {
 
 			/*
-			 * Get the underlying Quartz Scheduler. According to the Javadoc for
-			 * org.springframework.scheduling.quartz.SchedulerFactoryBean :
-			 * 
-			 *   For dynamic registration of jobs at runtime, use a bean 
-			 *   reference to this SchedulerFactoryBean to get direct access to
-			 *   the Quartz Scheduler (org.quartz.Scheduler). This allows you to
-			 *   create new jobs and triggers, and also to control and monitor 
-			 *   the entire Scheduler.
-			 * 
-			 * So it seems that in order to schedule jobs dynamically (which is
-			 * what  we are doing here), one *must* use the Quartz Scheduler 
-			 * object obtained here.
+			 * Get Spring managed bean that will run as the scheduled job.
 			 */
-			Scheduler scheduler = schedulerFactoryBean.getScheduler();
+			SubscriptionScheduledJob subscriptionScheduledJob = subscriptionScheduledJobFactory.getObject();
+			/*
+			 * Tell the bean which Subscription it is for.
+			 */
+			subscriptionScheduledJob.setSubscriptionId(subscription.getSubscriptionId());
+			/*
+			 * Create a factory for obtaining a Quartz JobDetail.
+			 */
+			MethodInvokingJobDetailFactoryBean subscriptionJobDetailFactory = new MethodInvokingJobDetailFactoryBean();
+			subscriptionJobDetailFactory.setTargetObject(subscriptionScheduledJob);
+			subscriptionJobDetailFactory.setTargetMethod("run");
+			subscriptionJobDetailFactory.setName(subscription.getSubscriptionId().toString());
+			subscriptionJobDetailFactory.setGroup(JOB_GROUP);
+			/*
+			 * This is important. Without it, the "run" method of the bean
+			 * "subscriptionScheduledJob" might run simultaneously in 
+			 * multiple threads. This would happen if:
+			 * 
+			 *   1. The "run" method runs for a period of time that is 
+			 *      longer than the time interval provided by the trigger. 
+			 *      In this case, another copy of the subscription job will 
+			 *      be started, even if the previous invocation is still 
+			 *      running.
+			 *      
+			 *   2. The subscription job is forced to run immediately with 
+			 *      triggerJob() just before the job is scheduled to run 
+			 *      anyway according to its trigger. In this case, the 
+			 *      trigger will start another copy, even though we *just* 
+			 *      forced a copy to run immediately with triggerJob().
+			 */
+			subscriptionJobDetailFactory.setConcurrent(false);
+			subscriptionJobDetailFactory.afterPropertiesSet();
 
 			/*
-			 * Do not re-schedule the subscription if it is already scheduled.
+			 * Alternate approach, using a JobDetailFactoryBean instead of
+			 * a MethodInvokingJobDetailFactoryBean.
 			 */
-			JobKey jobKey = subscriptionJobKey(subscription);
+			//	/*
+			//	 * This map will be used to initialize fields of the instance of 
+			//	 * SubscriptionScheduledJob that is associated with the
+			//	 * JobDetailFactoryBean created here (as well as the Quartz
+			//	 * JobDetail instance that it creates). This is the mechanism
+			//	 * used to associate a Subscription entity with a scheduled
+			//	 * subscription job.
+			//	 */
+			//	Map<String, Object> jobDataMap = new HashMap<>();
+			//	jobDataMap.put("subscriptionId", subscription.getSubscriptionId());
+			//	/*
+			//	 * Create a factory for obtaining a Quartz JobDetail.
+			//	 */
+			//	JobDetailFactoryBean subscriptionJobDetailFactory = new JobDetailFactoryBean();
+			//	subscriptionJobDetailFactory.setJobClass(SubscriptionScheduledJob.class);
+			//	subscriptionJobDetailFactory.setJobDataAsMap(jobDataMap);
+			//	subscriptionJobDetailFactory.setDurability(false);
+			//	subscriptionJobDetailFactory.setName(subscription.getSubscriptionId().toString());
+			//	subscriptionJobDetailFactory.setGroup(JOB_GROUP);
+			//	subscriptionJobDetailFactory.afterPropertiesSet();
 
-			if (!scheduler.checkExists(jobKey)) {
-
-				/*
-				 * If, for whatever reason, an entry for the subscription exists
-				 * in scheduledSubscriptions, it is removed here. This is done
-				 * in case an exception is thrown below before we can 
-				 * successfully schedule it. If not exception is thrown, an
-				 * entry for the subscription will be added below. This remove
-				 * operation does nothing if the key is not in the map.
-				 */
-				scheduledSubscriptions.remove(subscription.getSubscriptionId());
-
-				/*
-				 * Get Spring managed bean that will run as the scheduled job.
-				 */
-				SubscriptionScheduledJob subscriptionScheduledJob = subscriptionScheduledJobFactory.getObject();
-				/*
-				 * Tell the bean which Subscription it is for.
-				 */
-				subscriptionScheduledJob.setSubscriptionId(subscription.getSubscriptionId());
-				/*
-				 * Create a factory for obtaining a Quartz JobDetail.
-				 */
-				MethodInvokingJobDetailFactoryBean subscriptionJobDetailFactory = new MethodInvokingJobDetailFactoryBean();
-				subscriptionJobDetailFactory.setTargetObject(subscriptionScheduledJob);
-				subscriptionJobDetailFactory.setTargetMethod("run");
-				subscriptionJobDetailFactory.setName(subscription.getSubscriptionId().toString());
-				subscriptionJobDetailFactory.setGroup(JOB_GROUP);
-				/*
-				 * This is important. Without it, the "run" method of the bean
-				 * "subscriptionScheduledJob" might run simultaneously in 
-				 * multiple threads. This would happen if:
-				 * 
-				 *   1. The "run" method runs for a period of time that is 
-				 *      longer than the time interval provided by the trigger. 
-				 *      In this case, another copy of the subscription job will 
-				 *      be started, even if the previous invocation is still 
-				 *      running.
-				 *      
-				 *   2. The subscription job is forced to run immediately with 
-				 *      triggerJob() just before the job is scheduled to run 
-				 *      anyway according to its trigger. In this case, the 
-				 *      trigger will start another copy, even though we *just* 
-				 *      forced a copy to run immediately with triggerJob().
-				 */
-				subscriptionJobDetailFactory.setConcurrent(false);
-				subscriptionJobDetailFactory.afterPropertiesSet();
+			if (subscription.getCronSchedule() != null) {
 
 				/*
-				 * Alternate approach, using a JobDetailFactoryBean instead of
-				 * a MethodInvokingJobDetailFactoryBean.
+				 * Create a factory for obtaining a Quartz CronTrigger, to 
+				 * be used for subscriptionJobDetail.
 				 */
-				//	/*
-				//	 * This map will be used to initialize fields of the instance of 
-				//	 * SubscriptionScheduledJob that is associated with the
-				//	 * JobDetailFactoryBean created here (as well as the Quartz
-				//	 * JobDetail instance that it creates). This is the mechanism
-				//	 * used to associate a Subscription entity with a scheduled
-				//	 * subscription job.
-				//	 */
-				//	Map<String, Object> jobDataMap = new HashMap<>();
-				//	jobDataMap.put("subscriptionId", subscription.getSubscriptionId());
-				//	/*
-				//	 * Create a factory for obtaining a Quartz JobDetail.
-				//	 */
-				//	JobDetailFactoryBean subscriptionJobDetailFactory = new JobDetailFactoryBean();
-				//	subscriptionJobDetailFactory.setJobClass(SubscriptionScheduledJob.class);
-				//	subscriptionJobDetailFactory.setJobDataAsMap(jobDataMap);
-				//	subscriptionJobDetailFactory.setDurability(false);
-				//	subscriptionJobDetailFactory.setName(subscription.getSubscriptionId().toString());
-				//	subscriptionJobDetailFactory.setGroup(JOB_GROUP);
-				//	subscriptionJobDetailFactory.afterPropertiesSet();
+				CronTriggerFactoryBean cronTrigger = new CronTriggerFactoryBean();
+				cronTrigger.setJobDetail(subscriptionJobDetailFactory.getObject());
+				cronTrigger.setName(subscription.getSubscriptionId().toString());
+				cronTrigger.setGroup(TRIGGER_GROUP);
+				//cronTrigger.setStartDelay(1000L);
+				cronTrigger.setCronExpression(subscription.getCronSchedule());
+				cronTrigger.afterPropertiesSet();
 
-				if (subscription.getCronSchedule() != null) {
+				/*
+				 * Schedule the subscription to run according the schedule
+				 * defined by its trigger.
+				 */
+				scheduler.scheduleJob(
+						subscriptionJobDetailFactory.getObject(),
+						cronTrigger.getObject());
 
-					/*
-					 * Create a factory for obtaining a Quartz CronTrigger, to 
-					 * be used for subscriptionJobDetail.
-					 */
-					CronTriggerFactoryBean cronTrigger = new CronTriggerFactoryBean();
-					cronTrigger.setJobDetail(subscriptionJobDetailFactory.getObject());
-					cronTrigger.setName(subscription.getSubscriptionId().toString());
-					cronTrigger.setGroup(TRIGGER_GROUP);
-					//cronTrigger.setStartDelay(1000L);
-					cronTrigger.setCronExpression(subscription.getCronSchedule());
-					cronTrigger.afterPropertiesSet();
-
-					/*
-					 * Schedule the subscription to run according the schedule
-					 * defined by its trigger.
-					 */
-					scheduler.scheduleJob(
-							subscriptionJobDetailFactory.getObject(),
-							cronTrigger.getObject());
-
-				} else if (subscription.getRunOnceAt() != null) {
-					throw new RuntimeException("WRITE ME (treat case: subscription.getRunOnceAt() != null)");
-				} else {
-					throw new RuntimeException("WRITE ME (throw custom exception?)");
-				}
-
+			} else if (subscription.getRunOnceAt() != null) {
+				throw new RuntimeException("WRITE ME (treat case: subscription.getRunOnceAt() != null)");
 			} else {
-				logger.warn(
-						"Attempt to schedule the subscription job processor, but it is already registered with the scheduler");
-				/*
-				 * TODO At this point we could try resuming the job IN CASE it was paused
-				 * However, it is not clear at this point if that is the best behaviour to 
-				 * implement, so I will do nothing for now.
-				 */
+				throw new RuntimeException("WRITE ME (throw custom exception?)");
 			}
-
-			/*
-			 * Make sure the subscription job is registered in 
-			 * scheduledSubscriptions. If not, register it now.
-			 */
-			logger.error("\n\n\nWRITE CODE HERE!!!!!!!!!!!!!!!!!!!!!\n\n");
 
 		} else {
 			logger.warn(
-					"Attempt to schedule subscription {}, but the scheduler is not running", subscription);
+					"Attempt to schedule the subscription, but it is already registered with the scheduler");
+			/*
+			 * TODO At this point we could try resuming the job IN CASE it was paused
+			 * However, it is not clear at this point if that is the best behaviour to 
+			 * implement, so I will do nothing for now.
+			 */
 		}
 
 	}
@@ -337,101 +299,62 @@ public class SubscriptionScheduler {
 		return jobKey;
 	}
 
-	// DELETE:
-	//	/**
-	//	 * Update Subscription to reflect problem encountered.
-	//	 * 
-	//	 * @param subscription
-	//	 */
-	//	private void requestAttention(Subscription subscription, String problemDescription) {
-	//		/*
-	//		 * Only perform update if necessary, i.e., it is necessary to modify the
-	//		 * Subscription.
-	//		 */
-	//		if (problemDescription == null) {
-	//			/*
-	//			 * There is no problem, so clear fields, if necessary.
-	//			 */
-	//			//TODO Write me!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!Consider effect of saving subscription in calling code.
-	//		} else {
-	//			//TODO Write me!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!Consider effect of saving subscription in calling code.
-	//		}
-	//	}
-
-	//	/**
-	//	 * Forces the subscription job processor to run immediately.
-	//	 * 
-	//	 * This will force the processor to run even if the job is paused in the
-	//	 * Quartz scheduler; however, it will run only once, which means that this
-	//	 * will not UNpause the job.
-	//	 * 
-	//	 * @throws SchedulerException
-	//	 */
-	//	public void triggerJob() throws SchedulerException {
-	//		if (schedulerFactoryBean.isRunning()) {
-	//			Scheduler scheduler = schedulerFactoryBean.getScheduler();
-	//			if (scheduler.checkExists(JOB_KEY)) {
-	//				logger.info("Triggering the subscription job processor to run immediately");
-	//				scheduler.triggerJob(JOB_KEY);
-	//			} else {
-	//				logger.warn(
-	//						"Attempt to trigger the subscription job processor, but it is not registered with the scheduler");
-	//			}
-	//		} else {
-	//			logger.warn(
-	//					"Attempt to trigger the subscription job processor, but the scheduler is not running");
-	//		}
-	//	}
-
-	public void unscheduleJob(JobKey jobKey) throws SchedulerException {
-		//if (schedulerFactoryBean.isRunning()) {
-
-		Scheduler scheduler = schedulerFactoryBean.getScheduler();
-		if (scheduler.checkExists(jobKey)) {
-			logger.info("Deleting the subscription with job key = '{}' from the Quartz scheduler", jobKey);
-			scheduler.deleteJob(jobKey);
+	/**
+	 * Forces the scheduled subscription job to run immediately.
+	 * 
+	 * This will force the scheduled subscription job to run even if the job is
+	 * paused in Quartz scheduler; however, it will run only once, which means
+	 * that this will not UNpause the job.
+	 * 
+	 * @throws SchedulerException
+	 */
+	public void triggerJob(JobKey jobKey) throws SchedulerException {
+		if (schedulerFactoryBean.isRunning()) {
+			Scheduler scheduler = schedulerFactoryBean.getScheduler();
+			if (scheduler.checkExists(jobKey)) {
+				logger.info("Triggering the subscription job processor to run immediately");
+				scheduler.triggerJob(jobKey);
+			} else {
+				logger.warn(
+						"Attempt to trigger the subscription job processor, but it is not registered with the scheduler");
+			}
 		} else {
 			logger.warn(
-					"Attempt to unschedule the subscription with job key = '{}', but it is not registered with the scheduler",
-					jobKey);
+					"Attempt to trigger the subscription job processor, but the scheduler is not running");
 		}
-
-		//} else {
-		//	logger.warn("Attempt to unschedule the subscription with job key = '{}', but the scheduler is not running", jobKey);
-		//}
 	}
 
-	//	public void pauseJob() throws SchedulerException {
-	//		if (schedulerFactoryBean.isRunning()) {
-	//			Scheduler scheduler = schedulerFactoryBean.getScheduler();
-	//			if (scheduler.checkExists(JOB_KEY)) {
-	//				logger.info("Pausing the subscription job processor");
-	//				scheduler.pauseJob(JOB_KEY);
-	//			} else {
-	//				logger.warn(
-	//						"Attempt to pause the subscription job processor, but it is not registered with the scheduler");
-	//			}
-	//		} else {
-	//			logger.warn(
-	//					"Attempt to pause the subscription job processor, but the scheduler is not running");
-	//		}
-	//	}
-	//
-	//	public void resumeJob() throws SchedulerException {
-	//		if (schedulerFactoryBean.isRunning()) {
-	//			Scheduler scheduler = schedulerFactoryBean.getScheduler();
-	//			if (scheduler.checkExists(JOB_KEY)) {
-	//				logger.info("Resuming the subscription job processor");
-	//				scheduler.resumeJob(JOB_KEY);
-	//			} else {
-	//				logger.warn(
-	//						"Attempt to resume the subscription job processor, but it is not registered with the scheduler");
-	//			}
-	//		} else {
-	//			logger.warn(
-	//					"Attempt to resume the subscription job processor, but the scheduler is not running");
-	//		}
-	//	}
+	public void pauseJob(JobKey jobKey) throws SchedulerException {
+		if (schedulerFactoryBean.isRunning()) {
+			Scheduler scheduler = schedulerFactoryBean.getScheduler();
+			if (scheduler.checkExists(jobKey)) {
+				logger.info("Pausing the subscription");
+				scheduler.pauseJob(jobKey);
+			} else {
+				logger.warn(
+						"Attempt to pause the subscription, but it is not registered with the scheduler");
+			}
+		} else {
+			logger.warn(
+					"Attempt to pause the subscription, but the scheduler is not running");
+		}
+	}
+
+	public void resumeJob(JobKey jobKey) throws SchedulerException {
+		if (schedulerFactoryBean.isRunning()) {
+			Scheduler scheduler = schedulerFactoryBean.getScheduler();
+			if (scheduler.checkExists(jobKey)) {
+				logger.info("Resuming the subscription");
+				scheduler.resumeJob(jobKey);
+			} else {
+				logger.warn(
+						"Attempt to resume the subscription, but it is not registered with the scheduler");
+			}
+		} else {
+			logger.warn(
+					"Attempt to resume the subscription, but the scheduler is not running");
+		}
+	}
 
 	private void unscheduleAllJobs() {
 
@@ -466,14 +389,26 @@ public class SubscriptionScheduler {
 		}
 	}
 
+	public void unscheduleJob(JobKey jobKey) throws SchedulerException {
+		//if (schedulerFactoryBean.isRunning()) {
+
+		Scheduler scheduler = schedulerFactoryBean.getScheduler();
+		if (scheduler.checkExists(jobKey)) {
+			logger.info("Deleting the subscription with job key = '{}' from the Quartz scheduler", jobKey);
+			scheduler.deleteJob(jobKey);
+		} else {
+			logger.warn(
+					"Attempt to unschedule the subscription with job key = '{}', but it is not registered with the scheduler",
+					jobKey);
+		}
+
+		//} else {
+		//	logger.warn("Attempt to unschedule the subscription with job key = '{}', but the scheduler is not running", jobKey);
+		//}
+	}
+
 	@PreDestroy
 	public void shutdown() {
 		unscheduleAllJobs();
 	}
-
-	public void testGetInstance() {
-		SubscriptionScheduledJob subscriptionScheduledJob = subscriptionScheduledJobFactory.getObject();
-		logger.info("subscriptionScheduledJob = {}", subscriptionScheduledJob);
-	}
-
 }

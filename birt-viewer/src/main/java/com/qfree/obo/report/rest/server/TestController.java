@@ -466,20 +466,6 @@ public class TestController extends AbstractBaseController {
 	}
 
 	@GET
-	@Path("/testGetInstance")
-	@Produces(MediaType.TEXT_PLAIN)
-	public String testGetInstance(
-			@HeaderParam("Accept") final String acceptHeader,
-			@Context final UriInfo uriInfo) throws SchedulerException {
-		RestApiVersion apiVersion = RestUtils.extractAPIVersion(acceptHeader, RestApiVersion.v1);
-
-		logger.info("Retrieving a new instance of a Spring-managed bean (I hope)...");
-		subscriptionScheduler.testGetInstance();
-
-		return "Hopefully, we retrieved a new instance of a Spring-managed bean";
-	}
-
-	@GET
 	@Path("/scheduleAllJobs")
 	@Produces(MediaType.TEXT_PLAIN)
 	public String scheduleAllJobs(
