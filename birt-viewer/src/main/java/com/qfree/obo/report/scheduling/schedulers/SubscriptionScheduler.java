@@ -2,7 +2,6 @@ package com.qfree.obo.report.scheduling.schedulers;
 
 import java.text.ParseException;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -23,7 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
 import org.springframework.scheduling.quartz.CronTriggerFactoryBean;
-import org.springframework.scheduling.quartz.JobDetailFactoryBean;
+import org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean;
 import org.springframework.scheduling.quartz.SchedulerFactoryBean;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -147,7 +146,7 @@ public class SubscriptionScheduler {
 			 */
 			try {
 				scheduleJob(subscription);
-			} catch (SchedulerException | ParseException e) {
+			} catch (SchedulerException | ParseException | ClassNotFoundException | NoSuchMethodException e) {
 				logger.error("Could not schedule Subscription entity: {}. Exception thrown = {}", subscription, e);
 			}
 		}
@@ -161,10 +160,13 @@ public class SubscriptionScheduler {
 	 * @param subscription
 	 * @throws SchedulerException
 	 * @throws ParseException
+	 * @throws NoSuchMethodException
+	 * @throws ClassNotFoundException
 	 */
 	//TODO Add synchronized here?
 	@Transactional
-	public void scheduleJob(Subscription subscription) throws SchedulerException, ParseException {
+	public void scheduleJob(Subscription subscription)
+			throws SchedulerException, ParseException, ClassNotFoundException, NoSuchMethodException {
 
 		if (schedulerFactoryBean.isRunning()) {
 
@@ -202,26 +204,65 @@ public class SubscriptionScheduler {
 				scheduledSubscriptions.remove(subscription.getSubscriptionId());
 
 				/*
-				 * This map will be used to initialize fields of the instance of 
-				 * SubscriptionScheduledJob that is associated with the
-				 * JobDetailFactoryBean created here (as well as the Quartz
-				 * JobDetail instance that it creates). This is the mechanism
-				 * used to associate a Subscription entity with a scheduled
-				 * subscription job.
+				 * Get Spring managed bean that will run as the scheduled job.
 				 */
-				Map<String, Object> jobDataMap = new HashMap<>();
-				jobDataMap.put("subscriptionId", subscription.getSubscriptionId());
-
+				SubscriptionScheduledJob subscriptionScheduledJob = subscriptionScheduledJobFactory.getObject();
+				/*
+				 * Tell the bean which Subscription it is for.
+				 */
+				subscriptionScheduledJob.setSubscriptionId(subscription.getSubscriptionId());
 				/*
 				 * Create a factory for obtaining a Quartz JobDetail.
 				 */
-				JobDetailFactoryBean subscriptionJobDetailFactory = new JobDetailFactoryBean();
-				subscriptionJobDetailFactory.setJobClass(SubscriptionScheduledJob.class);
-				subscriptionJobDetailFactory.setJobDataAsMap(jobDataMap);
-				subscriptionJobDetailFactory.setDurability(false);
+				MethodInvokingJobDetailFactoryBean subscriptionJobDetailFactory = new MethodInvokingJobDetailFactoryBean();
+				subscriptionJobDetailFactory.setTargetObject(subscriptionScheduledJob);
+				subscriptionJobDetailFactory.setTargetMethod("run");
 				subscriptionJobDetailFactory.setName(subscription.getSubscriptionId().toString());
 				subscriptionJobDetailFactory.setGroup(JOB_GROUP);
+				/*
+				 * This is important. Without it, the "run" method of the bean
+				 * "subscriptionScheduledJob" might run simultaneously in 
+				 * multiple threads. This would happen if:
+				 * 
+				 *   1. The "run" method runs for a period of time that is 
+				 *      longer than the time interval provided by the trigger. 
+				 *      In this case, another copy of the subscription job will 
+				 *      be started, even if the previous invocation is still 
+				 *      running.
+				 *      
+				 *   2. The subscription job is forced to run immediately with 
+				 *      triggerJob() just before the job is scheduled to run 
+				 *      anyway according to its trigger. In this case, the 
+				 *      trigger will start another copy, even though we *just* 
+				 *      forced a copy to run immediately with triggerJob().
+				 */
+				subscriptionJobDetailFactory.setConcurrent(false);
 				subscriptionJobDetailFactory.afterPropertiesSet();
+
+				/*
+				 * Alternate approach, using a JobDetailFactoryBean instead of
+				 * a MethodInvokingJobDetailFactoryBean.
+				 */
+				//	/*
+				//	 * This map will be used to initialize fields of the instance of 
+				//	 * SubscriptionScheduledJob that is associated with the
+				//	 * JobDetailFactoryBean created here (as well as the Quartz
+				//	 * JobDetail instance that it creates). This is the mechanism
+				//	 * used to associate a Subscription entity with a scheduled
+				//	 * subscription job.
+				//	 */
+				//	Map<String, Object> jobDataMap = new HashMap<>();
+				//	jobDataMap.put("subscriptionId", subscription.getSubscriptionId());
+				//	/*
+				//	 * Create a factory for obtaining a Quartz JobDetail.
+				//	 */
+				//	JobDetailFactoryBean subscriptionJobDetailFactory = new JobDetailFactoryBean();
+				//	subscriptionJobDetailFactory.setJobClass(SubscriptionScheduledJob.class);
+				//	subscriptionJobDetailFactory.setJobDataAsMap(jobDataMap);
+				//	subscriptionJobDetailFactory.setDurability(false);
+				//	subscriptionJobDetailFactory.setName(subscription.getSubscriptionId().toString());
+				//	subscriptionJobDetailFactory.setGroup(JOB_GROUP);
+				//	subscriptionJobDetailFactory.afterPropertiesSet();
 
 				if (subscription.getCronSchedule() != null) {
 

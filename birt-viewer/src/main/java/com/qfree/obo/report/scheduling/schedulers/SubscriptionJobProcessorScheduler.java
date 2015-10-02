@@ -177,7 +177,7 @@ public class SubscriptionJobProcessorScheduler {
 				 *      with triggerJob() just before the job is scheduled to run anyway
 				 *      according to its trigger. In this case, the trigger will start 
 				 *      another copy, even though we *just* forced a copy to run 
-				 *      immediately with  with triggerJob().
+				 *      immediately with triggerJob().
 				 */
 				subscriptionJobProcessorJobDetailFactory.setConcurrent(false);
 				subscriptionJobProcessorJobDetailFactory.afterPropertiesSet();

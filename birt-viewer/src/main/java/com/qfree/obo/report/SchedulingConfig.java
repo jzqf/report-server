@@ -20,8 +20,6 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.quartz.SchedulerFactoryBean;
 import org.springframework.transaction.PlatformTransactionManager;
 
-import com.qfree.obo.report.scheduling.jobs.config.AutowiringSpringBeanJobFactory;
-
 @Configuration
 @EnableScheduling
 @ComponentScan(basePackageClasses = {
@@ -70,12 +68,15 @@ public class SchedulingConfig {
 		quartzScheduler.setOverwriteExistingJobs(true);
 		quartzScheduler.setSchedulerName("qfree-report-server-quartz-scheduler");
 
-		/*
-		 *  Custom Spring job factory with DI support for @Autowired.
+		/**
+		 * Custom Spring job factory with DI support for @Autowired. I have
+		 * commented out this support for now because I do not need it. It
+		 * *would* be needed if I choose approaches 1 or 2 in
+		 * {@link SubscriptionScheduledJob}.
 		 */
-		AutowiringSpringBeanJobFactory jobFactory = new AutowiringSpringBeanJobFactory();
-		jobFactory.setApplicationContext(applicationContext);
-		quartzScheduler.setJobFactory(jobFactory);
+		//	AutowiringSpringBeanJobFactory jobFactory = new AutowiringSpringBeanJobFactory();
+		//	jobFactory.setApplicationContext(applicationContext);
+		//	quartzScheduler.setJobFactory(jobFactory);
 
 		quartzScheduler.setQuartzProperties(quartzProperties());
 
