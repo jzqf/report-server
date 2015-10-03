@@ -14,7 +14,7 @@ public class SubscriptionJobProcessorScheduledJob {
 	 */
 	public void run() {
 
-		logger.info("********** Write me! Sleeping for 0s **********");
+		logger.info("********** Write me!");
 		//		try {
 		//			Thread.sleep(30L * 1000L);
 		//		} catch (InterruptedException e) {

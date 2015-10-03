@@ -52,15 +52,18 @@ public class SubscriptionScheduler {
 
 	private final SchedulerFactoryBean schedulerFactoryBean;
 	private final ObjectFactory<SubscriptionScheduledJob> subscriptionScheduledJobFactory;
+	//	private SubscriptionService subscriptionService;
 	private final SubscriptionRepository subscriptionRepository;
 
 	@Autowired
 	public SubscriptionScheduler(
 			SchedulerFactoryBean schedulerFactoryBean,
 			ObjectFactory<SubscriptionScheduledJob> subscriptionScheduledJobFactory,
+			//SubscriptionService subscriptionService,
 			SubscriptionRepository subscriptionRepository) {
 		this.schedulerFactoryBean = schedulerFactoryBean;
 		this.subscriptionScheduledJobFactory = subscriptionScheduledJobFactory;
+		//		this.subscriptionService = subscriptionService;
 		this.subscriptionRepository = subscriptionRepository;
 	}
 
@@ -185,6 +188,9 @@ public class SubscriptionScheduler {
 			 * Tell the bean which Subscription it is for.
 			 */
 			subscriptionScheduledJob.setSubscriptionId(subscription.getSubscriptionId());
+
+			//			subscriptionScheduledJob.setSubscriptionService(subscriptionService);
+
 			/*
 			 * Create a factory for obtaining a Quartz JobDetail.
 			 */

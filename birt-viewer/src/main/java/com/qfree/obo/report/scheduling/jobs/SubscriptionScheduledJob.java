@@ -7,9 +7,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.qfree.obo.report.db.JobRepository;
 import com.qfree.obo.report.db.SubscriptionRepository;
+import com.qfree.obo.report.domain.Job;
+import com.qfree.obo.report.domain.Subscription;
 
 /*
  * This class is instantiated by Quartz and therefore Spring-based dependency
@@ -50,13 +53,32 @@ import com.qfree.obo.report.db.SubscriptionRepository;
  *    
  *    This is the approach I have chose, since the scheduled job bean is a fully
  *    Spring-managed bean.
+ *    
+ *    However, I encountered a confusing exception trying to autowire a bean of 
+ *    type SubscriptionService in this class. The exception message listed a 
+ *    long chain of beans injected to each other and then ended with:
+ *    
+ *         Requested bean is currently in creation: Is there an unresolvable 
+ *         circular reference?
+ *    
+ *    I never figured that one out. It may have been related to how this is 
+ *    a prototype-scoped bean. Nevetheless, I solved it by autowiring 
+ *    Repository classes instead of a single service class.
+ *    
+ *  I use @@Transactional so that entities will not be persisted to the database
+ *  if an exception is thrown before a complete collection of Job, 
+ *  JobParameter and JobParameterValue entities are saved.
  */
+@Transactional
 @Component
 @Scope(value = "prototype")
 //public class SubscriptionScheduledJob extends QuartzJobBean {   <- for approaches 1 & 2 above
 public class SubscriptionScheduledJob {
 
 	private static final Logger logger = LoggerFactory.getLogger(SubscriptionScheduledJob.class);
+
+	//@Autowired
+	//private SubscriptionService subscriptionService;
 
 	@Autowired
 	private SubscriptionRepository subscriptionRepository;
@@ -88,16 +110,36 @@ public class SubscriptionScheduledJob {
 	 */
 	public void run() {
 
-		logger.info("subscriptionId = {}", subscriptionId);
+		//logger.info("subscriptionId = {}", subscriptionId);
+		//		logger.info("subscriptionService = {}", subscriptionService);
+		//		logger.info("subscriptionRepository = {}", subscriptionRepository);
+		//		logger.info("jobRepository = {}", jobRepository);
 
-		/*
-		 * TODO Inject a SubscriptionService bean instead of Repository beans so that the job will
-		 * be transactional (annotate service method with @Transactional) and I 
-		 * won't have to worry about lazy instantiation exceptions.
-		 */
-		logger.info("subscriptionRepository.findOne(subscriptionId) = {}",
-				subscriptionRepository.findOne(subscriptionId));
-		logger.info("jobRepository.count() = {}", jobRepository.count());
+		Subscription subscription = subscriptionRepository.findOne(subscriptionId);
+		if (subscription != null) {
+
+			Job job = new Job(
+					subscription.getReportVersion(),
+					subscription.getRole(),
+					subscription.getDocumentFormat());
+
+			/*
+			 * Create one 
+			 */
+
+			/*
+			 * Assign a JobStatus to the Job
+			 */
+
+			/*
+			 * This should save all entities created.
+			 */
+			job = jobRepository.save(job);
+			logger.info("Saved job ={}", job);
+
+		} else {
+			logger.error("No subscription for subscriptionId = {}", subscriptionId);
+		}
 
 		//TODO After creating a Job, force the job processor to run with triggerJob(),
 
@@ -110,6 +152,14 @@ public class SubscriptionScheduledJob {
 	public void setSubscriptionId(UUID subscriptionId) {
 		this.subscriptionId = subscriptionId;
 	}
+
+	//	public SubscriptionService getSubscriptionService() {
+	//		return subscriptionService;
+	//	}
+	//
+	//	public void setSubscriptionService(SubscriptionService subscriptionService) {
+	//		this.subscriptionService = subscriptionService;
+	//	}
 
 	public SubscriptionRepository getSubscriptionRepository() {
 		return subscriptionRepository;
@@ -127,4 +177,12 @@ public class SubscriptionScheduledJob {
 		this.jobRepository = jobRepository;
 	}
 
+	@Override
+	public String toString() {
+		StringBuilder builder = new StringBuilder();
+		builder.append("SubscriptionScheduledJob [subscriptionId=");
+		builder.append(subscriptionId);
+		builder.append("]");
+		return builder.toString();
+	}
 }

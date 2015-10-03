@@ -495,7 +495,7 @@ public class SubscriptionController extends AbstractBaseController {
 		if (subscriptionResource.getDocumentFormatResource() == null) {
 			/*
 			 * Construct a DocumentFormatResource to specify the CURRENTLY
-			 * selected DocumentFormat.
+			 * selected DocumentFormat. Only its Id needs to be set here.
 			 */
 			UUID currentDocumentFormatId = subscription.getDocumentFormat().getDocumentFormatId();
 			DocumentFormatResource documentFormatResource = new DocumentFormatResource();
@@ -562,7 +562,7 @@ public class SubscriptionController extends AbstractBaseController {
 		 * We cannot have an "enabled" Subscription that is inactive because
 		 * it does not make sense to schedule inactive subscriptions.
 		 */
-		if (!subscription.getActive() && subscription.getEnabled()) {
+		if (!subscriptionResource.getActive() && subscriptionResource.getEnabled()) {
 			throw new RestApiException(RestError.FORBIDDEN_SUBSCRIPTION_INACTIVE_ENABLED, Subscription.class);
 		}
 
