@@ -22,9 +22,11 @@ import com.qfree.obo.report.dto.DocumentFormatResource;
 import com.qfree.obo.report.dto.ReportVersionResource;
 import com.qfree.obo.report.dto.RestErrorResource.RestError;
 import com.qfree.obo.report.dto.RoleResource;
+import com.qfree.obo.report.dto.SchedulingStatusResource;
 import com.qfree.obo.report.dto.SubscriptionResource;
 import com.qfree.obo.report.exceptions.RestApiException;
 import com.qfree.obo.report.rest.server.RestUtils;
+import com.qfree.obo.report.scheduling.schedulers.SubscriptionScheduler;
 
 @Component
 @Transactional
@@ -36,17 +38,20 @@ public class SubscriptionService {
 	private final DocumentFormatRepository documentFormatRepository;
 	private final ReportVersionRepository reportVersionRepository;
 	private final RoleRepository roleRepository;
+	private final SubscriptionScheduler subscriptionScheduler;
 
 	@Autowired
 	public SubscriptionService(
 			SubscriptionRepository subscriptionRepository,
 			DocumentFormatRepository documentFormatRepository,
 			ReportVersionRepository reportVersionRepository,
-			RoleRepository roleRepository) {
+			RoleRepository roleRepository,
+			SubscriptionScheduler subscriptionScheduler) {
 		this.subscriptionRepository = subscriptionRepository;
 		this.documentFormatRepository = documentFormatRepository;
 		this.reportVersionRepository = reportVersionRepository;
 		this.roleRepository = roleRepository;
+		this.subscriptionScheduler = subscriptionScheduler;
 	}
 
 	@Transactional
@@ -298,5 +303,16 @@ public class SubscriptionService {
 
 		// TODO Write me!
 
+	}
+
+	/**
+	 * Interrogates the Quartz scheduler and returns details about the
+	 * scheduling state of the Subscription identified by its Id.
+	 * 
+	 * @param subscription
+	 * @return
+	 */
+	public SchedulingStatusResource getSchedulingStatusResource(Subscription subscription) {
+		return subscriptionScheduler.getSchedulingStatusResource(subscription);
 	}
 }

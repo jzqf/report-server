@@ -91,7 +91,7 @@ public class SubscriptionScheduledJob {
 		logger.info("subscriptionId = {}", subscriptionId);
 
 		/*
-		 * TODO Inject a service ban instead of Repository beans so that the job will
+		 * TODO Inject a SubscriptionService bean instead of Repository beans so that the job will
 		 * be transactional (annotate service method with @Transactional) and I 
 		 * won't have to worry about lazy instantiation exceptions.
 		 */

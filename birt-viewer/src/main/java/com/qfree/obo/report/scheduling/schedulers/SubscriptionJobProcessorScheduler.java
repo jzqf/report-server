@@ -115,10 +115,10 @@ public class SubscriptionJobProcessorScheduler {
 	public void scheduleJob() throws ClassNotFoundException, NoSuchMethodException, SchedulerException {
 
 		String repeatIntervalAsString = env.getProperty("schedule.jobprocessor.repeatinterval");
-		logger.info("schedule.jobprocessor.repeatinterval = {}", repeatIntervalAsString);
+		logger.debug("schedule.jobprocessor.repeatinterval = {}", repeatIntervalAsString);
 
 		String startDelayAsString = env.getProperty("schedule.jobprocessor.startDelay");
-		logger.info("schedule.jobprocessor.startDelay = {}", startDelayAsString);
+		logger.debug("schedule.jobprocessor.startDelay = {}", startDelayAsString);
 
 		long repeatIntervalSeconds = Long.parseLong(repeatIntervalAsString);
 		long startDelaySeconds = Long.parseLong(startDelayAsString);

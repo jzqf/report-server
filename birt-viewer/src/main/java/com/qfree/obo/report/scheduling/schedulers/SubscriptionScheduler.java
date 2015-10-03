@@ -25,6 +25,7 @@ import org.springframework.stereotype.Component;
 
 import com.qfree.obo.report.db.SubscriptionRepository;
 import com.qfree.obo.report.domain.Subscription;
+import com.qfree.obo.report.dto.SchedulingStatusResource;
 import com.qfree.obo.report.scheduling.jobs.SubscriptionScheduledJob;
 
 /**
@@ -120,7 +121,7 @@ public class SubscriptionScheduler {
 		 * scheduling.
 		 */
 		List<Subscription> subscriptions = subscriptionRepository.findByActiveTrueAndEnabledTrue();
-		logger.info("Considering {} subscriptions to be scheduled", subscriptions.size());
+		logger.debug("Considering {} subscriptions to be scheduled", subscriptions.size());
 		for (Subscription subscription : subscriptions) {
 			/*
 			 * We catch Exceptions here, instead of passing them upwards so that
@@ -312,15 +313,16 @@ public class SubscriptionScheduler {
 		if (schedulerFactoryBean.isRunning()) {
 			Scheduler scheduler = schedulerFactoryBean.getScheduler();
 			if (scheduler.checkExists(jobKey)) {
-				logger.info("Triggering the subscription job processor to run immediately");
+				logger.info("Triggering the subscription '{}' to run immediately", jobKey);
 				scheduler.triggerJob(jobKey);
 			} else {
 				logger.warn(
-						"Attempt to trigger the subscription job processor, but it is not registered with the scheduler");
+						"Attempt to trigger the subscription '{}', but it is not registered with the scheduler",
+						jobKey);
 			}
 		} else {
 			logger.warn(
-					"Attempt to trigger the subscription job processor, but the scheduler is not running");
+					"Attempt to trigger the subscription '{}', but the scheduler is not running", jobKey);
 		}
 	}
 
@@ -328,7 +330,7 @@ public class SubscriptionScheduler {
 		if (schedulerFactoryBean.isRunning()) {
 			Scheduler scheduler = schedulerFactoryBean.getScheduler();
 			if (scheduler.checkExists(jobKey)) {
-				logger.info("Pausing the subscription");
+				logger.info("Pausing the subscription '{}'", jobKey);
 				scheduler.pauseJob(jobKey);
 			} else {
 				logger.warn(
@@ -344,7 +346,7 @@ public class SubscriptionScheduler {
 		if (schedulerFactoryBean.isRunning()) {
 			Scheduler scheduler = schedulerFactoryBean.getScheduler();
 			if (scheduler.checkExists(jobKey)) {
-				logger.info("Resuming the subscription");
+				logger.info("Resuming the subscription '{}'", jobKey);
 				scheduler.resumeJob(jobKey);
 			} else {
 				logger.warn(
@@ -371,9 +373,15 @@ public class SubscriptionScheduler {
 				 */
 				List<Trigger> triggers = null; //new ArrayList<>();
 				triggers = (List<Trigger>) scheduler.getTriggersOfJob(jobKey);
-				Date nextFireTime = triggers.get(0).getNextFireTime();
-				logger.info("Unscheduling subscription with: jobKey = {}, nextFireTime = {}", jobKey, nextFireTime);
-
+				if (triggers != null && triggers.size() > 0) {
+					Date nextFireTime = triggers.get(0).getNextFireTime();
+					logger.info("Unscheduling subscription with: jobKey = {}, nextFireTime = {}", jobKey, nextFireTime);
+					if (triggers.size() > 1) {
+						logger.error("There are {} triggers for subscription job key: {}", triggers.size(), jobKey);
+					}
+				} else {
+					logger.error("The is no trigger for subscription job key: {}", jobKey);
+				}
 				try {
 					unscheduleJob(jobKey);
 				} catch (SchedulerException e) {
@@ -405,6 +413,54 @@ public class SubscriptionScheduler {
 		//} else {
 		//	logger.warn("Attempt to unschedule the subscription with job key = '{}', but the scheduler is not running", jobKey);
 		//}
+	}
+
+	public SchedulingStatusResource getSchedulingStatusResource(Subscription subscription) {
+
+		JobKey jobKey = subscriptionJobKey(subscription);
+		SchedulingStatusResource schedulingStatusResource = new SchedulingStatusResource();
+		Scheduler scheduler = schedulerFactoryBean.getScheduler();
+
+		try {
+			/*
+			 * Check if the Subscription is scheduled at all:
+			 */
+			if (scheduler.checkExists(jobKey)) {
+				schedulingStatusResource.setScheduled(true);
+				/*
+				 * Get job's trigger. There should only be one trigger.
+				 */
+				List<Trigger> triggers = null; //new ArrayList<>();
+				triggers = (List<Trigger>) scheduler.getTriggersOfJob(jobKey);
+				if (triggers != null && triggers.size() > 0) {
+					Date nextFireTime = triggers.get(0).getNextFireTime();
+					schedulingStatusResource.setNextFireTime(nextFireTime);
+					logger.debug("jobKey = {}, nextFireTime = {}", jobKey, nextFireTime);
+					if (triggers.size() > 1) {
+						logger.error("There are {} triggers for subscription: {}", triggers.size(), subscription);
+						schedulingStatusResource.setSchedulingNotice("There are " + triggers.size() + " triggers");
+					}
+				} else {
+					logger.error("Trigger does not exist for subscription: {}", subscription);
+					schedulingStatusResource.setSchedulingNotice("Trigger does not exist");
+				}
+			} else {
+				schedulingStatusResource.setScheduled(false);
+			}
+
+			if (!schedulerFactoryBean.isRunning()) {
+				//if(schedulingStatusResource.getSchedulingNotice()==null){
+				schedulingStatusResource.setSchedulingNotice("The scheduler is not running");
+				//}
+			}
+
+		} catch (SchedulerException e) {
+			logger.error("Exception thrown attempting to get scheduing status for subscription {}. Exception = {}",
+					subscription, e);
+			schedulingStatusResource.setSchedulingNotice("Problem retrieving subscription status");
+		}
+
+		return schedulingStatusResource;
 	}
 
 	@PreDestroy

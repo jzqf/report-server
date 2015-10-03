@@ -19,6 +19,7 @@ import com.qfree.obo.report.domain.DocumentFormat;
 import com.qfree.obo.report.domain.Subscription;
 import com.qfree.obo.report.rest.server.RestUtils;
 import com.qfree.obo.report.rest.server.RestUtils.RestApiVersion;
+import com.qfree.obo.report.service.SubscriptionService;
 
 @XmlRootElement
 public class SubscriptionResource extends AbstractBaseResource {
@@ -57,6 +58,9 @@ public class SubscriptionResource extends AbstractBaseResource {
 	@XmlElement
 	private Boolean enabled;
 
+	@XmlElement(name = "schedulingStatus")
+	private SchedulingStatusResource schedulingStatusResource;
+
 	@XmlElement
 	private Boolean active;
 
@@ -67,8 +71,48 @@ public class SubscriptionResource extends AbstractBaseResource {
 	public SubscriptionResource() {
 	}
 
-	public SubscriptionResource(Subscription subscription, UriInfo uriInfo, Map<String, List<String>> queryParams,
-			RestApiVersion apiVersion) {
+	public SubscriptionResource(Subscription subscription,
+			UriInfo uriInfo, Map<String, List<String>> queryParams, RestApiVersion apiVersion) {
+		/*
+		 * Note on subscriptionService=null here:
+		 * 
+		 *   null is passed here for subscriptionService. The result of this is
+		 *   that the SubscriptionResource that is constructed, will have
+		 *   schedulingStatusResource=null, i.e., there will be not information 
+		 *   about the status of the scheduling for this Subscription. 
+		 *   
+		 *   The reason why this constructor exists is that SubscriptionResource
+		 *   objects can be constructed in a chain-like fashion when other
+		 *   resource types are created. For example, when a 
+		 *   DocumentFormatResource is created, it's
+		 *   "subscriptionCollectionResource"field (if expanded) will hold a
+		 *   potentially large number of SubscriptionCollectionResource objects.
+		 *   Here are two points that relate to this "chained" instantiation of
+		 *   SubscriptionCollectionResource objects:
+		 *   
+		 *   1. I am not convinced it is worth the effort to construct a 
+		 *      potentially large number of SchedulingStatusResource instances,
+		 *      each of which requires several calls to the SchedulerFactoryBean
+		 *      or its underlying Quartz Scheduler.
+		 *      
+		 *   2.	I will need to make extra effort to make a SubscriptionService
+		 *      bean available everywhere that this SubscriptionResource
+		 *      constructor is called in this chained fashion. While this would
+		 *      not be a technically difficult thing to do, it seems messy and
+		 *      might not be worth the effort.
+		 *      
+		 *  If, one day, a use case appears where it is necessary to have the
+		 *  schedulingStatusResource field filled out for *every*
+		 *  SubscriptionResource that is constructed, even when in a chained 
+		 *  fashion as I describe above, then we must simply eliminate this
+		 *  constructor and make sure we always provide a SubscriptionService
+		 *  to the remaining constructor that requires one.
+		 */
+		this(subscription, null, uriInfo, queryParams, apiVersion);
+	}
+
+	public SubscriptionResource(Subscription subscription, SubscriptionService subscriptionService,
+			UriInfo uriInfo, Map<String, List<String>> queryParams, RestApiVersion apiVersion) {
 
 		super(Subscription.class, subscription.getSubscriptionId(), uriInfo, queryParams, apiVersion);
 
@@ -122,6 +166,16 @@ public class SubscriptionResource extends AbstractBaseResource {
 			this.enabled = subscription.getEnabled();
 			this.active = subscription.getActive();
 			this.createdOn = subscription.getCreatedOn();
+
+			/*
+			 * Interrogate the Quartz scheduler to obtain details about the 
+			 * scheduling state of the Subscription. This information is 
+			 * returned as a SchedulingStatusResource object.
+			 */
+			if (subscriptionService != null) {
+				this.schedulingStatusResource = subscriptionService.getSchedulingStatusResource(subscription);
+			}
+
 			this.subscriptionParameterCollectionResource = new SubscriptionParameterCollectionResource(
 					subscription, uriInfo, newQueryParams, apiVersion);
 		}
@@ -221,6 +275,14 @@ public class SubscriptionResource extends AbstractBaseResource {
 		this.enabled = enabled;
 	}
 
+	public SchedulingStatusResource getSchedulingStatusResource() {
+		return schedulingStatusResource;
+	}
+
+	public void setSchedulingStatusResource(SchedulingStatusResource schedulingStatusResource) {
+		this.schedulingStatusResource = schedulingStatusResource;
+	}
+
 	public SubscriptionParameterCollectionResource getSubscriptionParameterCollectionResource() {
 		return subscriptionParameterCollectionResource;
 	}
@@ -267,6 +329,8 @@ public class SubscriptionResource extends AbstractBaseResource {
 		builder.append(description);
 		builder.append(", enabled=");
 		builder.append(enabled);
+		builder.append(", schedulingStatusResource=");
+		builder.append(schedulingStatusResource);
 		builder.append(", active=");
 		builder.append(active);
 		builder.append(", createdOn=");

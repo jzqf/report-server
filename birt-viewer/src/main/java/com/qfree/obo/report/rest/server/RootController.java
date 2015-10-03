@@ -65,7 +65,7 @@ public class RootController extends AbstractBaseController {
 		RestApiVersion apiVersion = RestUtils.extractAPIVersion(acceptHeader, RestApiVersion.v1);
 		
 		Configuration configuration = configurationRepository.dbversion();
-		logger.info("configuration (dbversion) = ", configuration);
+		logger.debug("configuration (dbversion) = ", configuration);
 		Integer dbversion = -1;  // -1: undefined version number
 		if (configuration != null) {
 			dbversion = configuration.getIntegerValue() != null ? configuration.getIntegerValue() : -1;

@@ -120,10 +120,11 @@ public class SubscriptionController extends AbstractBaseController {
 		}
 		List<SubscriptionResource> subscriptionResources = new ArrayList<>(subscriptions.size());
 		for (Subscription subscription : subscriptions) {
-			subscriptionResources.add(new SubscriptionResource(subscription, uriInfo, queryParams, apiVersion));
+			subscriptionResources.add(new SubscriptionResource(subscription, subscriptionService,
+					uriInfo, queryParams, apiVersion));
 		}
-		return new SubscriptionCollectionResource(subscriptionResources, Subscription.class, uriInfo, queryParams,
-				apiVersion);
+		return new SubscriptionCollectionResource(subscriptionResources, Subscription.class,
+				uriInfo, queryParams, apiVersion);
 	}
 
 	/*
@@ -380,7 +381,8 @@ public class SubscriptionController extends AbstractBaseController {
 		addToExpandList(expand, SubscriptionParameter.class); // Also force children to be "expanded"
 		addToExpandList(expand, SubscriptionParameterValue.class); // Also force children to be "expanded"
 		// }
-		SubscriptionResource resource = new SubscriptionResource(subscription, uriInfo, queryParams, apiVersion);
+		SubscriptionResource resource = new SubscriptionResource(subscription, subscriptionService,
+				uriInfo, queryParams, apiVersion);
 
 		return created(resource);
 	}
@@ -415,8 +417,8 @@ public class SubscriptionController extends AbstractBaseController {
 		}
 		Subscription subscription = subscriptionRepository.findOne(id);
 		RestUtils.ifNullThen404(subscription, Subscription.class, "subscriptionId", id.toString());
-		SubscriptionResource subscriptionResource = new SubscriptionResource(subscription, uriInfo, queryParams,
-				apiVersion);
+		SubscriptionResource subscriptionResource = new SubscriptionResource(
+				subscription, subscriptionService, uriInfo, queryParams, apiVersion);
 		return subscriptionResource;
 	}
 
@@ -633,7 +635,7 @@ public class SubscriptionController extends AbstractBaseController {
 		//	if (RestUtils.AUTO_EXPAND_PRIMARY_RESOURCES) {
 		addToExpandList(expand, Subscription.class); // Force primary resource to be "expanded"
 		//	}
-		SubscriptionResource subscriptionResource = new SubscriptionResource(subscription,
+		SubscriptionResource subscriptionResource = new SubscriptionResource(subscription, subscriptionService,
 				uriInfo, queryParams, apiVersion);
 		logger.debug("subscriptionResource = {}", subscriptionResource);
 		/*

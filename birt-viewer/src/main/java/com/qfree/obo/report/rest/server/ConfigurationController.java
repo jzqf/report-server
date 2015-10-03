@@ -113,7 +113,7 @@ public class ConfigurationController extends AbstractBaseController {
 		queryParams.put(ResourcePath.SHOWALL_QP_KEY, showAll);
 		RestApiVersion apiVersion = RestUtils.extractAPIVersion(acceptHeader, RestApiVersion.v1);
 
-		logger.info("configurationResource = {}", configurationResource);
+		logger.debug("configurationResource = {}", configurationResource);
 
 		Configuration configuration = configurationService
 				.saveNewFromResource(configurationResource);
