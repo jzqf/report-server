@@ -12,6 +12,7 @@ public class SubscriptionJobProcessorScheduledJob {
 	/**
 	 * Runs periodically to process outstanding Job entities.
 	 */
+	//TODO Use "synchronized" here??? Just to be sure we do not process the same Job in two different threads?
 	public void run() {
 
 		logger.info("********** Write me!");

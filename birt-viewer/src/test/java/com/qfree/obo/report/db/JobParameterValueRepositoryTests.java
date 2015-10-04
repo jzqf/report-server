@@ -26,6 +26,7 @@ import com.qfree.obo.report.domain.DocumentFormat;
 import com.qfree.obo.report.domain.Job;
 import com.qfree.obo.report.domain.JobParameter;
 import com.qfree.obo.report.domain.JobParameterValue;
+import com.qfree.obo.report.domain.JobStatus;
 import com.qfree.obo.report.domain.Report;
 import com.qfree.obo.report.domain.ReportParameter;
 import com.qfree.obo.report.domain.ReportVersion;
@@ -39,22 +40,25 @@ public class JobParameterValueRepositoryTests {
 	private static final Logger logger = LoggerFactory.getLogger(JobParameterValueRepositoryTests.class);
 
 	@Autowired
-	JobParameterValueRepository jobParameterValueRepository;
+	private JobParameterValueRepository jobParameterValueRepository;
 
 	@Autowired
-	JobParameterRepository jobParameterRepository;
+	private JobParameterRepository jobParameterRepository;
 
 	@Autowired
-	JobRepository jobRepository;
+	private JobRepository jobRepository;
 
 	@Autowired
-	RoleRepository roleRepository;
+	private RoleRepository roleRepository;
 
 	@Autowired
-	ReportRepository reportRepository;
+	private ReportRepository reportRepository;
 
 	@Autowired
-	DocumentFormatRepository documentFormatRepository;
+	private DocumentFormatRepository documentFormatRepository;
+
+	@Autowired
+	private JobStatusRepository jobStatusRepository;
 
 	//	@Autowired
 	//	ReportParameterRepository reportParameterRepository;
@@ -98,11 +102,24 @@ public class JobParameterValueRepositoryTests {
 		DocumentFormat pdfFormat = documentFormatRepository.findOne(uuidOfPdfFormat);
 		assertThat(pdfFormat, is(not(nullValue())));
 
+		JobStatus jobStatusQueued = jobStatusRepository.findOne(JobStatus.QUEUED_ID);
+		assertThat(jobStatusQueued, is(notNullValue()));
+
 		/*
 		 * Create a new Job. for report "Report name #04" for Role "aabb".
 		 */
 		//		Job newJob = new Job(report04, role_aabb);
-		Job newJob = new Job(report04Version01, role_aabb, pdfFormat);
+		Job newJob = new Job(
+				null,
+				jobStatusQueued,
+				null,
+				report04Version01,
+				role_aabb,
+				pdfFormat,
+				null,
+				null,
+				null,
+				null);
 
 		/*
 		 * Get all the parameters for the report. There should be only one with

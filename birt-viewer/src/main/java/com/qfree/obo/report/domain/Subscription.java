@@ -150,6 +150,14 @@ public class Subscription implements Serializable {
 	@OneToMany(mappedBy = "subscription", cascade = CascadeType.ALL)
 	private List<SubscriptionParameter> subscriptionParameters;
 
+	/*
+	 * cascade = CascadeType.ALL:
+	 *     Deleting a Subscription will delete all of its 
+	 *     Job's.
+	 */
+	@OneToMany(mappedBy = "subscription", cascade = CascadeType.ALL)
+	private List<Job> jobs;
+
 	private Subscription() {
 	}
 
@@ -308,6 +316,14 @@ public class Subscription implements Serializable {
 
 	public void setSubscriptionParameters(List<SubscriptionParameter> subscriptionParameters) {
 		this.subscriptionParameters = subscriptionParameters;
+	}
+
+	public List<Job> getJobs() {
+		return jobs;
+	}
+
+	public void setJobs(List<Job> jobs) {
+		this.jobs = jobs;
 	}
 
 	public UUID getSubscriptionId() {

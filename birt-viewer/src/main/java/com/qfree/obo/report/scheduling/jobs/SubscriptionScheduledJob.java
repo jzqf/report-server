@@ -10,8 +10,10 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.qfree.obo.report.db.JobRepository;
+import com.qfree.obo.report.db.JobStatusRepository;
 import com.qfree.obo.report.db.SubscriptionRepository;
 import com.qfree.obo.report.domain.Job;
+import com.qfree.obo.report.domain.JobStatus;
 import com.qfree.obo.report.domain.Subscription;
 
 /*
@@ -62,10 +64,29 @@ import com.qfree.obo.report.domain.Subscription;
  *         circular reference?
  *    
  *    I never figured that one out. It may have been related to how this is 
- *    a prototype-scoped bean. Nevetheless, I solved it by autowiring 
- *    Repository classes instead of a single service class.
+ *    a prototype-scoped bean and *not* due to the autowiring itself. This is
+ *    because I also tried the following:
  *    
- *  I use @@Transactional so that entities will not be persisted to the database
+ *      1. Autowire the SubscriptionService bean in the singleton-scoped
+ *         SubscriptionScheduler.
+ *         
+ *      2. Create the SubscriptionScheduledJob prototype bean in 
+ *         SubscriptionScheduler using the object factory
+ *         ObjectFactory<SubscriptionScheduledJob> (as I do here in treatment
+ *         #3).
+ *      
+ *      3. Set the SubscriptionService service bean on the 
+ *         SubscriptionScheduledJob object in SubscriptionScheduledJob using: 
+ *         subscriptionScheduledJob.setSubscriptionService(subscriptionService).
+ *    
+ *    Everything worked fine up to this point, but the same exception was STILL 
+ *    thrown from the SubscriptionScheduledJob. I "solved" this, eventually, by
+ *    autowiring Repository classes in the SubscriptionScheduledJob instead of 
+ *    autowiring a single SubscriptionService service class. Somehow, the 
+ *    Repository classes did not trigger this problem in the same was as the 
+ *    service bean did.
+ *    
+ *  I use @Transactional so that entities will not be persisted to the database
  *  if an exception is thrown before a complete collection of Job, 
  *  JobParameter and JobParameterValue entities are saved.
  */
@@ -85,6 +106,9 @@ public class SubscriptionScheduledJob {
 
 	@Autowired
 	private JobRepository jobRepository;
+
+	@Autowired
+	private JobStatusRepository jobStatusRepository;
 
 	private UUID subscriptionId;
 
@@ -106,7 +130,11 @@ public class SubscriptionScheduledJob {
 	//	protected void executeInternal(JobExecutionContext arg0) throws JobExecutionException {
 	/**
 	 * Runs according to the subscription schedule. On each run a new Job is
-	 * created
+	 * created.
+	 * 
+	 * Creating a new Job and its related entities can be done very quickly.
+	 * Another scheduled Quartz job, SubscriptionJobProcessorScheduledJob will
+	 * discover these Job entities and run them.
 	 */
 	public void run() {
 
@@ -117,12 +145,20 @@ public class SubscriptionScheduledJob {
 
 		Subscription subscription = subscriptionRepository.findOne(subscriptionId);
 		if (subscription != null) {
+			
+			JobStatus jobStatusQueued = jobStatusRepository.findOne(JobStatus.QUEUED_ID);
 
 			Job job = new Job(
+					subscription,
+					jobStatusQueued,
+					null,
 					subscription.getReportVersion(),
 					subscription.getRole(),
-					subscription.getDocumentFormat());
-
+					subscription.getDocumentFormat(),
+					null,
+					null,
+					null,
+					null);
 			/*
 			 * Create one 
 			 */
@@ -138,11 +174,27 @@ public class SubscriptionScheduledJob {
 			logger.info("Saved job ={}", job);
 
 		} else {
-			logger.error("No subscription for subscriptionId = {}", subscriptionId);
+			logger.error("No Subscription for subscriptionId = {}", subscriptionId);
 		}
 
 		//TODO After creating a Job, force the job processor to run with triggerJob(),
 
+		/*
+		 * It might be wise to implement some mechanism to try to avoid a buggy 
+		 * situation where zillions of new [job] & [job_parameter_value] records
+		 * are created when some piece of code gets stuck in a tight loop. If 
+		 * this occurs, it is a bug that needs to be fixed, but we still want to
+		 * avoid it because it will contaminate a customer's report server 
+		 * database with zillions of jobs that the system will try to run.
+		 */
+		//TODO Should we sleep here for a minute or a few minutes to avoid having this job running too often?
+		// But this might cause problems while trying to shutdown?
+		// Perhaps we should record the last time this code ran using a field. Then, if the period is
+		// too small, sleep for a little while?
+		// private long lastRun = 0;  // System.currentTimeMillis();
+		//Instead of sleeping, do nothing abd just let the method end. Only when 
+		// at least a small time (1 minute?) has passed should we actually create
+		// a Job - and then update "lastRun"!
 	}
 
 	public UUID getSubscriptionId() {

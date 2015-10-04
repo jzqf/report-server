@@ -15,18 +15,18 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.qfree.obo.report.domain.ReportCategory;
+import com.qfree.obo.report.domain.JobStatus;
 import com.qfree.obo.report.rest.server.RestUtils.RestApiVersion;
 
 @XmlRootElement
 //@XmlJavaTypeAdapter(value = UuidAdapter.class, type = UUID.class) <- doesn't work
-public class ReportCategoryResource extends AbstractBaseResource {
+public class JobStatusResource extends AbstractBaseResource {
 
-	private static final Logger logger = LoggerFactory.getLogger(ReportCategoryResource.class);
+	private static final Logger logger = LoggerFactory.getLogger(JobStatusResource.class);
 
 	@XmlElement
 	@XmlJavaTypeAdapter(UuidAdapter.class)
-	private UUID reportCategoryId;
+	private UUID jobStatusId;
 
 	@XmlElement
 	private String abbreviation;
@@ -35,7 +35,7 @@ public class ReportCategoryResource extends AbstractBaseResource {
 	private String description;
 
 	//	@XmlElement
-	//	private List<Report> reports;
+	//	private List<Job> jobs;
 
 	@XmlElement
 	private Boolean active;
@@ -44,17 +44,17 @@ public class ReportCategoryResource extends AbstractBaseResource {
 	@XmlJavaTypeAdapter(DatetimeAdapter.class)
 	private Date createdOn;
 
-	public ReportCategoryResource() {
+	public JobStatusResource() {
 	}
 
-	public ReportCategoryResource(ReportCategory reportCategory, UriInfo uriInfo,
+	public JobStatusResource(JobStatus jobStatus, UriInfo uriInfo,
 			Map<String, List<String>> queryParams, RestApiVersion apiVersion) {
 
-		super(ReportCategory.class, reportCategory.getReportCategoryId(), uriInfo, queryParams, apiVersion);
+		super(JobStatus.class, jobStatus.getJobStatusId(), uriInfo, queryParams, apiVersion);
 
 		List<String> expand = queryParams.get(ResourcePath.EXPAND_QP_KEY);
 
-		String expandParam = ResourcePath.forEntity(ReportCategory.class).getExpandParam();
+		String expandParam = ResourcePath.forEntity(JobStatus.class).getExpandParam();
 		if (expand.contains(expandParam)) {
 			/*
 			 * Make a copy of the "expand" list from which expandParam is
@@ -79,22 +79,22 @@ public class ReportCategoryResource extends AbstractBaseResource {
 			 */
 			apiVersion = null;
 
-			this.reportCategoryId = reportCategory.getReportCategoryId();
-			this.abbreviation = reportCategory.getAbbreviation();
-			this.description = reportCategory.getDescription();
-			//		this.reports=reports;
-			this.active = reportCategory.isActive();
-			this.createdOn = reportCategory.getCreatedOn();
+			this.jobStatusId = jobStatus.getJobStatusId();
+			this.abbreviation = jobStatus.getAbbreviation();
+			this.description = jobStatus.getDescription();
+			//		this.job=job;
+			this.active = jobStatus.getActive();
+			this.createdOn = jobStatus.getCreatedOn();
 		}
 		logger.debug("this = {}", this);
 	}
 
-	public UUID getReportCategoryId() {
-		return reportCategoryId;
+	public UUID getJobStatusId() {
+		return jobStatusId;
 	}
 
-	public void setReportCategoryId(UUID reportCategoryId) {
-		this.reportCategoryId = reportCategoryId;
+	public void setJobStatusId(UUID jobStatusId) {
+		this.jobStatusId = jobStatusId;
 	}
 
 	public String getAbbreviation() {
@@ -132,8 +132,8 @@ public class ReportCategoryResource extends AbstractBaseResource {
 	@Override
 	public String toString() {
 		StringBuilder builder = new StringBuilder();
-		builder.append("ReportCategoryResource [reportCategoryId=");
-		builder.append(reportCategoryId);
+		builder.append("JobStatusResource [jobStatusId=");
+		builder.append(jobStatusId);
 		builder.append(", abbreviation=");
 		builder.append(abbreviation);
 		builder.append(", description=");
@@ -149,7 +149,7 @@ public class ReportCategoryResource extends AbstractBaseResource {
 
 	//	@Override
 	//	public String toString() {
-	//		return "ReportCategoryResource [href=" + href + "]";
+	//		return "JobStatusResource [href=" + href + "]";
 	//	}
 
 }
