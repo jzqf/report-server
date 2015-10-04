@@ -21,11 +21,13 @@ import org.springframework.core.env.Environment;
 import org.springframework.scheduling.quartz.CronTriggerFactoryBean;
 import org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean;
 import org.springframework.scheduling.quartz.SchedulerFactoryBean;
+import org.springframework.scheduling.quartz.SimpleTriggerFactoryBean;
 import org.springframework.stereotype.Component;
 
 import com.qfree.obo.report.db.SubscriptionRepository;
 import com.qfree.obo.report.domain.Subscription;
 import com.qfree.obo.report.dto.SchedulingStatusResource;
+import com.qfree.obo.report.exceptions.NoScheduleForSubscriptionException;
 import com.qfree.obo.report.scheduling.jobs.SubscriptionScheduledJob;
 
 /**
@@ -132,7 +134,8 @@ public class SubscriptionScheduler {
 			 */
 			try {
 				scheduleJob(subscription);
-			} catch (SchedulerException | ParseException | ClassNotFoundException | NoSuchMethodException e) {
+			} catch (SchedulerException | ParseException | ClassNotFoundException | NoSuchMethodException
+					| NoScheduleForSubscriptionException e) {
 				logger.error("Could not schedule Subscription entity: {}. Exception thrown = {}", subscription, e);
 			}
 		}
@@ -148,10 +151,12 @@ public class SubscriptionScheduler {
 	 * @throws ParseException
 	 * @throws NoSuchMethodException
 	 * @throws ClassNotFoundException
+	 * @throws NoScheduleForSubscriptionException
 	 */
 	//TODO Add synchronized here?
 	public void scheduleJob(Subscription subscription)
-			throws SchedulerException, ParseException, ClassNotFoundException, NoSuchMethodException {
+			throws SchedulerException, ParseException, ClassNotFoundException, NoSuchMethodException,
+			NoScheduleForSubscriptionException {
 
 		if (!schedulerFactoryBean.isRunning()) {
 			logger.warn("Attempt to schedule subscription {}, but the scheduler is not running", subscription);
@@ -250,26 +255,45 @@ public class SubscriptionScheduler {
 				 * Create a factory for obtaining a Quartz CronTrigger, to 
 				 * be used for subscriptionJobDetail.
 				 */
-				CronTriggerFactoryBean cronTrigger = new CronTriggerFactoryBean();
-				cronTrigger.setJobDetail(subscriptionJobDetailFactory.getObject());
-				cronTrigger.setName(subscription.getSubscriptionId().toString());
-				cronTrigger.setGroup(TRIGGER_GROUP);
-				//cronTrigger.setStartDelay(1000L);
-				cronTrigger.setCronExpression(subscription.getCronSchedule());
-				cronTrigger.afterPropertiesSet();
+				CronTriggerFactoryBean cronTriggerFactory = new CronTriggerFactoryBean();
+				cronTriggerFactory.setJobDetail(subscriptionJobDetailFactory.getObject());
+				cronTriggerFactory.setName(subscription.getSubscriptionId().toString());
+				cronTriggerFactory.setGroup(TRIGGER_GROUP);
+				cronTriggerFactory.setCronExpression(subscription.getCronSchedule());
+				cronTriggerFactory.afterPropertiesSet();
 
 				/*
 				 * Schedule the subscription to run according the schedule
-				 * defined by its trigger.
+				 * defined by its cron-based trigger.
 				 */
 				scheduler.scheduleJob(
 						subscriptionJobDetailFactory.getObject(),
-						cronTrigger.getObject());
+						cronTriggerFactory.getObject());
 
 			} else if (subscription.getRunOnceAt() != null) {
-				throw new RuntimeException("WRITE ME (treat case: subscription.getRunOnceAt() != null)");
+
+				/*
+				 * Create a factory for obtaining a Quartz SimpleTrigger, to
+				 * be used for subscriptionJobDetail.
+				 */
+				SimpleTriggerFactoryBean simpleTriggerFactory = new SimpleTriggerFactoryBean();
+				simpleTriggerFactory.setJobDetail(subscriptionJobDetailFactory.getObject());
+				simpleTriggerFactory.setName(subscription.getSubscriptionId().toString());
+				simpleTriggerFactory.setGroup(TRIGGER_GROUP);
+				simpleTriggerFactory.setStartTime(subscription.getRunOnceAt());
+				simpleTriggerFactory.setRepeatCount(0); // trigger will fire only once
+				simpleTriggerFactory.afterPropertiesSet();
+
+				/*
+				 * Schedule the subscription to run according the schedule
+				 * defined by its one-shot trigger.
+				 */
+				scheduler.scheduleJob(
+						subscriptionJobDetailFactory.getObject(),
+						simpleTriggerFactory.getObject());
+
 			} else {
-				throw new RuntimeException("WRITE ME (throw custom exception?)");
+				throw new NoScheduleForSubscriptionException();
 			}
 
 		} else {

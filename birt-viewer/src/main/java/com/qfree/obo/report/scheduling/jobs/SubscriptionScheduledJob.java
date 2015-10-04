@@ -1,5 +1,7 @@
 package com.qfree.obo.report.scheduling.jobs;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 import org.slf4j.Logger;
@@ -13,8 +15,12 @@ import com.qfree.obo.report.db.JobRepository;
 import com.qfree.obo.report.db.JobStatusRepository;
 import com.qfree.obo.report.db.SubscriptionRepository;
 import com.qfree.obo.report.domain.Job;
+import com.qfree.obo.report.domain.JobParameter;
+import com.qfree.obo.report.domain.JobParameterValue;
 import com.qfree.obo.report.domain.JobStatus;
 import com.qfree.obo.report.domain.Subscription;
+import com.qfree.obo.report.domain.SubscriptionParameter;
+import com.qfree.obo.report.domain.SubscriptionParameterValue;
 
 /*
  * This class is instantiated by Quartz and therefore Spring-based dependency
@@ -113,6 +119,27 @@ public class SubscriptionScheduledJob {
 	private UUID subscriptionId;
 
 	/*
+	 * This is used to avoid the unfortunate, although probably unlikely, 
+	 * possibility that this job is triggered at a very high frequency (due
+	 * to an error in the cron schedule or whatever. If that should happen, then
+	 * a very large number of Job entities could be created quickly, resulting 
+	 * in a huge number of reports being run and sent out by email. 
+	 * 
+	 * To avoid this possibility, the "run()" method (which performs all of the
+	 * work to process a Subscription and create a Job), will do nothing until
+	 * a certain minimum time has elapsed. This minimum time is specified by
+	 * MIN_TIME_BETWEEN_RUNS_MS.
+	 */
+	private long lastRunMs = 0;
+
+	/*
+	 * This is the minimum time in milliseconds between runs. The "run()" method
+	 * will do nothing until at least this much time has elapsed since the last
+	 * time it processed the subscription.
+	 */
+	private final long MIN_TIME_BETWEEN_RUNS_MS = 60L * 1000L;
+
+	/*
 	 * QUESTION: Is it possible for more than one instance of this class to be
 	 * created for the same subscription? Could this happen if a ridiculously
 	 * frequent schedule was set and the code run from this class ran for longer
@@ -138,14 +165,13 @@ public class SubscriptionScheduledJob {
 	 */
 	public void run() {
 
-		//logger.info("subscriptionId = {}", subscriptionId);
-		//		logger.info("subscriptionService = {}", subscriptionService);
-		//		logger.info("subscriptionRepository = {}", subscriptionRepository);
-		//		logger.info("jobRepository = {}", jobRepository);
+		logger.info("***** Only process subscription if a sufficient amount of time has passed since last run *****");
+
+		logger.info("Creating Job for subscriptionId = {}...", subscriptionId);
 
 		Subscription subscription = subscriptionRepository.findOne(subscriptionId);
 		if (subscription != null) {
-			
+
 			JobStatus jobStatusQueued = jobStatusRepository.findOne(JobStatus.QUEUED_ID);
 
 			Job job = new Job(
@@ -159,13 +185,72 @@ public class SubscriptionScheduledJob {
 					null,
 					null,
 					null);
-			/*
-			 * Create one 
-			 */
+
+			List<JobParameter> jobParameters = new ArrayList<>(0);
+			job.setJobParameters(jobParameters);
 
 			/*
-			 * Assign a JobStatus to the Job
+			 * Create one JobParameter for each SubscriptionParameter:
 			 */
+			for (SubscriptionParameter subscriptionParameter : subscription.getSubscriptionParameters()) {
+
+				JobParameter jobParameter = new JobParameter(job, subscriptionParameter.getReportParameter());
+				jobParameters.add(jobParameter);
+
+				List<JobParameterValue> jobParameterValues = new ArrayList<>(0);
+				jobParameter.setJobParameterValues(jobParameterValues);
+
+				/*
+				 * Create one JobParameterValue for each 
+				 * SubscriptionParameterValue:
+				 */
+				List<SubscriptionParameterValue> subscriptionParameterValues = subscriptionParameter
+						.getSubscriptionParameterValues();
+				for (SubscriptionParameterValue subscriptionParameterValue : subscriptionParameterValues) {
+
+					/*
+					 * SubscriptionParameterValue entities can represent either:
+					 * 
+					 *   1. A static value for a report parameter, or
+					 *   
+					 *   2. Details for how to compute a report parameter value.
+					 *      This applies in particular to report parameters of type
+					 *      "datetime".
+					 */
+					if (subscriptionParameterValues.size() == 1
+							&& (subscriptionParameterValue.getYearNumber() != null ||
+									subscriptionParameterValue.getYearsAgo() != null ||
+									subscriptionParameterValue.getMonthNumber() != null ||
+									subscriptionParameterValue.getMonthsAgo() != null ||
+									subscriptionParameterValue.getWeeksAgo() != null ||
+									subscriptionParameterValue.getDayOfWeekInMonthOrdinal() != null ||
+									subscriptionParameterValue.getDayOfWeekInMonthNumber() != null ||
+									subscriptionParameterValue.getDayOfWeekNumber() != null ||
+									subscriptionParameterValue.getDayOfMonthNumber() != null ||
+									subscriptionParameterValue.getDaysAgo() != null ||
+									subscriptionParameterValue.getDurationToAddYears() != null ||
+									subscriptionParameterValue.getDurationToAddMonths() != null ||
+									subscriptionParameterValue.getDurationToAddWeeks() != null ||
+									subscriptionParameterValue.getDurationToAddDays() != null ||
+									subscriptionParameterValue.getDurationToAddHours() != null ||
+									subscriptionParameterValue.getDurationToAddMinutes() != null ||
+									subscriptionParameterValue.getDurationToAddSeconds() != null)) {
+
+						//TODO Create single JobParameterValue that must be COMPUTED. Place this code in
+						// the JobParameterValue constructor (must remove check for size of list = 1).
+						logger.error(
+								"\n*****\n*****\nCreate single JobParameterValue that must be COMPUTED\n*****\n*****");
+
+					} else {
+						/*
+						 * The SubscriptionParameterValue entity represents a static value.
+						 */
+						JobParameterValue jobParameterValue = new JobParameterValue(jobParameter,
+								subscriptionParameterValue);
+						jobParameterValues.add(jobParameterValue);
+					}
+				}
+			}
 
 			/*
 			 * This should save all entities created.
@@ -173,11 +258,14 @@ public class SubscriptionScheduledJob {
 			job = jobRepository.save(job);
 			logger.info("Saved job ={}", job);
 
+			logger.info("Finsihed creating Job for subscriptionId = {}", subscriptionId);
+
 		} else {
-			logger.error("No Subscription for subscriptionId = {}", subscriptionId);
+			logger.error("No Subscription exists for subscriptionId = {}", subscriptionId);
 		}
 
 		//TODO After creating a Job, force the job processor to run with triggerJob(),
+		logger.info("***** Write code to trigger the job processor here *****");
 
 		/*
 		 * It might be wise to implement some mechanism to try to avoid a buggy 

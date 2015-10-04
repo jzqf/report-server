@@ -149,6 +149,19 @@ public class JobParameterValue implements Serializable {
 				DateUtils.nowUtc());
 	}
 
+	public JobParameterValue(JobParameter jobParameter, SubscriptionParameterValue subscriptionParameterValue) {
+		this(
+				jobParameter,
+				subscriptionParameterValue.getBooleanValue(),
+				subscriptionParameterValue.getDateValue(),
+				subscriptionParameterValue.getDatetimeValue(),
+				subscriptionParameterValue.getFloatValue(),
+				subscriptionParameterValue.getIntegerValue(),
+				subscriptionParameterValue.getStringValue(),
+				subscriptionParameterValue.getTimeValue(),
+				DateUtils.nowUtc());
+	}
+
 	public JobParameterValue(
 			JobParameter jobParameter,
 			Boolean booleanValue,
