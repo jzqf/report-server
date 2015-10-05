@@ -29,6 +29,7 @@ import com.qfree.obo.report.domain.Subscription;
 import com.qfree.obo.report.dto.SchedulingStatusResource;
 import com.qfree.obo.report.exceptions.NoScheduleForSubscriptionException;
 import com.qfree.obo.report.scheduling.jobs.SubscriptionScheduledJob;
+import com.qfree.obo.report.util.DateUtils;
 
 /**
  * This bean manages the scheduling of SubscriptionScheduledJob instances.
@@ -82,7 +83,7 @@ public class SubscriptionScheduler {
 
 		if (env.getProperty("startup.schedule.subscriptions").equals("true")) {
 
-			logger.info("Sceduling all enabled subscriptions...");
+			logger.info("Scheduling all enabled subscriptions...");
 
 			long sleepMs = 1000L;
 			long maxWaitMs = 10000L;
@@ -280,17 +281,43 @@ public class SubscriptionScheduler {
 				simpleTriggerFactory.setJobDetail(subscriptionJobDetailFactory.getObject());
 				simpleTriggerFactory.setName(subscription.getSubscriptionId().toString());
 				simpleTriggerFactory.setGroup(TRIGGER_GROUP);
-				simpleTriggerFactory.setStartTime(subscription.getRunOnceAt());
-				simpleTriggerFactory.setRepeatCount(0); // trigger will fire only once
-				simpleTriggerFactory.afterPropertiesSet();
-
 				/*
-				 * Schedule the subscription to run according the schedule
-				 * defined by its one-shot trigger.
+				 * Like all dates stored in the database, it is stored relative
+				 * to UTC/GMT.We need to adjust it here so that the subscription
+				 * is triggered at the appropriate time. Since java.util.Date
+				 * objects don't have time zone support, we have to perform some
+				 * magic here with DateUtils. 
 				 */
-				scheduler.scheduleJob(
-						subscriptionJobDetailFactory.getObject(),
-						simpleTriggerFactory.getObject());
+				logger.debug("subscription.getRunOnceAt() = {}", subscription.getRunOnceAt());
+				Date runOnceAtServerTimezone = DateUtils
+						.entityTimestampToServerTimezoneDate(subscription.getRunOnceAt());
+				logger.debug("runOnceAtServerTimezone = {}", runOnceAtServerTimezone);
+				/*
+				 * Only schedule the job if the trigger time is in the future.
+				 * Testing shows that the subscription job will get fired once
+				 * after executing "scheduler.scheduleJob(...)" below even if 
+				 * the "start time" is in the past. This is incorrect behaviour;
+				 * otherwise a user will receive a report via e-mail each time
+				 * the report server starts up, even though the "start time" is
+				 * in the past.
+				 */
+				if (runOnceAtServerTimezone.getTime() > new Date().getTime()) {
+					simpleTriggerFactory.setStartTime(runOnceAtServerTimezone);
+					simpleTriggerFactory.setRepeatCount(0); // trigger will fire only once
+					simpleTriggerFactory.afterPropertiesSet();
+
+					/*
+					 * Schedule the subscription to run according the schedule
+					 * defined by its one-shot trigger.
+					 */
+					scheduler.scheduleJob(
+							subscriptionJobDetailFactory.getObject(),
+							simpleTriggerFactory.getObject());
+				} else {
+					logger.info(
+							"Subscription with id = '{}' not scheduled because \"runOnceAt\" = '{}' (relative to UTC) is in the past",
+							subscription.getSubscriptionId(), subscription.getRunOnceAt());
+				}
 
 			} else {
 				throw new NoScheduleForSubscriptionException();

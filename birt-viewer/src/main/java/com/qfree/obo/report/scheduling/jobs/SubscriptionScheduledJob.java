@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import org.quartz.SchedulerException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +22,7 @@ import com.qfree.obo.report.domain.JobStatus;
 import com.qfree.obo.report.domain.Subscription;
 import com.qfree.obo.report.domain.SubscriptionParameter;
 import com.qfree.obo.report.domain.SubscriptionParameterValue;
+import com.qfree.obo.report.scheduling.schedulers.SubscriptionJobProcessorScheduler;
 
 /*
  * This class is instantiated by Quartz and therefore Spring-based dependency
@@ -116,6 +118,9 @@ public class SubscriptionScheduledJob {
 	@Autowired
 	private JobStatusRepository jobStatusRepository;
 
+	@Autowired
+	private SubscriptionJobProcessorScheduler subscriptionJobProcessorScheduler;
+
 	private UUID subscriptionId;
 
 	/*
@@ -165,124 +170,130 @@ public class SubscriptionScheduledJob {
 	 */
 	public void run() {
 
-		logger.info("***** Only process subscription if a sufficient amount of time has passed since last run *****");
+		/*
+		 * To avoid the potential of a messy situation where an unreasonable 
+		 * large number of Job entities are created per second, this method does
+		 * nothing until a certain minimum time has elapsed since the last time
+		 * it processed its Subscription.
+		 */
+		if (System.currentTimeMillis() - lastRunMs > MIN_TIME_BETWEEN_RUNS_MS) {
+			lastRunMs = System.currentTimeMillis(); // Update "last run" time
 
-		logger.info("Creating Job for subscriptionId = {}...", subscriptionId);
+			logger.info("");
+			logger.info("");
+			logger.info("Creating Job for subscriptionId = {}...", subscriptionId);
 
-		Subscription subscription = subscriptionRepository.findOne(subscriptionId);
-		if (subscription != null) {
+			Subscription subscription = subscriptionRepository.findOne(subscriptionId);
+			if (subscription != null) {
 
-			JobStatus jobStatusQueued = jobStatusRepository.findOne(JobStatus.QUEUED_ID);
+				JobStatus jobStatusQueued = jobStatusRepository.findOne(JobStatus.QUEUED_ID);
 
-			Job job = new Job(
-					subscription,
-					jobStatusQueued,
-					null,
-					subscription.getReportVersion(),
-					subscription.getRole(),
-					subscription.getDocumentFormat(),
-					null,
-					null,
-					null,
-					null);
+				Job job = new Job(
+						subscription,
+						jobStatusQueued,
+						null,
+						subscription.getReportVersion(),
+						subscription.getRole(),
+						subscription.getDocumentFormat(),
+						null,
+						null,
+						null,
+						null);
 
-			List<JobParameter> jobParameters = new ArrayList<>(0);
-			job.setJobParameters(jobParameters);
-
-			/*
-			 * Create one JobParameter for each SubscriptionParameter:
-			 */
-			for (SubscriptionParameter subscriptionParameter : subscription.getSubscriptionParameters()) {
-
-				JobParameter jobParameter = new JobParameter(job, subscriptionParameter.getReportParameter());
-				jobParameters.add(jobParameter);
-
-				List<JobParameterValue> jobParameterValues = new ArrayList<>(0);
-				jobParameter.setJobParameterValues(jobParameterValues);
+				List<JobParameter> jobParameters = new ArrayList<>(0);
+				job.setJobParameters(jobParameters);
 
 				/*
-				 * Create one JobParameterValue for each 
-				 * SubscriptionParameterValue:
+				 * Create one JobParameter for each SubscriptionParameter:
 				 */
-				List<SubscriptionParameterValue> subscriptionParameterValues = subscriptionParameter
-						.getSubscriptionParameterValues();
-				for (SubscriptionParameterValue subscriptionParameterValue : subscriptionParameterValues) {
+				for (SubscriptionParameter subscriptionParameter : subscription.getSubscriptionParameters()) {
+
+					JobParameter jobParameter = new JobParameter(job, subscriptionParameter.getReportParameter());
+					jobParameters.add(jobParameter);
+
+					List<JobParameterValue> jobParameterValues = new ArrayList<>(0);
+					jobParameter.setJobParameterValues(jobParameterValues);
 
 					/*
-					 * SubscriptionParameterValue entities can represent either:
-					 * 
-					 *   1. A static value for a report parameter, or
-					 *   
-					 *   2. Details for how to compute a report parameter value.
-					 *      This applies in particular to report parameters of type
-					 *      "datetime".
+					 * Create one JobParameterValue for each 
+					 * SubscriptionParameterValue:
 					 */
-					if (subscriptionParameterValues.size() == 1
-							&& (subscriptionParameterValue.getYearNumber() != null ||
-									subscriptionParameterValue.getYearsAgo() != null ||
-									subscriptionParameterValue.getMonthNumber() != null ||
-									subscriptionParameterValue.getMonthsAgo() != null ||
-									subscriptionParameterValue.getWeeksAgo() != null ||
-									subscriptionParameterValue.getDayOfWeekInMonthOrdinal() != null ||
-									subscriptionParameterValue.getDayOfWeekInMonthNumber() != null ||
-									subscriptionParameterValue.getDayOfWeekNumber() != null ||
-									subscriptionParameterValue.getDayOfMonthNumber() != null ||
-									subscriptionParameterValue.getDaysAgo() != null ||
-									subscriptionParameterValue.getDurationToAddYears() != null ||
-									subscriptionParameterValue.getDurationToAddMonths() != null ||
-									subscriptionParameterValue.getDurationToAddWeeks() != null ||
-									subscriptionParameterValue.getDurationToAddDays() != null ||
-									subscriptionParameterValue.getDurationToAddHours() != null ||
-									subscriptionParameterValue.getDurationToAddMinutes() != null ||
-									subscriptionParameterValue.getDurationToAddSeconds() != null)) {
+					List<SubscriptionParameterValue> subscriptionParameterValues = subscriptionParameter
+							.getSubscriptionParameterValues();
+					for (SubscriptionParameterValue subscriptionParameterValue : subscriptionParameterValues) {
 
-						//TODO Create single JobParameterValue that must be COMPUTED. Place this code in
-						// the JobParameterValue constructor (must remove check for size of list = 1).
-						logger.error(
-								"\n*****\n*****\nCreate single JobParameterValue that must be COMPUTED\n*****\n*****");
-
-					} else {
 						/*
-						 * The SubscriptionParameterValue entity represents a static value.
+						 * SubscriptionParameterValue entities can represent either:
+						 * 
+						 *   1. A static value for a report parameter, or
+						 *   
+						 *   2. Details for how to compute a report parameter value.
+						 *      This applies in particular to report parameters of type
+						 *      "datetime".
 						 */
-						JobParameterValue jobParameterValue = new JobParameterValue(jobParameter,
-								subscriptionParameterValue);
-						jobParameterValues.add(jobParameterValue);
+						if (subscriptionParameterValues.size() == 1
+								&& (subscriptionParameterValue.getYearNumber() != null ||
+										subscriptionParameterValue.getYearsAgo() != null ||
+										subscriptionParameterValue.getMonthNumber() != null ||
+										subscriptionParameterValue.getMonthsAgo() != null ||
+										subscriptionParameterValue.getWeeksAgo() != null ||
+										subscriptionParameterValue.getDayOfWeekInMonthOrdinal() != null ||
+										subscriptionParameterValue.getDayOfWeekInMonthNumber() != null ||
+										subscriptionParameterValue.getDayOfWeekNumber() != null ||
+										subscriptionParameterValue.getDayOfMonthNumber() != null ||
+										subscriptionParameterValue.getDaysAgo() != null ||
+										subscriptionParameterValue.getDurationToAddYears() != null ||
+										subscriptionParameterValue.getDurationToAddMonths() != null ||
+										subscriptionParameterValue.getDurationToAddWeeks() != null ||
+										subscriptionParameterValue.getDurationToAddDays() != null ||
+										subscriptionParameterValue.getDurationToAddHours() != null ||
+										subscriptionParameterValue.getDurationToAddMinutes() != null ||
+										subscriptionParameterValue.getDurationToAddSeconds() != null)) {
+
+							//TODO Create single JobParameterValue that must be COMPUTED. Place this code in
+							// the JobParameterValue constructor (must remove check for size of list = 1).
+							logger.error(
+									"\n*****\n*****\nCreate single JobParameterValue that must be COMPUTED\n*****\n*****");
+
+						} else {
+							/*
+							 * The SubscriptionParameterValue entity represents a static value.
+							 */
+							JobParameterValue jobParameterValue = new JobParameterValue(jobParameter,
+									subscriptionParameterValue);
+							jobParameterValues.add(jobParameterValue);
+						}
 					}
 				}
+
+				/*
+				 * This should save all entities created.
+				 */
+				job = jobRepository.save(job);
+
+				logger.info("Finished creating Job for subscriptionId = {}", subscriptionId);
+				logger.info("jobRepository.count() = {}", jobRepository.count());
+
+				/*
+				 * Force the processor to run so it will process the Job just 
+				 * created. This assumes that the transaction in which this job
+				 * here is running within will finish before the job processor
+				 * tries to process this Job; otherwise, the Job created here
+				 * will not be visible to it.
+				*/
+				try {
+					subscriptionJobProcessorScheduler.triggerJob();
+				} catch (SchedulerException e) {
+					logger.error("Exception thrown when triggering the job processor.", e);
+				}
+
+				logger.info("");
+				logger.info("");
+
+			} else {
+				logger.error("No Subscription exists for subscriptionId = {}", subscriptionId);
 			}
-
-			/*
-			 * This should save all entities created.
-			 */
-			job = jobRepository.save(job);
-			logger.info("Saved job ={}", job);
-
-			logger.info("Finsihed creating Job for subscriptionId = {}", subscriptionId);
-
-		} else {
-			logger.error("No Subscription exists for subscriptionId = {}", subscriptionId);
 		}
-
-		//TODO After creating a Job, force the job processor to run with triggerJob(),
-		logger.info("***** Write code to trigger the job processor here *****");
-
-		/*
-		 * It might be wise to implement some mechanism to try to avoid a buggy 
-		 * situation where zillions of new [job] & [job_parameter_value] records
-		 * are created when some piece of code gets stuck in a tight loop. If 
-		 * this occurs, it is a bug that needs to be fixed, but we still want to
-		 * avoid it because it will contaminate a customer's report server 
-		 * database with zillions of jobs that the system will try to run.
-		 */
-		//TODO Should we sleep here for a minute or a few minutes to avoid having this job running too often?
-		// But this might cause problems while trying to shutdown?
-		// Perhaps we should record the last time this code ran using a field. Then, if the period is
-		// too small, sleep for a little while?
-		// private long lastRun = 0;  // System.currentTimeMillis();
-		//Instead of sleeping, do nothing abd just let the method end. Only when 
-		// at least a small time (1 minute?) has passed should we actually create
-		// a Job - and then update "lastRun"!
 	}
 
 	public UUID getSubscriptionId() {

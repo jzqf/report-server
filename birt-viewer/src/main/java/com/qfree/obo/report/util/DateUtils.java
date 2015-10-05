@@ -22,7 +22,7 @@ public class DateUtils {
 
 	/**
 	 * Returns a {@link Date} corresponding to the current datetime such that if
-	 * it is stored in a PostgreSQL table column of type "timestamp without 
+	 * it is stored in a PostgreSQL table column of type "timestamp without
 	 * timezone", the value will represent the current instant in time in for
 	 * the GMT time zone.
 	 * <p>
@@ -343,16 +343,16 @@ public class DateUtils {
 		LocalTime localTime = LocalTime.parse(timeString);
 		logger.debug("localTime          = {}", localTime);
 
-		 /*
-		 * Combine the local time with the LocalDate in the local time
-		 * zone. It seems to do the job.
-		 */
-		 ZonedDateTime zonedDateTime = ZonedDateTime.of(LocalDate.now(),
-		 localTime, ZoneId.systemDefault());
-		 logger.debug("zonedDateTime = {}", zonedDateTime);
-		
-		 Date unmarshalledDate = Date.from(zonedDateTime.toInstant());
-		 logger.debug("unmarshalledDate = {}", unmarshalledDate);
+		/*
+		* Combine the local time with the LocalDate in the local time
+		* zone. It seems to do the job.
+		*/
+		ZonedDateTime zonedDateTime = ZonedDateTime.of(LocalDate.now(),
+				localTime, ZoneId.systemDefault());
+		logger.debug("zonedDateTime = {}", zonedDateTime);
+
+		Date unmarshalledDate = Date.from(zonedDateTime.toInstant());
+		logger.debug("unmarshalledDate = {}", unmarshalledDate);
 
 		return unmarshalledDate;
 	}
@@ -390,15 +390,19 @@ public class DateUtils {
 	/**
 	 * Oddly, the string representation of an Entity Date field annotated with
 	 * {@literal @}Temporal(TemporalType.TIMESTAMP) is quite different than the
-	 * string representation of a "normal" Java Date instance. Somehow, the
-	 * underlying Date objects are different, but the details are not clear. Th
-	 * STRING REPRESENTATION of such a Date returned from an entity has no time
-	 * zone information at all, but a "normal" Java does. Examples of each are
+	 * string representation of a "normal" Java {@link Date} instance. Somehow,
+	 * the underlying Date objects are different, but the details are not clear.
+	 * The <b>string representation</b> of such a {@link Date} returned from an
+	 * entity has no time zone information at all, but a "normal" Java
+	 * {@link Date} does. This is likely related to the fact that timestamps in
+	 * the database are stored in columns of type "timestamp without time zone",
+	 * i.e., time zone information has been discarded. Examples of each are:
 	 * 
-	 * <pre>
-	 * <code>timestampFromEntity.toString()  -> "2015-05-30 22:00:00.0"
-	 *normalDate.toString()      -> "Sat May 30 22:00:00 CEST 2015"</code>
-	 * </pre>
+	 * <ul>
+	 * <li><code>timestampFromEntity.toString()</code> ->
+	 * "2015-05-30 22:00:00.0"
+	 * <li><code>normalDate.toString()</code> -> "Sat May 30 22:00:00 CEST 2015"
+	 * </ul>
 	 * 
 	 * In order to compare objects of these "types" (technically, they are the
 	 * same Java type) and assert that they are "equal" in a test, the Date
@@ -414,15 +418,56 @@ public class DateUtils {
 		return calendar.getTime();
 	}
 
+	public static Date entityTimestampToServerTimezoneDate(Date entityTimestamp) {
+		logger.debug("entityTimestamp    = {}", entityTimestamp);
+
+		/*
+		 * Convert entityTimestamp to a LocalDateTime at UTC/GMT. This preserves
+		 * the date and the time values; It just strips the time zone 
+		 * information. Examples:
+		 * 
+		 *  entityTimestamp.toString()      localDateTimeUTC.toString()
+		 *  ------------------------------   ------------------------------
+		 *  2015-10-04 20:45:00.0         -> 2015-10-04T20:45
+		 */
+		LocalDateTime localDateTimeUTC = LocalDateTime.ofInstant(entityTimestamp.toInstant(), ZoneId.systemDefault());
+		logger.debug("localDateTimeUTC   = {}", localDateTimeUTC);
+
+		/*
+		 * Convert localDateTimeUTC to a ZonedDateTime at UTC/GMT. Examples:
+		 * 
+		 *  localDateTimeUTC.toString()      zonedDateTimeUTC.toString()
+		 *  ------------------------------   ------------------------------
+		 *  2015-10-04T20:45              -> 2015-05-30T12:00+02:00[Europe/Oslo]
+		 */
+		ZonedDateTime zonedDateTimeUTC = localDateTimeUTC.atZone(ZoneId.of("Z"));
+		logger.debug("zonedDateTimeUTC = {}", zonedDateTimeUTC);
+
+		/*
+		 * Convert zonedDateTimeUTC to a java.util.Date relative to the time 
+		 * zone where the report server is located. Examples:
+		 * 
+		 *  zonedDateTimeUTC.toString()       dateAtServer.toString()
+		 *  ------------------------------         -----------------------------
+		 *  2015-05-30T12:00+02:00[Europe/Oslo] -> Sat May 30 12:00:00 CEST 2015
+		 *  2015-05-30T12:00+02:00[Europe/Oslo] -> Sat May 30 12:00:00 CEST 2015
+		 *  2015-05-30T10:00+02:00[Europe/Oslo] -> Sat May 30 10:00:00 CEST 2015
+		 */
+		Date dateAtServer = Date.from(zonedDateTimeUTC.toInstant());
+		logger.debug("dateAtServer       = {}", dateAtServer);
+
+		return dateAtServer;
+	}
+
 	/**
-	 * This performs the same function as method 
+	 * This performs the same function as method
 	 * {@link #entityTimestampToNormalDate}, but for entity class attributes
 	 * annotated with {@literal @}Temporal(TemporalType.Date)}. This method just
-	 * delegates to {@link #entityTimestampToNormalDate} but it is useful to 
+	 * delegates to {@link #entityTimestampToNormalDate} but it is useful to
 	 * have different methods as markers for the different TemporalType's, in
-	 * case attributes annoated with {@literal @}Temporal(TemporalType.Date)} 
-	 * requires a different  treatment than objects annotated with 
-	 * {@literal @}Temporal(TemporalType.Timestamp)} in the furture.
+	 * case attributes annoated with {@literal @}Temporal(TemporalType.Date)}
+	 * requires a different treatment than objects annotated with {@literal @}
+	 * Temporal(TemporalType.Timestamp)} in the furture.
 	 * 
 	 * @param entityDate
 	 * @return
