@@ -434,12 +434,13 @@ public class SubscriptionController extends AbstractBaseController {
 	 * This updates the subscription with UUID 1778cb69-0561-42b9-889f-cfe8c66978db
 	 * with the following changes:
 	 * 
-	 * document format:	-> "OpenDocument Spreadsheet"
-	 * cronSchedule:	-> null
-	 * runOnceAt:		-> "2015-11-04T06:00:00.000Z"
-	 * email:			-> "bozo@clown.net"
-	 * description:		-> "New description"
-	 * enabled:			-> true
+	 * document format:		-> "OpenDocument Spreadsheet"
+	 * cronSchedule:		-> null
+	 * cronScheduleZoneId	-> null
+	 * runOnceAt:			-> "2015-11-04T06:00:00.000Z"
+	 * email:				-> "bozo@clown.net"
+	 * description:			-> "New description"
+	 * enabled:				-> true
 	 */
 	@Path("/{id}")
 	@PUT

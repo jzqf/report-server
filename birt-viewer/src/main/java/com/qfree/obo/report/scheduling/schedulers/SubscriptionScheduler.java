@@ -1,8 +1,11 @@
 package com.qfree.obo.report.scheduling.schedulers;
 
 import java.text.ParseException;
+import java.time.DateTimeException;
+import java.time.ZoneId;
 import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -261,6 +264,36 @@ public class SubscriptionScheduler {
 				cronTriggerFactory.setName(subscription.getSubscriptionId().toString());
 				cronTriggerFactory.setGroup(TRIGGER_GROUP);
 				cronTriggerFactory.setCronExpression(subscription.getCronSchedule());
+
+				/*
+				 * Set the time zone for the cron expression.
+				 */
+				String cronScheduleZoneId = subscription.getCronScheduleZoneId();
+				logger.info("cronScheduleZoneId = {}", cronScheduleZoneId);
+				ZoneId cronZoneId = null;
+				if (cronScheduleZoneId != null && !cronScheduleZoneId.isEmpty()) {
+					try {
+						cronZoneId = ZoneId.of(cronScheduleZoneId);
+					} catch (DateTimeException e) {
+						logger.error(
+								"cronScheduleZoneId '{}' is not legal. The default time zone will be used for the cron expression",
+								cronScheduleZoneId);
+					}
+				} else {
+					logger.warn(
+							"cronScheduleZoneId is not defined. The default time zone will be used for the cron expression");
+				}
+				if (cronZoneId == null) {
+					/*
+					 * Use the default time-zone.
+					 */
+					cronZoneId = ZoneId.systemDefault();
+				}
+				logger.info("cronZoneId = {}", cronZoneId);
+				TimeZone cronTimeZone = TimeZone.getTimeZone(cronZoneId);
+				logger.info("cronTimeZone = {}", cronTimeZone);
+				cronTriggerFactory.setTimeZone(cronTimeZone);
+
 				cronTriggerFactory.afterPropertiesSet();
 
 				/*

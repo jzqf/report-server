@@ -43,6 +43,9 @@ public class SubscriptionResource extends AbstractBaseResource {
 	private String cronSchedule;
 
 	@XmlElement
+	private String cronScheduleZoneId;
+
+	@XmlElement
 	@XmlJavaTypeAdapter(DatetimeAdapter.class)
 	private Date runOnceAt;
 
@@ -160,6 +163,7 @@ public class SubscriptionResource extends AbstractBaseResource {
 					uriInfo, newQueryParams, apiVersion);
 
 			this.cronSchedule = subscription.getCronSchedule();
+			this.cronScheduleZoneId = subscription.getCronScheduleZoneId();
 			this.runOnceAt = subscription.getRunOnceAt();
 			this.email = subscription.getEmail();
 			this.description = subscription.getDescription();
@@ -243,6 +247,14 @@ public class SubscriptionResource extends AbstractBaseResource {
 		this.cronSchedule = cronSchedule;
 	}
 
+	public String getCronScheduleZoneId() {
+		return cronScheduleZoneId;
+	}
+
+	public void setCronScheduleZoneId(String cronScheduleZoneId) {
+		this.cronScheduleZoneId = cronScheduleZoneId;
+	}
+
 	public Date getRunOnceAt() {
 		return runOnceAt;
 	}
@@ -321,6 +333,8 @@ public class SubscriptionResource extends AbstractBaseResource {
 		builder.append(documentFormatResource);
 		builder.append(", cronSchedule=");
 		builder.append(cronSchedule);
+		builder.append(", cronScheduleZoneId=");
+		builder.append(cronScheduleZoneId);
 		builder.append(", runOnceAt=");
 		builder.append(runOnceAt);
 		builder.append(", email=");

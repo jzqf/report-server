@@ -1,5 +1,9 @@
 package com.qfree.obo.report.rest.server;
 
+import java.time.ZoneId;
+import java.util.Arrays;
+import java.util.Set;
+
 import javax.ws.rs.GET;
 import javax.ws.rs.HeaderParam;
 import javax.ws.rs.Path;
@@ -71,6 +75,23 @@ public class RootController extends AbstractBaseController {
 			dbversion = configuration.getIntegerValue() != null ? configuration.getIntegerValue() : -1;
 		}
 		return dbversion;
+	}
+
+	@GET
+	@Path("/subscriptionTimeZones")
+	@Produces(MediaType.TEXT_PLAIN)
+	//	@Produces(MediaType.APPLICATION_JSON)
+	public String getSubscriptionTimeZones(
+			@HeaderParam("Accept") final String acceptHeader,
+			@Context final UriInfo uriInfo) {
+		RestApiVersion apiVersion = RestUtils.extractAPIVersion(acceptHeader, RestApiVersion.v1);
+
+		Set<String> zoneIds = ZoneId.getAvailableZoneIds();
+		String[] zoneIdsArray = zoneIds.toArray(new String[] {});
+		Arrays.sort(zoneIdsArray);
+		String subscriptionTimeZones = String.join("\n", zoneIdsArray);
+
+		return subscriptionTimeZones;
 	}
 
 }
