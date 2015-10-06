@@ -134,7 +134,7 @@ public class SubscriptionController extends AbstractBaseController {
 	 *   
 	 *   $ curl -iH "Accept: application/json;v=1" -H "Content-Type: application/json" -X POST -d '{\
 	 *   "reportVersion":{"reportVersionId":"afd8777f-b6a2-4cb8-8dc2-887c47af3644"},\
-	 *   "role":{"roleId":"b85fd129-17d9-40e7-ac11-7541040f8627"},\
+	 *   "role":{"roleId":"b85fd129-17d9-40e7-ac11-7541040f8627"},"cronScheduleZoneId":"CET",\
 	 *   "documentFormat":{"documentFormatId":"30800d77-5fdd-44bc-94a3-1502bd307c1d"}}' \
 	 *   http://localhost:8080/rest/subscriptions
 	 *   

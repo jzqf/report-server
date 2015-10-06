@@ -100,7 +100,7 @@ public class RoleController extends AbstractBaseController {
 	 *   $ mvn clean spring-boot:run
 	 *   $ curl -iH "Accept: application/json;v=1" -H "Content-Type: application/json" -X POST -d \
 	 *   '{"username":"bozoc","fullName":"Bozo the clown","encodedPassword":"asdf=","loginRole":true,\
-	 *   "email":"bozo@circus.net"}' http://localhost:8080/rest/roles
+	 *   "email":"bozo@circus.net","timeZoneId":"CET"}' http://localhost:8080/rest/roles
 	 */
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
@@ -294,7 +294,8 @@ public class RoleController extends AbstractBaseController {
 	 * 
 	 *   $ mvn clean spring-boot:run
 	 *   $ curl -iH "Accept: application/json;v=1" -H "Content-Type: application/json" -X PUT -d \
-	 *   '{"username":"baaa (modified)","fullName":"Mr. baaa","encodedPassword":"qwerty=","loginRole":true}' \
+	 *   '{"username":"baaa (modified)","fullName":"Mr. baaa","encodedPassword":"qwerty=","loginRole":true,\
+	 *   "email":"dumbo@circus.net","timeZoneId":"UTC"}' \
 	 *   http://localhost:8080/rest/roles/0db97c2a-fb78-464a-a0e7-8d25f6003c14
 	 */
 	@Path("/{id}")

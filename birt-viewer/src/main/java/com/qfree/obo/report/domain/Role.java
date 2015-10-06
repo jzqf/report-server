@@ -76,6 +76,16 @@ public class Role implements Serializable {
 	@Column(name = "email", nullable = true, length = 160)
 	private String email;
 
+	/**
+	 * Used to associate a default time zone with the Role, e.g., for use with a
+	 * cron schedule for a new Subscription.
+	 * 
+	 * This string must be a legal value to pass to
+	 * {@link java.time.ZoneId#of(String)}.
+	 */
+	@Column(name = "time_zone_id", nullable = true, length = 80)
+	private String timeZoneId;
+
 	@OneToMany(targetEntity = RoleRole.class, mappedBy = "parentRole")
 	private List<RoleRole> parentRoleRoles;
 
@@ -125,16 +135,17 @@ public class Role implements Serializable {
 	private Role() {
 	}
 
-	public Role(String encodedPassword, String username, String fullName, Boolean loginRole) {
-		this(
-				null,
-				encodedPassword,
-				username,
-				fullName,
-				loginRole,
-				null,
-				DateUtils.nowUtc());
-	}
+	//	public Role(String encodedPassword, String username, String fullName, Boolean loginRole) {
+	//		this(
+	//				null,
+	//				encodedPassword,
+	//				username,
+	//				fullName,
+	//				loginRole,
+	//				null,
+	//				null,
+	//				DateUtils.nowUtc());
+	//	}
 
 	//	public Role(
 	//			String encodedPassword,
@@ -142,6 +153,7 @@ public class Role implements Serializable {
 	//			String fullName,
 	//			Boolean loginRole,
 	//			String email,
+	//			String timeZoneId,
 	//			Date createdOn) {
 	//		this(
 	//				null,
@@ -150,6 +162,7 @@ public class Role implements Serializable {
 	//				fullName,
 	//				loginRole,
 	//				email,
+	//				timeZoneId,
 	//				createdOn);
 	//	}
 
@@ -161,6 +174,7 @@ public class Role implements Serializable {
 				roleResource.getFullName(),
 				roleResource.isLoginRole(),
 				roleResource.getEmail(),
+				roleResource.getTimeZoneId(),
 				roleResource.getCreatedOn());
 	}
 
@@ -171,6 +185,7 @@ public class Role implements Serializable {
 			String fullName,
 			Boolean loginRole,
 			String email,
+			String timeZoneId,
 			Date createdOn) {
 		this.roleId = roleId;
 		this.loginRole = loginRole;
@@ -178,6 +193,7 @@ public class Role implements Serializable {
 		this.fullName = fullName;
 		this.encodedPassword = encodedPassword;
 		this.email = email;
+		this.timeZoneId = timeZoneId;
 		this.createdOn = (createdOn != null) ? createdOn : DateUtils.nowUtc();
 	}
 
@@ -223,6 +239,14 @@ public class Role implements Serializable {
 
 	public void setEmail(String email) {
 		this.email = email;
+	}
+
+	public String getTimeZoneId() {
+		return timeZoneId;
+	}
+
+	public void setTimeZoneId(String timeZoneId) {
+		this.timeZoneId = timeZoneId;
 	}
 
 	public Date getCreatedOn() {
@@ -300,6 +324,8 @@ public class Role implements Serializable {
 		builder.append(encodedPassword);
 		builder.append(", email=");
 		builder.append(email);
+		builder.append(", timeZoneId=");
+		builder.append(timeZoneId);
 		builder.append(", createdOn=");
 		builder.append(createdOn);
 		builder.append("]");

@@ -81,32 +81,39 @@ public class SubscriptionService {
 		// Subscription.class, "email");
 
 		/*
-		 * If no email address has been specified, but the Role associated with
-		 * the subscription has an e-mail address, use it. This requires that a 
-		 * Role has been specified.
+		 * If necessary, copy default values to the new Subscription from the 
+		 * Role associated with the subscription. This requires that a Role has
+		 * been specified.
 		 */
-		String currentEmail = subscriptionResource.getEmail();
-		if (currentEmail == null || currentEmail.isEmpty()) {
+		UUID roleId = null;
+		if (subscriptionResource.getRoleResource() != null) {
+			roleId = subscriptionResource.getRoleResource().getRoleId();
+		}
+		if (roleId != null) {
+			Role role = roleRepository.findOne(roleId);
+			RestUtils.ifNullThen404(role, Role.class, "roleId", roleId.toString());
 
-			RoleResource roleResource = subscriptionResource.getRoleResource();
-			UUID roleId = null;
-			if (roleResource != null) {
-				roleId = roleResource.getRoleId();
-			}
-			Role role = null;
-			if (roleId != null) {
-				role = roleRepository.findOne(roleId);
-				RestUtils.ifNullThen404(role, Role.class, "roleId",
-						roleId.toString());
-			} else {
-				throw new RestApiException(RestError.FORBIDDEN_SUBSCRIPTION_ROLE_NULL,
-						Subscription.class, "roleId");
+			/*
+			 * If no email address has been specified, use the value from the  
+			 * Role associated with the subscription (which itself may or may 
+			 * not be null or blank).
+			 */
+			String subscriptionEmail = subscriptionResource.getEmail();
+			if (subscriptionEmail == null || subscriptionEmail.isEmpty()) {
+				subscriptionResource.setEmail(role.getEmail());
 			}
 
-			String roleEmail = role.getEmail();
-			if (roleEmail != null && !roleEmail.isEmpty()) {
-				subscriptionResource.setEmail(roleEmail);
+			/*
+			 * If no time zone has been specified, use the value from the  
+			 * Role associated with the subscription (which itself may or may 
+			 * not be null or blank).
+			 */
+			String subscriptionTimeZone = subscriptionResource.getCronScheduleZoneId();
+			if (subscriptionTimeZone == null || subscriptionTimeZone.isEmpty()) {
+				subscriptionResource.setCronScheduleZoneId(role.getTimeZoneId());
 			}
+		} else {
+			throw new RestApiException(RestError.FORBIDDEN_SUBSCRIPTION_ROLE_NULL, Subscription.class, "roleId");
 		}
 
 		return saveOrUpdateFromResource(subscriptionResource);
@@ -274,8 +281,9 @@ public class SubscriptionService {
 	 * <li>There can be more than one {@link SubscriptionParameterValue} per
 	 * {@link SubscriptionParameter}, but only if the associated
 	 * {@link ReportParameter} has <code>multivalued=true</code>.
-	 * <li>The {@link Subscription} must have a usable value for either
-	 * <code>cronSchedule</code> or <code>runOnceAt</code>.
+	 * <li>The {@link Subscription} must have a usable values for either
+	 * <code>cronSchedule</code> & <code>cronScheduleZoneId</code> or for
+	 * <code>runOnceAt</code>.
 	 * <li>The {@link Subscription} must have a value for <code>email</code>.
 	 * </ul>
 	 * 
