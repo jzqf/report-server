@@ -53,6 +53,16 @@ public class SubscriptionScheduler {
 
 	private static final Logger logger = LoggerFactory.getLogger(SubscriptionScheduler.class);
 
+	/**
+	 * If false, the entity field Subscription.deliveryDatetimeRunAt will be
+	 * assumed to be expressed relative to UTC/GMT.
+	 * 
+	 * If true, the entity field Subscription.deliveryDatetimeRunAt will be
+	 * assumed to be expressed relative to the time zone specified by the entity
+	 * field Subscription.deliveryTimeZoneId.
+	 */
+	private static final boolean RUNAT_ENTITY_DATE_TZ_DYNAMIC = true;
+
 	private static final String JOB_GROUP = "Subscription_JobGroup";
 	private static final String TRIGGER_GROUP = "Subscription_TriggerGroup";
 
@@ -253,6 +263,33 @@ public class SubscriptionScheduler {
 			//	subscriptionJobDetailFactory.setGroup(JOB_GROUP);
 			//	subscriptionJobDetailFactory.afterPropertiesSet();
 
+			/*
+			 * Get the time zone for the cron expression or the "run at" 
+			 * timestamp.
+			 */
+			String cronScheduleZoneId = subscription.getCronScheduleZoneId();
+			logger.info("cronScheduleZoneId = {}", cronScheduleZoneId);
+			ZoneId cronZoneId = null;
+			if (cronScheduleZoneId != null && !cronScheduleZoneId.isEmpty()) {
+				try {
+					cronZoneId = ZoneId.of(cronScheduleZoneId);
+				} catch (DateTimeException e) {
+					logger.error(
+							"cronScheduleZoneId '{}' is not legal. The default time zone will be used for the cron expression",
+							cronScheduleZoneId);
+				}
+			} else {
+				logger.warn(
+						"cronScheduleZoneId is not defined. The default time zone will be used for the cron expression");
+			}
+			if (cronZoneId == null) {
+				/*
+				 * Use the default time-zone.
+				 */
+				cronZoneId = ZoneId.systemDefault();
+			}
+			logger.info("cronZoneId = {}", cronZoneId);
+
 			if (subscription.getCronSchedule() != null) {
 
 				/*
@@ -268,28 +305,6 @@ public class SubscriptionScheduler {
 				/*
 				 * Set the time zone for the cron expression.
 				 */
-				String cronScheduleZoneId = subscription.getCronScheduleZoneId();
-				logger.info("cronScheduleZoneId = {}", cronScheduleZoneId);
-				ZoneId cronZoneId = null;
-				if (cronScheduleZoneId != null && !cronScheduleZoneId.isEmpty()) {
-					try {
-						cronZoneId = ZoneId.of(cronScheduleZoneId);
-					} catch (DateTimeException e) {
-						logger.error(
-								"cronScheduleZoneId '{}' is not legal. The default time zone will be used for the cron expression",
-								cronScheduleZoneId);
-					}
-				} else {
-					logger.warn(
-							"cronScheduleZoneId is not defined. The default time zone will be used for the cron expression");
-				}
-				if (cronZoneId == null) {
-					/*
-					 * Use the default time-zone.
-					 */
-					cronZoneId = ZoneId.systemDefault();
-				}
-				logger.info("cronZoneId = {}", cronZoneId);
 				TimeZone cronTimeZone = TimeZone.getTimeZone(cronZoneId);
 				logger.info("cronTimeZone = {}", cronTimeZone);
 				cronTriggerFactory.setTimeZone(cronTimeZone);
@@ -322,9 +337,16 @@ public class SubscriptionScheduler {
 				 * magic here with DateUtils. 
 				 */
 				logger.info("subscription.getRunOnceAt() = {}", subscription.getRunOnceAt());
-				Date runOnceAtServerTimezone = DateUtils
-						.entityTimestampToServerTimezoneDate(subscription.getRunOnceAt());
+				Date runOnceAtServerTimezone = null;
+				if (RUNAT_ENTITY_DATE_TZ_DYNAMIC) {
+					runOnceAtServerTimezone = DateUtils
+							.entityTimestampToServerTimezoneDate(subscription.getRunOnceAt(), cronZoneId);
+				} else {
+					runOnceAtServerTimezone = DateUtils
+							.entityTimestampToServerTimezoneDate(subscription.getRunOnceAt());
+				}
 				logger.info("runOnceAtServerTimezone = {}", runOnceAtServerTimezone);
+
 				/*
 				 * Only schedule the job if the trigger time is in the future.
 				 * Testing shows that the subscription job will get fired once
@@ -528,15 +550,15 @@ public class SubscriptionScheduler {
 				triggers = (List<Trigger>) scheduler.getTriggersOfJob(jobKey);
 				if (triggers != null && triggers.size() > 0) {
 					Date nextFireTime = triggers.get(0).getNextFireTime();
+
 					/*
 					 * REST resources returned to a client are expressed in 
 					 * ISO-8601 format with time zone "Z" (which means that they
-					 * are relative to UTC). We need to convert nextFireTime to
+					 * are relative to UTC). Here, we convert nextFireTime to
 					 * a different java.util.Date object that will provide this
-					 * behaviour
+					 * behaviour.
 					 */
 					schedulingStatusResource.setNextFireTime(DateUtils.normalDateToUtcTimezoneDate(nextFireTime));
-					logger.debug("jobKey = {}, nextFireTime = {}", jobKey, nextFireTime);
 					if (triggers.size() > 1) {
 						logger.error("There are {} triggers for subscription: {}", triggers.size(), subscription);
 						schedulingStatusResource.setSchedulingNotice("There are " + triggers.size() + " triggers");
