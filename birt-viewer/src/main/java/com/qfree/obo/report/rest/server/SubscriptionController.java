@@ -37,10 +37,7 @@ import com.qfree.obo.report.db.RoleParameterRepository;
 import com.qfree.obo.report.db.RoleParameterValueRepository;
 import com.qfree.obo.report.db.RoleRepository;
 import com.qfree.obo.report.db.SubscriptionRepository;
-import com.qfree.obo.report.domain.DocumentFormat;
 import com.qfree.obo.report.domain.ReportParameter;
-import com.qfree.obo.report.domain.ReportVersion;
-import com.qfree.obo.report.domain.Role;
 import com.qfree.obo.report.domain.RoleParameter;
 import com.qfree.obo.report.domain.RoleParameterValue;
 import com.qfree.obo.report.domain.Subscription;
@@ -514,19 +511,6 @@ public class SubscriptionController extends AbstractBaseController {
 			documentFormatResource.setDocumentFormatId(currentDocumentFormatId);
 			subscriptionResource.setDocumentFormatResource(documentFormatResource);
 		}
-		/*
-		 * Ensure that a DocumentFormat entity exists corresponding to
-		 * subscriptionResource.getDocumentFormatResource():
-		 */
-		UUID documentFormatId = subscriptionResource.getDocumentFormatResource().getDocumentFormatId();
-		if (documentFormatId != null) {
-			DocumentFormat documentFormat = documentFormatRepository.findOne(documentFormatId);
-			RestUtils.ifNullThen404(documentFormat, DocumentFormat.class, "documentFormatId",
-					documentFormatId.toString());
-		} else {
-			throw new RestApiException(RestError.FORBIDDEN_SUBSCRIPTION_DOCUMENTFORMAT_NULL,
-					Subscription.class, "documentFormatId");
-		}
 
 		/*
 		 * The values for the following attributes cannot be changed. These
@@ -539,36 +523,19 @@ public class SubscriptionController extends AbstractBaseController {
 		subscriptionResource.setCreatedOn(subscription.getCreatedOn());
 		/*
 		 * Construct a ReportVersionResource to specify the CURRENTLY
-		 * selected ReportVersion. We also check that an existing ReportVersion
-		 * entity exists for "subscription".
+		 * selected ReportVersion.
 		 */
-		//if (subscription.getReportVersion() != null) {
 		UUID currentReportVersionId = subscription.getReportVersion().getReportVersionId();
-		ReportVersion reportVersion = reportVersionRepository.findOne(currentReportVersionId);
-		RestUtils.ifNullThen404(reportVersion, ReportVersion.class, "reportVersionId",
-				currentReportVersionId.toString());
 		ReportVersionResource reportVersionResource = new ReportVersionResource();
 		reportVersionResource.setReportVersionId(currentReportVersionId);
 		subscriptionResource.setReportVersionResource(reportVersionResource);
-		//} else {
-		//	throw new RestApiException(RestError.FORBIDDEN_SUBSCRIPTION_REPORTVERSION_NULL,
-		//			Subscription.class, "reportVersionId");
-		//}
 		/*
-		 * Construct a RoleResource to specify the CURRENTLY selected Role. We 
-		 * also check that an existing Role entity exists for "subscription".
+		 * Construct a RoleResource to specify the CURRENTLY selected Role.
 		 */
-		//if (subscription.getRole() != null) {
 		UUID currentRoleId = subscription.getRole().getRoleId();
-		Role role = roleRepository.findOne(currentRoleId);
-		RestUtils.ifNullThen404(role, Role.class, "roleId", currentRoleId.toString());
 		RoleResource roleResource = new RoleResource();
 		roleResource.setRoleId(currentRoleId);
 		subscriptionResource.setRoleResource(roleResource);
-		//} else {
-		//	throw new RestApiException(RestError.FORBIDDEN_SUBSCRIPTION_ROLE_NULL,
-		//			Subscription.class, "roleId");
-		//}
 
 		/*
 		 * If enabled=true is specified for the subscription, there are many
