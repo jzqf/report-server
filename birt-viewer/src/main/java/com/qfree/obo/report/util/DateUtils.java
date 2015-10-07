@@ -16,6 +16,8 @@ import java.util.GregorianCalendar;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.qfree.obo.report.dto.DatetimeAdapter;
+
 public class DateUtils {
 
 	private static final Logger logger = LoggerFactory.getLogger(DateUtils.class);
@@ -420,43 +422,98 @@ public class DateUtils {
 
 	public static Date entityTimestampToServerTimezoneDate(Date entityTimestamp) {
 		logger.debug("entityTimestamp    = {}", entityTimestamp);
+		//System.out.println(String.format("entityTimestamp = %s", entityTimestamp));
 
 		/*
-		 * Convert entityTimestamp to a LocalDateTime at UTC/GMT. This preserves
-		 * the date and the time values; It just strips the time zone 
-		 * information. Examples:
+		 * Convert entityTimestamp to a LocalDateTime at the server's (default)
+		 * time zone. This preserves the date and the time values; It just 
+		 * strips the time zone information. Example:
 		 * 
-		 *  entityTimestamp.toString()      localDateTimeUTC.toString()
+		 *  entityTimestamp.toString()      localDateTimeServerTZ.toString()
 		 *  ------------------------------   ------------------------------
 		 *  2015-10-04 20:45:00.0         -> 2015-10-04T20:45
 		 */
-		LocalDateTime localDateTimeUTC = LocalDateTime.ofInstant(entityTimestamp.toInstant(), ZoneId.systemDefault());
-		logger.debug("localDateTimeUTC   = {}", localDateTimeUTC);
+		LocalDateTime localDateTimeServerTZ = LocalDateTime.ofInstant(entityTimestamp.toInstant(),
+				ZoneId.systemDefault());
+		logger.debug("localDateTimeServerTZ   = {}", localDateTimeServerTZ);
+		//System.out.println(String.format("localDateTimeServerTZ = %s", localDateTimeServerTZ));
 
 		/*
-		 * Convert localDateTimeUTC to a ZonedDateTime at UTC/GMT. Examples:
+		 * Convert localDateTimeServerTZ to a ZonedDateTime at UTC/GMT. Examples:
 		 * 
-		 *  localDateTimeUTC.toString()      zonedDateTimeUTC.toString()
+		 *  localDateTimeServerTZ.toString() zonedDateTimeUTC.toString()
 		 *  ------------------------------   ------------------------------
-		 *  2015-10-04T20:45              -> 2015-05-30T12:00+02:00[Europe/Oslo]
+		 *  2015-10-04T20:45              -> 2015-10-04T20:45Z
 		 */
-		ZonedDateTime zonedDateTimeUTC = localDateTimeUTC.atZone(ZoneId.of("Z"));
+		ZonedDateTime zonedDateTimeUTC = localDateTimeServerTZ.atZone(ZoneId.of("Z"));
 		logger.debug("zonedDateTimeUTC = {}", zonedDateTimeUTC);
+		//System.out.println(String.format("zonedDateTimeUTC = %s", zonedDateTimeUTC));
 
 		/*
 		 * Convert zonedDateTimeUTC to a java.util.Date relative to the time 
 		 * zone where the report server is located. Examples:
 		 * 
-		 *  zonedDateTimeUTC.toString()       dateAtServer.toString()
-		 *  ------------------------------         -----------------------------
-		 *  2015-05-30T12:00+02:00[Europe/Oslo] -> Sat May 30 12:00:00 CEST 2015
-		 *  2015-05-30T12:00+02:00[Europe/Oslo] -> Sat May 30 12:00:00 CEST 2015
-		 *  2015-05-30T10:00+02:00[Europe/Oslo] -> Sat May 30 10:00:00 CEST 2015
+		 *  zonedDateTimeUTC.toString()      dateAtServer.toString()
+		 *  ------------------------------   -----------------------------
+		 *  2015-10-04T20:45Z             -> Sun Oct 04 22:45:00 CEST 2015
 		 */
 		Date dateAtServer = Date.from(zonedDateTimeUTC.toInstant());
 		logger.debug("dateAtServer       = {}", dateAtServer);
+		//System.out.println(String.format("dateAtServer = %s", dateAtServer));
 
 		return dateAtServer;
+	}
+
+	/**
+	 * Convert a normal {@link javal.util.Date} to a new {@link javal.util.Date}
+	 * , but such that when it is serialized by
+	 * {@link DatetimeAdapter#marshal(Date)} the resulting string will correclt
+	 * represent the original date in ISO-8601 format relative to "Zulu" time.
+	 * 
+	 * @param date
+	 * @return
+	 */
+	public static Date normalDateToUtcTimezoneDate(Date date) {
+		logger.debug("date    = {}", date);
+		//System.out.println(String.format("date = %s", date));
+
+		/*
+		 * Convert date to a LocalDateTime relative to UTC. Example:
+		 * (Note: This example uses a date where summer time is in effect)
+		 * 
+		 *  date.toString()                  localDateTimeUtc.toString()
+		 *  ------------------------------   ------------------------------
+		 *  Sun Oct 04 20:45:00 CEST 2015 -> 2015-10-04T18:45
+		 */
+		LocalDateTime localDateTimeUtc = LocalDateTime.ofInstant(date.toInstant(), ZoneId.of("Z"));
+		logger.debug("localDateTimeUtc   = {}", localDateTimeUtc);
+		//System.out.println(String.format("localDateTimeUtc = %s", localDateTimeUtc));
+
+		/*
+		 * Convert localDateTimeUtc to a ZonedDateTime at the server's time 
+		 * zone. Example:
+		 * 
+		 *  localDateTimeUtc.toString()      zonedDateTimeServerTZ.toString()
+		 *  ------------------------------   ------------------------------
+		 *  2015-10-04T18:45              -> 2015-10-04T18:45+02:00[Europe/Oslo]
+		 */
+		ZonedDateTime zonedDateTimeServerTZ = localDateTimeUtc.atZone(ZoneId.systemDefault());
+		logger.debug("zonedDateTimeServerTZ = {}", zonedDateTimeServerTZ);
+		//System.out.println(String.format("zonedDateTimeServerTZ = %s", zonedDateTimeServerTZ));
+
+		/*
+		 * Convert zonedDateTimeServerTZ to a java.util.Date relative to the 
+		 * time zone where the report server is located. Example:
+		 * 
+		 *  zonedDateTimeServerTZ.toString()       dateAtServer.toString()
+		 *  ------------------------------         -----------------------------
+		 *  2015-10-04T18:45+02:00[Europe/Oslo] -> Sun Oct 04 18:45:00 CEST 2015
+		 */
+		Date dateAtUtc = Date.from(zonedDateTimeServerTZ.toInstant());
+		logger.debug("dateAtServer       = {}", dateAtUtc);
+		//System.out.println(String.format("dateAtUtc = %s", dateAtUtc));
+
+		return dateAtUtc;
 	}
 
 	/**
@@ -609,5 +666,14 @@ public class DateUtils {
 		System.out.println("DateUtils.dateFromBirtTimeString(\"12:30:59:999\")                = " + date5);
 		System.out.println("DateUtils.birtTimeStringFromDate(" + date5 + ") = "
 				+ DateUtils.birtTimeStringFromDate(date5));
+
+		System.out.println("");
+		date1 = DateUtils.dateFromBirtDatetimeString("2015-10-04 20:45:00");
+		date2 = entityTimestampToServerTimezoneDate(date1);
+
+		System.out.println("");
+		date1 = DateUtils.dateFromBirtDatetimeString("2015-10-04 20:45:00");
+		date2 = normalDateToUtcTimezoneDate(date1);
+
 	}
 }

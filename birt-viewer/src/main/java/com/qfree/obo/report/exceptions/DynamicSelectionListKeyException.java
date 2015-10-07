@@ -2,6 +2,8 @@ package com.qfree.obo.report.exceptions;
 
 public class DynamicSelectionListKeyException extends ReportingException {
 
+	private static final long serialVersionUID = 1L;
+
 	public DynamicSelectionListKeyException() {
 	}
 

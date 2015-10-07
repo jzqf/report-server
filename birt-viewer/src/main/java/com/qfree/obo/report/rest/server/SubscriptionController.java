@@ -1,5 +1,6 @@
 package com.qfree.obo.report.rest.server;
 
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -23,6 +24,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
 import org.eclipse.birt.report.engine.api.IParameterDefn;
+import org.quartz.SchedulerException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,9 +54,12 @@ import com.qfree.obo.report.dto.RoleResource;
 import com.qfree.obo.report.dto.SubscriptionCollectionResource;
 import com.qfree.obo.report.dto.SubscriptionParameterCollectionResource;
 import com.qfree.obo.report.dto.SubscriptionResource;
+import com.qfree.obo.report.exceptions.NoScheduleForSubscriptionException;
 import com.qfree.obo.report.exceptions.RestApiException;
 import com.qfree.obo.report.rest.server.RestUtils.RestApiVersion;
+import com.qfree.obo.report.scheduling.schedulers.SubscriptionScheduler;
 import com.qfree.obo.report.service.SubscriptionService;
+import com.qfree.obo.report.util.CompareUtils;
 import com.qfree.obo.report.util.DateUtils;
 
 @Component
@@ -70,6 +75,7 @@ public class SubscriptionController extends AbstractBaseController {
 	private final RoleRepository roleRepository;
 	private final RoleParameterRepository roleParameterRepository;
 	private final RoleParameterValueRepository roleParameterValueRepository;
+	private final SubscriptionScheduler subscriptionScheduler;
 
 	@Autowired
 	public SubscriptionController(
@@ -79,7 +85,8 @@ public class SubscriptionController extends AbstractBaseController {
 			ReportVersionRepository reportVersionRepository,
 			RoleRepository roleRepository,
 			RoleParameterRepository roleParameterRepository,
-			RoleParameterValueRepository roleParameterValueRepository) {
+			RoleParameterValueRepository roleParameterValueRepository,
+			SubscriptionScheduler subscriptionScheduler) {
 		this.subscriptionRepository = subscriptionRepository;
 		this.subscriptionService = subscriptionService;
 		this.documentFormatRepository = documentFormatRepository;
@@ -87,6 +94,7 @@ public class SubscriptionController extends AbstractBaseController {
 		this.roleRepository = roleRepository;
 		this.roleParameterRepository = roleParameterRepository;
 		this.roleParameterValueRepository = roleParameterValueRepository;
+		this.subscriptionScheduler = subscriptionScheduler;
 	}
 
 	/*
@@ -275,16 +283,18 @@ public class SubscriptionController extends AbstractBaseController {
 				case IParameterDefn.TYPE_ANY:
 					/*
 					 * Will this case occur? I don't know what is the 
-					 * appropriate way to treat this case, so I will ignore it,
-					 * although I do log it. This will not cause any serious 
-					 * problem - it just means that the user will be forced to
-					 * provide a value for this parameter before the 
-					 * subscription can be enabled.
+					 * appropriate way to treat this case, so I throw an 
+					 * exception.
 					 */
-					logger.error("Report parameter '{}' of report '{}' has type = IParameterDefn.TYPE_ANY",
-							subscriptionParameter.getReportParameter().getName(),
-							subscriptionParameter.getSubscription().getReportVersion().getFileName());
-					break;
+					throw new RestApiException(RestError.INTERNAL_SERVER_ERROR_DATA_TYPE_ANY,
+							String.format("Report parameter '%s' of report '%s' has type = IParameterDefn.TYPE_ANY",
+									subscriptionParameter.getReportParameter().getName(),
+									subscriptionParameter.getSubscription().getReportVersion().getFileName()),
+							Subscription.class);
+					//logger.error("Report parameter '{}' of report '{}' has type = IParameterDefn.TYPE_ANY",
+					//		subscriptionParameter.getReportParameter().getName(),
+					//		subscriptionParameter.getSubscription().getReportVersion().getFileName());
+					//					break;
 				case IParameterDefn.TYPE_STRING:
 					subscriptionParameterValue.setStringValue(reportParameter.getDefaultValue());
 					break;
@@ -454,7 +464,8 @@ public class SubscriptionController extends AbstractBaseController {
 			@QueryParam(ResourcePath.EXPAND_QP_NAME) final List<String> expand,
 			@QueryParam(ResourcePath.SHOWALL_QP_NAME) final List<String> showAll,
 			@Context final ServletContext servletContext,
-			@Context final UriInfo uriInfo) {
+			@Context final UriInfo uriInfo)
+					throws ClassNotFoundException, NoSuchMethodException, SchedulerException, ParseException {
 		Map<String, List<String>> queryParams = new HashMap<>();
 		queryParams.put(ResourcePath.EXPAND_QP_KEY, expand);
 		queryParams.put(ResourcePath.SHOWALL_QP_KEY, showAll);
@@ -560,32 +571,288 @@ public class SubscriptionController extends AbstractBaseController {
 		//}
 
 		/*
-		 * We cannot have an "enabled" Subscription that is inactive because
-		 * it does not make sense to schedule inactive subscriptions.
+		 * If enabled=true is specified for the subscription, there are many
+		 * constraints that must be satisfied by the values of the other fields
+		 * of the subscription. If any of these are violated, we throw an 
+		 * exception to prevent the changes to be saved to the specified
+		 * Subscription entity.
 		 */
-		if (!subscriptionResource.getActive() && subscriptionResource.getEnabled()) {
-			throw new RestApiException(RestError.FORBIDDEN_SUBSCRIPTION_INACTIVE_ENABLED, Subscription.class);
+		if (subscriptionResource.getEnabled()) {
+
+			/*
+			 * We cannot have an "enabled" Subscription that is inactive because
+			 * it does not make sense to schedule inactive subscriptions.
+			 */
+			if (!subscriptionResource.getActive()) {
+				throw new RestApiException(RestError.FORBIDDEN_ENABLED_SUBSCRIPTION_INACTIVE, Subscription.class);
+			}
+
+			/*
+			 * The subscription must have a valid e-mail address to which the 
+			 * rendered report will eventually be sent.
+			 */
+			if (subscriptionResource.getEmail() == null || subscriptionResource.getEmail().isEmpty()) {
+				throw new RestApiException(RestError.FORBIDDEN_ENABLED_SUBSCRIPTION_NO_EMAIL, Subscription.class);
+			}
+
+			/*
+			 * The subscription must have a usable values for either 
+			 * cronSchedule & cronScheduleZoneId or for runOnceAt.
+			 * 
+			 */
+			if ((subscriptionResource.getCronSchedule() == null
+					|| subscriptionResource.getCronSchedule().isEmpty()
+					|| subscriptionResource.getCronScheduleZoneId() == null
+					|| subscriptionResource.getCronScheduleZoneId().isEmpty())
+					&& subscriptionResource.getRunOnceAt() == null) {
+				throw new RestApiException(RestError.FORBIDDEN_ENABLED_SUBSCRIPTION_NO_SCHEDULE, Subscription.class);
+			}
+
+			/*
+			 * There must be at least one SubscriptionParameterValue per 
+			 * SubscriptionParameter, and each SubscriptionParameterValue needs 
+			 * to have non-null values assigned if "required=true".
+			 * 
+			 * There can be more than one SubscriptionParameterValue per 
+			 * SubscriptionParameter, but only if the associated ReportParameter
+			 * has multivalued=true.
+			 */
+			for (SubscriptionParameter subscriptionParameter : subscription.getSubscriptionParameters()) {
+				List<SubscriptionParameterValue> subscriptionParameterValues = subscriptionParameter
+						.getSubscriptionParameterValues();
+
+				if (subscriptionParameterValues.size() == 0) {
+					/*
+					 * A SubscriptionParameterValue is still required for report
+					 * parameters with required=false, but then the value can be
+					 * null.
+					 */
+					throw new RestApiException(RestError.FORBIDDEN_ENABLED_SUBSCRIPTION_NO_PARAM_VALUE,
+							"There is no SubscriptionParameterValue for the report parameter '"
+									+ subscriptionParameter.getReportParameter().getName() + "'",
+							Subscription.class);
+				}
+
+				if (subscriptionParameterValues.size() > 1
+						&& !subscriptionParameter.getReportParameter().getMultivalued()) {
+					throw new RestApiException(RestError.FORBIDDEN_ENABLED_SUBSCRIPTION_MULTIPLE_VALUES,
+							subscriptionParameterValues.size() + " values for the single-valued report parameter '"
+									+ subscriptionParameter.getReportParameter().getName() + "'",
+							Subscription.class);
+				}
+
+				for (SubscriptionParameterValue subscriptionParameterValue : subscriptionParameterValues) {
+					if (subscriptionParameter.getReportParameter().getRequired()) {
+						/*
+						 * Check that the SubscriptionParameterValue has non-null
+						 * values for the data type of the report parameter.
+						 */
+						String errorMessage = null;
+						switch (subscriptionParameter.getReportParameter().getDataType()) {
+						case IParameterDefn.TYPE_ANY:
+							/*
+							 * Will this case occur? I don't know what is the 
+							 * appropriate way to treat this case so I throw an
+							 * exception.
+							 */
+							errorMessage = String.format(
+									"Report parameter '%s' of report '%s' has type = IParameterDefn.TYPE_ANY",
+									subscriptionParameter.getReportParameter().getName(),
+									subscriptionParameter.getSubscription().getReportVersion().getFileName());
+							throw new RestApiException(RestError.INTERNAL_SERVER_ERROR_DATA_TYPE_ANY,
+									errorMessage, Subscription.class);
+							//break;
+						case IParameterDefn.TYPE_STRING:
+							if (subscriptionParameterValue.getStringValue() == null) {
+								errorMessage = String.format(
+										"The String value for report parameter '%s' of report '%s' is null",
+										subscriptionParameter.getReportParameter().getName(),
+										subscriptionParameter.getSubscription().getReportVersion()
+												.getFileName());
+								throw new RestApiException(RestError.FORBIDDEN_ENABLED_SUBSCRIPTION_NULL_PARAM_VALUE,
+										errorMessage, Subscription.class);
+							}
+							break;
+						case IParameterDefn.TYPE_FLOAT:
+							if (subscriptionParameterValue.getFloatValue() == null) {
+								errorMessage = String.format(
+										"The Float value for report parameter '%s' of report '%s' is null",
+										subscriptionParameter.getReportParameter().getName(),
+										subscriptionParameter.getSubscription().getReportVersion()
+												.getFileName());
+								throw new RestApiException(RestError.FORBIDDEN_ENABLED_SUBSCRIPTION_NULL_PARAM_VALUE,
+										errorMessage, Subscription.class);
+							}
+							break;
+						case IParameterDefn.TYPE_DECIMAL:
+							/*
+							 * Assume that we can treat parameters of data type
+							 * "decimal" as floats. This may not be so, but we will
+							 * give this a try.
+							 */
+							if (subscriptionParameterValue.getFloatValue() == null) {
+								errorMessage = String.format(
+										"The Float value for report parameter '%s' of report '%s' is null",
+										subscriptionParameter.getReportParameter().getName(),
+										subscriptionParameter.getSubscription().getReportVersion()
+												.getFileName());
+								throw new RestApiException(RestError.FORBIDDEN_ENABLED_SUBSCRIPTION_NULL_PARAM_VALUE,
+										errorMessage, Subscription.class);
+							}
+							break;
+						case IParameterDefn.TYPE_DATE_TIME:
+							if (subscriptionParameterValue.getDatetimeValue() == null &&
+									subscriptionParameterValue.getDayOfMonthNumber() == null &&
+									subscriptionParameterValue.getDayOfWeekInMonthNumber() == null &&
+									subscriptionParameterValue.getDayOfWeekInMonthOrdinal() == null &&
+									subscriptionParameterValue.getDayOfWeekNumber() == null &&
+									subscriptionParameterValue.getDaysAgo() == null &&
+									subscriptionParameterValue.getMonthNumber() == null &&
+									subscriptionParameterValue.getMonthsAgo() == null &&
+									subscriptionParameterValue.getWeeksAgo() == null &&
+									subscriptionParameterValue.getYearNumber() == null &&
+									subscriptionParameterValue.getYearsAgo() == null &&
+									/*
+									 * timeValue is used if we are computing a datetime value,
+									 * i.e., if datetimeValue is null. In this case it specifies 
+									 * the time of day on the computed date.
+									 */
+									subscriptionParameterValue.getTimeValue() == null) {
+								errorMessage = String.format(
+										"The Datetime value for report parameter '%s' of report '%s' is null or cannot be determined",
+										subscriptionParameter.getReportParameter().getName(),
+										subscriptionParameter.getSubscription().getReportVersion()
+												.getFileName());
+								throw new RestApiException(RestError.FORBIDDEN_ENABLED_SUBSCRIPTION_NULL_PARAM_VALUE,
+										errorMessage, Subscription.class);
+							}
+							break;
+						case IParameterDefn.TYPE_BOOLEAN:
+							if (subscriptionParameterValue.getBooleanValue() == null) {
+								errorMessage = String.format(
+										"The Boolean value for report parameter '%s' of report '%s' is null",
+										subscriptionParameter.getReportParameter().getName(),
+										subscriptionParameter.getSubscription().getReportVersion()
+												.getFileName());
+								throw new RestApiException(RestError.FORBIDDEN_ENABLED_SUBSCRIPTION_NULL_PARAM_VALUE,
+										errorMessage, Subscription.class);
+							}
+							break;
+						case IParameterDefn.TYPE_INTEGER:
+							if (subscriptionParameterValue.getIntegerValue() == null) {
+								errorMessage = String.format(
+										"The Integer value for report parameter '%s' of report '%s' is null",
+										subscriptionParameter.getReportParameter().getName(),
+										subscriptionParameter.getSubscription().getReportVersion()
+												.getFileName());
+								throw new RestApiException(RestError.FORBIDDEN_ENABLED_SUBSCRIPTION_NULL_PARAM_VALUE,
+										errorMessage, Subscription.class);
+							}
+							break;
+						case IParameterDefn.TYPE_DATE:
+							if (subscriptionParameterValue.getDateValue() == null &&
+									subscriptionParameterValue.getDayOfMonthNumber() == null &&
+									subscriptionParameterValue.getDayOfWeekInMonthNumber() == null &&
+									subscriptionParameterValue.getDayOfWeekInMonthOrdinal() == null &&
+									subscriptionParameterValue.getDayOfWeekNumber() == null &&
+									subscriptionParameterValue.getDaysAgo() == null &&
+									subscriptionParameterValue.getMonthNumber() == null &&
+									subscriptionParameterValue.getMonthsAgo() == null &&
+									subscriptionParameterValue.getWeeksAgo() == null &&
+									subscriptionParameterValue.getYearNumber() == null &&
+									subscriptionParameterValue.getYearsAgo() == null) {
+								errorMessage = String.format(
+										"The Datetime value for report parameter '%s' of report '%s' is null or cannot be determined",
+										subscriptionParameter.getReportParameter().getName(),
+										subscriptionParameter.getSubscription().getReportVersion()
+												.getFileName());
+								throw new RestApiException(RestError.FORBIDDEN_ENABLED_SUBSCRIPTION_NULL_PARAM_VALUE,
+										errorMessage, Subscription.class);
+							}
+							break;
+						case IParameterDefn.TYPE_TIME:
+							if (subscriptionParameterValue.getTimeValue() == null) {
+								errorMessage = String.format(
+										"The Time value for report parameter '%s' of report '%s' is null",
+										subscriptionParameter.getReportParameter().getName(),
+										subscriptionParameter.getSubscription().getReportVersion()
+												.getFileName());
+								throw new RestApiException(RestError.FORBIDDEN_ENABLED_SUBSCRIPTION_NULL_PARAM_VALUE,
+										errorMessage, Subscription.class);
+							}
+							break;
+						default:
+							errorMessage = String.format(
+									"subscriptionParameter.getReportParameter().getDataType() = %s",
+									subscriptionParameter.getReportParameter().getDataType());
+							throw new RestApiException(RestError.INTERNAL_SERVER_ERROR_UNTREATED_CASE, errorMessage);
+						}
+					}
+				}
+			}
+
 		}
 
 		/*
-		 * Save updated entity.
+		 * Remember if any of the fields of the subscription that affect its
+		 * scheduling have been modified. If so, we reschedule the job below.
+		 */
+		boolean rescheduleJob = CompareUtils.different(subscriptionResource.getEnabled(), subscription.getEnabled())
+				|| CompareUtils.different(subscriptionResource.getCronSchedule(), subscription.getCronSchedule())
+				|| CompareUtils.different(subscriptionResource.getCronScheduleZoneId(),
+						subscription.getCronScheduleZoneId())
+				|| CompareUtils.different(subscriptionResource.getRunOnceAt(), subscription.getRunOnceAt());
+
+		/*
+		 * Save updated entity. This must come *after* we check if fields of the
+		 * subscription have been modified. It must also come *before* we
+		 * reschedule the subscription job because the updated Subscription 
+		 * object is required for this, *not* the SubscriptionResource object.
 		 */
 		subscription = subscriptionService.saveExistingFromResource(subscriptionResource);
 
 		/*
-		 * If the"enabled" field of the subscription is "true", we make sure 
-		 * that the subscription is scheduled.
+		 * If the value of *any* of the fields that influence the scheduling of 
+		 * the subscription have changed, the following procedure is performed:
+		 * 
+		 *    1. If the subscription is currently scheduled, the scheduled job 
+		 *       is deleted, i.e., it is "unscheduled".
+		 *     
+		 *    2. If enabled=true, the subscription is scheduled.
 		 */
-		if (subscription.getEnabled()) {
-			subscriptionService.enable(subscription);
-		}
+		if (rescheduleJob) {
 
-		/*
-		 * If the"enabled" field of the subscription is "False", we make sure 
-		 * that the subscription is *not* scheduled.
-		 */
-		if (!subscription.getEnabled()) {
-			subscriptionService.disable(subscription);
+			logger.info("Deleting (if it exists) {}", subscription);
+			/*
+			 * If the subscription is scheduled, the scheduled job is deleted.
+			 */
+			try {
+				if (subscriptionScheduler.isSubscriptionScheduled(subscription)) {
+					subscriptionScheduler.unscheduleJob(subscription);
+				}
+			} catch (SchedulerException e) {
+				throw new RestApiException(RestError.INTERNAL_SERVER_ERROR_SCHEDULER, e);
+			}
+
+			logger.info("Scheduling (if it is enabled) {}", subscription);
+
+			/*
+			 * If enabled=true, the subscription is scheduled.
+			 */
+			if (subscription.getEnabled()) {
+				try {
+					subscriptionScheduler.scheduleJob(subscription);
+					//	} catch (ClassNotFoundException e) {
+					//	} catch (NoSuchMethodException e) {
+					//	} catch (ParseException e) {
+				} catch (NoScheduleForSubscriptionException e) {
+					throw new RestApiException(RestError.FORBIDDEN_ENABLED_SUBSCRIPTION_NO_SCHEDULE,
+							Subscription.class);
+				}
+			}
+
+		} else {
+			logger.info("No need to reschedule subscription job");
 		}
 
 		return Response.status(Response.Status.OK).build();
@@ -623,11 +890,6 @@ public class SubscriptionController extends AbstractBaseController {
 		RestUtils.ifNullThen404(subscription, Subscription.class, "subscriptionId", id.toString());
 
 		/*
-		 * If the subscription is currently scheduled, we need to unschedule it.
-		 */
-		subscriptionService.disable(subscription);
-
-		/*
 		 * If the Subscription entity is successfully deleted, it is 
 		 * returned as the entity body so it is clear to the caller precisely
 		 * which entity was deleted. Here, the resource to be returned is 
@@ -643,18 +905,31 @@ public class SubscriptionController extends AbstractBaseController {
 		 * Delete entity.
 		 */
 		subscriptionRepository.delete(subscription);
-		logger.debug("subscription (after deletion) = {}", subscription);
+		logger.info("subscription (after deletion) = {}", subscription);
+
 		/*
-		 * Confirm that the entity was, indeed, deleted. subscription here
-		 * should be null. Currently, I don't do anything based on this check.
-		 * I assume that the delete call above with throw some sort of 
-		 * RuntimeException if that happens, or some other exception will be
-		 * thrown by the back-end database (PostgreSQL) code when the 
-		 * transaction is eventually committed. I don't have the time to look 
-		 * into this at the moment.
+		 * Delete (unschedule) the subscription job, if it is currently
+		 * scheduled.
 		 */
-		subscription = subscriptionRepository.findOne(subscriptionResource.getSubscriptionId());
-		logger.debug("subscription (after find()) = {}", subscription);
+		try {
+			if (subscriptionScheduler.isSubscriptionScheduled(subscription)) {
+				subscriptionScheduler.unscheduleJob(subscription);
+			}
+		} catch (SchedulerException e) {
+			throw new RestApiException(RestError.INTERNAL_SERVER_ERROR_SCHEDULER, e);
+		}
+
+		//	/*
+		//	 * Confirm that the entity was, indeed, deleted. subscription here
+		//	 * should be null. Currently, I don't do anything based on this check.
+		//	 * I assume that the delete call above with throw some sort of 
+		//	 * RuntimeException if that happens, or some other exception will be
+		//	 * thrown by the back-end database (PostgreSQL) code when the 
+		//	 * transaction is eventually committed. I don't have the time to look 
+		//	 * into this at the moment.
+		//	 */
+		//	subscription = subscriptionRepository.findOne(subscriptionResource.getSubscriptionId());
+		//	logger.info("subscription (after find()) = {}", subscription); // subscription is null here
 
 		//return Response.status(Response.Status.OK).build();
 		return subscriptionResource;

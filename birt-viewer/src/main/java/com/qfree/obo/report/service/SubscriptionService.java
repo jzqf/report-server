@@ -16,8 +16,6 @@ import com.qfree.obo.report.domain.DocumentFormat;
 import com.qfree.obo.report.domain.ReportVersion;
 import com.qfree.obo.report.domain.Role;
 import com.qfree.obo.report.domain.Subscription;
-import com.qfree.obo.report.domain.SubscriptionParameter;
-import com.qfree.obo.report.domain.SubscriptionParameterValue;
 import com.qfree.obo.report.dto.DocumentFormatResource;
 import com.qfree.obo.report.dto.ReportVersionResource;
 import com.qfree.obo.report.dto.RestErrorResource.RestError;
@@ -234,83 +232,6 @@ public class SubscriptionService {
 		logger.debug("subscription (created/updated) = {}", subscription);
 
 		return subscription;
-	}
-
-	/**
-	 * Performs whatever actions are appropriate when a subscription is
-	 * deactivated. This code may also run when the subscription was already
-	 * disabled, so this is taken into account.
-	 * 
-	 * <p>
-	 * The most important action is to disable any scheduling that is active for
-	 * the subscription.
-	 * 
-	 * @param subscription
-	 */
-	public void disable(Subscription subscription) {
-
-		/*
-		 * The subscription may not be scheduled, so we check for that first.
-		 */
-		//TODO Check if the subscription NOT currently scheduled - here or in the called code.
-		// Write method "unscheduleIfNecessary? No, just "unschedule", but it should make this check.
-
-		/*
-		 * If subscription.getEnabled() = true, execute subscription.setEnabled(Boolean.FALSE)
-		 * and then save the Subscription.
-		 */
-
-		// TODO Write me!
-
-	}
-
-	/**
-	 * Performs whatever actions are appropriate when a subscription is enabled.
-	 * This code may also run when the subscription was already enabled, so this
-	 * is taken into account.
-	 * 
-	 * <p>
-	 * The most important action is to enable scheduling for the subscription,
-	 * but this can only be done if certain details have been provided:
-	 * 
-	 * <ul>
-	 * <li>There must be at least one {@link SubscriptionParameterValue} per
-	 * {@link SubscriptionParameter}, and each
-	 * {@link SubscriptionParameterValue} needs to have non-null values
-	 * assigned.
-	 * <li>There can be more than one {@link SubscriptionParameterValue} per
-	 * {@link SubscriptionParameter}, but only if the associated
-	 * {@link ReportParameter} has <code>multivalued=true</code>.
-	 * <li>The {@link Subscription} must have a usable values for either
-	 * <code>cronSchedule</code> & <code>cronScheduleZoneId</code> or for
-	 * <code>runOnceAt</code>.
-	 * <li>The {@link Subscription} must have a value for <code>email</code>.
-	 * </ul>
-	 * 
-	 * @param subscription
-	 */
-	public void enable(Subscription subscription) {
-
-		/*
-		 * The subscription may already be scheduled, so we check for that 
-		 * first.
-		 */
-		//TODO Check if the subscription is already be scheduled - here or in the called code.
-		// Write method "scheduleIfNecessary? No, just "schedule", but it should make this check.
-		// Don't report any error if this occurs. Use logger.info, not logger.warn.
-
-		/*
-		 * If the subscription is not in a state to be scheduled, then we need
-		 * to execute subscription.setEnabled(Boolean.FALSE) and then save the Subscription.
-		 * 
-		 * Otherwise:
-		 * 
-		 * If subscription.getEnabled() = false, execute subscription.setEnabled(Boolean.TRUE)
-		 * and then save the Subscription. Then schedule it.
-		 */
-
-		// TODO Write me!
-
 	}
 
 	/**

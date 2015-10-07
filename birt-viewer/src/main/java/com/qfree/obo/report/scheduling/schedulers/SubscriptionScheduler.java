@@ -321,10 +321,10 @@ public class SubscriptionScheduler {
 				 * objects don't have time zone support, we have to perform some
 				 * magic here with DateUtils. 
 				 */
-				logger.debug("subscription.getRunOnceAt() = {}", subscription.getRunOnceAt());
+				logger.info("subscription.getRunOnceAt() = {}", subscription.getRunOnceAt());
 				Date runOnceAtServerTimezone = DateUtils
 						.entityTimestampToServerTimezoneDate(subscription.getRunOnceAt());
-				logger.debug("runOnceAtServerTimezone = {}", runOnceAtServerTimezone);
+				logger.info("runOnceAtServerTimezone = {}", runOnceAtServerTimezone);
 				/*
 				 * Only schedule the job if the trigger time is in the future.
 				 * Testing shows that the subscription job will get fired once
@@ -487,6 +487,10 @@ public class SubscriptionScheduler {
 		}
 	}
 
+	public void unscheduleJob(Subscription subscription) throws SchedulerException {
+		unscheduleJob(subscriptionJobKey(subscription));
+	}
+
 	public void unscheduleJob(JobKey jobKey) throws SchedulerException {
 		//if (schedulerFactoryBean.isRunning()) {
 
@@ -524,7 +528,14 @@ public class SubscriptionScheduler {
 				triggers = (List<Trigger>) scheduler.getTriggersOfJob(jobKey);
 				if (triggers != null && triggers.size() > 0) {
 					Date nextFireTime = triggers.get(0).getNextFireTime();
-					schedulingStatusResource.setNextFireTime(nextFireTime);
+					/*
+					 * REST resources returned to a client are expressed in 
+					 * ISO-8601 format with time zone "Z" (which means that they
+					 * are relative to UTC). We need to convert nextFireTime to
+					 * a different java.util.Date object that will provide this
+					 * behaviour
+					 */
+					schedulingStatusResource.setNextFireTime(DateUtils.normalDateToUtcTimezoneDate(nextFireTime));
 					logger.debug("jobKey = {}, nextFireTime = {}", jobKey, nextFireTime);
 					if (triggers.size() > 1) {
 						logger.error("There are {} triggers for subscription: {}", triggers.size(), subscription);
@@ -551,6 +562,31 @@ public class SubscriptionScheduler {
 		}
 
 		return schedulingStatusResource;
+	}
+
+	/**
+	 * Returns true if the job associated with the specified {@link JobKey}
+	 * exists.
+	 * 
+	 * @param jobKey
+	 * @return
+	 * @throws SchedulerException
+	 */
+	public boolean isSubscriptionScheduled(Subscription subscription) throws SchedulerException {
+		return isScheduled(subscriptionJobKey(subscription));
+	}
+
+	/**
+	 * Returns true if the job associated with the specified {@link JobKey}
+	 * exists.
+	 * 
+	 * @param jobKey
+	 * @return
+	 * @throws SchedulerException
+	 */
+	private boolean isScheduled(JobKey jobKey) throws SchedulerException {
+		Scheduler scheduler = schedulerFactoryBean.getScheduler();
+		return scheduler.checkExists(jobKey);
 	}
 
 	@PreDestroy
