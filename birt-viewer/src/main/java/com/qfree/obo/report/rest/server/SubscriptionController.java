@@ -139,7 +139,7 @@ public class SubscriptionController extends AbstractBaseController {
 	 *   
 	 *   $ curl -iH "Accept: application/json;v=1" -H "Content-Type: application/json" -X POST -d '{\
 	 *   "reportVersion":{"reportVersionId":"afd8777f-b6a2-4cb8-8dc2-887c47af3644"},\
-	 *   "role":{"roleId":"b85fd129-17d9-40e7-ac11-7541040f8627"},"cronScheduleZoneId":"CET",\
+	 *   "role":{"roleId":"b85fd129-17d9-40e7-ac11-7541040f8627"},"deliveryTimeZoneId":"CET",\
 	 *   "documentFormat":{"documentFormatId":"30800d77-5fdd-44bc-94a3-1502bd307c1d"}}' \
 	 *   http://localhost:8080/rest/subscriptions
 	 *   
@@ -435,19 +435,20 @@ public class SubscriptionController extends AbstractBaseController {
 	 *   $ mvn clean spring-boot:run
 	 *   $ curl -iH "Accept: application/json;v=1" -H "Content-Type: application/json" -X PUT -d \
 	 *   '{"documentFormat":{"documentFormatId":"05a4ad8d-6f30-4d6d-83d5-995345a8dc58"},\
-	 *   "runOnceAt":"2015-11-04T06:00:00.000Z","email":"bozo@clown.net","description":"New description",\
-	 *   "enabled":true}' http://localhost:8080/rest/subscriptions/1778cb69-0561-42b9-889f-cfe8c66978db
+	 *   "deliveryDatetimeRunAt":"2015-11-04T06:00:00.000","cronScheduleZoneId":"Canada/Pacific",\
+	 *   "email":"bozo@clown.net","description":"New description","enabled":true}' \
+	 *   http://localhost:8080/rest/subscriptions/1778cb69-0561-42b9-889f-cfe8c66978db
 	 *   
 	 * This updates the subscription with UUID 1778cb69-0561-42b9-889f-cfe8c66978db
 	 * with the following changes:
 	 * 
-	 * document format:		-> "OpenDocument Spreadsheet"
-	 * cronSchedule:		-> null
-	 * cronScheduleZoneId	-> null
-	 * runOnceAt:			-> "2015-11-04T06:00:00.000Z"
-	 * email:				-> "bozo@clown.net"
-	 * description:			-> "New description"
-	 * enabled:				-> true
+	 * document format:			-> "OpenDocument Spreadsheet"
+	 * deliveryCronSchedule:	-> null
+	 * deliveryTimeZoneId		-> "Canada/Pacific"
+	 * deliveryDatetimeRunAt:	-> "2015-11-04T06:00:00.000"
+	 * email:					-> "bozo@clown.net"
+	 * description:				-> "New description"
+	 * enabled:					-> true
 	 */
 	@Path("/{id}")
 	@PUT
@@ -565,28 +566,28 @@ public class SubscriptionController extends AbstractBaseController {
 			/*
 			 * The subscription must have a usable values for either:
 			 * 
-			 *     cronSchedule & cronScheduleZoneId
+			 *     deliveryCronSchedule & deliveryTimeZoneId
 			 *     
 			 * or for:
 			 * 
-			 *    runOnceAt                       if RUNAT_ENTITY_DATE_TZ_DYNAMIC=false
+			 *    deliveryDatetimeRunAt                       if RUNAT_ENTITY_DATE_TZ_DYNAMIC=false
 			 *    
-			 *    runOnceAt & cronScheduleZoneId  if RUNAT_ENTITY_DATE_TZ_DYNAMIC=true
+			 *    deliveryDatetimeRunAt & deliveryTimeZoneId  if RUNAT_ENTITY_DATE_TZ_DYNAMIC=true
 			 * 
 			 * Rather than creating one long conditional expression, I have 
 			 * broke it down to make it clearer.
 			 */
-			boolean usableCronSchedule = subscriptionResource.getCronSchedule() != null
-					&& !subscriptionResource.getCronSchedule().isEmpty()
-					&& subscriptionResource.getCronScheduleZoneId() != null
-					&& !subscriptionResource.getCronScheduleZoneId().isEmpty();
+			boolean usableCronSchedule = subscriptionResource.getDeliveryCronSchedule() != null
+					&& !subscriptionResource.getDeliveryCronSchedule().isEmpty()
+					&& subscriptionResource.getDeliveryTimeZoneId() != null
+					&& !subscriptionResource.getDeliveryTimeZoneId().isEmpty();
 			boolean usableRunAt;
 			if (SubscriptionScheduler.RUNAT_ENTITY_DATE_TZ_DYNAMIC) {
-				usableRunAt = subscriptionResource.getRunOnceAt() != null
-						&& subscriptionResource.getCronScheduleZoneId() != null
-						&& !subscriptionResource.getCronScheduleZoneId().isEmpty();
+				usableRunAt = subscriptionResource.getDeliveryDatetimeRunAt() != null
+						&& subscriptionResource.getDeliveryTimeZoneId() != null
+						&& !subscriptionResource.getDeliveryTimeZoneId().isEmpty();
 			} else {
-				usableRunAt = subscriptionResource.getRunOnceAt() != null;
+				usableRunAt = subscriptionResource.getDeliveryDatetimeRunAt() != null;
 			}
 			if (!usableCronSchedule && !usableRunAt) {
 				throw new RestApiException(RestError.FORBIDDEN_ENABLED_SUBSCRIPTION_NO_SCHEDULE, Subscription.class);
@@ -782,10 +783,10 @@ public class SubscriptionController extends AbstractBaseController {
 		 * scheduling have been modified. If so, we reschedule the job below.
 		 */
 		boolean rescheduleJob = CompareUtils.different(subscriptionResource.getEnabled(), subscription.getEnabled())
-				|| CompareUtils.different(subscriptionResource.getCronSchedule(), subscription.getCronSchedule())
-				|| CompareUtils.different(subscriptionResource.getCronScheduleZoneId(),
-						subscription.getCronScheduleZoneId())
-				|| CompareUtils.different(subscriptionResource.getRunOnceAt(), subscription.getRunOnceAt());
+				|| CompareUtils.different(subscriptionResource.getDeliveryCronSchedule(), subscription.getDeliveryCronSchedule())
+				|| CompareUtils.different(subscriptionResource.getDeliveryTimeZoneId(),
+						subscription.getDeliveryTimeZoneId())
+				|| CompareUtils.different(subscriptionResource.getDeliveryDatetimeRunAt(), subscription.getDeliveryDatetimeRunAt());
 
 		/*
 		 * Save updated entity. This must come *after* we check if fields of the

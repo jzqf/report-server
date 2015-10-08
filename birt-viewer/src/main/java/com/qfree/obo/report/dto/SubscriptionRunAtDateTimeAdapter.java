@@ -14,7 +14,7 @@ import com.qfree.obo.report.scheduling.schedulers.SubscriptionScheduler;
 import com.qfree.obo.report.util.DateUtils;
 
 /**
- * Adapter class for the SubscriptionResource.runOnceAt field to serialize Java
+ * Adapter class for the SubscriptionResource.deliveryDatetimeRunAt field to serialize Java
  * Date objects as strings as well as deserializes strings into Java Date
  * objects.
  * 

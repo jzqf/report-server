@@ -97,11 +97,20 @@ public class Subscription implements Serializable {
 	/**
 	 * "cron" expression used to specify the delivery schedule for the
 	 * subscription. This can be specified instead of (or in addition to?)
-	 * runOnceAt, which is used to schedule a single delivery at a specified
+	 * deliveryDatetimeRunAt, which is used to schedule a single delivery at a specified
 	 * date and time.
 	 */
-	@Column(name = "cron_schedule", nullable = true, length = 80)
-	private String cronSchedule;
+	@Column(name = "delivery_cron_schedule", nullable = true, length = 80)
+	private String deliveryCronSchedule;
+
+	/**
+	 * Date and time for running the subscription once at a particular date and
+	 * time. This can be specified instead of deliveryCronSchedule, which is used to
+	 * specify a recurring delivery schedule.
+	 */
+	@Temporal(TemporalType.TIMESTAMP)
+	@Column(name = "delivery_datetime_run_at", nullable = true)
+	private Date deliveryDatetimeRunAt;
 
 	/**
 	 * Used to associate a time zone with the cron schedule.
@@ -109,17 +118,8 @@ public class Subscription implements Serializable {
 	 * This string must be a legal value to pass to
 	 * {@link java.time.ZoneId#of(String)}.
 	 */
-	@Column(name = "cron_schedule_zone_id", nullable = true, length = 80)
-	private String cronScheduleZoneId;
-
-	/**
-	 * Date and time for running the subscription once at a particular date and
-	 * time. This can be specified instead of cronSchedule, which is used to
-	 * specify a recurring delivery schedule.
-	 */
-	@Temporal(TemporalType.TIMESTAMP)
-	@Column(name = "run_once_at", nullable = true)
-	private Date runOnceAt;
+	@Column(name = "delivery_time_zone_id", nullable = true, length = 80)
+	private String deliveryTimeZoneId;
 
 	/**
 	 * E-mail address to which the rendered report will be sent. This allows a
@@ -174,9 +174,9 @@ public class Subscription implements Serializable {
 			Role role,
 			ReportVersion reportVersion,
 			DocumentFormat documentFormat,
-			String cronSchedule,
-			String cronScheduleZoneId,
-			Date runOnceAt,
+			String deliveryCronSchedule,
+			String deliveryTimeZoneId,
+			Date deliveryDatetimeRunAt,
 			String email,
 			String description,
 			Boolean enabled,
@@ -186,9 +186,9 @@ public class Subscription implements Serializable {
 				role,
 				reportVersion,
 				documentFormat,
-				cronSchedule,
-				cronScheduleZoneId,
-				runOnceAt,
+				deliveryCronSchedule,
+				deliveryTimeZoneId,
+				deliveryDatetimeRunAt,
 				email,
 				description,
 				enabled,
@@ -206,9 +206,9 @@ public class Subscription implements Serializable {
 				role,
 				reportVersion,
 				documentFormat,
-				subscriptionResource.getCronSchedule(),
-				subscriptionResource.getCronScheduleZoneId(),
-				subscriptionResource.getRunOnceAt(),
+				subscriptionResource.getDeliveryCronSchedule(),
+				subscriptionResource.getDeliveryTimeZoneId(),
+				subscriptionResource.getDeliveryDatetimeRunAt(),
 				subscriptionResource.getEmail(),
 				subscriptionResource.getDescription(),
 				subscriptionResource.getEnabled(),
@@ -221,9 +221,9 @@ public class Subscription implements Serializable {
 			Role role,
 			ReportVersion reportVersion,
 			DocumentFormat documentFormat,
-			String cronSchedule,
-			String cronScheduleZoneId,
-			Date runOnceAt,
+			String deliveryCronSchedule,
+			String deliveryTimeZoneId,
+			Date deliveryDatetimeRunAt,
 			String email,
 			String description,
 			Boolean enabled,
@@ -234,9 +234,9 @@ public class Subscription implements Serializable {
 		this.role = role;
 		this.reportVersion = reportVersion;
 		this.documentFormat = documentFormat;
-		this.cronSchedule = cronSchedule;
-		this.cronScheduleZoneId = cronScheduleZoneId;
-		this.runOnceAt = runOnceAt;
+		this.deliveryCronSchedule = deliveryCronSchedule;
+		this.deliveryTimeZoneId = deliveryTimeZoneId;
+		this.deliveryDatetimeRunAt = deliveryDatetimeRunAt;
 		this.email = email;
 		this.description = description;
 		this.enabled = (enabled != null) ? enabled : false;
@@ -268,28 +268,28 @@ public class Subscription implements Serializable {
 		this.documentFormat = documentFormat;
 	}
 
-	public String getCronSchedule() {
-		return cronSchedule;
+	public String getDeliveryCronSchedule() {
+		return deliveryCronSchedule;
 	}
 
-	public void setCronSchedule(String cronSchedule) {
-		this.cronSchedule = cronSchedule;
+	public void setDeliveryCronSchedule(String deliveryCronSchedule) {
+		this.deliveryCronSchedule = deliveryCronSchedule;
 	}
 
-	public String getCronScheduleZoneId() {
-		return cronScheduleZoneId;
+	public String getDeliveryTimeZoneId() {
+		return deliveryTimeZoneId;
 	}
 
-	public void setCronScheduleZoneId(String cronScheduleZoneId) {
-		this.cronScheduleZoneId = cronScheduleZoneId;
+	public void setDeliveryTimeZoneId(String deliveryTimeZoneId) {
+		this.deliveryTimeZoneId = deliveryTimeZoneId;
 	}
 
-	public Date getRunOnceAt() {
-		return runOnceAt;
+	public Date getDeliveryDatetimeRunAt() {
+		return deliveryDatetimeRunAt;
 	}
 
-	public void setRunOnceAt(Date runOnceAt) {
-		this.runOnceAt = runOnceAt;
+	public void setDeliveryDatetimeRunAt(Date deliveryDatetimeRunAt) {
+		this.deliveryDatetimeRunAt = deliveryDatetimeRunAt;
 	}
 
 	public String getEmail() {
@@ -363,12 +363,12 @@ public class Subscription implements Serializable {
 		builder.append(reportVersion.getReportVersionId());
 		builder.append(", documentFormat=");
 		builder.append(documentFormat);
-		builder.append(", cronSchedule=");
-		builder.append(cronSchedule);
-		builder.append(", cronScheduleZoneId=");
-		builder.append(cronScheduleZoneId);
-		builder.append(", runOnceAt=");
-		builder.append(runOnceAt);
+		builder.append(", deliveryCronSchedule=");
+		builder.append(deliveryCronSchedule);
+		builder.append(", deliveryTimeZoneId=");
+		builder.append(deliveryTimeZoneId);
+		builder.append(", deliveryDatetimeRunAt=");
+		builder.append(deliveryDatetimeRunAt);
 		builder.append(", email=");
 		builder.append(email);
 		builder.append(", description=");

@@ -106,9 +106,9 @@ public class SubscriptionService {
 			 * Role associated with the subscription (which itself may or may 
 			 * not be null or blank).
 			 */
-			String subscriptionTimeZone = subscriptionResource.getCronScheduleZoneId();
+			String subscriptionTimeZone = subscriptionResource.getDeliveryTimeZoneId();
 			if (subscriptionTimeZone == null || subscriptionTimeZone.isEmpty()) {
-				subscriptionResource.setCronScheduleZoneId(role.getTimeZoneId());
+				subscriptionResource.setDeliveryTimeZoneId(role.getTimeZoneId());
 			}
 		} else {
 			throw new RestApiException(RestError.FORBIDDEN_SUBSCRIPTION_ROLE_NULL, Subscription.class, "roleId");

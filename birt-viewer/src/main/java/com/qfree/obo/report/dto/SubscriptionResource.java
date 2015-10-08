@@ -40,14 +40,14 @@ public class SubscriptionResource extends AbstractBaseResource {
 	private DocumentFormatResource documentFormatResource;
 
 	@XmlElement
-	private String cronSchedule;
+	private String deliveryCronSchedule;
 
 	@XmlElement
-	private String cronScheduleZoneId;
+	private String deliveryTimeZoneId;
 
 	@XmlElement
 	@XmlJavaTypeAdapter(SubscriptionRunAtDateTimeAdapter.class)
-	private Date runOnceAt;
+	private Date deliveryDatetimeRunAt;
 
 	@XmlElement
 	private String email;
@@ -162,9 +162,9 @@ public class SubscriptionResource extends AbstractBaseResource {
 			this.documentFormatResource = new DocumentFormatResource(subscription.getDocumentFormat(),
 					uriInfo, newQueryParams, apiVersion);
 
-			this.cronSchedule = subscription.getCronSchedule();
-			this.cronScheduleZoneId = subscription.getCronScheduleZoneId();
-			this.runOnceAt = subscription.getRunOnceAt();
+			this.deliveryCronSchedule = subscription.getDeliveryCronSchedule();
+			this.deliveryTimeZoneId = subscription.getDeliveryTimeZoneId();
+			this.deliveryDatetimeRunAt = subscription.getDeliveryDatetimeRunAt();
 			this.email = subscription.getEmail();
 			this.description = subscription.getDescription();
 			this.enabled = subscription.getEnabled();
@@ -239,28 +239,28 @@ public class SubscriptionResource extends AbstractBaseResource {
 		this.documentFormatResource = documentFormatResource;
 	}
 
-	public String getCronSchedule() {
-		return cronSchedule;
+	public String getDeliveryCronSchedule() {
+		return deliveryCronSchedule;
 	}
 
-	public void setCronSchedule(String cronSchedule) {
-		this.cronSchedule = cronSchedule;
+	public void setDeliveryCronSchedule(String deliveryCronSchedule) {
+		this.deliveryCronSchedule = deliveryCronSchedule;
 	}
 
-	public String getCronScheduleZoneId() {
-		return cronScheduleZoneId;
+	public String getDeliveryTimeZoneId() {
+		return deliveryTimeZoneId;
 	}
 
-	public void setCronScheduleZoneId(String cronScheduleZoneId) {
-		this.cronScheduleZoneId = cronScheduleZoneId;
+	public void setDeliveryTimeZoneId(String deliveryTimeZoneId) {
+		this.deliveryTimeZoneId = deliveryTimeZoneId;
 	}
 
-	public Date getRunOnceAt() {
-		return runOnceAt;
+	public Date getDeliveryDatetimeRunAt() {
+		return deliveryDatetimeRunAt;
 	}
 
-	public void setRunOnceAt(Date runOnceAt) {
-		this.runOnceAt = runOnceAt;
+	public void setDeliveryDatetimeRunAt(Date deliveryDatetimeRunAt) {
+		this.deliveryDatetimeRunAt = deliveryDatetimeRunAt;
 	}
 
 	public String getEmail() {
@@ -331,12 +331,12 @@ public class SubscriptionResource extends AbstractBaseResource {
 		builder.append(roleResource);
 		builder.append(", documentFormatResource=");
 		builder.append(documentFormatResource);
-		builder.append(", cronSchedule=");
-		builder.append(cronSchedule);
-		builder.append(", cronScheduleZoneId=");
-		builder.append(cronScheduleZoneId);
-		builder.append(", runOnceAt=");
-		builder.append(runOnceAt);
+		builder.append(", deliveryCronSchedule=");
+		builder.append(deliveryCronSchedule);
+		builder.append(", deliveryTimeZoneId=");
+		builder.append(deliveryTimeZoneId);
+		builder.append(", deliveryDatetimeRunAt=");
+		builder.append(deliveryDatetimeRunAt);
 		builder.append(", email=");
 		builder.append(email);
 		builder.append(", description=");

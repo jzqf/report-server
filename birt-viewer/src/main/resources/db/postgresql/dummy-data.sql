@@ -2739,7 +2739,7 @@ insert into reporting.role_report (role_report_id, role_id, report_id, created_o
 --insert into reporting.configuration (configuration_id, param_name, role_id, param_type, time_value    , created_on) VALUES ('96a86f9a-da4e-4173-9267-94a68176bff0', 'TEST_TIME'     , 'ee56f34d-dbb4-41c1-9d30-ce29cf973820', 'TIME'     , '00:00:01'                , '2015-07-14T00:00:00');
 --
 --
---insert into reporting.subscription (subscription_id, role_id, report_version_id, document_format_id, run_once_at, cron_schedule, cron_schedule_zone_id, email, description, enabled, active, created_on) values ('7f68e31c-2884-4638-b3e5-c64697a28bd1', 'ee56f34d-dbb4-41c1-9d30-ce29cf973820', 'dbc0883b-afe3-4147-87b4-0ed35869cd35', '30800d77-5fdd-44bc-94a3-1502bd307c1d', '2016-01-01T03:00:00', '00 6 * * 1', 'CET', 'jeffreyz@q-free.com', 'Description for Subscription #1', false, true, '2015-06-06T15:45:30');
+--insert into reporting.subscription (subscription_id, role_id, report_version_id, document_format_id, delivery_datetime_run_at, delivery_cron_schedule, delivery_time_zone_id, email, description, enabled, active, created_on) values ('7f68e31c-2884-4638-b3e5-c64697a28bd1', 'ee56f34d-dbb4-41c1-9d30-ce29cf973820', 'dbc0883b-afe3-4147-87b4-0ed35869cd35', '30800d77-5fdd-44bc-94a3-1502bd307c1d', '2016-01-01T03:00:00', '00 6 * * 1', 'CET', 'jeffreyz@q-free.com', 'Description for Subscription #1', false, true, '2015-06-06T15:45:30');
 --
 --
 ---- [subscription_parameter] rows for [report_parameter]'s associated with 

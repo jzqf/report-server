@@ -70,13 +70,13 @@ public class SubscriptionScheduler {
 	 * e.g., "2015-11-29T10:15:30".
 	 * 
 	 * <p>
-	 * In order for the treatment of {@link Subscription#cronSchedule} and
-	 * {@link Subscription#runOnceAt} to appear consistent to the report server
+	 * In order for the treatment of {@link Subscription#deliveryCronSchedule} and
+	 * {@link Subscription#deliveryDatetimeRunAt} to appear consistent to the report server
 	 * user, it is probably best to set this to <code>true</code>. For this
-	 * case, the time zone for both {@link Subscription#cronSchedule} <i>and</i>
-	 * {@link Subscription#runOnceAt} is specified by
-	 * {@link Subscription#cronScheduleZoneId}. The treatment of
-	 * {@link Subscription#runOnceAt} for when <code>false</code> is set has
+	 * case, the time zone for both {@link Subscription#deliveryCronSchedule} <i>and</i>
+	 * {@link Subscription#deliveryDatetimeRunAt} is specified by
+	 * {@link Subscription#deliveryTimeZoneId}. The treatment of
+	 * {@link Subscription#deliveryDatetimeRunAt} for when <code>false</code> is set has
 	 * been retained only for documenting this case, as well as so that this can
 	 * be recovered if, for some reason, it is desired in the future.
 	 */
@@ -286,20 +286,20 @@ public class SubscriptionScheduler {
 			 * Get the time zone for the cron expression or the "run at" 
 			 * timestamp.
 			 */
-			String cronScheduleZoneId = subscription.getCronScheduleZoneId();
-			logger.info("cronScheduleZoneId = {}", cronScheduleZoneId);
+			String deliveryTimeZoneId = subscription.getDeliveryTimeZoneId();
+			logger.info("deliveryTimeZoneId = {}", deliveryTimeZoneId);
 			ZoneId cronZoneId = null;
-			if (cronScheduleZoneId != null && !cronScheduleZoneId.isEmpty()) {
+			if (deliveryTimeZoneId != null && !deliveryTimeZoneId.isEmpty()) {
 				try {
-					cronZoneId = ZoneId.of(cronScheduleZoneId);
+					cronZoneId = ZoneId.of(deliveryTimeZoneId);
 				} catch (DateTimeException e) {
 					logger.error(
-							"cronScheduleZoneId '{}' is not legal. The default time zone will be used for the cron expression",
-							cronScheduleZoneId);
+							"deliveryTimeZoneId '{}' is not legal. The default time zone will be used for the cron expression",
+							deliveryTimeZoneId);
 				}
 			} else {
 				logger.warn(
-						"cronScheduleZoneId is not defined. The default time zone will be used for the cron expression");
+						"deliveryTimeZoneId is not defined. The default time zone will be used for the cron expression");
 			}
 			if (cronZoneId == null) {
 				/*
@@ -309,7 +309,7 @@ public class SubscriptionScheduler {
 			}
 			logger.info("cronZoneId = {}", cronZoneId);
 
-			if (subscription.getCronSchedule() != null) {
+			if (subscription.getDeliveryCronSchedule() != null) {
 
 				/*
 				 * Create a factory for obtaining a Quartz CronTrigger, to 
@@ -319,7 +319,7 @@ public class SubscriptionScheduler {
 				cronTriggerFactory.setJobDetail(subscriptionJobDetailFactory.getObject());
 				cronTriggerFactory.setName(subscription.getSubscriptionId().toString());
 				cronTriggerFactory.setGroup(TRIGGER_GROUP);
-				cronTriggerFactory.setCronExpression(subscription.getCronSchedule());
+				cronTriggerFactory.setCronExpression(subscription.getDeliveryCronSchedule());
 
 				/*
 				 * Set the time zone for the cron expression.
@@ -338,7 +338,7 @@ public class SubscriptionScheduler {
 						subscriptionJobDetailFactory.getObject(),
 						cronTriggerFactory.getObject());
 
-			} else if (subscription.getRunOnceAt() != null) {
+			} else if (subscription.getDeliveryDatetimeRunAt() != null) {
 
 				/*
 				 * Create a factory for obtaining a Quartz SimpleTrigger, to
@@ -373,14 +373,14 @@ public class SubscriptionScheduler {
 				 * The adjustment we make depends on how we interpret the time
 				 * zone of the entity Date subscription.getRunOnceAt().
 				 */
-				logger.info("subscription.getRunOnceAt() = {}", subscription.getRunOnceAt());
+				logger.info("subscription.getRunOnceAt() = {}", subscription.getDeliveryDatetimeRunAt());
 				Date runOnceAtServerTimezone = null;
 				if (RUNAT_ENTITY_DATE_TZ_DYNAMIC) {
 					runOnceAtServerTimezone = DateUtils
-							.entityTimestampToServerTimezoneDate(subscription.getRunOnceAt(), cronZoneId);
+							.entityTimestampToServerTimezoneDate(subscription.getDeliveryDatetimeRunAt(), cronZoneId);
 				} else {
 					runOnceAtServerTimezone = DateUtils
-							.entityTimestampToServerTimezoneDate(subscription.getRunOnceAt());
+							.entityTimestampToServerTimezoneDate(subscription.getDeliveryDatetimeRunAt());
 				}
 				logger.info("runOnceAtServerTimezone = {}", runOnceAtServerTimezone);
 
@@ -407,13 +407,13 @@ public class SubscriptionScheduler {
 				} else {
 					if (RUNAT_ENTITY_DATE_TZ_DYNAMIC) {
 						logger.info(
-								"Subscription with id = '{}' not scheduled because \"runOnceAt\" = '{}' (relative to time zone '{}') is in the past",
-								subscription.getSubscriptionId(), subscription.getRunOnceAt(),
-								subscription.getCronScheduleZoneId());
+								"Subscription with id = '{}' not scheduled because \"deliveryDatetimeRunAt\" = '{}' (relative to time zone '{}') is in the past",
+								subscription.getSubscriptionId(), subscription.getDeliveryDatetimeRunAt(),
+								subscription.getDeliveryTimeZoneId());
 					} else {
 						logger.info(
-								"Subscription with id = '{}' not scheduled because \"runOnceAt\" = '{}' (relative to UTC) is in the past",
-								subscription.getSubscriptionId(), subscription.getRunOnceAt());
+								"Subscription with id = '{}' not scheduled because \"deliveryDatetimeRunAt\" = '{}' (relative to UTC) is in the past",
+								subscription.getSubscriptionId(), subscription.getDeliveryDatetimeRunAt());
 					}
 				}
 
@@ -610,8 +610,8 @@ public class SubscriptionScheduler {
 					/*
 					 * This is not necessarily an error. It can occur during 
 					 * normal after a one-shot trigger is has fired. Such a 
-					 * trigger is used if Subscription.runOnceAt has a value
-					 * and Subscription.cronSchedule = null.
+					 * trigger is used if Subscription.deliveryDatetimeRunAt has a value
+					 * and Subscription.deliveryCronSchedule = null.
 					 */
 					logger.warn("Trigger does not exist for subscription: {}", subscription);
 					schedulingStatusResource.setSchedulingNotice("Trigger does not exist");
