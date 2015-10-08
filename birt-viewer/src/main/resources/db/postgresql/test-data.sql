@@ -20,6 +20,12 @@ insert into reporting.report_category (report_category_id, description, abbrevia
 insert into reporting.report_category (report_category_id, description, abbreviation, active, created_on) values ('72d7cb27-1770-4cc7-b301-44d39ccf1e76', 'Traffic'          , 'TRA'  , true , '2015-03-01T02:00:10');
 
 
+insert into reporting.job_status (job_status_id, description, abbreviation, active, created_on) values ('08de9764-735f-4c82-bbe9-3981b29cc133', 'Queued'   , 'QUEUED'   , true, current_timestamp AT TIME ZONE 'UTC');
+insert into reporting.job_status (job_status_id, description, abbreviation, active, created_on) values ('a613aae2-836a-4b03-a75d-cfb8303eaad5', 'Running'  , 'RUNNING'  , true, current_timestamp AT TIME ZONE 'UTC');
+insert into reporting.job_status (job_status_id, description, abbreviation, active, created_on) values ('f378fc09-35e4-4096-b1d1-2db14756b098', 'Completed', 'COMPLETED', true, current_timestamp AT TIME ZONE 'UTC');
+insert into reporting.job_status (job_status_id, description, abbreviation, active, created_on) values ('2a9cd697-af00-45bc-aa6a-053284b9d9e4', 'Failed'   , 'FAILED'   , true, current_timestamp AT TIME ZONE 'UTC');
+
+
 insert into reporting.report (report_id, report_category_id, name, number, sort_order, active, created_on) values ('d65f3d9c-f67d-4beb-9936-9dfa19aa1407', '7a482694-51d2-42d0-b0e2-19dd13bbbc64', 'Report name #01', 100, 100, true , '2014-06-09T22:00:00'); --, (SELECT rptdesign FROM tmp_rptdesign));
 insert into reporting.report (report_id, report_category_id, name, number, sort_order, active, created_on) values ('c7f1d394-9814-4ede-bb01-2700187d79ca', '7a482694-51d2-42d0-b0e2-19dd13bbbc64', 'Report name #02', 200, 200, true , '2014-06-09T22:10:00'); --, (SELECT rptdesign FROM tmp_rptdesign));
 insert into reporting.report (report_id, report_category_id, name, number, sort_order, active, created_on) values ('fe718314-5b39-40e7-aed2-279354c04a9d', '7a482694-51d2-42d0-b0e2-19dd13bbbc64', 'Report name #03', 300, 300, false, '2014-07-04T23:30:00'); --, (SELECT rptdesign FROM tmp_rptdesign));
@@ -504,7 +510,7 @@ insert into reporting.configuration (configuration_id, param_name, role_id, para
 insert into reporting.configuration (configuration_id, param_name, role_id, param_type, time_value    , created_on) VALUES ('96a86f9a-da4e-4173-9267-94a68176bff0', 'TEST_TIME'     , 'ee56f34d-dbb4-41c1-9d30-ce29cf973820', 'TIME'     , '00:00:01'                , '2015-07-14T00:00:00');
 
 
-insert into reporting.subscription (subscription_id, role_id, report_version_id, document_format_id, run_once_at, cron_schedule, email, description, enabled, active, created_on) values ('7f68e31c-2884-4638-b3e5-c64697a28bd1', 'ee56f34d-dbb4-41c1-9d30-ce29cf973820', 'dbc0883b-afe3-4147-87b4-0ed35869cd35', '30800d77-5fdd-44bc-94a3-1502bd307c1d', '2016-01-01T03:00:00', '00 6 * * 1', 'jeffreyz@q-free.com', 'Description for Subscription #1', false, true, '2015-06-06T15:45:30');
+insert into reporting.subscription (subscription_id, role_id, report_version_id, document_format_id, delivery_datetime_run_at, delivery_cron_schedule, delivery_time_zone_id, email, description, enabled, active, created_on) values ('7f68e31c-2884-4638-b3e5-c64697a28bd1', 'ee56f34d-dbb4-41c1-9d30-ce29cf973820', 'dbc0883b-afe3-4147-87b4-0ed35869cd35', '30800d77-5fdd-44bc-94a3-1502bd307c1d', '2016-01-01T03:00:00', '00 6 * * 1', 'CET', 'jeffreyz@q-free.com', 'Description for Subscription #1', false, true, '2015-06-06T15:45:30');
 
 
 -- [subscription_parameter] rows for [report_parameter]'s associated with 
@@ -520,10 +526,10 @@ insert into reporting.subscription_parameter_value (subscription_parameter_value
 -- hence, it may not be unique. Therefore, we let PostgreSQL create the job_id
 -- values for us (the DDL for this column includes: "default nextval('job_job_id_seq'::regclass)"
 --
--- job for [report_version] "version 1" of report "Report name #01" run by role "aabb". [document_format]: PDF:
-insert into reporting.job (report_version_id, role_id, document_format_id, url, file_name, document, encoded, created_on) VALUES ('dbc0883b-afe3-4147-87b4-0ed35869cd35', 'ee56f34d-dbb4-41c1-9d30-ce29cf973820', '30800d77-5fdd-44bc-94a3-1502bd307c1d', null, null, null, null, '2015-06-06T00:00:15');
--- job for [report_version] "version 1" of report "Report name #01" run by role "aabb". [document_format]: OpenDocument Spreadsheet:
-insert into reporting.job (report_version_id, role_id, document_format_id, url, file_name, document, encoded, created_on) VALUES ('dbc0883b-afe3-4147-87b4-0ed35869cd35', 'ee56f34d-dbb4-41c1-9d30-ce29cf973820', '05a4ad8d-6f30-4d6d-83d5-995345a8dc58', null, null, null, null, '2015-06-07T00:00:15');
+-- job for [report_version] "version 1" of report "Report name #01" run by role "aabb". [document_format] = PDF, [job_status] = "Queued":
+insert into reporting.job (report_version_id, subscription_id, job_status_id, job_status_remarks, role_id, document_format_id, url, file_name, document, encoded, created_on) VALUES ('dbc0883b-afe3-4147-87b4-0ed35869cd35', null, '08de9764-735f-4c82-bbe9-3981b29cc133', null, 'ee56f34d-dbb4-41c1-9d30-ce29cf973820', '30800d77-5fdd-44bc-94a3-1502bd307c1d', null, null, null, null, '2015-06-06T00:00:15');
+-- job for [report_version] "version 1" of report "Report name #01" run by role "aabb". [document_format] = OpenDocument Spreadsheet, [job_status] = "Queued":
+insert into reporting.job (report_version_id, subscription_id, job_status_id, job_status_remarks, role_id, document_format_id, url, file_name, document, encoded, created_on) VALUES ('dbc0883b-afe3-4147-87b4-0ed35869cd35', null, '08de9764-735f-4c82-bbe9-3981b29cc133', null, 'ee56f34d-dbb4-41c1-9d30-ce29cf973820', '05a4ad8d-6f30-4d6d-83d5-995345a8dc58', null, null, null, null, '2015-06-07T00:00:15');
 --------------------------------------------------------------------------------
 
 

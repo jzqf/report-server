@@ -16,13 +16,15 @@ import java.util.GregorianCalendar;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.qfree.obo.report.dto.DatetimeAdapter;
+
 public class DateUtils {
 
 	private static final Logger logger = LoggerFactory.getLogger(DateUtils.class);
 
 	/**
 	 * Returns a {@link Date} corresponding to the current datetime such that if
-	 * it is stored in a PostgreSQL table column of type "timestamp without 
+	 * it is stored in a PostgreSQL table column of type "timestamp without
 	 * timezone", the value will represent the current instant in time in for
 	 * the GMT time zone.
 	 * <p>
@@ -154,6 +156,37 @@ public class DateUtils {
 	}
 
 	/**
+	 * Converts a string that represents a datetime to a java.util.Date on the
+	 * report server (this application) that has the same date and same time
+	 * value.
+	 * 
+	 * This assumes that the string is in the format that can be parsed by
+	 * {@link LocalDateTime#parse(CharSequence)}, e.g., "2015-11-29T10:15:30".
+	 * 
+	 * Datetime values should be encoded in this String format in ReST resources
+	 * when the datetime does not refer to any time zone in particular.
+	 * 
+	 * @param localDatetimeString
+	 * @return
+	 */
+	public static Date dateServerTZFromLocalDatetimeString(String localDatetimeString) {
+
+		logger.debug("----------------------------------------");
+		logger.debug("localDatetimeString   = {}", localDatetimeString);
+
+		LocalDateTime localDateTime = LocalDateTime.parse(localDatetimeString);
+		logger.debug("localDateTime         = {}", localDateTime);
+
+		ZonedDateTime zonedDateTimeAtSysDef = localDateTime.atZone(ZoneId.systemDefault());
+		logger.debug("zonedDateTimeAtSysDef = {}", zonedDateTimeAtSysDef);
+
+		Date date = Date.from(zonedDateTimeAtSysDef.toInstant());
+		logger.debug("unmarshalledDate      = {}", date);
+
+		return date;
+	}
+
+	/**
 	 * Converts a string that represents a datetime to a java.util.Date.
 	 * 
 	 * This assumes that the string was obtained from a BIRT rptdesign file via
@@ -169,7 +202,7 @@ public class DateUtils {
 	 * to a string, then the original string passed to this method should be
 	 * recovered.
 	 * 
-	 * @param defaultValue
+	 * @param birtDatetimeString
 	 * @return
 	 */
 	public static Date dateFromBirtDatetimeString(String birtDatetimeString) {
@@ -187,7 +220,7 @@ public class DateUtils {
 		 * This is a crude way to support this range of formats, but it works
 		 * fine.
 		 */
-		LocalDateTime localDateTime;
+		LocalDateTime localDateTime = null;
 		try {
 			localDateTime = LocalDateTime.parse(birtDatetimeString, dateTimeFormatter1);
 		} catch (DateTimeParseException e) {
@@ -343,16 +376,16 @@ public class DateUtils {
 		LocalTime localTime = LocalTime.parse(timeString);
 		logger.debug("localTime          = {}", localTime);
 
-		 /*
-		 * Combine the local time with the LocalDate in the local time
-		 * zone. It seems to do the job.
-		 */
-		 ZonedDateTime zonedDateTime = ZonedDateTime.of(LocalDate.now(),
-		 localTime, ZoneId.systemDefault());
-		 logger.debug("zonedDateTime = {}", zonedDateTime);
-		
-		 Date unmarshalledDate = Date.from(zonedDateTime.toInstant());
-		 logger.debug("unmarshalledDate = {}", unmarshalledDate);
+		/*
+		* Combine the local time with the LocalDate in the local time
+		* zone. It seems to do the job.
+		*/
+		ZonedDateTime zonedDateTime = ZonedDateTime.of(LocalDate.now(),
+				localTime, ZoneId.systemDefault());
+		logger.debug("zonedDateTime = {}", zonedDateTime);
+
+		Date unmarshalledDate = Date.from(zonedDateTime.toInstant());
+		logger.debug("unmarshalledDate = {}", unmarshalledDate);
 
 		return unmarshalledDate;
 	}
@@ -390,15 +423,19 @@ public class DateUtils {
 	/**
 	 * Oddly, the string representation of an Entity Date field annotated with
 	 * {@literal @}Temporal(TemporalType.TIMESTAMP) is quite different than the
-	 * string representation of a "normal" Java Date instance. Somehow, the
-	 * underlying Date objects are different, but the details are not clear. Th
-	 * STRING REPRESENTATION of such a Date returned from an entity has no time
-	 * zone information at all, but a "normal" Java does. Examples of each are
+	 * string representation of a "normal" Java {@link Date} instance. Somehow,
+	 * the underlying Date objects are different, but the details are not clear.
+	 * The <b>string representation</b> of such a {@link Date} returned from an
+	 * entity has no time zone information at all, but a "normal" Java
+	 * {@link Date} does. This is likely related to the fact that timestamps in
+	 * the database are stored in columns of type "timestamp without time zone",
+	 * i.e., time zone information has been discarded. Examples of each are:
 	 * 
-	 * <pre>
-	 * <code>timestampFromEntity.toString()  -> "2015-05-30 22:00:00.0"
-	 *normalDate.toString()      -> "Sat May 30 22:00:00 CEST 2015"</code>
-	 * </pre>
+	 * <ul>
+	 * <li><code>timestampFromEntity.toString()</code> ->
+	 * "2015-05-30 22:00:00.0"
+	 * <li><code>normalDate.toString()</code> -> "Sat May 30 22:00:00 CEST 2015"
+	 * </ul>
 	 * 
 	 * In order to compare objects of these "types" (technically, they are the
 	 * same Java type) and assert that they are "equal" in a test, the Date
@@ -415,14 +452,193 @@ public class DateUtils {
 	}
 
 	/**
-	 * This performs the same function as method 
+	 * Converts the Date field of a JPA entity class instance (which, by
+	 * convention we have decided will always be interpreted relative to UTC) to
+	 * a normal java.util.Date that can be used by the server in its default
+	 * time zone.
+	 * 
+	 * @param entityTimestamp
+	 * @return
+	 */
+	public static Date entityTimestampToServerTimezoneDate(Date entityTimestamp) {
+
+		//	logger.debug("entityTimestamp    = {}", entityTimestamp);
+		//	//System.out.println(String.format("entityTimestamp = %s", entityTimestamp));
+		//
+		//	/*
+		//	 * Convert entityTimestamp to a LocalDateTime at the server's (default)
+		//	 * time zone. This preserves the date and the time values; It just 
+		//	 * strips the time zone information. Example:
+		//	 * 
+		//	 *  entityTimestamp.toString()      localDateTimeServerTZ.toString()
+		//	 *  ------------------------------   ------------------------------
+		//	 *  2015-10-04 20:45:00.0         -> 2015-10-04T20:45
+		//	 */
+		//	LocalDateTime localDateTimeServerTZ = LocalDateTime.ofInstant(entityTimestamp.toInstant(),
+		//			ZoneId.systemDefault());
+		//	logger.debug("localDateTimeServerTZ   = {}", localDateTimeServerTZ);
+		//	//System.out.println(String.format("localDateTimeServerTZ = %s", localDateTimeServerTZ));
+		//
+		//	/*
+		//	 * Convert localDateTimeServerTZ to a ZonedDateTime at UTC/GMT. Examples:
+		//	 * 
+		//	 *  localDateTimeServerTZ.toString() zonedDateTimeUTC.toString()
+		//	 *  ------------------------------   ------------------------------
+		//	 *  2015-10-04T20:45              -> 2015-10-04T20:45Z
+		//	 */
+		//	ZonedDateTime zonedDateTimeUTC = localDateTimeServerTZ.atZone(ZoneId.of("Z"));
+		//	logger.debug("zonedDateTimeUTC = {}", zonedDateTimeUTC);
+		//	//System.out.println(String.format("zonedDateTimeUTC = %s", zonedDateTimeUTC));
+		//
+		//	/*
+		//	 * Convert zonedDateTimeUTC to a java.util.Date relative to the time 
+		//	 * zone where the report server is located. Examples:
+		//	 * 
+		//	 *  zonedDateTimeUTC.toString()      dateAtServer.toString()
+		//	 *  ------------------------------   -----------------------------
+		//	 *  2015-10-04T20:45Z             -> Sun Oct 04 22:45:00 CEST 2015
+		//	 */
+		//	Date dateAtServer = Date.from(zonedDateTimeUTC.toInstant());
+		//	logger.debug("dateAtServer       = {}", dateAtServer);
+		//	//System.out.println(String.format("dateAtServer = %s", dateAtServer));
+		//	return dateAtServer;
+
+		return entityTimestampToServerTimezoneDate(entityTimestamp, ZoneId.of("Z"));
+	}
+
+	/**
+	 * Converts the Date field of a JPA entity class instance to a normal
+	 * java.util.Date that can be used by the server in its default time zone.
+	 * 
+	 * It differs from {@link #entityTimestampToServerTimezoneDate(Date)}
+	 * (which, by convention assumes that the entity Date will be interpreted
+	 * relative to UTC) in that it assumes that the entity Date will be
+	 * interpreted relative to the time zone specified by zoneId.
+	 * 
+	 * @param entityTimestamp
+	 * @param zoneId
+	 * @return
+	 */
+	// GET entityTimestampToServerTimezoneDate(Date) TO CALL THIS METHOD, USING THE APPROPRIATE ZoneId FOR UTC/ZULU
+	public static Date entityTimestampToServerTimezoneDate(Date entityTimestamp, ZoneId entityDateZoneId) {
+		logger.debug("entityDateZoneId   = {}", entityDateZoneId);
+		logger.debug("entityTimestamp    = {}", entityTimestamp);
+		//System.out.println(String.format("entityTimestamp = %s", entityTimestamp));
+
+		/*
+		 * Notes about the example below:
+		 * 
+		 *   1. The "entity time zone" is "Canada/Pacific", i.e., 
+		 *      entityTimestamp (which the value of a java.util.Date field of an
+		 *      entity class instance) represents a date and time in the time 
+		 *      zone "Canada/Pacific".
+		 *   
+		 *   2. For the entityTimestamp value used in this example, the time
+		 *      here in Trondheim where the server is located is 9 hours ahead
+		 *      of the instant represented by entityTimestamp.
+		 */
+
+		/*
+		 * Convert entityTimestamp to a LocalDateTime at the server's (default)
+		 * time zone. This preserves the date and the time values; It just 
+		 * strips the time zone information. Example:
+		 * 
+		 *  entityTimestamp.toString()      localDateTimeServerTZ.toString()
+		 *  ------------------------------   ------------------------------
+		 *  2015-10-08 06:00:00.0         -> 2015-10-08T06:00
+		 */
+		LocalDateTime localDateTimeServerTZ = LocalDateTime.ofInstant(entityTimestamp.toInstant(),
+				ZoneId.systemDefault());
+		logger.debug("localDateTimeServerTZ   = {}", localDateTimeServerTZ);
+		//System.out.println(String.format("localDateTimeServerTZ = %s", localDateTimeServerTZ));
+
+		/*
+		 * Convert localDateTimeServerTZ to a ZonedDateTime at UTC/GMT. Examples:
+		 * 
+		 *  localDateTimeServerTZ.toString() zonedDateTimeEntityDateZoneId.toString()
+		 *  ------------------------------   ------------------------------
+		 *  2015-10-08T06:00              -> 2015-10-08T06:00-07:00[Canada/Pacific]
+		 */
+		ZonedDateTime zonedDateTimeEntityDateZoneId = localDateTimeServerTZ.atZone(entityDateZoneId);
+		logger.debug("zonedDateTimeEntityDateZoneId = {}", zonedDateTimeEntityDateZoneId);
+		//System.out.println(String.format("zonedDateTimeEntityDateZoneId = %s", zonedDateTimeEntityDateZoneId));
+
+		/*
+		 * Convert zonedDateTimeEntityDateZoneId to a java.util.Date relative to the time 
+		 * zone where the report server is located. Examples:
+		 * 
+		 *  zonedDateTimeEntityDateZoneId.toString()      dateAtServer.toString()
+		 *  ------------------------------   -----------------------------
+		 *  2015-10-08T06:00-07:00[Canada/Pacific]            -> Thu Oct 08 15:00:00 CEST 2015
+		 */
+		Date dateAtServer = Date.from(zonedDateTimeEntityDateZoneId.toInstant());
+		logger.debug("dateAtServer       = {}", dateAtServer);
+		//System.out.println(String.format("dateAtServer = %s", dateAtServer));
+
+		return dateAtServer;
+	}
+
+	/**
+	 * Convert a normal {@link javal.util.Date} to a new {@link javal.util.Date}
+	 * , but such that when it is serialized by
+	 * {@link DatetimeAdapter#marshal(Date)} the resulting string will correctly
+	 * represent the original date in ISO-8601 format relative to "Zulu" time.
+	 * 
+	 * @param date
+	 * @return
+	 */
+	public static Date normalDateToUtcTimezoneDate(Date date) {
+		logger.debug("date    = {}", date);
+		//System.out.println(String.format("date = %s", date));
+
+		/*
+		 * Convert date to a LocalDateTime relative to UTC. Example:
+		 * (Note: This example uses a date where summer time is in effect)
+		 * 
+		 *  date.toString()                  localDateTimeUtc.toString()
+		 *  ------------------------------   ------------------------------
+		 *  Sun Oct 04 20:45:00 CEST 2015 -> 2015-10-04T18:45
+		 */
+		LocalDateTime localDateTimeUtc = LocalDateTime.ofInstant(date.toInstant(), ZoneId.of("Z"));
+		logger.debug("localDateTimeUtc   = {}", localDateTimeUtc);
+		//System.out.println(String.format("localDateTimeUtc = %s", localDateTimeUtc));
+
+		/*
+		 * Convert localDateTimeUtc to a ZonedDateTime at the server's time 
+		 * zone. Example:
+		 * 
+		 *  localDateTimeUtc.toString()      zonedDateTimeServerTZ.toString()
+		 *  ------------------------------   ------------------------------
+		 *  2015-10-04T18:45              -> 2015-10-04T18:45+02:00[Europe/Oslo]
+		 */
+		ZonedDateTime zonedDateTimeServerTZ = localDateTimeUtc.atZone(ZoneId.systemDefault());
+		logger.debug("zonedDateTimeServerTZ = {}", zonedDateTimeServerTZ);
+		//System.out.println(String.format("zonedDateTimeServerTZ = %s", zonedDateTimeServerTZ));
+
+		/*
+		 * Convert zonedDateTimeServerTZ to a java.util.Date relative to the 
+		 * time zone where the report server is located. Example:
+		 * 
+		 *  zonedDateTimeServerTZ.toString()       dateAtServer.toString()
+		 *  ------------------------------         -----------------------------
+		 *  2015-10-04T18:45+02:00[Europe/Oslo] -> Sun Oct 04 18:45:00 CEST 2015
+		 */
+		Date dateAtUtc = Date.from(zonedDateTimeServerTZ.toInstant());
+		logger.debug("dateAtServer       = {}", dateAtUtc);
+		//System.out.println(String.format("dateAtUtc = %s", dateAtUtc));
+
+		return dateAtUtc;
+	}
+
+	/**
+	 * This performs the same function as method
 	 * {@link #entityTimestampToNormalDate}, but for entity class attributes
 	 * annotated with {@literal @}Temporal(TemporalType.Date)}. This method just
-	 * delegates to {@link #entityTimestampToNormalDate} but it is useful to 
+	 * delegates to {@link #entityTimestampToNormalDate} but it is useful to
 	 * have different methods as markers for the different TemporalType's, in
-	 * case attributes annoated with {@literal @}Temporal(TemporalType.Date)} 
-	 * requires a different  treatment than objects annotated with 
-	 * {@literal @}Temporal(TemporalType.Timestamp)} in the furture.
+	 * case attributes annoated with {@literal @}Temporal(TemporalType.Date)}
+	 * requires a different treatment than objects annotated with {@literal @}
+	 * Temporal(TemporalType.Timestamp)} in the furture.
 	 * 
 	 * @param entityDate
 	 * @return
@@ -564,5 +780,33 @@ public class DateUtils {
 		System.out.println("DateUtils.dateFromBirtTimeString(\"12:30:59:999\")                = " + date5);
 		System.out.println("DateUtils.birtTimeStringFromDate(" + date5 + ") = "
 				+ DateUtils.birtTimeStringFromDate(date5));
+
+		System.out.println("");
+		date1 = DateUtils.dateFromBirtDatetimeString("2015-10-04 20:45:00");
+		date2 = entityTimestampToServerTimezoneDate(date1);
+		System.out.println(String.format("entityTimestampToServerTimezoneDate(%s) = %s", date1, date2));
+
+		//System.out.println("");
+		date1 = DateUtils.dateFromBirtDatetimeString("2015-10-04 20:45:00");
+		date2 = normalDateToUtcTimezoneDate(date1);
+
+		System.out.println("");
+		String localDatetimeString = null;
+		localDatetimeString = "2015-10-04T20:45:00";
+		System.out.println(String.format("dateServerTZFromLocalDatetimeString(\"%s\") = %s", localDatetimeString,
+				dateServerTZFromLocalDatetimeString(localDatetimeString)));
+		localDatetimeString = "2015-10-04T20:45:00.001";
+		System.out.println(String.format("dateServerTZFromLocalDatetimeString(\"%s\") = %s", localDatetimeString,
+				dateServerTZFromLocalDatetimeString(localDatetimeString)));
+		localDatetimeString = "2015-10-04T20:45:00.01";
+		System.out.println(String.format("dateServerTZFromLocalDatetimeString(\"%s\") = %s", localDatetimeString,
+				dateServerTZFromLocalDatetimeString(localDatetimeString)));
+		localDatetimeString = "2015-10-04T20:45:00.1";
+		System.out.println(String.format("dateServerTZFromLocalDatetimeString(\"%s\") = %s", localDatetimeString,
+				dateServerTZFromLocalDatetimeString(localDatetimeString)));
+		//localDatetimeString = "2015-10-04T20:45:00Z"; // <- DateTimeParseException thrown
+		//System.out.println(String.format("dateServerTZFromLocalDatetimeString(\"%s\") = %s", localDatetimeString,
+		//		dateServerTZFromLocalDatetimeString(localDatetimeString)));
+
 	}
 }

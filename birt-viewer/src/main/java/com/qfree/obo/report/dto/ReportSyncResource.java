@@ -95,7 +95,6 @@ public class ReportSyncResource extends AbstractBaseResource {
 	//			this.active = reportSync.isActive();
 	//			this.createdOn = reportSync.getCreatedOn();
 	//
-	//			logger.info("reportSync = {}", reportSync);
 	//		}
 	//	}
 

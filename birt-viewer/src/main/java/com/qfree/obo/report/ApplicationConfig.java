@@ -89,7 +89,9 @@ import com.qfree.obo.report.service.StartupService;
 		com.qfree.obo.report.rest.server.ComponentScanPackageMarker.class,
 		com.qfree.obo.report.service.ComponentScanPackageMarker.class,
 })
-@Import({ PersistenceConfig.class })
+@Import({
+		PersistenceConfig.class,
+		SchedulingConfig.class })
 @ImportResource("classpath:spring/root-context.xml")
 //@ImportResource("/WEB-INF/spring/root-context.xml")
 @PropertySource("classpath:config.properties")

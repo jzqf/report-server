@@ -170,7 +170,6 @@ public abstract class AbstractBaseResource {
 	//	 */
 	//	protected static String getFullyQualifiedContextPath(UriInfo uriInfo) {
 	//		String fqBasePath = uriInfo.getBaseUri().toString();
-	//		logger.info("fq = {}", fqBasePath);
 	//		if (fqBasePath.endsWith("/")) {
 	//			return fqBasePath.substring(0, fqBasePath.length() - 1);
 	//		}

@@ -4,6 +4,8 @@ import java.util.List;
 
 import com.qfree.obo.report.domain.Configuration;
 import com.qfree.obo.report.domain.DocumentFormat;
+import com.qfree.obo.report.domain.Job;
+import com.qfree.obo.report.domain.JobStatus;
 import com.qfree.obo.report.domain.ParameterGroup;
 import com.qfree.obo.report.domain.Report;
 import com.qfree.obo.report.domain.ReportCategory;
@@ -27,6 +29,16 @@ public enum ResourcePath {
 			ResourcePath.DOCUMENTFORMAT_EXPAND_PARAM,
 			ResourcePath.DOCUMENTFORMAT_SHOWALL_PARAM,
 			DocumentFormat.class),
+	JOBS(
+			ResourcePath.JOBS_PATH,
+			ResourcePath.JOB_EXPAND_PARAM,
+			ResourcePath.JOB_SHOWALL_PARAM,
+			Job.class),
+	JOBSTATUSES(
+			ResourcePath.JOBSTATUSES_PATH,
+			ResourcePath.JOBSTATUS_EXPAND_PARAM,
+			ResourcePath.JOBSTATUS_SHOWALL_PARAM,
+			JobStatus.class),
 	PARAMETERGROUPS(
 			ResourcePath.PARAMETERGROUPS_PATH,
 			ResourcePath.PARAMETERGROUP_EXPAND_PARAM,
@@ -89,6 +101,8 @@ public enum ResourcePath {
 	 */
 	public static final String CONFIGURATIONS_PATH = ResourcePath.PATH_SEPARATOR + "configurations";
 	public static final String DOCUMENTFORMATS_PATH = ResourcePath.PATH_SEPARATOR + "documentFormats";
+	public static final String JOBS_PATH = ResourcePath.PATH_SEPARATOR + "jobs";
+	public static final String JOBSTATUSES_PATH = ResourcePath.PATH_SEPARATOR + "jobStatuses";
 	public static final String PARAMETERGROUPS_PATH = ResourcePath.PATH_SEPARATOR + "parameterGroups";
 	public static final String REPORTCATEGORIES_PATH = ResourcePath.PATH_SEPARATOR + "reportCategories";
 	public static final String REPORTPARAMETERS_PATH = ResourcePath.PATH_SEPARATOR + "reportParameters";
@@ -118,6 +132,8 @@ public enum ResourcePath {
 	 */
 	public static final String CONFIGURATION_EXPAND_PARAM = "configurations";
 	public static final String DOCUMENTFORMAT_EXPAND_PARAM = "documentFormats";
+	public static final String JOB_EXPAND_PARAM = "jobs";
+	public static final String JOBSTATUS_EXPAND_PARAM = "jobStatuses";
 	public static final String PARAMETERGROUP_EXPAND_PARAM = "parameterGroups";
 	public static final String REPORT_EXPAND_PARAM = "reports";
 	public static final String REPORTCATEGORY_EXPAND_PARAM = "reportCategories";
@@ -148,6 +164,8 @@ public enum ResourcePath {
 	 */
 	public static final String CONFIGURATION_SHOWALL_PARAM = CONFIGURATION_EXPAND_PARAM;
 	public static final String DOCUMENTFORMAT_SHOWALL_PARAM = DOCUMENTFORMAT_EXPAND_PARAM;
+	public static final String JOB_SHOWALL_PARAM = JOB_EXPAND_PARAM;
+	public static final String JOBSTATUS_SHOWALL_PARAM = JOBSTATUS_EXPAND_PARAM;
 	public static final String PARAMETERGROUP_SHOWALL_PARAM = PARAMETERGROUP_EXPAND_PARAM;
 	public static final String REPORT_SHOWALL_PARAM = REPORT_EXPAND_PARAM;
 	public static final String REPORTCATEGORY_SHOWALL_PARAM = REPORTCATEGORY_EXPAND_PARAM;

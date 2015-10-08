@@ -16,15 +16,15 @@ import com.qfree.obo.report.domain.DocumentFormat;
 import com.qfree.obo.report.domain.ReportVersion;
 import com.qfree.obo.report.domain.Role;
 import com.qfree.obo.report.domain.Subscription;
-import com.qfree.obo.report.domain.SubscriptionParameter;
-import com.qfree.obo.report.domain.SubscriptionParameterValue;
 import com.qfree.obo.report.dto.DocumentFormatResource;
 import com.qfree.obo.report.dto.ReportVersionResource;
 import com.qfree.obo.report.dto.RestErrorResource.RestError;
 import com.qfree.obo.report.dto.RoleResource;
+import com.qfree.obo.report.dto.SchedulingStatusResource;
 import com.qfree.obo.report.dto.SubscriptionResource;
 import com.qfree.obo.report.exceptions.RestApiException;
 import com.qfree.obo.report.rest.server.RestUtils;
+import com.qfree.obo.report.scheduling.schedulers.SubscriptionScheduler;
 
 @Component
 @Transactional
@@ -36,17 +36,20 @@ public class SubscriptionService {
 	private final DocumentFormatRepository documentFormatRepository;
 	private final ReportVersionRepository reportVersionRepository;
 	private final RoleRepository roleRepository;
+	private final SubscriptionScheduler subscriptionScheduler;
 
 	@Autowired
 	public SubscriptionService(
 			SubscriptionRepository subscriptionRepository,
 			DocumentFormatRepository documentFormatRepository,
 			ReportVersionRepository reportVersionRepository,
-			RoleRepository roleRepository) {
+			RoleRepository roleRepository,
+			SubscriptionScheduler subscriptionScheduler) {
 		this.subscriptionRepository = subscriptionRepository;
 		this.documentFormatRepository = documentFormatRepository;
 		this.reportVersionRepository = reportVersionRepository;
 		this.roleRepository = roleRepository;
+		this.subscriptionScheduler = subscriptionScheduler;
 	}
 
 	@Transactional
@@ -66,7 +69,7 @@ public class SubscriptionService {
 		if (subscriptionResource.getEnabled() == null) {
 			subscriptionResource.setEnabled(Boolean.FALSE);
 		} else if (subscriptionResource.getEnabled()) {
-			throw new RestApiException(RestError.FORBIDDEN_NEW_SUBSCRIPTION_ACTIVE, Subscription.class);
+			throw new RestApiException(RestError.FORBIDDEN_NEW_SUBSCRIPTION_ENABLED, Subscription.class);
 		}
 
 		// /*
@@ -74,6 +77,42 @@ public class SubscriptionService {
 		// */
 		// RestUtils.ifAttrNullThen403(subscriptionResource.getEmail(),
 		// Subscription.class, "email");
+
+		/*
+		 * If necessary, copy default values to the new Subscription from the 
+		 * Role associated with the subscription. This requires that a Role has
+		 * been specified.
+		 */
+		UUID roleId = null;
+		if (subscriptionResource.getRoleResource() != null) {
+			roleId = subscriptionResource.getRoleResource().getRoleId();
+		}
+		if (roleId != null) {
+			Role role = roleRepository.findOne(roleId);
+			RestUtils.ifNullThen404(role, Role.class, "roleId", roleId.toString());
+
+			/*
+			 * If no email address has been specified, use the value from the  
+			 * Role associated with the subscription (which itself may or may 
+			 * not be null or blank).
+			 */
+			String subscriptionEmail = subscriptionResource.getEmail();
+			if (subscriptionEmail == null || subscriptionEmail.isEmpty()) {
+				subscriptionResource.setEmail(role.getEmail());
+			}
+
+			/*
+			 * If no time zone has been specified, use the value from the  
+			 * Role associated with the subscription (which itself may or may 
+			 * not be null or blank).
+			 */
+			String subscriptionTimeZone = subscriptionResource.getDeliveryTimeZoneId();
+			if (subscriptionTimeZone == null || subscriptionTimeZone.isEmpty()) {
+				subscriptionResource.setDeliveryTimeZoneId(role.getTimeZoneId());
+			}
+		} else {
+			throw new RestApiException(RestError.FORBIDDEN_SUBSCRIPTION_ROLE_NULL, Subscription.class, "roleId");
+		}
 
 		return saveOrUpdateFromResource(subscriptionResource);
 	}
@@ -102,7 +141,10 @@ public class SubscriptionService {
 		 */
 		DocumentFormatResource documentFormatResource = subscriptionResource.getDocumentFormatResource();
 		logger.debug("documentFormatResource = {}", documentFormatResource);
-		UUID documentFormatId = documentFormatResource.getDocumentFormatId();
+		UUID documentFormatId = null;
+		if (documentFormatResource != null) {
+			documentFormatId = documentFormatResource.getDocumentFormatId();
+		}
 		logger.debug("documentFormatId = {}", documentFormatId);
 		DocumentFormat documentFormat = null;
 		if (documentFormatId != null) {
@@ -129,7 +171,10 @@ public class SubscriptionService {
 		 */
 		ReportVersionResource reportVersionResource = subscriptionResource.getReportVersionResource();
 		logger.debug("reportVersionResource = {}", reportVersionResource);
-		UUID reportVersionId = reportVersionResource.getReportVersionId();
+		UUID reportVersionId = null;
+		if (reportVersionResource != null) {
+			reportVersionId = reportVersionResource.getReportVersionId();
+		}
 		logger.debug("reportVersionId = {}", reportVersionId);
 		ReportVersion reportVersion = null;
 		if (reportVersionId != null) {
@@ -156,7 +201,10 @@ public class SubscriptionService {
 		 */
 		RoleResource roleResource = subscriptionResource.getRoleResource();
 		logger.debug("roleResource = {}", roleResource);
-		UUID roleId = roleResource.getRoleId();
+		UUID roleId = null;
+		if (roleResource != null) {
+			roleId = roleResource.getRoleId();
+		}
 		logger.debug("roleId = {}", roleId);
 		Role role = null;
 		if (roleId != null) {
@@ -187,78 +235,13 @@ public class SubscriptionService {
 	}
 
 	/**
-	 * Performs whatever actions are appropriate when a subscription is
-	 * deactivated. This code may also run when the subscription was already
-	 * disabled, so this is taken into account.
-	 * 
-	 * <p>
-	 * The most important action is to disable any scheduling that is active for
-	 * the subscription.
+	 * Interrogates the Quartz scheduler and returns details about the
+	 * scheduling state of the Subscription identified by its Id.
 	 * 
 	 * @param subscription
+	 * @return
 	 */
-	public void disable(Subscription subscription) {
-
-		/*
-		 * The subscription may not be scheduled, so we check for that first.
-		 */
-		//TODO Check if the subscription NOT currently scheduled - here or in the called code.
-		// Write method "unscheduleIfNecessary? No, just "unschedule", but it should make this check.
-
-		/*
-		 * If subscription.getEnabled() = true, execute subscription.setEnabled(Boolean.FALSE)
-		 * and then save the Subscription.
-		 */
-
-		// TODO Write me!
-
-	}
-
-	/**
-	 * Performs whatever actions are appropriate when a subscription is enabled.
-	 * This code may also run when the subscription was already enabled, so this
-	 * is taken into account.
-	 * 
-	 * <p>
-	 * The most important action is to enable scheduling for the subscription,
-	 * but this can only be done if certain details have been provided:
-	 * 
-	 * <ul>
-	 * <li>There must be at least one {@link SubscriptionParameterValue} per
-	 * {@link SubscriptionParameter}, and each
-	 * {@link SubscriptionParameterValue} needs to have non-null values
-	 * assigned.
-	 * <li>There can be more than one {@link SubscriptionParameterValue} per
-	 * {@link SubscriptionParameter}, but only if the associated
-	 * {@link ReportParameter} has <code>multivalued=true</code>.
-	 * <li>The {@link Subscription} must have a usable value for either
-	 * <code>cronSchedule</code> or <code>runOnceAt</code>.
-	 * <li>The {@link Subscription} must have a value for <code>email</code>.
-	 * </ul>
-	 * 
-	 * @param subscription
-	 */
-	public void enable(Subscription subscription) {
-
-		/*
-		 * The subscription may already be scheduled, so we check for that 
-		 * first.
-		 */
-		//TODO Check if the subscription is already be scheduled - here or in the called code.
-		// Write method "scheduleIfNecessary? No, just "schedule", but it should make this check.
-		// Don't report any error if this occurs. Use logger.info, not logger.warn.
-
-		/*
-		 * If the subscription is not in a state to be scheduled, then we need
-		 * to execute subscription.setEnabled(Boolean.FALSE) and then save the Subscription.
-		 * 
-		 * Otherwise:
-		 * 
-		 * If subscription.getEnabled() = false, execute subscription.setEnabled(Boolean.TRUE)
-		 * and then save the Subscription. Then schedule it.
-		 */
-
-		// TODO Write me!
-
+	public SchedulingStatusResource getSchedulingStatusResource(Subscription subscription) {
+		return subscriptionScheduler.getSchedulingStatusResource(subscription);
 	}
 }

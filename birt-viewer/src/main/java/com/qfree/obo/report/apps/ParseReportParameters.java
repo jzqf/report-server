@@ -21,9 +21,10 @@ public class ParseReportParameters {
 
 	public static void main(String[] args) {
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(ApplicationConfig.class);
-		BirtService birtService=(BirtService)context.getBean(BirtService.class);
+		//	BirtService birtService = (BirtService) context.getBean(BirtService.class);
+		BirtService birtService = context.getBean(BirtService.class);
 		logger.info("birtService = {}", birtService);
-		
+
 		try {
 
 			/*
