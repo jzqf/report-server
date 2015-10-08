@@ -2,6 +2,7 @@ package com.qfree.obo.report.scheduling.schedulers;
 
 import java.text.ParseException;
 import java.time.DateTimeException;
+import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Date;
 import java.util.List;
@@ -54,14 +55,32 @@ public class SubscriptionScheduler {
 	private static final Logger logger = LoggerFactory.getLogger(SubscriptionScheduler.class);
 
 	/**
-	 * If false, the entity field Subscription.deliveryDatetimeRunAt will be
-	 * assumed to be expressed relative to UTC/GMT.
+	 * If <code>false</code>, the entity field
+	 * Subscription.deliveryDatetimeRunAt will be assumed to be expressed
+	 * relative to UTC/GMT. In addition, datetimes submitted in ReST resources
+	 * via HTTP POST or PUT must be expressed in ISO-8601 format, which requires
+	 * the time zone to be specified, either as "Z" or "±hh:mm"
 	 * 
-	 * If true, the entity field Subscription.deliveryDatetimeRunAt will be
-	 * assumed to be expressed relative to the time zone specified by the entity
-	 * field Subscription.deliveryTimeZoneId.
+	 * <p>
+	 * If <code>true</code>, the entity field Subscription.deliveryDatetimeRunAt
+	 * will be assumed to be expressed relative to the time zone specified by
+	 * the entity field Subscription.deliveryTimeZoneId. In addition, datetimes
+	 * submitted in ReST resources via HTTP POST or PUT must be expressed in a
+	 * format that can be parse by {@link LocalDateTime#parse(CharSequence)},
+	 * e.g., "2015-11-29T10:15:30".
+	 * 
+	 * <p>
+	 * In order for the treatment of {@link Subscription#cronSchedule} and
+	 * {@link Subscription#runOnceAt} to appear consistent to the report server
+	 * user, it is probably best to set this to <code>true</code>. For this
+	 * case, the time zone for both {@link Subscription#cronSchedule} <i>and</i>
+	 * {@link Subscription#runOnceAt} is specified by
+	 * {@link Subscription#cronScheduleZoneId}. The treatment of
+	 * {@link Subscription#runOnceAt} for when <code>false</code> is set has
+	 * been retained only for documenting this case, as well as so that this can
+	 * be recovered if, for some reason, it is desired in the future.
 	 */
-	private static final boolean RUNAT_ENTITY_DATE_TZ_DYNAMIC = true;
+	public static final boolean RUNAT_ENTITY_DATE_TZ_DYNAMIC = true;
 
 	private static final String JOB_GROUP = "Subscription_JobGroup";
 	private static final String TRIGGER_GROUP = "Subscription_TriggerGroup";
@@ -330,11 +349,29 @@ public class SubscriptionScheduler {
 				simpleTriggerFactory.setName(subscription.getSubscriptionId().toString());
 				simpleTriggerFactory.setGroup(TRIGGER_GROUP);
 				/*
-				 * Like all dates stored in the database, it is stored relative
-				 * to UTC/GMT.We need to adjust it here so that the subscription
-				 * is triggered at the appropriate time. Since java.util.Date
-				 * objects don't have time zone support, we have to perform some
-				 * magic here with DateUtils. 
+				 * If RUNAT_ENTITY_DATE_TZ_DYNAMIC = true:
+				 * 
+				 *   We assume that subscription.getRunOnceAt() is stored 
+				 *   relative to the server's own time zone. In order to express
+				 *   this datetime value relative to the correct time zone so
+				 *   that the job is triggered at the correct time, we make
+				 *   use of subscription.getCronScheduleZoneId().
+				 * 
+				 * If RUNAT_ENTITY_DATE_TZ_DYNAMIC = false:
+				 * 
+				 *   We assume that subscription.getRunOnceAt() is stored 
+				 *   relative to UTC/GMT (which is the convention we have 
+				 *   chosen for most entity Date fields that represent datetime
+				 *   values). The value of subscription.getCronScheduleZoneId()
+				 *   is *not* used for this case because we assume that the 
+				 *   entity Date field value is expressed relative to UTC/GMT.
+				 * 
+				 * It is necessary to adjust subscription.getRunOnceAt() here so
+				 * that the subscription is triggered at the appropriate time. 
+				 * Since java.util.Date objects don't have time zone support, we
+				 * have to perform some magic here with DateUtils. The 
+				 * The adjustment we make depends on how we interpret the time
+				 * zone of the entity Date subscription.getRunOnceAt().
 				 */
 				logger.info("subscription.getRunOnceAt() = {}", subscription.getRunOnceAt());
 				Date runOnceAtServerTimezone = null;
@@ -360,7 +397,6 @@ public class SubscriptionScheduler {
 					simpleTriggerFactory.setStartTime(runOnceAtServerTimezone);
 					simpleTriggerFactory.setRepeatCount(0); // trigger will fire only once
 					simpleTriggerFactory.afterPropertiesSet();
-
 					/*
 					 * Schedule the subscription to run according the schedule
 					 * defined by its one-shot trigger.
@@ -369,9 +405,16 @@ public class SubscriptionScheduler {
 							subscriptionJobDetailFactory.getObject(),
 							simpleTriggerFactory.getObject());
 				} else {
-					logger.info(
-							"Subscription with id = '{}' not scheduled because \"runOnceAt\" = '{}' (relative to UTC) is in the past",
-							subscription.getSubscriptionId(), subscription.getRunOnceAt());
+					if (RUNAT_ENTITY_DATE_TZ_DYNAMIC) {
+						logger.info(
+								"Subscription with id = '{}' not scheduled because \"runOnceAt\" = '{}' (relative to time zone '{}') is in the past",
+								subscription.getSubscriptionId(), subscription.getRunOnceAt(),
+								subscription.getCronScheduleZoneId());
+					} else {
+						logger.info(
+								"Subscription with id = '{}' not scheduled because \"runOnceAt\" = '{}' (relative to UTC) is in the past",
+								subscription.getSubscriptionId(), subscription.getRunOnceAt());
+					}
 				}
 
 			} else {
@@ -564,7 +607,13 @@ public class SubscriptionScheduler {
 						schedulingStatusResource.setSchedulingNotice("There are " + triggers.size() + " triggers");
 					}
 				} else {
-					logger.error("Trigger does not exist for subscription: {}", subscription);
+					/*
+					 * This is not necessarily an error. It can occur during 
+					 * normal after a one-shot trigger is has fired. Such a 
+					 * trigger is used if Subscription.runOnceAt has a value
+					 * and Subscription.cronSchedule = null.
+					 */
+					logger.warn("Trigger does not exist for subscription: {}", subscription);
 					schedulingStatusResource.setSchedulingNotice("Trigger does not exist");
 				}
 			} else {

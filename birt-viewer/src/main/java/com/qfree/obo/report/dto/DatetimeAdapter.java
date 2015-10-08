@@ -129,7 +129,7 @@ public class DatetimeAdapter extends XmlAdapter<String, Date> {
 	 * 
 	 * <p>
 	 * Note that this method ensures that the value stored in a PostgreSQL
-	 * timestamp (without timezone) column will always in UTC/GMT time.
+	 * timestamp (without timezone) column will always be in UTC/GMT time.
 	 */
 	@Override
 	public Date unmarshal(String utcDateAsString) {

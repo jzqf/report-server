@@ -156,6 +156,37 @@ public class DateUtils {
 	}
 
 	/**
+	 * Converts a string that represents a datetime to a java.util.Date on the
+	 * report server (this application) that has the same date and same time
+	 * value.
+	 * 
+	 * This assumes that the string is in the format that can be parsed by
+	 * {@link LocalDateTime#parse(CharSequence)}, e.g., "2015-11-29T10:15:30".
+	 * 
+	 * Datetime values should be encoded in this String format in ReST resources
+	 * when the datetime does not refer to any time zone in particular.
+	 * 
+	 * @param localDatetimeString
+	 * @return
+	 */
+	public static Date dateServerTZFromLocalDatetimeString(String localDatetimeString) {
+
+		logger.debug("----------------------------------------");
+		logger.debug("localDatetimeString   = {}", localDatetimeString);
+
+		LocalDateTime localDateTime = LocalDateTime.parse(localDatetimeString);
+		logger.debug("localDateTime         = {}", localDateTime);
+
+		ZonedDateTime zonedDateTimeAtSysDef = localDateTime.atZone(ZoneId.systemDefault());
+		logger.debug("zonedDateTimeAtSysDef = {}", zonedDateTimeAtSysDef);
+
+		Date date = Date.from(zonedDateTimeAtSysDef.toInstant());
+		logger.debug("unmarshalledDate      = {}", date);
+
+		return date;
+	}
+
+	/**
 	 * Converts a string that represents a datetime to a java.util.Date.
 	 * 
 	 * This assumes that the string was obtained from a BIRT rptdesign file via
@@ -171,7 +202,7 @@ public class DateUtils {
 	 * to a string, then the original string passed to this method should be
 	 * recovered.
 	 * 
-	 * @param defaultValue
+	 * @param birtDatetimeString
 	 * @return
 	 */
 	public static Date dateFromBirtDatetimeString(String birtDatetimeString) {
@@ -189,7 +220,7 @@ public class DateUtils {
 		 * This is a crude way to support this range of formats, but it works
 		 * fine.
 		 */
-		LocalDateTime localDateTime;
+		LocalDateTime localDateTime = null;
 		try {
 			localDateTime = LocalDateTime.parse(birtDatetimeString, dateTimeFormatter1);
 		} catch (DateTimeParseException e) {
@@ -755,9 +786,27 @@ public class DateUtils {
 		date2 = entityTimestampToServerTimezoneDate(date1);
 		System.out.println(String.format("entityTimestampToServerTimezoneDate(%s) = %s", date1, date2));
 
-		System.out.println("");
+		//System.out.println("");
 		date1 = DateUtils.dateFromBirtDatetimeString("2015-10-04 20:45:00");
 		date2 = normalDateToUtcTimezoneDate(date1);
+
+		System.out.println("");
+		String localDatetimeString = null;
+		localDatetimeString = "2015-10-04T20:45:00";
+		System.out.println(String.format("dateServerTZFromLocalDatetimeString(\"%s\") = %s", localDatetimeString,
+				dateServerTZFromLocalDatetimeString(localDatetimeString)));
+		localDatetimeString = "2015-10-04T20:45:00.001";
+		System.out.println(String.format("dateServerTZFromLocalDatetimeString(\"%s\") = %s", localDatetimeString,
+				dateServerTZFromLocalDatetimeString(localDatetimeString)));
+		localDatetimeString = "2015-10-04T20:45:00.01";
+		System.out.println(String.format("dateServerTZFromLocalDatetimeString(\"%s\") = %s", localDatetimeString,
+				dateServerTZFromLocalDatetimeString(localDatetimeString)));
+		localDatetimeString = "2015-10-04T20:45:00.1";
+		System.out.println(String.format("dateServerTZFromLocalDatetimeString(\"%s\") = %s", localDatetimeString,
+				dateServerTZFromLocalDatetimeString(localDatetimeString)));
+		//localDatetimeString = "2015-10-04T20:45:00Z"; // <- DateTimeParseException thrown
+		//System.out.println(String.format("dateServerTZFromLocalDatetimeString(\"%s\") = %s", localDatetimeString,
+		//		dateServerTZFromLocalDatetimeString(localDatetimeString)));
 
 	}
 }

@@ -563,15 +563,32 @@ public class SubscriptionController extends AbstractBaseController {
 			}
 
 			/*
-			 * The subscription must have a usable values for either 
-			 * cronSchedule & cronScheduleZoneId or for runOnceAt.
+			 * The subscription must have a usable values for either:
 			 * 
+			 *     cronSchedule & cronScheduleZoneId
+			 *     
+			 * or for:
+			 * 
+			 *    runOnceAt                       if RUNAT_ENTITY_DATE_TZ_DYNAMIC=false
+			 *    
+			 *    runOnceAt & cronScheduleZoneId  if RUNAT_ENTITY_DATE_TZ_DYNAMIC=true
+			 * 
+			 * Rather than creating one long conditional expression, I have 
+			 * broke it down to make it clearer.
 			 */
-			if ((subscriptionResource.getCronSchedule() == null
-					|| subscriptionResource.getCronSchedule().isEmpty()
-					|| subscriptionResource.getCronScheduleZoneId() == null
-					|| subscriptionResource.getCronScheduleZoneId().isEmpty())
-					&& subscriptionResource.getRunOnceAt() == null) {
+			boolean usableCronSchedule = subscriptionResource.getCronSchedule() != null
+					&& !subscriptionResource.getCronSchedule().isEmpty()
+					&& subscriptionResource.getCronScheduleZoneId() != null
+					&& !subscriptionResource.getCronScheduleZoneId().isEmpty();
+			boolean usableRunAt;
+			if (SubscriptionScheduler.RUNAT_ENTITY_DATE_TZ_DYNAMIC) {
+				usableRunAt = subscriptionResource.getRunOnceAt() != null
+						&& subscriptionResource.getCronScheduleZoneId() != null
+						&& !subscriptionResource.getCronScheduleZoneId().isEmpty();
+			} else {
+				usableRunAt = subscriptionResource.getRunOnceAt() != null;
+			}
+			if (!usableCronSchedule && !usableRunAt) {
 				throw new RestApiException(RestError.FORBIDDEN_ENABLED_SUBSCRIPTION_NO_SCHEDULE, Subscription.class);
 			}
 

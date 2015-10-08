@@ -46,7 +46,7 @@ public class SubscriptionResource extends AbstractBaseResource {
 	private String cronScheduleZoneId;
 
 	@XmlElement
-	@XmlJavaTypeAdapter(DatetimeAdapter.class)
+	@XmlJavaTypeAdapter(SubscriptionRunAtDateTimeAdapter.class)
 	private Date runOnceAt;
 
 	@XmlElement

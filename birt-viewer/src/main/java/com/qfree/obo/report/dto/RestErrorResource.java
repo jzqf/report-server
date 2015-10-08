@@ -199,7 +199,8 @@ public class RestErrorResource {
 				"A subscription cannot be both inactive and enabled. Either disable it or make it active.", null),
 		FORBIDDEN_ENABLED_SUBSCRIPTION_NO_SCHEDULE(
 				Response.Status.FORBIDDEN, "403.19",
-				"A enabled subscription must have a valid cron schedule and time zone or a valid for runOnceAt", null),
+				"A enabled subscription must have useable values to define a schedule (a time zone and a cron schedule or a time to run once)",
+				null),
 		FORBIDDEN_ENABLED_SUBSCRIPTION_NO_EMAIL(
 				Response.Status.FORBIDDEN, "403.20",
 				"A enabled subscription must have a valid e-mail address", null),
