@@ -6,14 +6,17 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.HeaderParam;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
 import org.slf4j.Logger;
@@ -126,7 +129,7 @@ public class DocumentFormatController extends AbstractBaseController {
 	 * 
 	 *   $ mvn clean spring-boot:run
 	 *   $ curl -i -H "Accept: application/json;v=1" -X GET \
-	 *   http://localhost:8081/report-server/rest/documentFormats/7a482694-51d2-42d0-b0e2-19dd13bbbc64?expand=documentFormats
+	 *   http://localhost:8081/report-server/rest/documentFormats/30800d77-5fdd-44bc-94a3-1502bd307c1d?expand=documentFormats
 	 *   
 	 * @Transactional is used to avoid org.hibernate.LazyInitializationException
 	 * being thrown when evaluating documentFormat.getSubscriptions() in
@@ -158,51 +161,69 @@ public class DocumentFormatController extends AbstractBaseController {
 		return documentFormatResource;
 	}
 
-	// /*
-	// * This endpoint can be tested with:
-	// *
-	// * $ mvn clean spring-boot:run
-	// * $ curl -iH "Accept: application/json;v=1" -H "Content-Type:
-	// application/json" -X PUT -d \
-	// * '{...,"active":false}' \
-	// *
-	// http://localhost:8080/rest/documentFormats/bb2bc482-c19a-4c19-a087-e68ffc62b5a0
-	// */
-	// @Path("/{id}")
-	// @PUT
-	// @Consumes(MediaType.APPLICATION_JSON)
-	// @Produces(MediaType.APPLICATION_JSON)
-	// @Transactional
-	// public Response updateById(
-	// DocumentFormatResource documentFormatResource,
-	// @PathParam("id") final UUID id,
-	// @HeaderParam("Accept") final String acceptHeader,
-	// @QueryParam(ResourcePath.EXPAND_QP_NAME) final List<String> expand,
-	// @QueryParam(ResourcePath.SHOWALL_QP_NAME) final List<String> showAll,
-	// @Context final UriInfo uriInfo) {
-	// Map<String, List<String>> queryParams = new HashMap<>();
-	// queryParams.put(ResourcePath.EXPAND_QP_KEY, expand);
-	// queryParams.put(ResourcePath.SHOWALL_QP_KEY, showAll);
-	// RestApiVersion apiVersion = RestUtils.extractAPIVersion(acceptHeader,
-	// RestApiVersion.v1);
-	//
-	// /*
-	// * Retrieve DocumentFormat entity to be updated.
-	// */
-	// DocumentFormat documentFormat = documentFormatRepository.findOne(id);
-	// RestUtils.ifNullThen404(documentFormat, DocumentFormat.class,
-	// "documentFormatId", id.toString());
-	// /*
-	// * Ensure that the entity's "id" and "CreatedOn" are not changed.
-	// */
-	// documentFormatResource.setDocumentFormatId(documentFormat.getDocumentFormatId());
-	// documentFormatResource.setCreatedOn(documentFormat.getCreatedOn());
-	// /*
-	// * Save updated entity.
-	// */
-	// documentFormat =
-	// documentFormatService.saveExistingFromResource(documentFormatResource);
-	// return Response.status(Response.Status.OK).build();
-	// }
+	/*
+	* This endpoint can be tested with:
+	*
+	* $ mvn clean spring-boot:run
+	* $ curl -iH "Accept: application/json;v=1" -H "Content-Type:application/json" -X PUT -d \
+	* '{"active":false}' http://localhost:8080/rest/documentFormats/d7ccb194-91c6-4dce-bbfe-6424f079dc07
+	*/
+	@Path("/{id}")
+	@PUT
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	@Transactional
+	public Response updateById(
+			DocumentFormatResource documentFormatResource,
+			@PathParam("id") final UUID id,
+			@HeaderParam("Accept") final String acceptHeader,
+			@QueryParam(ResourcePath.EXPAND_QP_NAME) final List<String> expand,
+			@QueryParam(ResourcePath.SHOWALL_QP_NAME) final List<String> showAll,
+			@Context final UriInfo uriInfo) {
+		Map<String, List<String>> queryParams = new HashMap<>();
+		queryParams.put(ResourcePath.EXPAND_QP_KEY, expand);
+		queryParams.put(ResourcePath.SHOWALL_QP_KEY, showAll);
+		RestApiVersion apiVersion = RestUtils.extractAPIVersion(acceptHeader,
+				RestApiVersion.v1);
+
+		/*
+		* Retrieve DocumentFormat entity to be updated.
+		*/
+		DocumentFormat documentFormat = documentFormatRepository.findOne(id);
+		RestUtils.ifNullThen404(documentFormat, DocumentFormat.class, "documentFormatId", id.toString());
+
+		/*
+		 * Treat attributes that are effectively required. These attributes can 
+		 * be omitted in the PUT data, but in that case they are then set here 
+		 * to the CURRENT values from the entity. If the values of these 
+		 * attributes do not need to be changed, they do not need to be included
+		 * in the PUT data.
+		 */
+		if (documentFormatResource.getActive() == null) {
+			documentFormatResource.setActive(documentFormat.getActive());
+		}
+
+		/*
+		 * The values for the following attributes cannot be changed. These
+		 * attributes should not appear in the PUT data, but if any do, their
+		 * values will not be used because they will be overridden here by
+		 * forcing their values to be the same as the CURRENT value stored for
+		 * the entity.
+		 */
+		documentFormatResource.setDocumentFormatId(documentFormat.getDocumentFormatId());
+		documentFormatResource.setBinaryData(documentFormat.getBinaryData());
+		documentFormatResource.setBirtFormat(documentFormat.getBirtFormat());
+		documentFormatResource.setFileExtension(documentFormat.getFileExtension());
+		documentFormatResource.setMediaType(documentFormat.getMediaType());
+		documentFormatResource.setName(documentFormat.getName());
+		documentFormatResource.setCreatedOn(documentFormat.getCreatedOn());
+
+		/*
+		* Save updated entity.
+		*/
+		documentFormat = documentFormatService.saveExistingFromResource(documentFormatResource);
+
+		return Response.status(Response.Status.OK).build();
+	}
 
 }
