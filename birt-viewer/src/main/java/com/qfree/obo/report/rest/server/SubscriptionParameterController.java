@@ -590,7 +590,7 @@ public class SubscriptionParameterController extends AbstractBaseController {
 	 * with:
 	 * 
 	 *   $ mvn clean spring-boot:run
-	 *   $ curl -i -H "Accept: application/json;v=1" -X GET \
+	 *   $ curl -X GET -iH "Accept: application/json;v=1" \
 	 *   http://localhost:8080/rest/subscriptionParameters/c7f1d394-9814-4ede-bb01-2700187d79ca/subscriptionParameterValues
 	 * 
 	 * @Transactional is used to avoid org.hibernate.LazyInitializationException
