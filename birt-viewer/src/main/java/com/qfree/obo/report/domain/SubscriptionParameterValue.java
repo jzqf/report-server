@@ -124,15 +124,37 @@ public class SubscriptionParameterValue implements Serializable {
 	@Column(name = "time_value", nullable = true)
 	private Date timeValue;
 
+	/**
+	 * 4-digit year for generating a dynamic date or datetime value.
+	 */
 	@Column(name = "year_number", nullable = true)
 	private Integer yearNumber;
 
+	/**
+	 * Offset for generating a dynamic date or datetime value:
+	 * 
+	 * <p>
+	 * +n: means "n" years in the past <br>
+	 * 0: means this year
+	 */
 	@Column(name = "years_ago", nullable = true)
 	private Integer yearsAgo;
 
+	/**
+	 * 2-digit month for generating a dynamic date or datetime value.
+	 * 
+	 * Used with {@link java.time.Month} enum.
+	 */
 	@Column(name = "month_number", nullable = true)
 	private Integer monthNumber;
 
+	/**
+	 * Offset for generating a dynamic date or datetime value:
+	 * 
+	 * <p>
+	 * +n: means "n" months in the past <br>
+	 * 0: means this month
+	 */
 	@Column(name = "months_ago", nullable = true)
 	private Integer monthsAgo;
 
@@ -142,6 +164,13 @@ public class SubscriptionParameterValue implements Serializable {
 	// @Column(name = "week_of_year_number", nullable = true)
 	// private Integer weekOfYearNumber;
 
+	/**
+	 * Offset for generating a dynamic date or datetime value:
+	 * 
+	 * <p>
+	 * +n: means "n" weeks in the past <br>
+	 * 0: means this week
+	 */
 	@Column(name = "weeks_ago", nullable = true)
 	private Integer weeksAgo;
 
@@ -221,9 +250,22 @@ public class SubscriptionParameterValue implements Serializable {
 	 * Use to shift the day of week within the current Monday-to-Sunday week,
 	 * even if it causes the month to change.
 	 */
+	/*
+	 * Use: $date.with(ChronoField.DAY_OF_WEEK, dayOfWeekNumber) ?
+	 */
 	@Column(name = "day_of_week_number", nullable = true)
 	private Integer dayOfWeekNumber;
 
+	/*
+	 * Implement with: LocalDate.withDayOfMonth(dayOfMonthNumber) *if* 
+	 * dayOfMonthNumber > 0.
+	 * 
+	 * If dayOfMonthNumber < 0:
+	 * 
+	 *   -1: last day of the month
+	 *   -2: 2nd to last day of the month
+	 *   ...
+	 */
 	@Column(name = "day_of_month_number", nullable = true)
 	private Integer dayOfMonthNumber;
 
