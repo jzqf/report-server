@@ -1,5 +1,6 @@
 package com.qfree.obo.report.scheduling.jobs;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -228,8 +229,8 @@ public class SubscriptionScheduledJob {
 						 *   1. A static value for a report parameter, or
 						 *   
 						 *   2. Details for how to compute a report parameter value.
-						 *      This applies in particular to report parameters of type
-						 *      "datetime".
+						 *      This applies only to report parameters of type "date"
+						 *      or "datetime".
 						 */
 						if (subscriptionParameterValues.size() == 1
 								&& (subscriptionParameterValue.getYearNumber() != null ||
@@ -250,10 +251,32 @@ public class SubscriptionScheduledJob {
 										subscriptionParameterValue.getDurationToAddMinutes() != null ||
 										subscriptionParameterValue.getDurationToAddSeconds() != null)) {
 
+							/*
+							 * Assume for the time being that the report expects date 
+							 * or datetime parameters with no time zone information.
+							 * This means that we can use classes LocalDate and
+							 * LocalDatetime. If this is not the case, we must add
+							 * support for time zones in the future.
+							 */
+							LocalDateTime now = LocalDateTime.now();
+							logger.info("now = {}", now);
+
+							if (subscriptionParameterValue.getYearNumber() != null) {
+
+								//set year number of $date to year_number, e.g., 2015
+
+							} else if (subscriptionParameterValue.getYearsAgo() != null) {
+
+								//move $date backwards years_ago years
+
+							}
+
 							//TODO Create single JobParameterValue that must be COMPUTED. Place this code in
-							// the JobParameterValue constructor (must remove check for size of list = 1).
+							// the JobParameterValue constructor (must remove check above for size of list = 1).
 							logger.error(
 									"\n*****\n*****\nCreate single JobParameterValue that must be COMPUTED\n*****\n*****");
+							throw new RuntimeException(
+									"Finish code in SubscriptionScheduledJob to create JobParameterValue that must be COMPUTED");
 
 						} else {
 							/*
