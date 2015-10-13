@@ -658,7 +658,7 @@ public class DateUtils {
 		logger.debug("date1 = {}, date2 = {}", date1, date2);
 
 		/*
-		 * date1 and/or date2 may come from a Date filed of an entity class that
+		 * date1 and/or date2 may come from a Date field of an entity class that
 		 * is annotated with: @Temporal(TemporalType.TIMESTAMP). Such fields
 		 * are stored in an SQL database column of type "time without time zone".
 		 * When a value from such a column is loaded into a java.util.Date 
@@ -726,6 +726,63 @@ public class DateUtils {
 		// org.joda.time.LocalTime lt1 = new org.joda.time.LocalTime(date1);
 		// org.joda.time.LocalTime lt2 = new org.joda.time.LocalTime(date2);
 		// return lt1.equals(lt2);
+	}
+
+	/**
+	 * Convert a Date value that comes from an entity class instance field that
+	 * is stored in an SQL database column of type "time without time zone".
+	 * 
+	 * @param entityTimeDate
+	 * @return
+	 */
+	public static LocalTime localTimeFromEntityTimeDate(Date entityTimeDate) {
+		logger.info("entityTimeDate = {}", entityTimeDate);
+
+		/*
+		 * entityTimeDate may come from a Date field of an entity class that
+		 * is annotated with: @Temporal(TemporalType.TIMESTAMP). Such fields
+		 * are stored in an SQL database column of type "time without time zone".
+		 * When a value from such a column is loaded into a java.util.Date 
+		 * object, the string representation of this Date object is only the 
+		 * time - it does not have any date information. For example, we could 
+		 * have the situation:
+		 * 
+		 *   entityTimeDate.tostring() = "16:17:18"
+		 * 
+		 * On the other hand, if a "normal" java.util.Date object is passed to
+		 * this method as entityTimeDate, we could have, e.g.,
+		 * 
+		 *   entityTimeDate.tostring() = "Sat Jan 01 16:17:18 CET 2000"
+		 * 
+		 * I don't know what is going on behind the scenes for this to be 
+		 * possible, but that is what happens. Unfortunately, for such Dates
+		 * that appeat to only hold a time value, an exception is thrown if you 
+		 * try to execute:
+		 * 
+		 *   entityTimeDate.toInstant()
+		 * 
+		 * To avoid this, we compute new a Date here, calendarDate via a 
+		 * Calendar object.
+		 * 
+		 * All this work is done so that we can eventually create a LocalTime
+		 * object. It is a lot of work.
+		 */
+
+		Calendar calendar = Calendar.getInstance();
+		calendar.setTime(entityTimeDate);
+		Date calendarDate = calendar.getTime();
+		logger.info("calendarDate = {}", calendarDate);
+
+		Instant instant = calendarDate.toInstant();
+		logger.info("instant = {}", instant);
+
+		ZonedDateTime zonedDateTime = ZonedDateTime.ofInstant(instant, ZoneId.systemDefault());
+		logger.info("zonedDateTime = {}", zonedDateTime);
+
+		LocalTime localTime = zonedDateTime.toLocalTime();
+		logger.info("localTime = {}", localTime);
+
+		return localTime;
 	}
 
 	public static void main(String[] args) {

@@ -2,14 +2,20 @@ package com.qfree.obo.report.apps;
 
 import java.time.DateTimeException;
 import java.time.DayOfWeek;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.ZoneId;
 import java.time.temporal.ChronoField;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalAdjuster;
 import java.time.temporal.TemporalAdjusters;
+import java.util.Date;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.qfree.obo.report.util.DateUtils;
 
 public class CreateDynamicDatetimeParameterValue {
 
@@ -52,7 +58,6 @@ public class CreateDynamicDatetimeParameterValue {
 		LocalDateTime localDateTime = LocalDateTime.now();
 		logger.info("localDateTime = {}", localDateTime);
 
-		//TODO DOCUMENT PRECIDENCE OF THESE VALUES
 		if (getYearNumber != null) {
 			/*
 			 * Set year number of localDateTime to specified year number.
@@ -77,7 +82,6 @@ public class CreateDynamicDatetimeParameterValue {
 			}
 		}
 
-		//TODO DOCUMENT PRECIDENCE OF THESE VALUES
 		if (getMonthNumber != null) {
 			/*
 			 * Set month number of localDateTime to specified month number.
@@ -281,6 +285,19 @@ public class CreateDynamicDatetimeParameterValue {
 		 * If we are computing a report parameter of type "Date", not 
 		 * "Datetime", the time part of localDateTime must be discarded.
 		 */
+		LocalDate localDate = localDateTime.toLocalDate();
+		logger.info("localDate = {}", localDate);
+
+		Date fakeEntityTimeDate = new Date();
+		logger.info("fakeEntityTimeDate = {}", fakeEntityTimeDate);
+		LocalTime localTime = DateUtils.localTimeFromEntityTimeDate(fakeEntityTimeDate);
+		logger.info("localTime = {}", localTime);
+
+		localDateTime = LocalDateTime.of(localDate, localTime);
+		logger.info("localDateTime = {}", localDateTime);
+
+		Date datetimeValue = Date.from(localDateTime.atZone(ZoneId.systemDefault()).toInstant());
+		logger.info("datetimeValue = {}", datetimeValue);
 
 	}
 }
