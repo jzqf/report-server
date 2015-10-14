@@ -284,18 +284,30 @@ public class CreateDynamicDatetimeParameterValue {
 		/*
 		 * If we are computing a report parameter of type "Date", not 
 		 * "Datetime", the time part of localDateTime must be discarded.
+		 * 
+		 * This LocalDate may also be used for a report parameter of type 
+		 * "Datetime", provided a value was specified for fakeEntityTimeDate.
+		 * In this case we combine the LocalDate with the specified
+		 * fakeEntityTimeDate to create a LocalDateTime.
 		 */
 		LocalDate localDate = localDateTime.toLocalDate();
 		logger.info("localDate = {}", localDate);
 
+		//DATE:
+
+		//DATETIME:
 		Date fakeEntityTimeDate = new Date();
 		logger.info("fakeEntityTimeDate = {}", fakeEntityTimeDate);
-		LocalTime localTime = DateUtils.localTimeFromEntityTimeDate(fakeEntityTimeDate);
-		logger.info("localTime = {}", localTime);
+		if (fakeEntityTimeDate != null) {
+			LocalTime localTime = DateUtils.localTimeFromEntityTimeDate(fakeEntityTimeDate);
+			logger.info("localTime = {}", localTime);
 
-		localDateTime = LocalDateTime.of(localDate, localTime);
-		logger.info("localDateTime = {}", localDateTime);
+			localDateTime = LocalDateTime.of(localDate, localTime);
+			logger.info("localDateTime = {}", localDateTime);
 
+		} else {
+			//DO NOTHING HERE?????
+		}
 		Date datetimeValue = Date.from(localDateTime.atZone(ZoneId.systemDefault()).toInstant());
 		logger.info("datetimeValue = {}", datetimeValue);
 

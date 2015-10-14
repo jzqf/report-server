@@ -1,10 +1,21 @@
 package com.qfree.obo.report.scheduling.jobs;
 
+import java.time.DateTimeException;
+import java.time.DayOfWeek;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.ZoneId;
+import java.time.temporal.ChronoField;
+import java.time.temporal.ChronoUnit;
+import java.time.temporal.TemporalAdjuster;
+import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
+import org.eclipse.birt.report.engine.api.IParameterDefn;
 import org.quartz.SchedulerException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,6 +35,7 @@ import com.qfree.obo.report.domain.Subscription;
 import com.qfree.obo.report.domain.SubscriptionParameter;
 import com.qfree.obo.report.domain.SubscriptionParameterValue;
 import com.qfree.obo.report.scheduling.schedulers.SubscriptionJobProcessorScheduler;
+import com.qfree.obo.report.util.DateUtils;
 
 /*
  * This class is instantiated by Quartz and therefore Spring-based dependency
@@ -187,6 +199,9 @@ public class SubscriptionScheduledJob {
 			Subscription subscription = subscriptionRepository.findOne(subscriptionId);
 			if (subscription != null) {
 
+				/*
+				 * The new Job will have status=QUEUED.
+				 */
 				JobStatus jobStatusQueued = jobStatusRepository.findOne(JobStatus.QUEUED_ID);
 
 				Job job = new Job(
@@ -223,26 +238,35 @@ public class SubscriptionScheduledJob {
 							.getSubscriptionParameterValues();
 					for (SubscriptionParameterValue subscriptionParameterValue : subscriptionParameterValues) {
 
+						Integer parameterDataType = subscriptionParameter.getReportParameter().getDataType();
+
 						/*
 						 * SubscriptionParameterValue entities can represent either:
 						 * 
 						 *   1. A static value for a report parameter, or
 						 *   
 						 *   2. Details for how to compute a report parameter value.
-						 *      This applies only to report parameters of type "date"
-						 *      or "datetime".
+						 *      This applies only to report parameters:
+						 *        a. that have a single SubscriptionParameterValue
+						 *        b. of type "date" or "datetime"
+						 *        c. at least one "dynamic" attribute of the
+						 *           SubscriptionParameterValue is set
 						 */
 						if (subscriptionParameterValues.size() == 1
+
+								&& (parameterDataType.equals(IParameterDefn.TYPE_DATE_TIME) ||
+										parameterDataType.equals(IParameterDefn.TYPE_DATE))
+
 								&& (subscriptionParameterValue.getYearNumber() != null ||
 										subscriptionParameterValue.getYearsAgo() != null ||
 										subscriptionParameterValue.getMonthNumber() != null ||
 										subscriptionParameterValue.getMonthsAgo() != null ||
 										subscriptionParameterValue.getWeeksAgo() != null ||
-										subscriptionParameterValue.getDayOfWeekInMonthOrdinal() != null ||
-										subscriptionParameterValue.getDayOfWeekInMonthNumber() != null ||
+										subscriptionParameterValue.getDaysAgo() != null ||
 										subscriptionParameterValue.getDayOfWeekNumber() != null ||
 										subscriptionParameterValue.getDayOfMonthNumber() != null ||
-										subscriptionParameterValue.getDaysAgo() != null ||
+										subscriptionParameterValue.getDayOfWeekInMonthOrdinal() != null ||
+										subscriptionParameterValue.getDayOfWeekInMonthNumber() != null ||
 										subscriptionParameterValue.getDurationToAddYears() != null ||
 										subscriptionParameterValue.getDurationToAddMonths() != null ||
 										subscriptionParameterValue.getDurationToAddWeeks() != null ||
@@ -258,25 +282,336 @@ public class SubscriptionScheduledJob {
 							 * LocalDatetime. If this is not the case, we must add
 							 * support for time zones in the future.
 							 */
-							LocalDateTime now = LocalDateTime.now();
-							logger.info("now = {}", now);
+							LocalDateTime localDateTime = LocalDateTime.now();
+							logger.info("localDateTime = {}", localDateTime);
 
 							if (subscriptionParameterValue.getYearNumber() != null) {
-
-								//set year number of $date to year_number, e.g., 2015
-
+								/*
+								 * Set year number of localDateTime to specified year number.
+								 */
+								try {
+									localDateTime = localDateTime.withYear(subscriptionParameterValue.getYearNumber());
+									logger.info("After setting year number to {}. localDateTime = {}",
+											subscriptionParameterValue.getYearNumber(),
+											localDateTime);
+								} catch (DateTimeException e) {
+									logger.warn(
+											"Illegal value for subscriptionParameterValue.getYearNumber(): {}. localDateTime = {}. Exception: {}",
+											subscriptionParameterValue.getYearNumber(), localDateTime, e);
+								}
 							} else if (subscriptionParameterValue.getYearsAgo() != null) {
-
-								//move $date backwards years_ago years
-
+								/*
+								 * Move localDateTime backwards specified number of years.
+								 */
+								try {
+									localDateTime = localDateTime
+											.plusYears(-subscriptionParameterValue.getYearsAgo().longValue());
+									logger.info("After moving localDateTime back {} years. localDateTime = {}",
+											subscriptionParameterValue.getYearsAgo(), localDateTime);
+								} catch (DateTimeException e) {
+									logger.warn(
+											"Illegal value for subscriptionParameterValue.getYearsAgo(): {}. localDateTime = {}. Exception: {}",
+											subscriptionParameterValue.getYearsAgo(), localDateTime, e);
+								}
 							}
 
-							//TODO Create single JobParameterValue that must be COMPUTED. Place this code in
-							// the JobParameterValue constructor (must remove check above for size of list = 1).
-							logger.error(
-									"\n*****\n*****\nCreate single JobParameterValue that must be COMPUTED\n*****\n*****");
-							throw new RuntimeException(
-									"Finish code in SubscriptionScheduledJob to create JobParameterValue that must be COMPUTED");
+							if (subscriptionParameterValue.getMonthNumber() != null) {
+								/*
+								 * Set month number of localDateTime to specified month number.
+								 */
+								try {
+									localDateTime = localDateTime
+											.withMonth(subscriptionParameterValue.getMonthNumber());
+									logger.info("After setting month number to {}. localDateTime = {}",
+											subscriptionParameterValue.getMonthNumber(),
+											localDateTime);
+								} catch (DateTimeException e) {
+									logger.warn(
+											"Illegal value for subscriptionParameterValue.getMonthNumber(): {}. localDateTime = {}. Exception: {}",
+											subscriptionParameterValue.getMonthNumber(), localDateTime, e);
+								}
+							} else if (subscriptionParameterValue.getMonthsAgo() != null) {
+								/*
+								 * Move localDateTime backwards specified number of months.
+								 */
+								try {
+									localDateTime = localDateTime
+											.plusMonths(-subscriptionParameterValue.getMonthsAgo().longValue());
+									logger.info("After moving localDateTime back {} months. localDateTime = {}",
+											subscriptionParameterValue.getMonthsAgo(), localDateTime);
+								} catch (DateTimeException e) {
+									logger.warn(
+											"Illegal value for subscriptionParameterValue.getMonthsAgo(): {}. localDateTime = {}. Exception: {}",
+											subscriptionParameterValue.getMonthsAgo(), localDateTime, e);
+								}
+							}
+
+							if (subscriptionParameterValue.getWeeksAgo() != null) {
+								/*
+								 * Move localDateTime backwards specified number of weeks.
+								 */
+								try {
+									localDateTime = localDateTime
+											.plusWeeks(-subscriptionParameterValue.getWeeksAgo().longValue());
+									logger.info("After moving localDateTime back {} weeks. localDateTime = {}",
+											subscriptionParameterValue.getWeeksAgo(), localDateTime);
+								} catch (DateTimeException e) {
+									logger.warn(
+											"Illegal value for subscriptionParameterValue.getWeeksAgo(): {}. localDateTime = {}. Exception: {}",
+											subscriptionParameterValue.getWeeksAgo(), localDateTime, e);
+								}
+							}
+
+							if (subscriptionParameterValue.getDaysAgo() != null) {
+								/*
+								 * Move localDateTime backwards specified number of days.
+								 */
+								try {
+									localDateTime = localDateTime
+											.plusDays(-subscriptionParameterValue.getDaysAgo().longValue());
+									logger.info("After moving localDateTime back {} days. localDateTime = {}",
+											subscriptionParameterValue.getDaysAgo(), localDateTime);
+								} catch (DateTimeException e) {
+									logger.warn(
+											"Illegal value for subscriptionParameterValue.getDaysAgo(): {}. localDateTime = {}. Exception: {}",
+											subscriptionParameterValue.getDaysAgo(), localDateTime, e);
+								}
+							}
+
+							if (subscriptionParameterValue.getDayOfWeekNumber() != null) {
+								/*
+								 * Move the day-of-week number (1-7) of localDateTime, within the 
+								 * current Monday-to-Sunday week, even if it causes the month to 
+								 * change.
+								 */
+								try {
+									localDateTime = localDateTime.with(ChronoField.DAY_OF_WEEK,
+											subscriptionParameterValue.getDayOfWeekNumber().longValue());
+									logger.info(
+											"After setting day-of-week of localDateTime to {}, even if it causes the month to change. localDateTime = {}",
+											subscriptionParameterValue.getDayOfWeekNumber(), localDateTime);
+								} catch (DateTimeException | ArithmeticException e) {
+									logger.warn(
+											"Illegal value for subscriptionParameterValue.getDayOfWeekNumber(): {}. localDateTime = {}. Exception: {}",
+											subscriptionParameterValue.getDayOfWeekNumber(), localDateTime, e);
+								}
+							}
+
+							if (subscriptionParameterValue.getDayOfMonthNumber() != null) {
+								try {
+									if (subscriptionParameterValue.getDayOfMonthNumber() > 0
+											&& subscriptionParameterValue.getDayOfMonthNumber() <= 31) {
+										/*
+										 * Move the day-of-month number (1-31) of localDateTime.
+										 */
+										localDateTime = localDateTime.with(ChronoField.DAY_OF_MONTH,
+												subscriptionParameterValue.getDayOfMonthNumber().longValue());
+										logger.info(
+												"After setting day-of-month of localDateTime to {}. localDateTime = {}",
+												subscriptionParameterValue.getDayOfMonthNumber(), localDateTime);
+									} else if (subscriptionParameterValue.getDayOfMonthNumber() < 0
+											&& subscriptionParameterValue.getDayOfMonthNumber() >= -31) {
+										/*
+										 * Move the day-of-month number (1-31) of localDateTime relative
+										 * to the last day of the month.
+										 * 
+										 *   -1: Last day of the month
+										 *   -2: 2nd to last day of the month
+										 *   -3: 3rd to last day of the month
+										 *     ...
+										 */
+										long lastDayOfMonth = localDateTime.range(ChronoField.DAY_OF_MONTH)
+												.getMaximum();
+										logger.info("lastDayOfMonth = {}", lastDayOfMonth);
+										localDateTime = localDateTime.with(ChronoField.DAY_OF_MONTH,
+												lastDayOfMonth
+														+ subscriptionParameterValue.getDayOfMonthNumber().longValue()
+														+ 1);
+										logger.info(
+												"After setting day-of-month of localDateTime to {}. localDateTime = {}",
+												lastDayOfMonth
+														+ subscriptionParameterValue.getDayOfMonthNumber().longValue()
+														+ 1,
+												localDateTime);
+									} else {
+										/*
+										 * Zero has no meaning.
+										 */
+										logger.warn(
+												"Illegal value for subscriptionParameterValue.getDayOfMonthNumber(): {}",
+												subscriptionParameterValue.getDayOfMonthNumber());
+									}
+								} catch (DateTimeException | ArithmeticException e) {
+									logger.warn(
+											"Illegal value for subscriptionParameterValue.getDayOfMonthNumber(): {}. localDateTime = {}. Exception: {}",
+											subscriptionParameterValue.getDayOfMonthNumber(), localDateTime, e);
+								}
+							}
+
+							if (subscriptionParameterValue.getDayOfWeekInMonthOrdinal() != null
+									&& subscriptionParameterValue.getDayOfWeekInMonthNumber() != null) {
+								/*
+								 * Select the Nth day-of-week in the same month (if possible) as
+								 * localDateTime. Here:
+								 * 
+								 *   N           = subscriptionParameterValue.getDayOfWeekInMonthOrdinal()
+								 *   day-of-week = subscriptionParameterValue.getDayOfWeekInMonthNumber()
+								 *                 (1:Monday, ...7:Sunday)
+								 */
+								try {
+									TemporalAdjuster dayOfWeekInMonthAdjuster = TemporalAdjusters.dayOfWeekInMonth(
+											subscriptionParameterValue.getDayOfWeekInMonthOrdinal(),
+											DayOfWeek.of(subscriptionParameterValue.getDayOfWeekInMonthNumber()));
+									localDateTime = localDateTime.with(dayOfWeekInMonthAdjuster);
+									logger.info(
+											"After setting Nth day-of-week with subscriptionParameterValue.getDayOfWeekInMonthOrdinal()={}, subscriptionParameterValue.getDayOfWeekInMonthNumber()={}. localDateTime = {}",
+											subscriptionParameterValue.getDayOfWeekInMonthOrdinal(),
+											subscriptionParameterValue.getDayOfWeekInMonthNumber(), localDateTime);
+								} catch (DateTimeException | ArithmeticException e) {
+									logger.warn(
+											"Adjustment cannot be made for subscriptionParameterValue.getDayOfWeekInMonthOrdinal()={}, subscriptionParameterValue.getDayOfWeekInMonthNumber()={}. localDateTime = {}. Exception: {}",
+											subscriptionParameterValue.getDayOfWeekInMonthOrdinal(),
+											subscriptionParameterValue.getDayOfWeekInMonthNumber(), localDateTime, e);
+								}
+							}
+
+							if (subscriptionParameterValue.getDurationToAddYears() != null) {
+								try {
+									localDateTime = localDateTime.plus(
+											subscriptionParameterValue.getDurationToAddYears().longValue(),
+											ChronoUnit.YEARS);
+									logger.info("After adding {} years. localDateTime = {}",
+											subscriptionParameterValue.getDurationToAddYears(),
+											localDateTime);
+								} catch (DateTimeException | ArithmeticException e) {
+									logger.warn(
+											"Adjustment cannot be made for subscriptionParameterValue.getDurationToAddYears()={}. localDateTime = {}. Exception: {}",
+											subscriptionParameterValue.getDurationToAddYears(), localDateTime, e);
+								}
+							}
+							if (subscriptionParameterValue.getDurationToAddMonths() != null) {
+								try {
+									localDateTime = localDateTime.plus(
+											subscriptionParameterValue.getDurationToAddMonths().longValue(),
+											ChronoUnit.MONTHS);
+									logger.info("After adding {} months. localDateTime = {}",
+											subscriptionParameterValue.getDurationToAddMonths(),
+											localDateTime);
+								} catch (DateTimeException | ArithmeticException e) {
+									logger.warn(
+											"Adjustment cannot be made for subscriptionParameterValue.getDurationToAddMonths()={}. localDateTime = {}. Exception: {}",
+											subscriptionParameterValue.getDurationToAddMonths(), localDateTime, e);
+								}
+							}
+							if (subscriptionParameterValue.getDurationToAddWeeks() != null) {
+								try {
+									localDateTime = localDateTime.plus(
+											subscriptionParameterValue.getDurationToAddWeeks().longValue(),
+											ChronoUnit.WEEKS);
+									logger.info("After adding {} weeks. localDateTime = {}",
+											subscriptionParameterValue.getDurationToAddWeeks(),
+											localDateTime);
+								} catch (DateTimeException | ArithmeticException e) {
+									logger.warn(
+											"Adjustment cannot be made for subscriptionParameterValue.getDurationToAddWeeks()={}. localDateTime = {}. Exception: {}",
+											subscriptionParameterValue.getDurationToAddWeeks(), localDateTime, e);
+								}
+							}
+							if (subscriptionParameterValue.getDurationToAddDays() != null) {
+								try {
+									localDateTime = localDateTime.plus(
+											subscriptionParameterValue.getDurationToAddDays().longValue(),
+											ChronoUnit.DAYS);
+									logger.info("After adding {} days. localDateTime = {}",
+											subscriptionParameterValue.getDurationToAddDays(),
+											localDateTime);
+								} catch (DateTimeException | ArithmeticException e) {
+									logger.warn(
+											"Adjustment cannot be made for subscriptionParameterValue.getDurationToAddDays()={}. localDateTime = {}. Exception: {}",
+											subscriptionParameterValue.getDurationToAddDays(), localDateTime, e);
+								}
+							}
+							if (subscriptionParameterValue.getDurationToAddHours() != null) {
+								try {
+									localDateTime = localDateTime.plus(
+											subscriptionParameterValue.getDurationToAddHours().longValue(),
+											ChronoUnit.HOURS);
+									logger.info("After adding {} hours. localDateTime = {}",
+											subscriptionParameterValue.getDurationToAddHours(),
+											localDateTime);
+								} catch (DateTimeException | ArithmeticException e) {
+									logger.warn(
+											"Adjustment cannot be made for subscriptionParameterValue.getDurationToAddHours()={}. localDateTime = {}. Exception: {}",
+											subscriptionParameterValue.getDurationToAddHours(), localDateTime, e);
+								}
+							}
+							if (subscriptionParameterValue.getDurationToAddMinutes() != null) {
+								try {
+									localDateTime = localDateTime.plus(
+											subscriptionParameterValue.getDurationToAddMinutes().longValue(),
+											ChronoUnit.MINUTES);
+									logger.info("After adding {} minutes. localDateTime = {}",
+											subscriptionParameterValue.getDurationToAddMinutes(),
+											localDateTime);
+								} catch (DateTimeException | ArithmeticException e) {
+									logger.warn(
+											"Adjustment cannot be made for subscriptionParameterValue.getDurationToAddMinutes()={}. localDateTime = {}. Exception: {}",
+											subscriptionParameterValue.getDurationToAddMinutes(), localDateTime, e);
+								}
+							}
+							if (subscriptionParameterValue.getDurationToAddSeconds() != null) {
+								try {
+									localDateTime = localDateTime.plus(
+											subscriptionParameterValue.getDurationToAddSeconds().longValue(),
+											ChronoUnit.SECONDS);
+									logger.info("After adding {} seconds. localDateTime = {}",
+											subscriptionParameterValue.getDurationToAddSeconds(),
+											localDateTime);
+								} catch (DateTimeException | ArithmeticException e) {
+									logger.warn(
+											"Adjustment cannot be made for subscriptionParameterValue.getDurationToAddSeconds()={}. localDateTime = {}. Exception: {}",
+											subscriptionParameterValue.getDurationToAddSeconds(), localDateTime, e);
+								}
+							}
+
+							/*
+							 * If we are computing a report parameter of type "Date", not 
+							 * "Datetime", the time part of localDateTime must be discarded.
+							 * 
+							 * This LocalDate may also be used for a report parameter of type 
+							 * "Datetime", provided a value was specified for fakeEntityTimeDate.
+							 * In this case we combine the LocalDate with the specified
+							 * fakeEntityTimeDate to create a LocalDateTime.
+							 */
+							LocalDate localDate = localDateTime.toLocalDate();
+							logger.info("localDate = {}", localDate);
+
+							if (parameterDataType.equals(IParameterDefn.TYPE_DATE)) {
+
+								//DATE:
+
+							} else if (parameterDataType.equals(IParameterDefn.TYPE_DATE_TIME)) {
+
+								Date fakeEntityTimeDate = new Date();
+								logger.info("fakeEntityTimeDate = {}", fakeEntityTimeDate);
+								if (fakeEntityTimeDate != null) {
+									LocalTime localTime = DateUtils.localTimeFromEntityTimeDate(fakeEntityTimeDate);
+									logger.info("localTime = {}", localTime);
+
+									localDateTime = LocalDateTime.of(localDate, localTime);
+									logger.info("localDateTime = {}", localDateTime);
+
+								} else {
+									//DO NOTHING HERE?????
+								}
+								Date datetimeValue = Date
+										.from(localDateTime.atZone(ZoneId.systemDefault()).toInstant());
+								logger.info("datetimeValue = {}", datetimeValue);
+							} else {
+
+								//TODO throw unused case exception!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+							}
 
 						} else {
 							/*
