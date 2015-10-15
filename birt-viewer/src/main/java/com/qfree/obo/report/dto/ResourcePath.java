@@ -3,6 +3,9 @@ package com.qfree.obo.report.dto;
 import java.util.List;
 
 import com.qfree.obo.report.domain.Configuration;
+import com.qfree.obo.report.domain.DocumentFormat;
+import com.qfree.obo.report.domain.Job;
+import com.qfree.obo.report.domain.JobStatus;
 import com.qfree.obo.report.domain.ParameterGroup;
 import com.qfree.obo.report.domain.Report;
 import com.qfree.obo.report.domain.ReportCategory;
@@ -10,6 +13,9 @@ import com.qfree.obo.report.domain.ReportParameter;
 import com.qfree.obo.report.domain.ReportVersion;
 import com.qfree.obo.report.domain.Role;
 import com.qfree.obo.report.domain.SelectionListValue;
+import com.qfree.obo.report.domain.Subscription;
+import com.qfree.obo.report.domain.SubscriptionParameter;
+import com.qfree.obo.report.domain.SubscriptionParameterValue;
 
 public enum ResourcePath {
 
@@ -18,6 +24,21 @@ public enum ResourcePath {
 			ResourcePath.CONFIGURATION_EXPAND_PARAM,
 			ResourcePath.CONFIGURATION_SHOWALL_PARAM,
 			Configuration.class),
+	DOCUMENTFORMATS(
+			ResourcePath.DOCUMENTFORMATS_PATH,
+			ResourcePath.DOCUMENTFORMAT_EXPAND_PARAM,
+			ResourcePath.DOCUMENTFORMAT_SHOWALL_PARAM,
+			DocumentFormat.class),
+	JOBS(
+			ResourcePath.JOBS_PATH,
+			ResourcePath.JOB_EXPAND_PARAM,
+			ResourcePath.JOB_SHOWALL_PARAM,
+			Job.class),
+	JOBSTATUSES(
+			ResourcePath.JOBSTATUSES_PATH,
+			ResourcePath.JOBSTATUS_EXPAND_PARAM,
+			ResourcePath.JOBSTATUS_SHOWALL_PARAM,
+			JobStatus.class),
 	PARAMETERGROUPS(
 			ResourcePath.PARAMETERGROUPS_PATH,
 			ResourcePath.PARAMETERGROUP_EXPAND_PARAM,
@@ -52,7 +73,22 @@ public enum ResourcePath {
 			ResourcePath.SELECTIONLISTVALUES_PATH,
 			ResourcePath.SELECTIONLISTVALUE_EXPAND_PARAM,
 			ResourcePath.SELECTIONLISTVALUE_SHOWALL_PARAM,
-			SelectionListValue.class);
+			SelectionListValue.class),
+	SUBSCRIPTIONS(
+			ResourcePath.SUBSCRIPTIONS_PATH,
+			ResourcePath.SUBSCRIPTION_EXPAND_PARAM,
+			ResourcePath.SUBSCRIPTION_SHOWALL_PARAM,
+			Subscription.class),
+	SUBSCRIPTIONPARAMETERS(
+			ResourcePath.SUBSCRIPTIONPARAMETERS_PATH,
+			ResourcePath.SUBSCRIPTIONPARAMETER_EXPAND_PARAM,
+			ResourcePath.SUBSCRIPTIONPARAMETER_SHOWALL_PARAM,
+			SubscriptionParameter.class),
+	SUBSCRIPTIONPARAMETERVALUES(
+			ResourcePath.SUBSCRIPTIONPARAMETERVALUES_PATH,
+			ResourcePath.SUBSCRIPTIONPARAMETERVALUE_EXPAND_PARAM,
+			ResourcePath.SUBSCRIPTIONPARAMETERVALUE_SHOWALL_PARAM,
+			SubscriptionParameterValue.class);
 
 	private static final String PATH_SEPARATOR = "/";
 
@@ -64,6 +100,9 @@ public enum ResourcePath {
 	 * constant expression.
 	 */
 	public static final String CONFIGURATIONS_PATH = ResourcePath.PATH_SEPARATOR + "configurations";
+	public static final String DOCUMENTFORMATS_PATH = ResourcePath.PATH_SEPARATOR + "documentFormats";
+	public static final String JOBS_PATH = ResourcePath.PATH_SEPARATOR + "jobs";
+	public static final String JOBSTATUSES_PATH = ResourcePath.PATH_SEPARATOR + "jobStatuses";
 	public static final String PARAMETERGROUPS_PATH = ResourcePath.PATH_SEPARATOR + "parameterGroups";
 	public static final String REPORTCATEGORIES_PATH = ResourcePath.PATH_SEPARATOR + "reportCategories";
 	public static final String REPORTPARAMETERS_PATH = ResourcePath.PATH_SEPARATOR + "reportParameters";
@@ -71,6 +110,10 @@ public enum ResourcePath {
 	public static final String REPORTS_PATH = ResourcePath.PATH_SEPARATOR + "reports";
 	public static final String ROLES_PATH = ResourcePath.PATH_SEPARATOR + "roles";
 	public static final String SELECTIONLISTVALUES_PATH = ResourcePath.PATH_SEPARATOR + "selectionListValues";
+	public static final String SUBSCRIPTIONS_PATH = ResourcePath.PATH_SEPARATOR + "subscriptions";
+	public static final String SUBSCRIPTIONPARAMETERS_PATH = ResourcePath.PATH_SEPARATOR + "subscriptionParameters";
+	public static final String SUBSCRIPTIONPARAMETERVALUES_PATH = ResourcePath.PATH_SEPARATOR
+			+ "subscriptionParameterValues";
 
 	public static final String LOGINATTEMPTS_PATH = ResourcePath.PATH_SEPARATOR + "loginAttempts";
 
@@ -88,6 +131,9 @@ public enum ResourcePath {
 	 * "expand" query parameter.
 	 */
 	public static final String CONFIGURATION_EXPAND_PARAM = "configurations";
+	public static final String DOCUMENTFORMAT_EXPAND_PARAM = "documentFormats";
+	public static final String JOB_EXPAND_PARAM = "jobs";
+	public static final String JOBSTATUS_EXPAND_PARAM = "jobStatuses";
 	public static final String PARAMETERGROUP_EXPAND_PARAM = "parameterGroups";
 	public static final String REPORT_EXPAND_PARAM = "reports";
 	public static final String REPORTCATEGORY_EXPAND_PARAM = "reportCategories";
@@ -95,6 +141,9 @@ public enum ResourcePath {
 	public static final String REPORTVERSION_EXPAND_PARAM = "reportVersions";
 	public static final String ROLE_EXPAND_PARAM = "roles";
 	public static final String SELECTIONLISTVALUE_EXPAND_PARAM = "selectionListValues";
+	public static final String SUBSCRIPTION_EXPAND_PARAM = "subscriptions";
+	public static final String SUBSCRIPTIONPARAMETER_EXPAND_PARAM = "subscriptionParameters";
+	public static final String SUBSCRIPTIONPARAMETERVALUE_EXPAND_PARAM = "subscriptionParameterValues";
 	/*
 	 * Special "expand" parameter for the *field* ReportVersion.rptdesign.
 	 */
@@ -114,6 +163,9 @@ public enum ResourcePath {
 	 * "showall" query parameter.
 	 */
 	public static final String CONFIGURATION_SHOWALL_PARAM = CONFIGURATION_EXPAND_PARAM;
+	public static final String DOCUMENTFORMAT_SHOWALL_PARAM = DOCUMENTFORMAT_EXPAND_PARAM;
+	public static final String JOB_SHOWALL_PARAM = JOB_EXPAND_PARAM;
+	public static final String JOBSTATUS_SHOWALL_PARAM = JOBSTATUS_EXPAND_PARAM;
 	public static final String PARAMETERGROUP_SHOWALL_PARAM = PARAMETERGROUP_EXPAND_PARAM;
 	public static final String REPORT_SHOWALL_PARAM = REPORT_EXPAND_PARAM;
 	public static final String REPORTCATEGORY_SHOWALL_PARAM = REPORTCATEGORY_EXPAND_PARAM;
@@ -121,6 +173,9 @@ public enum ResourcePath {
 	public static final String REPORTVERSION_SHOWALL_PARAM = REPORTVERSION_EXPAND_PARAM;
 	public static final String ROLE_SHOWALL_PARAM = ROLE_EXPAND_PARAM;
 	public static final String SELECTIONLISTVALUE_SHOWALL_PARAM = SELECTIONLISTVALUE_EXPAND_PARAM;
+	public static final String SUBSCRIPTION_SHOWALL_PARAM = SUBSCRIPTION_EXPAND_PARAM;
+	public static final String SUBSCRIPTIONPARAMETER_SHOWALL_PARAM = SUBSCRIPTIONPARAMETER_EXPAND_PARAM;
+	public static final String SUBSCRIPTIONPARAMETERVALUE_SHOWALL_PARAM = SUBSCRIPTIONPARAMETERVALUE_EXPAND_PARAM;
 
 	/*
 	 * This is the name of query parameter used to specify the value(s) of

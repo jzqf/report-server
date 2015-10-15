@@ -48,14 +48,14 @@ public class SelectionListValueService {
 				"valueDisplayed");
 		RestUtils.ifAttrNullThen403(selectionListValueResource.getOrderIndex(), SelectionListValue.class, "orderIndex");
 
-		RestUtils.ifAttrNullThen403(selectionListValueResource.getReportParameterResource(), SelectionListValue.class,
-				"reportParameter");
 		/*
 		 * Not only must selectionListValueResource.getReportParameterResource()
 		 * be not null, this ReportParameterResource must have an id so that the
 		 * new SelectionListValue entity will be linked to a ReportParameter
 		 * entity.
 		 */
+		RestUtils.ifAttrNullThen403(selectionListValueResource.getReportParameterResource(), SelectionListValue.class,
+				"reportParameter");
 		RestUtils.ifAttrNullThen403(selectionListValueResource.getReportParameterResource().getReportParameterId(),
 				ReportParameter.class, "reportParameterId");
 
@@ -86,7 +86,10 @@ public class SelectionListValueService {
 		 */
 		ReportParameterResource reportParameterResource = selectionListValueResource.getReportParameterResource();
 		logger.debug("reportParameterResource = {}", reportParameterResource);
-		UUID reportParameterId = reportParameterResource.getReportParameterId();
+		UUID reportParameterId = null;
+		if (reportParameterResource != null) {
+			reportParameterId = reportParameterResource.getReportParameterId();
+		}
 		logger.debug("reportParameterId = {}", reportParameterId);
 		ReportParameter reportParameter = null;
 		if (reportParameterId != null) {

@@ -41,7 +41,7 @@ public class ReportCategoryResource extends AbstractBaseResource {
 	private Boolean active;
 
 	@XmlElement
-	@XmlJavaTypeAdapter(DateAdapter.class)
+	@XmlJavaTypeAdapter(DatetimeAdapter.class)
 	private Date createdOn;
 
 	public ReportCategoryResource() {
@@ -142,13 +142,10 @@ public class ReportCategoryResource extends AbstractBaseResource {
 		builder.append(active);
 		builder.append(", createdOn=");
 		builder.append(createdOn);
-		builder.append(", href=");
-		builder.append(href);
-		builder.append(", mediaType=");
-		builder.append(mediaType);
 		builder.append("]");
 		return builder.toString();
 	}
+
 
 	//	@Override
 	//	public String toString() {

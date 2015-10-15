@@ -3,7 +3,7 @@
 CAUTION: Do not modify this file unless you know what you are doing.
          Unexpected results may occur if the code is changed deliberately.
 -->
-<dbmodel pgmodeler-ver="0.8.1" last-position="0,282" last-zoom="1"
+<dbmodel pgmodeler-ver="0.8.1" last-position="0,0" last-zoom="1"
 	 default-schema="public" default-owner="postgres">
 <role name="adam"
       superuser="true"
@@ -53,7 +53,7 @@ CAUTION: Do not modify this file unless you know what you are doing.
 <table name="configuration">
 	<schema name="reporting"/>
 	<role name="report_server_app"/>
-	<position x="24" y="929"/>
+	<position x="28" y="1050"/>
 	<column name="configuration_id" not-null="true" default-value="uuid_generate_v4()">
 		<type name="uuid"/>
 	</column>
@@ -113,7 +113,7 @@ CAUTION: Do not modify this file unless you know what you are doing.
 <table name="document_format">
 	<schema name="reporting"/>
 	<role name="report_server_app"/>
-	<position x="459.391" y="878"/>
+	<position x="538.391" y="870"/>
 	<column name="document_format_id" not-null="true" default-value="uuid_generate_v4()">
 		<type name="uuid"/>
 	</column>
@@ -154,7 +154,7 @@ CAUTION: Do not modify this file unless you know what you are doing.
 <table name="job">
 	<schema name="reporting"/>
 	<role name="report_server_app"/>
-	<position x="894.531" y="1027"/>
+	<position x="1038.53" y="1039"/>
 	<column name="job_id" not-null="true" default-value="nextval('job_job_id_seq'::regclass)">
 		<type name="bigint"/>
 	</column>
@@ -170,10 +170,16 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	<column name="file_name">
 		<type name="character varying" length="128"/>
 	</column>
+	<column name="job_status_remarks">
+		<type name="text"/>
+	</column>
 	<column name="url">
 		<type name="character varying" length="1024"/>
 	</column>
 	<column name="document_format_id" not-null="true">
+		<type name="uuid"/>
+	</column>
+	<column name="job_status_id" not-null="true">
 		<type name="uuid"/>
 	</column>
 	<column name="report_version_id" not-null="true">
@@ -182,8 +188,43 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	<column name="role_id" not-null="true">
 		<type name="uuid"/>
 	</column>
+	<column name="subscription_id">
+		<type name="uuid"/>
+	</column>
 	<constraint name="job_pkey" type="pk-constr" table="reporting.job">
 		<columns names="job_id" ref-type="src-columns"/>
+	</constraint>
+</table>
+
+<sequence name="job_parameter_job_parameter_id_seq"
+	 start="1" increment="1"
+	 min-value="1" max-value="9223372036854775807"
+	 cache="1" cycle="false">
+	<schema name="reporting"/>
+	<role name="report_server_app"/>
+</sequence>
+
+<table name="job_parameter">
+	<schema name="reporting"/>
+	<role name="report_server_app"/>
+	<position x="1088.89" y="1275"/>
+	<column name="job_parameter_id" not-null="true" default-value="nextval('job_parameter_job_parameter_id_seq'::regclass)">
+		<type name="bigint"/>
+	</column>
+	<column name="created_on" not-null="true">
+		<type name="timestamp"/>
+	</column>
+	<column name="job_id" not-null="true">
+		<type name="bigint"/>
+	</column>
+	<column name="report_parameter_id" not-null="true">
+		<type name="uuid"/>
+	</column>
+	<constraint name="job_parameter_pkey" type="pk-constr" table="reporting.job_parameter">
+		<columns names="job_parameter_id" ref-type="src-columns"/>
+	</constraint>
+	<constraint name="uc_jobparameter_job_parameter" type="uq-constr" table="reporting.job_parameter">
+		<columns names="job_id,report_parameter_id" ref-type="src-columns"/>
 	</constraint>
 </table>
 
@@ -198,34 +239,70 @@ CAUTION: Do not modify this file unless you know what you are doing.
 <table name="job_parameter_value">
 	<schema name="reporting"/>
 	<role name="report_server_app"/>
-	<position x="1323.89" y="1035"/>
+	<position x="1485.27" y="1133"/>
 	<column name="job_parameter_value_id" not-null="true" default-value="nextval('job_parameter_value_job_parameter_value_id_seq'::regclass)">
 		<type name="bigint"/>
+	</column>
+	<column name="boolean_value">
+		<type name="boolean"/>
 	</column>
 	<column name="created_on" not-null="true">
 		<type name="timestamp"/>
 	</column>
-	<column name="string_value" not-null="true">
+	<column name="date_value">
+		<type name="date"/>
+	</column>
+	<column name="datetime_value">
+		<type name="timestamp"/>
+	</column>
+	<column name="float_value">
+		<type name="double precision"/>
+	</column>
+	<column name="integer_value">
+		<type name="integer"/>
+	</column>
+	<column name="string_value">
 		<type name="character varying" length="80"/>
 	</column>
-	<column name="job_id" not-null="true">
-		<type name="bigint"/>
+	<column name="time_value">
+		<type name="time"/>
 	</column>
-	<column name="report_parameter_id" not-null="true" default-value="uuid_generate_v4()">
-		<type name="uuid"/>
+	<column name="job_parameter_id" not-null="true">
+		<type name="bigint"/>
 	</column>
 	<constraint name="job_parameter_value_pkey" type="pk-constr" table="reporting.job_parameter_value">
 		<columns names="job_parameter_value_id" ref-type="src-columns"/>
 	</constraint>
-	<constraint name="uc_jobparametervalue_job_parameter_value" type="uq-constr" table="reporting.job_parameter_value">
-		<columns names="job_id,report_parameter_id,string_value" ref-type="src-columns"/>
+</table>
+
+<table name="job_status">
+	<schema name="reporting"/>
+	<role name="report_server_app"/>
+	<position x="642" y="1120.4"/>
+	<column name="job_status_id" not-null="true" default-value="uuid_generate_v4()">
+		<type name="uuid"/>
+	</column>
+	<column name="abbreviation" not-null="true">
+		<type name="character varying" length="32"/>
+	</column>
+	<column name="active" not-null="true">
+		<type name="boolean"/>
+	</column>
+	<column name="created_on" not-null="true">
+		<type name="timestamp"/>
+	</column>
+	<column name="description" not-null="true">
+		<type name="character varying" length="32"/>
+	</column>
+	<constraint name="job_status_pkey" type="pk-constr" table="reporting.job_status">
+		<columns names="job_status_id" ref-type="src-columns"/>
 	</constraint>
 </table>
 
 <table name="parameter_group">
 	<schema name="reporting"/>
 	<role name="report_server_app"/>
-	<position x="16.2969" y="333"/>
+	<position x="52.0625" y="570.4"/>
 	<column name="parameter_group_id" not-null="true" default-value="uuid_generate_v4()">
 		<type name="uuid"/>
 	</column>
@@ -249,7 +326,7 @@ CAUTION: Do not modify this file unless you know what you are doing.
 <table name="report">
 	<schema name="reporting"/>
 	<role name="report_server_app"/>
-	<position x="415" y="29.4"/>
+	<position x="416.063" y="26.4"/>
 	<column name="report_id" not-null="true" default-value="uuid_generate_v4()">
 		<type name="uuid"/>
 	</column>
@@ -279,7 +356,7 @@ CAUTION: Do not modify this file unless you know what you are doing.
 <table name="report_category">
 	<schema name="reporting"/>
 	<role name="report_server_app"/>
-	<position x="14.8125" y="52.4"/>
+	<position x="10.875" y="70.4"/>
 	<column name="report_category_id" not-null="true" default-value="uuid_generate_v4()">
 		<type name="uuid"/>
 	</column>
@@ -303,7 +380,7 @@ CAUTION: Do not modify this file unless you know what you are doing.
 <table name="report_parameter">
 	<schema name="reporting"/>
 	<role name="report_server_app"/>
-	<position x="444.656" y="374.4"/>
+	<position x="487.719" y="348.4"/>
 	<column name="report_parameter_id" not-null="true" default-value="uuid_generate_v4()">
 		<type name="uuid"/>
 	</column>
@@ -387,7 +464,7 @@ CAUTION: Do not modify this file unless you know what you are doing.
 <table name="report_version">
 	<schema name="reporting"/>
 	<role name="report_server_app"/>
-	<position x="431.469" y="196.4"/>
+	<position x="458" y="179.8"/>
 	<column name="report_version_id" not-null="true" default-value="uuid_generate_v4()">
 		<type name="uuid"/>
 	</column>
@@ -426,12 +503,15 @@ CAUTION: Do not modify this file unless you know what you are doing.
 <table name="role">
 	<schema name="reporting"/>
 	<role name="report_server_app"/>
-	<position x="1310.56" y="37.4"/>
+	<position x="1381.09" y="27.8"/>
 	<column name="role_id" not-null="true" default-value="uuid_generate_v4()">
 		<type name="uuid"/>
 	</column>
 	<column name="created_on" not-null="true">
 		<type name="timestamp"/>
+	</column>
+	<column name="email">
+		<type name="character varying" length="160"/>
 	</column>
 	<column name="encoded_password" not-null="true">
 		<type name="character varying" length="32"/>
@@ -441,6 +521,9 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	</column>
 	<column name="login_role" not-null="true">
 		<type name="boolean"/>
+	</column>
+	<column name="time_zone_id">
+		<type name="character varying" length="80"/>
 	</column>
 	<column name="username" not-null="true">
 		<type name="character varying" length="32"/>
@@ -453,18 +536,15 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	</constraint>
 </table>
 
-<table name="role_parameter_value">
+<table name="role_parameter">
 	<schema name="reporting"/>
 	<role name="report_server_app"/>
-	<position x="890" y="376.8"/>
-	<column name="role_parameter_value_id" not-null="true" default-value="uuid_generate_v4()">
+	<position x="988.141" y="348.8"/>
+	<column name="role_parameter_id" not-null="true" default-value="uuid_generate_v4()">
 		<type name="uuid"/>
 	</column>
 	<column name="created_on" not-null="true">
 		<type name="timestamp"/>
-	</column>
-	<column name="string_value" not-null="true">
-		<type name="character varying" length="80"/>
 	</column>
 	<column name="report_parameter_id" not-null="true">
 		<type name="uuid"/>
@@ -472,18 +552,57 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	<column name="role_id" not-null="true">
 		<type name="uuid"/>
 	</column>
+	<constraint name="role_parameter_pkey" type="pk-constr" table="reporting.role_parameter">
+		<columns names="role_parameter_id" ref-type="src-columns"/>
+	</constraint>
+	<constraint name="uc_roleparameter_role_parameter" type="uq-constr" table="reporting.role_parameter">
+		<columns names="role_id,report_parameter_id" ref-type="src-columns"/>
+	</constraint>
+</table>
+
+<table name="role_parameter_value">
+	<schema name="reporting"/>
+	<role name="report_server_app"/>
+	<position x="1405.52" y="321.8"/>
+	<column name="role_parameter_value_id" not-null="true" default-value="uuid_generate_v4()">
+		<type name="uuid"/>
+	</column>
+	<column name="boolean_value">
+		<type name="boolean"/>
+	</column>
+	<column name="created_on" not-null="true">
+		<type name="timestamp"/>
+	</column>
+	<column name="date_value">
+		<type name="date"/>
+	</column>
+	<column name="datetime_value">
+		<type name="timestamp"/>
+	</column>
+	<column name="float_value">
+		<type name="double precision"/>
+	</column>
+	<column name="integer_value">
+		<type name="integer"/>
+	</column>
+	<column name="string_value">
+		<type name="character varying" length="80"/>
+	</column>
+	<column name="time_value">
+		<type name="time"/>
+	</column>
+	<column name="role_parameter_id" not-null="true">
+		<type name="uuid"/>
+	</column>
 	<constraint name="role_parameter_value_pkey" type="pk-constr" table="reporting.role_parameter_value">
 		<columns names="role_parameter_value_id" ref-type="src-columns"/>
-	</constraint>
-	<constraint name="uc_roleparametervalue_role_parameter_value" type="uq-constr" table="reporting.role_parameter_value">
-		<columns names="role_id,report_parameter_id,string_value" ref-type="src-columns"/>
 	</constraint>
 </table>
 
 <table name="role_report">
 	<schema name="reporting"/>
 	<role name="report_server_app"/>
-	<position x="891.859" y="59.8"/>
+	<position x="921.359" y="42.8"/>
 	<column name="role_report_id" not-null="true" default-value="uuid_generate_v4()">
 		<type name="uuid"/>
 	</column>
@@ -507,7 +626,7 @@ CAUTION: Do not modify this file unless you know what you are doing.
 <table name="role_role">
 	<schema name="reporting"/>
 	<role name="report_server_app"/>
-	<position x="1372.7" y="223.8"/>
+	<position x="1427" y="210.2"/>
 	<column name="role_role_id" not-null="true" default-value="uuid_generate_v4()">
 		<type name="uuid"/>
 	</column>
@@ -531,7 +650,7 @@ CAUTION: Do not modify this file unless you know what you are doing.
 <table name="selection_list_value">
 	<schema name="reporting"/>
 	<role name="report_server_app"/>
-	<position x="15.4375" y="466.8"/>
+	<position x="34.7344" y="409.2"/>
 	<column name="selection_list_value_id" not-null="true" default-value="uuid_generate_v4()">
 		<type name="uuid"/>
 	</column>
@@ -558,24 +677,33 @@ CAUTION: Do not modify this file unless you know what you are doing.
 <table name="subscription">
 	<schema name="reporting"/>
 	<role name="report_server_app"/>
-	<position x="903.5" y="711.8"/>
+	<position x="1008.8" y="563.2"/>
 	<column name="subscription_id" not-null="true" default-value="uuid_generate_v4()">
 		<type name="uuid"/>
+	</column>
+	<column name="active" not-null="true">
+		<type name="boolean"/>
 	</column>
 	<column name="created_on" not-null="true">
 		<type name="timestamp"/>
 	</column>
-	<column name="cron_schedule">
+	<column name="delivery_cron_schedule">
+		<type name="character varying" length="80"/>
+	</column>
+	<column name="delivery_datetime_run_at">
+		<type name="timestamp"/>
+	</column>
+	<column name="delivery_time_zone_id">
 		<type name="character varying" length="80"/>
 	</column>
 	<column name="description">
-		<type name="character varying" length="80"/>
+		<type name="character varying" length="1024"/>
 	</column>
-	<column name="email" not-null="true">
-		<type name="character varying" length="80"/>
+	<column name="email">
+		<type name="character varying" length="160"/>
 	</column>
-	<column name="run_once_at">
-		<type name="timestamp"/>
+	<column name="enabled" not-null="true">
+		<type name="boolean"/>
 	</column>
 	<column name="document_format_id" not-null="true">
 		<type name="uuid"/>
@@ -591,29 +719,95 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	</constraint>
 </table>
 
-<table name="subscription_parameter_value">
+<table name="subscription_parameter">
 	<schema name="reporting"/>
 	<role name="report_server_app"/>
-	<position x="1305" y="714.2"/>
-	<column name="subscription_parameter_value_id" not-null="true" default-value="uuid_generate_v4()">
+	<position x="1033.94" y="821.2"/>
+	<column name="subscription_parameter_id" not-null="true" default-value="uuid_generate_v4()">
 		<type name="uuid"/>
 	</column>
 	<column name="created_on" not-null="true">
 		<type name="timestamp"/>
 	</column>
+	<column name="report_parameter_id" not-null="true">
+		<type name="uuid"/>
+	</column>
+	<column name="subscription_id" not-null="true">
+		<type name="uuid"/>
+	</column>
+	<constraint name="subscription_parameter_pkey" type="pk-constr" table="reporting.subscription_parameter">
+		<columns names="subscription_parameter_id" ref-type="src-columns"/>
+	</constraint>
+	<constraint name="uc_subscriptionparameter_subscription_parameter" type="uq-constr" table="reporting.subscription_parameter">
+		<columns names="subscription_id,report_parameter_id" ref-type="src-columns"/>
+	</constraint>
+</table>
+
+<table name="subscription_parameter_value">
+	<schema name="reporting"/>
+	<role name="report_server_app"/>
+	<position x="1457.69" y="563.2"/>
+	<column name="subscription_parameter_value_id" not-null="true" default-value="uuid_generate_v4()">
+		<type name="uuid"/>
+	</column>
+	<column name="boolean_value">
+		<type name="boolean"/>
+	</column>
+	<column name="created_on" not-null="true">
+		<type name="timestamp"/>
+	</column>
+	<column name="date_value">
+		<type name="date"/>
+	</column>
+	<column name="datetime_value">
+		<type name="timestamp"/>
+	</column>
 	<column name="day_of_month_number">
+		<type name="integer"/>
+	</column>
+	<column name="day_of_week_in_month_number">
+		<type name="integer"/>
+	</column>
+	<column name="day_of_week_in_month_ordinal">
 		<type name="integer"/>
 	</column>
 	<column name="day_of_week_number">
 		<type name="integer"/>
 	</column>
-	<column name="days_relative">
+	<column name="days_ago">
+		<type name="integer"/>
+	</column>
+	<column name="duration_to_add_days">
+		<type name="integer"/>
+	</column>
+	<column name="duration_to_add_hours">
+		<type name="integer"/>
+	</column>
+	<column name="duration_to_add_minutes">
+		<type name="integer"/>
+	</column>
+	<column name="duration_to_add_months">
+		<type name="integer"/>
+	</column>
+	<column name="duration_to_add_seconds">
+		<type name="integer"/>
+	</column>
+	<column name="duration_to_add_weeks">
+		<type name="integer"/>
+	</column>
+	<column name="duration_to_add_years">
+		<type name="integer"/>
+	</column>
+	<column name="float_value">
+		<type name="double precision"/>
+	</column>
+	<column name="integer_value">
 		<type name="integer"/>
 	</column>
 	<column name="month_number">
 		<type name="integer"/>
 	</column>
-	<column name="months_relative">
+	<column name="months_ago">
 		<type name="integer"/>
 	</column>
 	<column name="string_value">
@@ -622,25 +816,16 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	<column name="time_value">
 		<type name="time"/>
 	</column>
-	<column name="week_of_month_number">
-		<type name="integer"/>
-	</column>
-	<column name="week_of_year_number">
-		<type name="integer"/>
-	</column>
-	<column name="weeks_relative">
+	<column name="weeks_ago">
 		<type name="integer"/>
 	</column>
 	<column name="year_number">
 		<type name="integer"/>
 	</column>
-	<column name="years_relative">
+	<column name="years_ago">
 		<type name="integer"/>
 	</column>
-	<column name="report_parameter_id" not-null="true">
-		<type name="uuid"/>
-	</column>
-	<column name="subscription_id" not-null="true">
+	<column name="subscription_parameter_id" not-null="true">
 		<type name="uuid"/>
 	</column>
 	<constraint name="subscription_parameter_value_pkey" type="pk-constr" table="reporting.subscription_parameter_value">
@@ -660,7 +845,13 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	<columns names="document_format_id" ref-type="dst-columns"/>
 </constraint>
 
-<constraint name="fk_job_report" type="fk-constr" comparison-type="MATCH SIMPLE"
+<constraint name="fk_job_jobstatus" type="fk-constr" comparison-type="MATCH SIMPLE"
+	 upd-action="NO ACTION" del-action="NO ACTION" ref-table="reporting.job_status" table="reporting.job">
+	<columns names="job_status_id" ref-type="src-columns"/>
+	<columns names="job_status_id" ref-type="dst-columns"/>
+</constraint>
+
+<constraint name="fk_job_reportversion" type="fk-constr" comparison-type="MATCH SIMPLE"
 	 upd-action="NO ACTION" del-action="NO ACTION" ref-table="reporting.report_version" table="reporting.job">
 	<columns names="report_version_id" ref-type="src-columns"/>
 	<columns names="report_version_id" ref-type="dst-columns"/>
@@ -672,16 +863,28 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	<columns names="role_id" ref-type="dst-columns"/>
 </constraint>
 
-<constraint name="fk_jobparametervalue_job" type="fk-constr" comparison-type="MATCH SIMPLE"
-	 upd-action="NO ACTION" del-action="NO ACTION" ref-table="reporting.job" table="reporting.job_parameter_value">
+<constraint name="fk_job_subscription" type="fk-constr" comparison-type="MATCH SIMPLE"
+	 upd-action="NO ACTION" del-action="NO ACTION" ref-table="reporting.subscription" table="reporting.job">
+	<columns names="subscription_id" ref-type="src-columns"/>
+	<columns names="subscription_id" ref-type="dst-columns"/>
+</constraint>
+
+<constraint name="fk_jobparameter_job" type="fk-constr" comparison-type="MATCH SIMPLE"
+	 upd-action="NO ACTION" del-action="NO ACTION" ref-table="reporting.job" table="reporting.job_parameter">
 	<columns names="job_id" ref-type="src-columns"/>
 	<columns names="job_id" ref-type="dst-columns"/>
 </constraint>
 
-<constraint name="fk_jobparametervalue_reportparameter" type="fk-constr" comparison-type="MATCH SIMPLE"
-	 upd-action="NO ACTION" del-action="NO ACTION" ref-table="reporting.report_parameter" table="reporting.job_parameter_value">
+<constraint name="fk_jobparameter_reportparameter" type="fk-constr" comparison-type="MATCH SIMPLE"
+	 upd-action="NO ACTION" del-action="NO ACTION" ref-table="reporting.report_parameter" table="reporting.job_parameter">
 	<columns names="report_parameter_id" ref-type="src-columns"/>
 	<columns names="report_parameter_id" ref-type="dst-columns"/>
+</constraint>
+
+<constraint name="fk_jobparametervalue_jobparameter" type="fk-constr" comparison-type="MATCH SIMPLE"
+	 upd-action="NO ACTION" del-action="NO ACTION" ref-table="reporting.job_parameter" table="reporting.job_parameter_value">
+	<columns names="job_parameter_id" ref-type="src-columns"/>
+	<columns names="job_parameter_id" ref-type="dst-columns"/>
 </constraint>
 
 <constraint name="fk_report_reportcategory" type="fk-constr" comparison-type="MATCH SIMPLE"
@@ -696,7 +899,7 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	<columns names="parameter_group_id" ref-type="dst-columns"/>
 </constraint>
 
-<constraint name="fk_reportparameter_report" type="fk-constr" comparison-type="MATCH SIMPLE"
+<constraint name="fk_reportparameter_reportversion" type="fk-constr" comparison-type="MATCH SIMPLE"
 	 upd-action="NO ACTION" del-action="NO ACTION" ref-table="reporting.report_version" table="reporting.report_parameter">
 	<columns names="report_version_id" ref-type="src-columns"/>
 	<columns names="report_version_id" ref-type="dst-columns"/>
@@ -708,16 +911,22 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	<columns names="report_id" ref-type="dst-columns"/>
 </constraint>
 
-<constraint name="fk_roleparametervalue_reportparameter" type="fk-constr" comparison-type="MATCH SIMPLE"
-	 upd-action="NO ACTION" del-action="NO ACTION" ref-table="reporting.report_parameter" table="reporting.role_parameter_value">
+<constraint name="fk_roleparameter_reportparameter" type="fk-constr" comparison-type="MATCH SIMPLE"
+	 upd-action="NO ACTION" del-action="NO ACTION" ref-table="reporting.report_parameter" table="reporting.role_parameter">
 	<columns names="report_parameter_id" ref-type="src-columns"/>
 	<columns names="report_parameter_id" ref-type="dst-columns"/>
 </constraint>
 
-<constraint name="fk_roleparametervalue_role" type="fk-constr" comparison-type="MATCH SIMPLE"
-	 upd-action="NO ACTION" del-action="NO ACTION" ref-table="reporting.role" table="reporting.role_parameter_value">
+<constraint name="fk_roleparameter_role" type="fk-constr" comparison-type="MATCH SIMPLE"
+	 upd-action="NO ACTION" del-action="NO ACTION" ref-table="reporting.role" table="reporting.role_parameter">
 	<columns names="role_id" ref-type="src-columns"/>
 	<columns names="role_id" ref-type="dst-columns"/>
+</constraint>
+
+<constraint name="fk_roleparametervalue_roleparameter" type="fk-constr" comparison-type="MATCH SIMPLE"
+	 upd-action="NO ACTION" del-action="NO ACTION" ref-table="reporting.role_parameter" table="reporting.role_parameter_value">
+	<columns names="role_parameter_id" ref-type="src-columns"/>
+	<columns names="role_parameter_id" ref-type="dst-columns"/>
 </constraint>
 
 <constraint name="fk_rolereport_report" type="fk-constr" comparison-type="MATCH SIMPLE"
@@ -768,142 +977,178 @@ CAUTION: Do not modify this file unless you know what you are doing.
 	<columns names="role_id" ref-type="dst-columns"/>
 </constraint>
 
-<constraint name="fk_subscriptionparametervalue_reportparameter" type="fk-constr" comparison-type="MATCH SIMPLE"
-	 upd-action="NO ACTION" del-action="NO ACTION" ref-table="reporting.report_parameter" table="reporting.subscription_parameter_value">
+<constraint name="fk_subscriptionparameter_reportparameter" type="fk-constr" comparison-type="MATCH SIMPLE"
+	 upd-action="NO ACTION" del-action="NO ACTION" ref-table="reporting.report_parameter" table="reporting.subscription_parameter">
 	<columns names="report_parameter_id" ref-type="src-columns"/>
 	<columns names="report_parameter_id" ref-type="dst-columns"/>
 </constraint>
 
-<constraint name="fk_subscriptionparametervalue_subscription" type="fk-constr" comparison-type="MATCH SIMPLE"
-	 upd-action="NO ACTION" del-action="NO ACTION" ref-table="reporting.subscription" table="reporting.subscription_parameter_value">
+<constraint name="fk_subscriptionparameter_subscription" type="fk-constr" comparison-type="MATCH SIMPLE"
+	 upd-action="NO ACTION" del-action="NO ACTION" ref-table="reporting.subscription" table="reporting.subscription_parameter">
 	<columns names="subscription_id" ref-type="src-columns"/>
 	<columns names="subscription_id" ref-type="dst-columns"/>
 </constraint>
 
+<constraint name="fk_subscriptionparametervalue_subscriptionparameter" type="fk-constr" comparison-type="MATCH SIMPLE"
+	 upd-action="NO ACTION" del-action="NO ACTION" ref-table="reporting.subscription_parameter" table="reporting.subscription_parameter_value">
+	<columns names="subscription_parameter_id" ref-type="src-columns"/>
+	<columns names="subscription_parameter_id" ref-type="dst-columns"/>
+</constraint>
+
 <relationship name="rel_configuration_role" type="relfk"
-	 custom-color="#82d5c3"
+	 custom-color="#3a1697"
 	 src-table="reporting.configuration"
 	 dst-table="reporting.role"
 	 src-required="false" dst-required="false"/>
 
 <relationship name="rel_job_document_format" type="relfk"
-	 custom-color="#946a49"
+	 custom-color="#046e23"
 	 src-table="reporting.job"
 	 dst-table="reporting.document_format"
 	 src-required="false" dst-required="false"/>
 
+<relationship name="rel_job_job_status" type="relfk"
+	 custom-color="#20fee9"
+	 src-table="reporting.job"
+	 dst-table="reporting.job_status"
+	 src-required="false" dst-required="false"/>
+
 <relationship name="rel_job_report_version" type="relfk"
-	 custom-color="#661788"
+	 custom-color="#7bd0df"
 	 src-table="reporting.job"
 	 dst-table="reporting.report_version"
 	 src-required="false" dst-required="false"/>
 
 <relationship name="rel_job_role" type="relfk"
-	 custom-color="#9f3002"
+	 custom-color="#31acfc"
 	 src-table="reporting.job"
 	 dst-table="reporting.role"
 	 src-required="false" dst-required="false"/>
 
-<relationship name="rel_job_parameter_value_job" type="relfk"
-	 custom-color="#b86d9d"
-	 src-table="reporting.job_parameter_value"
+<relationship name="rel_job_subscription" type="relfk"
+	 custom-color="#1b6281"
+	 src-table="reporting.job"
+	 dst-table="reporting.subscription"
+	 src-required="false" dst-required="false"/>
+
+<relationship name="rel_job_parameter_job" type="relfk"
+	 custom-color="#7ca2de"
+	 src-table="reporting.job_parameter"
 	 dst-table="reporting.job"
 	 src-required="false" dst-required="false"/>
 
-<relationship name="rel_job_parameter_value_report_parameter" type="relfk"
-	 custom-color="#1b8eba"
-	 src-table="reporting.job_parameter_value"
+<relationship name="rel_job_parameter_report_parameter" type="relfk"
+	 custom-color="#e6ab3b"
+	 src-table="reporting.job_parameter"
 	 dst-table="reporting.report_parameter"
 	 src-required="false" dst-required="false"/>
 
+<relationship name="rel_job_parameter_value_job_parameter" type="relfk"
+	 custom-color="#99ef09"
+	 src-table="reporting.job_parameter_value"
+	 dst-table="reporting.job_parameter"
+	 src-required="false" dst-required="false"/>
+
 <relationship name="rel_report_report_category" type="relfk"
-	 custom-color="#6433ab"
+	 custom-color="#21ddfe"
 	 src-table="reporting.report"
 	 dst-table="reporting.report_category"
 	 src-required="false" dst-required="false"/>
 
 <relationship name="rel_report_parameter_parameter_group" type="relfk"
-	 custom-color="#f2f42a"
+	 custom-color="#b6c3b7"
 	 src-table="reporting.report_parameter"
 	 dst-table="reporting.parameter_group"
 	 src-required="false" dst-required="false"/>
 
 <relationship name="rel_report_parameter_report_version" type="relfk"
-	 custom-color="#d09341"
+	 custom-color="#e74a03"
 	 src-table="reporting.report_parameter"
 	 dst-table="reporting.report_version"
 	 src-required="false" dst-required="false"/>
 
 <relationship name="rel_report_version_report" type="relfk"
-	 custom-color="#81c9ae"
+	 custom-color="#92b4d2"
 	 src-table="reporting.report_version"
 	 dst-table="reporting.report"
 	 src-required="false" dst-required="false"/>
 
-<relationship name="rel_role_parameter_value_report_parameter" type="relfk"
-	 custom-color="#18efaf"
-	 src-table="reporting.role_parameter_value"
+<relationship name="rel_role_parameter_report_parameter" type="relfk"
+	 custom-color="#d5531a"
+	 src-table="reporting.role_parameter"
 	 dst-table="reporting.report_parameter"
 	 src-required="false" dst-required="false"/>
 
-<relationship name="rel_role_parameter_value_role" type="relfk"
-	 custom-color="#ea94aa"
-	 src-table="reporting.role_parameter_value"
+<relationship name="rel_role_parameter_role" type="relfk"
+	 custom-color="#ffd176"
+	 src-table="reporting.role_parameter"
 	 dst-table="reporting.role"
 	 src-required="false" dst-required="false"/>
 
+<relationship name="rel_role_parameter_value_role_parameter" type="relfk"
+	 custom-color="#7de7e5"
+	 src-table="reporting.role_parameter_value"
+	 dst-table="reporting.role_parameter"
+	 src-required="false" dst-required="false"/>
+
 <relationship name="rel_role_report_report" type="relfk"
-	 custom-color="#c6a68d"
+	 custom-color="#dd01b3"
 	 src-table="reporting.role_report"
 	 dst-table="reporting.report"
 	 src-required="false" dst-required="false"/>
 
 <relationship name="rel_role_report_role" type="relfk"
-	 custom-color="#7c89b2"
+	 custom-color="#883f20"
 	 src-table="reporting.role_report"
 	 dst-table="reporting.role"
 	 src-required="false" dst-required="false"/>
 
 <relationship name="rel_role_role_role" type="relfk"
-	 custom-color="#7e4336"
+	 custom-color="#0e06dc"
 	 src-table="reporting.role_role"
 	 dst-table="reporting.role"
 	 src-required="false" dst-required="false"/>
 
 <relationship name="rel_selection_list_value_report_parameter" type="relfk"
-	 custom-color="#5de88b"
+	 custom-color="#e7ca88"
 	 src-table="reporting.selection_list_value"
 	 dst-table="reporting.report_parameter"
 	 src-required="false" dst-required="false"/>
 
 <relationship name="rel_subscription_document_format" type="relfk"
-	 custom-color="#73270e"
+	 custom-color="#4d5744"
 	 src-table="reporting.subscription"
 	 dst-table="reporting.document_format"
 	 src-required="false" dst-required="false"/>
 
 <relationship name="rel_subscription_report_version" type="relfk"
-	 custom-color="#d5c0cc"
+	 custom-color="#cce3e4"
 	 src-table="reporting.subscription"
 	 dst-table="reporting.report_version"
 	 src-required="false" dst-required="false"/>
 
 <relationship name="rel_subscription_role" type="relfk"
-	 custom-color="#d52ea5"
+	 custom-color="#50c454"
 	 src-table="reporting.subscription"
 	 dst-table="reporting.role"
 	 src-required="false" dst-required="false"/>
 
-<relationship name="rel_subscription_parameter_value_report_parameter" type="relfk"
-	 custom-color="#189cd9"
-	 src-table="reporting.subscription_parameter_value"
+<relationship name="rel_subscription_parameter_report_parameter" type="relfk"
+	 custom-color="#cf44ff"
+	 src-table="reporting.subscription_parameter"
 	 dst-table="reporting.report_parameter"
 	 src-required="false" dst-required="false"/>
 
-<relationship name="rel_subscription_parameter_value_subscription" type="relfk"
-	 custom-color="#1a375b"
-	 src-table="reporting.subscription_parameter_value"
+<relationship name="rel_subscription_parameter_subscription" type="relfk"
+	 custom-color="#a2ff59"
+	 src-table="reporting.subscription_parameter"
 	 dst-table="reporting.subscription"
+	 src-required="false" dst-required="false"/>
+
+<relationship name="rel_subscription_parameter_value_subscription_parameter" type="relfk"
+	 custom-color="#80f41f"
+	 src-table="reporting.subscription_parameter_value"
+	 dst-table="reporting.subscription_parameter"
 	 src-required="false" dst-required="false"/>
 
 </dbmodel>

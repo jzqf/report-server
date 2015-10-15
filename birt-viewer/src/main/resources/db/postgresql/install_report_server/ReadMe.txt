@@ -31,10 +31,7 @@ can be done easily by following these simple steps:
 		tar -xvzpf install_report_server-***.tar.gz
 
 The "-p" option is essential. If you do not follow these instructions, the 
-installation may fail. You may also see lines similar to the following in the
- log file:	
-	
-		could not change directory to "...": Permission denied
+installation may fail.
 
 
 ===== Installation instructions =====

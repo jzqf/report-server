@@ -177,9 +177,10 @@ public class ReportVersionController extends AbstractBaseController {
 				ReportVersion.class, "rptdesign", null);
 
 		ReportVersion reportVersion = reportVersionService.saveNewFromResource(reportVersionResource);
-		if (RestUtils.AUTO_EXPAND_PRIMARY_RESOURCES) {
-			addToExpandList(expand, ReportVersion.class);
-		}
+		// if (RestUtils.AUTO_EXPAND_PRIMARY_RESOURCES) {
+		addToExpandList(expand, ReportVersion.class);// Force primary resource
+														// to be "expanded"
+		// }
 
 		/*
 		 * Parse report parameters here and for each report parameter, create a 

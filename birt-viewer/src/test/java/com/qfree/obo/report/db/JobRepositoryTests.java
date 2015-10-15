@@ -21,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.qfree.obo.report.ApplicationConfig;
 import com.qfree.obo.report.domain.DocumentFormat;
 import com.qfree.obo.report.domain.Job;
+import com.qfree.obo.report.domain.JobStatus;
 import com.qfree.obo.report.domain.Report;
 import com.qfree.obo.report.domain.ReportVersion;
 import com.qfree.obo.report.domain.Role;
@@ -33,16 +34,19 @@ public class JobRepositoryTests {
 	private static final Logger logger = LoggerFactory.getLogger(JobRepositoryTests.class);
 
 	@Autowired
-	JobRepository jobRepository;
+	private JobRepository jobRepository;
 
 	@Autowired
-	RoleRepository roleRepository;
+	private RoleRepository roleRepository;
 
 	@Autowired
-	ReportRepository reportRepository;
+	private ReportRepository reportRepository;
 
 	@Autowired
-	DocumentFormatRepository documentFormatRepository;
+	private DocumentFormatRepository documentFormatRepository;
+
+	@Autowired
+	private JobStatusRepository jobStatusRepository;
 
 	@Test
 	@Transactional
@@ -78,7 +82,20 @@ public class JobRepositoryTests {
 		Role role_aabb = roleRepository.findOne(uuidOfRole_aabb);
 		assertThat(role_aabb, is(notNullValue()));
 
-		Job unsavedJob = new Job(report04Version01, role_aabb, pdfFormat);
+		JobStatus jobStatusQueued = jobStatusRepository.findOne(JobStatus.QUEUED_ID);
+		assertThat(jobStatusQueued, is(notNullValue()));
+
+		Job unsavedJob = new Job(
+				null,
+				jobStatusQueued,
+				null,
+				report04Version01,
+				role_aabb,
+				pdfFormat,
+				null,
+				null,
+				null,
+				null);
 		Job savedJob = jobRepository.save(unsavedJob);
 
 		assertThat(jobRepository.count(), is(3L));

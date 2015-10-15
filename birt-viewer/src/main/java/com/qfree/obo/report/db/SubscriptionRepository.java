@@ -1,5 +1,6 @@
 package com.qfree.obo.report.db;
 
+import java.util.List;
 import java.util.UUID;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -15,5 +16,9 @@ import com.qfree.obo.report.domain.Subscription;
  * @author Jeffrey Zelt
  */
 public interface SubscriptionRepository extends JpaRepository<Subscription, UUID> {
-	  
+
+	List<Subscription> findByActiveTrue();
+
+	List<Subscription> findByActiveTrueAndEnabledTrue();
+
 }

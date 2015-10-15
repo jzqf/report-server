@@ -3,7 +3,12 @@ package com.qfree.obo.report.rest.server;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.text.ParseException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.FormParam;
@@ -17,13 +22,23 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.UriInfo;
 
+import org.quartz.JobKey;
+import org.quartz.Scheduler;
+import org.quartz.SchedulerException;
+import org.quartz.impl.matchers.GroupMatcher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.quartz.CronTriggerFactoryBean;
+import org.springframework.scheduling.quartz.JobDetailFactoryBean;
+import org.springframework.scheduling.quartz.SchedulerFactoryBean;
 import org.springframework.stereotype.Component;
 
 import com.qfree.obo.report.domain.Configuration.ParamName;
 import com.qfree.obo.report.rest.server.RestUtils.RestApiVersion;
+import com.qfree.obo.report.scheduling.jobs.SubscriptionScheduledJob;
+import com.qfree.obo.report.scheduling.schedulers.SubscriptionJobProcessorScheduler;
+import com.qfree.obo.report.scheduling.schedulers.SubscriptionScheduler;
 import com.qfree.obo.report.service.BirtService;
 import com.qfree.obo.report.service.ConfigurationService;
 
@@ -36,12 +51,25 @@ public class TestController extends AbstractBaseController {
 	private final ConfigurationService configurationService;
 	private final BirtService birtService;
 
+	private final SchedulerFactoryBean schedulerFactoryBean;
+	//	private final SubscriptionJobProcessorScheduledJob subscriptionJobProcessorScheduledJob;
+	private final SubscriptionJobProcessorScheduler subscriptionJobProcessorScheduler;
+	private final SubscriptionScheduler subscriptionScheduler;
+
 	@Autowired
 	public TestController(
 			ConfigurationService configurationService,
-			BirtService birtService) {
+			BirtService birtService,
+			SchedulerFactoryBean schedulerFactoryBean,
+			//			SubscriptionJobProcessorScheduledJob subscriptionJobProcessorScheduledJob,
+			SubscriptionJobProcessorScheduler subscriptionJobProcessorScheduler,
+			SubscriptionScheduler subscriptionScheduler) {
 		this.configurationService = configurationService;
 		this.birtService = birtService;
+		this.schedulerFactoryBean = schedulerFactoryBean;
+		//		this.subscriptionJobProcessorScheduledJob = subscriptionJobProcessorScheduledJob;
+		this.subscriptionJobProcessorScheduler = subscriptionJobProcessorScheduler;
+		this.subscriptionScheduler = subscriptionScheduler;
 	}
 
 	@GET
@@ -250,6 +278,205 @@ public class TestController extends AbstractBaseController {
 		}
 
 		return "Please work!!!";
+	}
+
+	@GET
+	@Path("/scheduleTask")
+	@Produces(MediaType.TEXT_PLAIN)
+	public String scheduleTask(
+			@HeaderParam("Accept") final String acceptHeader,
+			@Context final UriInfo uriInfo) {
+		RestApiVersion apiVersion = RestUtils.extractAPIVersion(acceptHeader, RestApiVersion.v1);
+
+		/*
+		 * Get the underlying Quartz Scheduler. According to the Javadoc for
+		 * org.springframework.scheduling.quartz.SchedulerFactoryBean :
+		 * 
+		 *   For dynamic registration of jobs at runtime, use a bean reference 
+		 *   to this SchedulerFactoryBean to get direct access to the Quartz 
+		 *   Scheduler (org.quartz.Scheduler). This allows you to create new 
+		 *   jobs and triggers, and also to control and monitor the entire 
+		 *   Scheduler.
+		 * 
+		 * So it seems that in order to schedule jobs dynamically (which is what
+		 * we are doing here), one *must* use the Quartz Scheduler object
+		 * obtained here.
+		 */
+		Scheduler scheduler = schedulerFactoryBean.getScheduler();
+
+		String complexJobGroupName = "ReportSubscriptions";
+		String complexJobName = "complexSubscriptionUUID";
+
+		UUID subscriptionId = UUID.randomUUID();
+
+		Map<String, Object> jobDataMap = new HashMap<>();
+		jobDataMap.put("subscriptionId", subscriptionId);
+
+		/*
+		 * Also set a field to be a singleton bean that is injected into the
+		 * current context. This bean should be keep track of which subscriptions
+		 * have been scheduled, which are active, paused, etc. Try this approach
+		 * instead of using static maps/lists. This bean will still need to be
+		 * thread-safe - therefore, check the Javadoc for data structures (maps,
+		 * lists, sets,...) that are inherently thread-safe? Or...
+		 * 
+		 * Name this class SubscriptionScheduleManager / SubscriptionScheduleService?
+		 */
+
+		JobDetailFactoryBean complexJobDetail = new JobDetailFactoryBean();
+		complexJobDetail.setJobClass(SubscriptionScheduledJob.class);
+		complexJobDetail.setJobDataAsMap(jobDataMap);
+		complexJobDetail.setDurability(true); // ?????????????????????????????????????
+		complexJobDetail.setGroup(complexJobGroupName);
+		complexJobDetail.setName(complexJobName);
+		complexJobDetail.afterPropertiesSet();
+
+		/*
+		 * Create trigger for complexJobDetail.
+		 */
+		CronTriggerFactoryBean cronTrigger = new CronTriggerFactoryBean();
+		cronTrigger.setJobDetail(complexJobDetail.getObject());
+		cronTrigger.setName("cronTriggerCreatedByJeff");
+		cronTrigger.setStartDelay(1000L);
+		cronTrigger.setCronExpression("0/5 * * ? * MON-FRI"); // Run the job every 5 seconds only on weekdays
+		try {
+			cronTrigger.afterPropertiesSet();
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
+
+		try {
+			scheduler.scheduleJob(complexJobDetail.getObject(), cronTrigger.getObject());
+		} catch (SchedulerException e) {
+			e.printStackTrace();
+		}
+
+		try {
+			logger.info("scheduler.getTriggerGroupNames() = {}", scheduler.getTriggerGroupNames());
+		} catch (SchedulerException e) {
+			e.printStackTrace();
+		}
+
+		try {
+			Set<JobKey> jobKeySet = scheduler.getJobKeys(GroupMatcher.anyGroup());
+			logger.debug("scheduler.getJobKeys(GroupMatcher.anyGroup()) = {}", jobKeySet);
+			JobKey[] jobKeys = jobKeySet.toArray(new JobKey[] {});
+			logger.info("{} JobKeys:", jobKeys.length);
+			for (JobKey jobKey : jobKeys) {
+				logger.info("    {}", jobKey);
+			}
+		} catch (SchedulerException e1) {
+			e1.printStackTrace();
+		}
+
+		try {
+			logger.info("scheduler.isStarted() = {}", scheduler.isStarted());
+		} catch (SchedulerException e) {
+			e.printStackTrace();
+		}
+
+		return "Return something here after scheduling the task?";
+	}
+
+	@GET
+	@Path("/scheduleJobProcessor")
+	@Produces(MediaType.TEXT_PLAIN)
+	public String scheduleJobProcessor(
+			@HeaderParam("Accept") final String acceptHeader,
+			@Context final UriInfo uriInfo) throws SchedulerException, ClassNotFoundException, NoSuchMethodException {
+		RestApiVersion apiVersion = RestUtils.extractAPIVersion(acceptHeader, RestApiVersion.v1);
+
+		logger.info("Scheduling job processor");
+		subscriptionJobProcessorScheduler.scheduleJob();
+
+		return "Job processor scheduled";
+	}
+
+	@GET
+	@Path("/triggerJobProcessor")
+	@Produces(MediaType.TEXT_PLAIN)
+	public String triggerJobProcessor(
+			@HeaderParam("Accept") final String acceptHeader,
+			@Context final UriInfo uriInfo) throws SchedulerException {
+		RestApiVersion apiVersion = RestUtils.extractAPIVersion(acceptHeader, RestApiVersion.v1);
+
+		logger.info("Triggering job processor...");
+		subscriptionJobProcessorScheduler.triggerJob();
+
+		return "Triggered job processor";
+	}
+
+	@GET
+	@Path("/pauseJobProcessor")
+	@Produces(MediaType.TEXT_PLAIN)
+	public String pauseJobProcessor(
+			@HeaderParam("Accept") final String acceptHeader,
+			@Context final UriInfo uriInfo) throws SchedulerException {
+		RestApiVersion apiVersion = RestUtils.extractAPIVersion(acceptHeader, RestApiVersion.v1);
+
+		logger.info("Pausing job processor");
+		subscriptionJobProcessorScheduler.pauseJob();
+
+		return "Paused job processor";
+	}
+
+	@GET
+	@Path("/resumeJobProcessor")
+	@Produces(MediaType.TEXT_PLAIN)
+	public String resumeJobProcessor(
+			@HeaderParam("Accept") final String acceptHeader,
+			@Context final UriInfo uriInfo) throws SchedulerException {
+		RestApiVersion apiVersion = RestUtils.extractAPIVersion(acceptHeader, RestApiVersion.v1);
+
+		logger.info("Resuming job processor...");
+		subscriptionJobProcessorScheduler.resumeJob();
+
+		return "Resumed job processor";
+	}
+
+	@GET
+	@Path("/unscheduleJobProcessor")
+	@Produces(MediaType.TEXT_PLAIN)
+	public String unscheduleJobProcessor(
+			@HeaderParam("Accept") final String acceptHeader,
+			@Context final UriInfo uriInfo) throws SchedulerException {
+		RestApiVersion apiVersion = RestUtils.extractAPIVersion(acceptHeader, RestApiVersion.v1);
+
+		//		logger.info("schedulerFactoryBean.stop()");
+		//		schedulerFactoryBean.stop();
+		//
+		//		logger.info("schedulerFactoryBean.isRunning() = {}", schedulerFactoryBean.isRunning());
+		//
+		//		Scheduler scheduler = schedulerFactoryBean.getScheduler();
+		//		try {
+		//			logger.info("scheduler.isShutdown() = {}", scheduler.isShutdown());
+		//		} catch (SchedulerException e) {
+		//			e.printStackTrace();
+		//		}
+
+		/*
+		 * This will start the scheduler again, so "stop()" is really like "pause()".
+		 */
+		//		logger.info("schedulerFactoryBean.start()");
+		//		schedulerFactoryBean.start();
+
+		subscriptionJobProcessorScheduler.unscheduleJob();
+
+		return "Job processor unscheduled";
+	}
+
+	@GET
+	@Path("/scheduleAllJobs")
+	@Produces(MediaType.TEXT_PLAIN)
+	public String scheduleAllJobs(
+			@HeaderParam("Accept") final String acceptHeader,
+			@Context final UriInfo uriInfo) throws SchedulerException {
+		RestApiVersion apiVersion = RestUtils.extractAPIVersion(acceptHeader, RestApiVersion.v1);
+
+		logger.info("Executing subscriptionScheduler.scheduleAllJobs()");
+		subscriptionScheduler.scheduleAllJobs();
+
+		return "Executed subscriptionScheduler.scheduleAllJobs()";
 	}
 
 }

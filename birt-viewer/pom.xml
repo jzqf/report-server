@@ -12,7 +12,7 @@
 
 	<!-- <groupId>com.qfree.obo</groupId> -->
 	<artifactId>birt-viewer</artifactId>
-	<version>0.7-RELEASE</version>
+	<version>0.8-RELEASE</version>
 	<packaging>war</packaging>
 	<name>OBO Report Viewer</name>
 	<description>Web project for displaying OBO reports that integrates the BIRT Viewer and that can be deployed in a servlet container such as Tomcat</description>
@@ -49,6 +49,7 @@
 		<birt-runtime.viewservlets.version>4.4.1</birt-runtime.viewservlets.version>
 		<!-- <servlet-api.version>3.1.0</servlet-api.version> -->
 		<!-- <hibernate.version>4.3.8.Final</hibernate.version> -->
+		<quartz.version>2.2.1</quartz.version>
 		<tomcat7.maven.plugin.version>2.2</tomcat7.maven.plugin.version>
 		<!--
 		  The following versions must agree with the properties defined with the
@@ -276,6 +277,20 @@
 			<artifactId>spring-orm</artifactId>
 			<!-- <version>${spring.version}</version> -->
 		</dependency>
+		
+		<!-- Needed for:
+		     org.springframework.scheduling.quartz.SchedulerFactoryBean -->
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-context-support</artifactId>
+		</dependency>
+		
+		<!-- Quartz framework -->
+		<dependency>
+			<groupId>org.quartz-scheduler</groupId>
+			<artifactId>quartz</artifactId>
+			<version>${quartz.version}</version>
+		</dependency>
 
 		<!-- Spring Data JPA -->
 		<dependency>
@@ -348,12 +363,12 @@
 			<!-- <version>1.4.186</version> -->
 		</dependency>
 		
-		<!-- Replace with LocalDate, LocalTime, ... when we move to Java 8 -->
+		<!-- Replace with LocalDate, LocalTime, ... when we move to Java 8 
 		<dependency>
 			<groupId>joda-time</groupId>
 			<artifactId>joda-time</artifactId>
-			<!-- <version>2.7</version> -->
 		</dependency>
+		-->
 
 	</dependencies>
 

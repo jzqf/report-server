@@ -23,6 +23,7 @@ import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;
 
+import com.qfree.obo.report.dto.ConfigurationResource;
 import com.qfree.obo.report.util.DateUtils;
 
 /**
@@ -191,9 +192,68 @@ public class Configuration implements Serializable {
 	}
 
 	public Configuration(ParamName paramName, Role role, ParamType paramType, Date createdOn) {
-		this.paramName = paramName;
+		this(
+				null,
+				role,
+				paramName,
+				paramType,
+				null, null, null, null, null, null, null, null, null, null, null,
+				(createdOn != null) ? createdOn : DateUtils.nowUtc());
+	}
+
+	public Configuration(ConfigurationResource configurationResource, Role role) {
+		this(
+				configurationResource.getConfigurationId(),
+				role,
+				configurationResource.getParamName(),
+				configurationResource.getParamType(),
+				configurationResource.getBooleanValue(),
+				configurationResource.getByteaValue(),
+				configurationResource.getDateValue(),
+				configurationResource.getDatetimeValue(),
+				configurationResource.getDoubleValue(),
+				configurationResource.getFloatValue(),
+				configurationResource.getIntegerValue(),
+				configurationResource.getLongValue(),
+				configurationResource.getStringValue(),
+				configurationResource.getTextValue(),
+				configurationResource.getTimeValue(),
+				configurationResource.getCreatedOn());
+	}
+
+	public Configuration(
+			UUID configurationId,
+			Role role,
+			ParamName paramName,
+			ParamType paramType,
+			Boolean booleanValue,
+			byte[] byteaValue,
+			Date dateValue,
+			Date datetimeValue,
+			Double doubleValue,
+			Float floatValue,
+			Integer integerValue,
+			Long longValue,
+			String stringValue,
+			String textValue,
+			Date timeValue,
+			Date createdOn) {
+		super();
+		this.configurationId = configurationId;
 		this.role = role;
+		this.paramName = paramName;
 		this.paramType = paramType;
+		this.booleanValue = booleanValue;
+		this.byteaValue = byteaValue;
+		this.dateValue = dateValue;
+		this.datetimeValue = datetimeValue;
+		this.doubleValue = doubleValue;
+		this.floatValue = floatValue;
+		this.integerValue = integerValue;
+		this.longValue = longValue;
+		this.stringValue = stringValue;
+		this.textValue = textValue;
+		this.timeValue = timeValue;
 		this.createdOn = (createdOn != null) ? createdOn : DateUtils.nowUtc();
 	}
 

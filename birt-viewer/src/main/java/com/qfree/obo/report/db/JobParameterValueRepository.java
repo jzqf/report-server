@@ -1,7 +1,5 @@
 package com.qfree.obo.report.db;
 
-import java.util.UUID;
-
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.qfree.obo.report.domain.JobParameterValue;
@@ -14,6 +12,6 @@ import com.qfree.obo.report.domain.JobParameterValue;
  * 
  * @author Jeffrey Zelt
  */
-public interface JobParameterValueRepository extends JpaRepository<JobParameterValue, UUID> {
+public interface JobParameterValueRepository extends JpaRepository<JobParameterValue, Long> {
 	  
 }

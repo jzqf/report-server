@@ -51,7 +51,7 @@ public class Role implements Serializable {
 
 	@NotNull
 	@Column(name = "login_role", nullable = false)
-	private boolean loginRole;
+	private Boolean loginRole;
 
 	@NotBlank
 	@Column(name = "username", nullable = false, length = 32)
@@ -66,6 +66,25 @@ public class Role implements Serializable {
 	@NotBlank
 	@Column(name = "encoded_password", nullable = false, length = 32)
 	private String encodedPassword;
+
+	/**
+	 * E-mail address to associate with the role. This can be used to
+	 * automatically set the email address for a newly created report
+	 * subscription.
+	 */
+	// @NotBlank
+	@Column(name = "email", nullable = true, length = 160)
+	private String email;
+
+	/**
+	 * Used to associate a default time zone with the Role, e.g., for use with a
+	 * cron schedule for a new Subscription.
+	 * 
+	 * This string must be a legal value to pass to
+	 * {@link java.time.ZoneId#of(String)}.
+	 */
+	@Column(name = "time_zone_id", nullable = true, length = 80)
+	private String timeZoneId;
 
 	@OneToMany(targetEntity = RoleRole.class, mappedBy = "parentRole")
 	private List<RoleRole> parentRoleRoles;
@@ -89,10 +108,10 @@ public class Role implements Serializable {
 
 	/*
 	 * cascade = CascadeType.ALL:
-	 *     Deleting a Role will delete all of its RoleParameterValue's.
+	 *     Deleting a Role will delete all of its RoleParameter's.
 	 */
 	@OneToMany(mappedBy = "role", cascade = CascadeType.ALL)
-	private List<RoleParameterValue> roleParameterValues;
+	private List<RoleParameter> roleParameters;
 
 	/*
 	 * cascade = CascadeType.ALL:
@@ -116,13 +135,36 @@ public class Role implements Serializable {
 	private Role() {
 	}
 
-	public Role(String encodedPassword, String username, String fullName, boolean loginRole) {
-		this(encodedPassword, username, fullName, loginRole, DateUtils.nowUtc());
-	}
+	//	public Role(String encodedPassword, String username, String fullName, Boolean loginRole) {
+	//		this(
+	//				null,
+	//				encodedPassword,
+	//				username,
+	//				fullName,
+	//				loginRole,
+	//				null,
+	//				null,
+	//				DateUtils.nowUtc());
+	//	}
 
-	public Role(String encodedPassword, String username, String fullName, boolean loginRole, Date createdOn) {
-		this(null, encodedPassword, username, fullName, loginRole, createdOn);
-	}
+	//	public Role(
+	//			String encodedPassword,
+	//			String username,
+	//			String fullName,
+	//			Boolean loginRole,
+	//			String email,
+	//			String timeZoneId,
+	//			Date createdOn) {
+	//		this(
+	//				null,
+	//				encodedPassword,
+	//				username,
+	//				fullName,
+	//				loginRole,
+	//				email,
+	//				timeZoneId,
+	//				createdOn);
+	//	}
 
 	public Role(RoleResource roleResource) {
 		this(
@@ -131,15 +173,27 @@ public class Role implements Serializable {
 				roleResource.getUsername(),
 				roleResource.getFullName(),
 				roleResource.isLoginRole(),
+				roleResource.getEmail(),
+				roleResource.getTimeZoneId(),
 				roleResource.getCreatedOn());
 	}
 
-	public Role(UUID roleId, String encodedPassword, String username, String fullName, boolean loginRole, Date createdOn) {
+	public Role(
+			UUID roleId,
+			String encodedPassword,
+			String username,
+			String fullName,
+			Boolean loginRole,
+			String email,
+			String timeZoneId,
+			Date createdOn) {
 		this.roleId = roleId;
 		this.loginRole = loginRole;
 		this.username = username;
 		this.fullName = fullName;
 		this.encodedPassword = encodedPassword;
+		this.email = email;
+		this.timeZoneId = timeZoneId;
 		this.createdOn = (createdOn != null) ? createdOn : DateUtils.nowUtc();
 	}
 
@@ -171,12 +225,28 @@ public class Role implements Serializable {
 		this.fullName = fullName;
 	}
 
-	public boolean isLoginRole() {
+	public Boolean isLoginRole() {
 		return loginRole;
 	}
 
-	public void setLoginRole(boolean loginRole) {
+	public void setLoginRole(Boolean loginRole) {
 		this.loginRole = loginRole;
+	}
+
+	public String getEmail() {
+		return email;
+	}
+
+	public void setEmail(String email) {
+		this.email = email;
+	}
+
+	public String getTimeZoneId() {
+		return timeZoneId;
+	}
+
+	public void setTimeZoneId(String timeZoneId) {
+		this.timeZoneId = timeZoneId;
 	}
 
 	public Date getCreatedOn() {
@@ -215,12 +285,12 @@ public class Role implements Serializable {
 		this.roleSubscriptions = roleSubscriptions;
 	}
 
-	public List<RoleParameterValue> getRoleParameterValues() {
-		return roleParameterValues;
+	public List<RoleParameter> getRoleParameters() {
+		return roleParameters;
 	}
 
-	public void setRoleParameterValues(List<RoleParameterValue> roleParameterValues) {
-		this.roleParameterValues = roleParameterValues;
+	public void setRoleParameters(List<RoleParameter> roleParameters) {
+		this.roleParameters = roleParameters;
 	}
 
 	public List<Job> getJobs() {
@@ -252,9 +322,14 @@ public class Role implements Serializable {
 		builder.append(fullName);
 		builder.append(", encodedPassword=");
 		builder.append(encodedPassword);
+		builder.append(", email=");
+		builder.append(email);
+		builder.append(", timeZoneId=");
+		builder.append(timeZoneId);
 		builder.append(", createdOn=");
 		builder.append(createdOn);
 		builder.append("]");
 		return builder.toString();
 	}
+
 }

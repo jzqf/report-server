@@ -41,7 +41,7 @@ public class ReportSyncResource extends AbstractBaseResource {
 	private Boolean active;
 
 	@XmlElement
-	@XmlJavaTypeAdapter(DateAdapter.class)
+	@XmlJavaTypeAdapter(DatetimeAdapter.class)
 	private Date createdOn;
 
 	public ReportSyncResource() {
@@ -95,7 +95,6 @@ public class ReportSyncResource extends AbstractBaseResource {
 	//			this.active = reportSync.isActive();
 	//			this.createdOn = reportSync.getCreatedOn();
 	//
-	//			logger.info("reportSync = {}", reportSync);
 	//		}
 	//	}
 

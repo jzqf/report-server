@@ -101,7 +101,10 @@ public class ReportParameterService {
 		 */
 		ReportVersionResource reportVersionResource = reportParameterResource.getReportVersionResource();
 		logger.debug("reportVersionResource = {}", reportVersionResource);
-		UUID reportVersionId = reportVersionResource.getReportVersionId();
+		UUID reportVersionId = null;
+		if (reportVersionResource != null) {
+			reportVersionId = reportVersionResource.getReportVersionId();
+		}
 		logger.debug("reportVersionId = {}", reportVersionId);
 		ReportVersion reportVersion = null;
 		if (reportVersionId != null) {
@@ -129,7 +132,10 @@ public class ReportParameterService {
 		 */
 		ParameterGroupResource parameterGroupResource = reportParameterResource.getParameterGroupResource();
 		logger.debug("parameterGroupResource = {}", parameterGroupResource);
-		UUID parameterGroupId = parameterGroupResource.getParameterGroupId();
+		UUID parameterGroupId = null;
+		if (parameterGroupResource != null) {
+			parameterGroupId = parameterGroupResource.getParameterGroupId();
+		}
 		logger.debug("parameterGroupId = {}", parameterGroupId);
 		ParameterGroup parameterGroup = null;
 		if (parameterGroupId != null) {

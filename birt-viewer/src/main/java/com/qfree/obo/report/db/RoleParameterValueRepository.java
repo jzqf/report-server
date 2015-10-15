@@ -1,9 +1,11 @@
 package com.qfree.obo.report.db;
 
+import java.util.List;
 import java.util.UUID;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import com.qfree.obo.report.domain.RoleParameter;
 import com.qfree.obo.report.domain.RoleParameterValue;
 
 /**
@@ -15,5 +17,7 @@ import com.qfree.obo.report.domain.RoleParameterValue;
  * @author Jeffrey Zelt
  */
 public interface RoleParameterValueRepository extends JpaRepository<RoleParameterValue, UUID> {
+
+	List<RoleParameterValue> findByRoleParameter(RoleParameter roleParameter);
 	  
 }

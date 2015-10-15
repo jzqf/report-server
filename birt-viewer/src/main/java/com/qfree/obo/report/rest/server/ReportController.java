@@ -120,9 +120,10 @@ public class ReportController extends AbstractBaseController {
 		RestApiVersion apiVersion = RestUtils.extractAPIVersion(acceptHeader, RestApiVersion.v1);
 
 		Report report = reportService.saveNewFromResource(reportResource);
-		if (RestUtils.AUTO_EXPAND_PRIMARY_RESOURCES) {
-			addToExpandList(expand, Report.class);
-		}
+		// if (RestUtils.AUTO_EXPAND_PRIMARY_RESOURCES) {
+		addToExpandList(expand, Report.class);// Force primary resource to be
+												// "expanded"
+		// }
 		ReportResource resource = new ReportResource(report, uriInfo, queryParams, apiVersion);
 		return created(resource);
 	}
@@ -210,8 +211,7 @@ public class ReportController extends AbstractBaseController {
 
 		/*
 		 * If the "sortOrder" was not specified in 
-		 * reportResource, we use the current value stored in 
-		 * reportVersion.
+		 * reportResource, we use the current value stored in report.
 		 */
 		if (reportResource.getSortOrder() == null) {
 			reportResource.setSortOrder(report.getSortOrder());

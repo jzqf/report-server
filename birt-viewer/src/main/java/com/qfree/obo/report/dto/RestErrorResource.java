@@ -179,6 +179,41 @@ public class RestErrorResource {
 				"Wrong number of parent key values passed for a cascading parameter dynamic list", null),
 		FORBIDDEN_ATTRIBUTE_BLANK(Response.Status.FORBIDDEN, "403.12",
 				"An attribute is blank when it should not be", null),
+		FORBIDDEN_SUBSCRIPTION_DOCUMENTFORMAT_NULL(
+				Response.Status.FORBIDDEN, "403.13",
+				"documentFormatId is null for a subscription being saved", null),
+		FORBIDDEN_SUBSCRIPTION_REPORTVERSION_NULL(
+				Response.Status.FORBIDDEN, "403.14",
+				"reportVersionId is null for a subscription being saved", null),
+		FORBIDDEN_SUBSCRIPTION_ROLE_NULL(
+				Response.Status.FORBIDDEN, "403.15",
+				"roleId is null for a subscription being saved", null),
+		FORBIDDEN_NEW_SUBSCRIPTION_ENABLED(
+				Response.Status.FORBIDDEN, "403.16",
+				"A new subscription cannot be created with enabled=true", null),
+		FORBIDDEN_MULTIPLE_VALUES_FOR_PARAM(
+				Response.Status.FORBIDDEN, "403.17",
+				"Multiple values provided for a single-valued report parameter", null),
+		FORBIDDEN_ENABLED_SUBSCRIPTION_INACTIVE(
+				Response.Status.FORBIDDEN, "403.18",
+				"A subscription cannot be both inactive and enabled. Either disable it or make it active.", null),
+		FORBIDDEN_ENABLED_SUBSCRIPTION_NO_SCHEDULE(
+				Response.Status.FORBIDDEN, "403.19",
+				"A enabled subscription must have useable values to define a schedule (a time zone and a cron schedule or a time to run once)",
+				null),
+		FORBIDDEN_ENABLED_SUBSCRIPTION_NO_EMAIL(
+				Response.Status.FORBIDDEN, "403.20",
+				"A enabled subscription must have a valid e-mail address", null),
+		FORBIDDEN_ENABLED_SUBSCRIPTION_NO_PARAM_VALUE(
+				Response.Status.FORBIDDEN, "403.21",
+				"A enabled subscription must have at least one value for each report parameter", null),
+		FORBIDDEN_ENABLED_SUBSCRIPTION_MULTIPLE_VALUES(
+				Response.Status.FORBIDDEN, "403.22",
+				"There are mutiple values for a report parameter for which multivalued=false", null),
+		FORBIDDEN_ENABLED_SUBSCRIPTION_NULL_PARAM_VALUE(
+				Response.Status.FORBIDDEN, "403.23",
+				"The value of a report parameter is null, but required=true", null),
+
 		/**
 		 * {@code 404 Not Found}.
 		 * @see <a href="http://tools.ietf.org/html/rfc2616#section-10.4.5">HTTP/1.1</a>
@@ -309,6 +344,12 @@ public class RestErrorResource {
 				"500.4",
 				"InterruptedException thrown while waiting to acquire semaphore permit.",
 				null),
+		INTERNAL_SERVER_ERROR_UNTREATED_CASE(Response.Status.INTERNAL_SERVER_ERROR, "500.5",
+				"Untreated case", null),
+		INTERNAL_SERVER_ERROR_DATA_TYPE_ANY(Response.Status.INTERNAL_SERVER_ERROR, "500.5",
+				"Report parameter encountered with data type = IParameterDefn.TYPE_ANY", null),
+		INTERNAL_SERVER_ERROR_SCHEDULER(Response.Status.INTERNAL_SERVER_ERROR, "500.6",
+				"The Quartz scheduler threw an exaception", null),
 		/**
 		 * {@code 501 Not Implemented}.
 		 * @see <a href="http://tools.ietf.org/html/rfc2616#section-10.5.2">HTTP/1.1</a>
@@ -411,11 +452,11 @@ public class RestErrorResource {
 	private String errorCode;
 	@XmlElement
 	private String errorMessage;
-	@XmlTransient
+	@XmlElement //@XmlTransient
 	private String resourceName;// @XmlTransient means this will not be serialized to JSON
-	@XmlTransient
+	@XmlElement //@XmlTransient
 	private String attrName;// @XmlTransient means this will not be serialized to JSON
-	@XmlTransient
+	@XmlElement //@XmlTransient
 	private String attrValue;// @XmlTransient means this will not be serialized to JSON
 	@XmlElement
 	private String moreInfoUrl;

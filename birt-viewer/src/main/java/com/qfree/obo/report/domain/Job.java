@@ -56,13 +56,53 @@ public class Job implements Serializable {
 	 * PostgreSQL column definition includes "DEFAULT uuid_generate_v4()", which
 	 * is not what is wanted.
 	 */
+	@NotNull
+	@JoinColumn(name = "job_status_id", nullable = false,
+			foreignKey = @ForeignKey(name = "fk_job_jobstatus") ,
+			columnDefinition = "uuid")
+	private JobStatus jobStatus;
+
+	/**
+	 * Specified details that give more details related to the current value of
+	 * jobStatus.
+	 * 
+	 * This should be considered read-only in the ReST API.
+	 */
+	@Column(name = "job_status_remarks", nullable = true, columnDefinition = "text")
+	private String jobStatusRemarks;
+
+	/**
+	 * The {@link Subscription} for which this Job was created.
+	 * 
+	 * This may be null if the Job is not created from a {@link Subscription}.
+	 */
+	@ManyToOne
+	/*
+	 * If columnDefinition="uuid" is omitted here and the database schema is 
+	 * created by Hibernate (via hibernate.hbm2ddl.auto="create"), then the 
+	 * PostgreSQL column definition includes "DEFAULT uuid_generate_v4()", which
+	 * is not what is wanted.
+	 */
+	//@NotNull
+	@JoinColumn(name = "subscription_id", nullable = true,
+			foreignKey = @ForeignKey(name = "fk_job_subscription") ,
+			columnDefinition = "uuid")
+	private Subscription subscription;
+
+	@ManyToOne
+	/*
+	 * If columnDefinition="uuid" is omitted here and the database schema is 
+	 * created by Hibernate (via hibernate.hbm2ddl.auto="create"), then the 
+	 * PostgreSQL column definition includes "DEFAULT uuid_generate_v4()", which
+	 * is not what is wanted.
+	 */
 	//	@JoinColumn(name = "report_id", nullable = false,
 	//			foreignKey = @ForeignKey(name = "fk_job_report"),
 	//			columnDefinition = "uuid")
 	//	private Report report;
 	@NotNull
 	@JoinColumn(name = "report_version_id", nullable = false,
-			foreignKey = @ForeignKey(name = "fk_job_report"),
+			foreignKey = @ForeignKey(name = "fk_job_reportversion") ,
 			columnDefinition = "uuid")
 	private ReportVersion reportVersion;
 
@@ -99,10 +139,10 @@ public class Job implements Serializable {
 
 	/*
 	 * cascade = CascadeType.ALL:
-	 *     Deleting a Job will delete all of its JobParameterValue's.
+	 *     Deleting a Job will delete all of its JobParameter's.
 	 */
 	@OneToMany(mappedBy = "job", cascade = CascadeType.ALL)
-	private List<JobParameterValue> jobParameterValues;
+	private List<JobParameter> jobParameters;
 
 	/**
 	 * The URL used to request the report from the report server.
@@ -159,17 +199,64 @@ public class Job implements Serializable {
 	private Job() {
 	}
 
-	public Job(ReportVersion report_version, Role role, DocumentFormat documentFormat) {
-		this(report_version, role, documentFormat, null, null, null, null, DateUtils.nowUtc());
+	//	public Job(
+	//			JobStatus jobStatus,
+	//			ReportVersion reportVersion,
+	//			Role role,
+	//			DocumentFormat documentFormat) {
+	//		this(
+	//				jobStatus,
+	//				null,
+	//				reportVersion,
+	//				role,
+	//				documentFormat,
+	//				null,
+	//				null,
+	//				null,
+	//				null,
+	//				DateUtils.nowUtc());
+	//	}
+
+	public Job(
+			Subscription subscription,
+			JobStatus jobStatus,
+			String jobStatusRemarks,
+			ReportVersion reportVersion,
+			Role role,
+			DocumentFormat documentFormat,
+			String url,
+			String fileName,
+			String document,
+			Boolean encoded) {
+		this(
+				subscription,
+				jobStatus,
+				jobStatusRemarks,
+				reportVersion,
+				role,
+				documentFormat,
+				url,
+				fileName,
+				document,
+				encoded,
+				DateUtils.nowUtc());
 	}
 
-	public Job(ReportVersion report_version, Role role, DocumentFormat documentFormat,
-			String url, String fileName, String document, Boolean encoded) {
-		this(report_version, role, documentFormat, url, fileName, document, encoded, DateUtils.nowUtc());
-	}
-
-	public Job(ReportVersion report_version, Role role, DocumentFormat documentFormat,
-			String url, String fileName, String document, Boolean encoded, Date createdOn) {
+	public Job(
+			Subscription subscription,
+			JobStatus jobStatus,
+			String jobStatusRemarks,
+			ReportVersion report_version,
+			Role role,
+			DocumentFormat documentFormat,
+			String url,
+			String fileName,
+			String document,
+			Boolean encoded,
+			Date createdOn) {
+		this.subscription = subscription;
+		this.jobStatus = jobStatus;
+		this.jobStatusRemarks = jobStatusRemarks;
 		this.reportVersion = report_version;
 		this.role = role;
 		this.documentFormat = documentFormat;
@@ -182,6 +269,22 @@ public class Job implements Serializable {
 
 	public Long getJobId() {
 		return this.jobId;
+	}
+
+	public JobStatus getJobStatus() {
+		return this.jobStatus;
+	}
+
+	public void setJobStatus(JobStatus jobStatus) {
+		this.jobStatus = jobStatus;
+	}
+
+	public String getJobStatusRemarks() {
+		return jobStatusRemarks;
+	}
+
+	public void setJobStatusRemarks(String jobStatusRemarks) {
+		this.jobStatusRemarks = jobStatusRemarks;
 	}
 
 	public Date getCreatedOn() {
@@ -212,12 +315,12 @@ public class Job implements Serializable {
 		this.documentFormat = documentformat;
 	}
 
-	public List<JobParameterValue> getJobParameterValues() {
-		return jobParameterValues;
+	public List<JobParameter> getJobParameters() {
+		return jobParameters;
 	}
 
-	public void setJobParameterValues(List<JobParameterValue> jobParameterValues) {
-		this.jobParameterValues = jobParameterValues;
+	public void setJobParameters(List<JobParameter> jobParameters) {
+		this.jobParameters = jobParameters;
 	}
 
 	public String getUrl() {
@@ -257,10 +360,28 @@ public class Job implements Serializable {
 		StringBuilder builder = new StringBuilder();
 		builder.append("Job [jobId=");
 		builder.append(jobId);
-		builder.append(", report_version=");
+		builder.append(", jobStatus=");
+		builder.append(jobStatus);
+		builder.append(", jobStatusRemarks=");
+		builder.append(jobStatusRemarks);
+		builder.append(", reportVersion=");
 		builder.append(reportVersion);
 		builder.append(", role=");
 		builder.append(role);
+		builder.append(", documentFormat=");
+		builder.append(documentFormat);
+		//	builder.append(", jobParameters=");
+		//	builder.append(jobParameters);  // <- generates circular reference - do not uncomment
+		builder.append(", url=");
+		builder.append(url);
+		builder.append(", fileName=");
+		builder.append(fileName);
+		builder.append(", document=");
+		builder.append(document);
+		builder.append(", encoded=");
+		builder.append(encoded);
+		builder.append(", createdOn=");
+		builder.append(createdOn);
 		builder.append("]");
 		return builder.toString();
 	}

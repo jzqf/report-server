@@ -20,6 +20,7 @@ import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;
 import org.hibernate.validator.constraints.NotBlank;
 
+import com.qfree.obo.report.dto.DocumentFormatResource;
 import com.qfree.obo.report.util.DateUtils;
 
 /**
@@ -133,16 +134,30 @@ public class DocumentFormat implements Serializable {
 	}
 
 	public DocumentFormat(String name, String fileExtension, String mediaType, String birtFormat, Boolean binary) {
-		this(name, fileExtension, mediaType, birtFormat, binary, true, DateUtils.nowUtc());
+		this(null, name, fileExtension, mediaType, birtFormat, binary, true, DateUtils.nowUtc());
 	}
 
 	public DocumentFormat(String name, String fileExtension, String mediaType, String birtFormat, Boolean binary,
 			Boolean active) {
-		this(name, fileExtension, mediaType, birtFormat, binary, active, DateUtils.nowUtc());
+		this(null, name, fileExtension, mediaType, birtFormat, binary, active, DateUtils.nowUtc());
 	}
 
-	public DocumentFormat(String name, String fileExtension, String mediaType, String birtFormat, Boolean binary,
+	public DocumentFormat(DocumentFormatResource documentFormatResource) {
+		this(
+				documentFormatResource.getDocumentFormatId(),
+				documentFormatResource.getName(),
+				documentFormatResource.getFileExtension(),
+				documentFormatResource.getMediaType(),
+				documentFormatResource.getBirtFormat(),
+				documentFormatResource.getBinaryData(),
+				documentFormatResource.getActive(),
+				documentFormatResource.getCreatedOn());
+	}
+
+	public DocumentFormat(UUID documentFormatId, String name, String fileExtension, String mediaType, String birtFormat,
+			Boolean binary,
 			Boolean active, Date createdOn) {
+		this.documentFormatId = documentFormatId;
 		this.name = name;
 		this.fileExtension = fileExtension;
 		this.mediaType = mediaType;
@@ -152,16 +167,20 @@ public class DocumentFormat implements Serializable {
 		this.createdOn = (createdOn != null) ? createdOn : DateUtils.nowUtc();
 	}
 
-	public UUID getDocumentFormatId() {
-		return documentFormatId;
+	public List<Subscription> getSubscriptions() {
+		return subscriptions;
 	}
 
-	public String getFileExtension() {
-		return fileExtension;
+	public void setSubscriptions(List<Subscription> subscriptions) {
+		this.subscriptions = subscriptions;
 	}
 
-	public void setFileExtension(String fileExtension) {
-		this.fileExtension = fileExtension;
+	public List<Job> getJobs() {
+		return jobs;
+	}
+
+	public void setJobs(List<Job> jobs) {
+		this.jobs = jobs;
 	}
 
 	public String getName() {
@@ -170,6 +189,14 @@ public class DocumentFormat implements Serializable {
 
 	public void setName(String name) {
 		this.name = name;
+	}
+
+	public String getFileExtension() {
+		return fileExtension;
+	}
+
+	public void setFileExtension(String fileExtension) {
+		this.fileExtension = fileExtension;
 	}
 
 	public String getMediaType() {
@@ -188,15 +215,15 @@ public class DocumentFormat implements Serializable {
 		this.birtFormat = birtFormat;
 	}
 
-	public Boolean isBinaryData() {
+	public Boolean getBinaryData() {
 		return binaryData;
 	}
 
-	public void setBinaryData(Boolean binary) {
-		this.binaryData = binary;
+	public void setBinaryData(Boolean binaryData) {
+		this.binaryData = binaryData;
 	}
 
-	public Boolean isActive() {
+	public Boolean getActive() {
 		return active;
 	}
 
@@ -204,20 +231,16 @@ public class DocumentFormat implements Serializable {
 		this.active = active;
 	}
 
-	public List<Subscription> getSubscriptions() {
-		return subscriptions;
+	public Date getCreatedOn() {
+		return createdOn;
 	}
 
-	public void setSubscriptions(List<Subscription> subscriptions) {
-		this.subscriptions = subscriptions;
+	public void setCreatedOn(Date createdOn) {
+		this.createdOn = createdOn;
 	}
 
-	public List<Job> getJobs() {
-		return jobs;
-	}
-
-	public void setJobs(List<Job> jobs) {
-		this.jobs = jobs;
+	public UUID getDocumentFormatId() {
+		return documentFormatId;
 	}
 
 	@Override

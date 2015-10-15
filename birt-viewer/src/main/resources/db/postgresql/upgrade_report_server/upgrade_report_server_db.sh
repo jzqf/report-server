@@ -250,9 +250,9 @@ if [ -d "$SQL_UPGRADE_DIR" ]; then
 		
 		# Here "$ls_output" preserves whitespace exactly, i.e, newlines, tabs, 
 		# multiple blanks, etc. Without the quotes, each sequence of one or more
-		# blanks, tabs and newlines with a single space, which is not what we
-		# want. We need to preserve newlines because we use "wc" to count the 
-		# lines (number of scripts available).
+		# blanks, tabs and newlines will be replaced with a single space, which 
+		# is not what we want. We need to preserve newlines because we use "wc" 
+		# to count the lines (number of scripts available).
 		#
 		# The logic here *assumes* that there is one upgrade script for each 
 		# new version and the script names include version numbers starting from
@@ -275,7 +275,7 @@ if [ -d "$SQL_UPGRADE_DIR" ]; then
 		if [ -z "$ls_output" ]; then
 			num_upgrade_scripts=0
 		else		
-			num_upgrade_scripts=$(echo | wc -l)
+			num_upgrade_scripts=$(echo "$ls_output" | wc -l)  # Double quotes are important. See comments.
 		fi
 		current_db_version=$(( $num_upgrade_scripts + 1 ))
 		#echo "num_upgrade_scripts = $num_upgrade_scripts"

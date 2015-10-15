@@ -106,10 +106,13 @@ CREATE TABLE job (
     document text,
     encoded boolean,
     file_name character varying(128),
+    job_status_remarks text,
     url character varying(1024),
     document_format_id uuid NOT NULL,
+    job_status_id uuid NOT NULL,
     report_version_id uuid NOT NULL,
-    role_id uuid NOT NULL
+    role_id uuid NOT NULL,
+    subscription_id uuid
 );
 
 
@@ -137,15 +140,55 @@ ALTER SEQUENCE job_job_id_seq OWNED BY job.job_id;
 
 
 --
+-- Name: job_parameter; Type: TABLE; Schema: reporting; Owner: report_server_app; Tablespace: 
+--
+
+CREATE TABLE job_parameter (
+    job_parameter_id bigint NOT NULL,
+    created_on timestamp without time zone NOT NULL,
+    job_id bigint NOT NULL,
+    report_parameter_id uuid NOT NULL
+);
+
+
+ALTER TABLE job_parameter OWNER TO report_server_app;
+
+--
+-- Name: job_parameter_job_parameter_id_seq; Type: SEQUENCE; Schema: reporting; Owner: report_server_app
+--
+
+CREATE SEQUENCE job_parameter_job_parameter_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE job_parameter_job_parameter_id_seq OWNER TO report_server_app;
+
+--
+-- Name: job_parameter_job_parameter_id_seq; Type: SEQUENCE OWNED BY; Schema: reporting; Owner: report_server_app
+--
+
+ALTER SEQUENCE job_parameter_job_parameter_id_seq OWNED BY job_parameter.job_parameter_id;
+
+
+--
 -- Name: job_parameter_value; Type: TABLE; Schema: reporting; Owner: report_server_app; Tablespace: 
 --
 
 CREATE TABLE job_parameter_value (
     job_parameter_value_id bigint NOT NULL,
+    boolean_value boolean,
     created_on timestamp without time zone NOT NULL,
-    string_value character varying(80) NOT NULL,
-    job_id bigint NOT NULL,
-    report_parameter_id uuid DEFAULT uuid_generate_v4() NOT NULL
+    date_value date,
+    datetime_value timestamp without time zone,
+    float_value double precision,
+    integer_value integer,
+    string_value character varying(80),
+    time_value time without time zone,
+    job_parameter_id bigint NOT NULL
 );
 
 
@@ -171,6 +214,21 @@ ALTER TABLE job_parameter_value_job_parameter_value_id_seq OWNER TO report_serve
 
 ALTER SEQUENCE job_parameter_value_job_parameter_value_id_seq OWNED BY job_parameter_value.job_parameter_value_id;
 
+
+--
+-- Name: job_status; Type: TABLE; Schema: reporting; Owner: report_server_app; Tablespace: 
+--
+
+CREATE TABLE job_status (
+    job_status_id uuid DEFAULT uuid_generate_v4() NOT NULL,
+    abbreviation character varying(32) NOT NULL,
+    active boolean NOT NULL,
+    created_on timestamp without time zone NOT NULL,
+    description character varying(32) NOT NULL
+);
+
+
+ALTER TABLE job_status OWNER TO report_server_app;
 
 --
 -- Name: parameter_group; Type: TABLE; Schema: reporting; Owner: report_server_app; Tablespace: 
@@ -278,9 +336,11 @@ ALTER TABLE report_version OWNER TO report_server_app;
 CREATE TABLE role (
     role_id uuid DEFAULT uuid_generate_v4() NOT NULL,
     created_on timestamp without time zone NOT NULL,
+    email character varying(160),
     encoded_password character varying(32) NOT NULL,
     full_name character varying(32),
     login_role boolean NOT NULL,
+    time_zone_id character varying(80),
     username character varying(32) NOT NULL
 );
 
@@ -288,15 +348,34 @@ CREATE TABLE role (
 ALTER TABLE role OWNER TO report_server_app;
 
 --
+-- Name: role_parameter; Type: TABLE; Schema: reporting; Owner: report_server_app; Tablespace: 
+--
+
+CREATE TABLE role_parameter (
+    role_parameter_id uuid DEFAULT uuid_generate_v4() NOT NULL,
+    created_on timestamp without time zone NOT NULL,
+    report_parameter_id uuid NOT NULL,
+    role_id uuid NOT NULL
+);
+
+
+ALTER TABLE role_parameter OWNER TO report_server_app;
+
+--
 -- Name: role_parameter_value; Type: TABLE; Schema: reporting; Owner: report_server_app; Tablespace: 
 --
 
 CREATE TABLE role_parameter_value (
     role_parameter_value_id uuid DEFAULT uuid_generate_v4() NOT NULL,
+    boolean_value boolean,
     created_on timestamp without time zone NOT NULL,
-    string_value character varying(80) NOT NULL,
-    report_parameter_id uuid NOT NULL,
-    role_id uuid NOT NULL
+    date_value date,
+    datetime_value timestamp without time zone,
+    float_value double precision,
+    integer_value integer,
+    string_value character varying(80),
+    time_value time without time zone,
+    role_parameter_id uuid NOT NULL
 );
 
 
@@ -352,11 +431,14 @@ ALTER TABLE selection_list_value OWNER TO report_server_app;
 
 CREATE TABLE subscription (
     subscription_id uuid DEFAULT uuid_generate_v4() NOT NULL,
+    active boolean NOT NULL,
     created_on timestamp without time zone NOT NULL,
-    cron_schedule character varying(80),
-    description character varying(80),
-    email character varying(80) NOT NULL,
-    run_once_at timestamp without time zone,
+    delivery_cron_schedule character varying(80),
+    delivery_datetime_run_at timestamp without time zone,
+    delivery_time_zone_id character varying(80),
+    description character varying(1024),
+    email character varying(160),
+    enabled boolean NOT NULL,
     document_format_id uuid NOT NULL,
     report_version_id uuid NOT NULL,
     role_id uuid NOT NULL
@@ -366,26 +448,51 @@ CREATE TABLE subscription (
 ALTER TABLE subscription OWNER TO report_server_app;
 
 --
+-- Name: subscription_parameter; Type: TABLE; Schema: reporting; Owner: report_server_app; Tablespace: 
+--
+
+CREATE TABLE subscription_parameter (
+    subscription_parameter_id uuid DEFAULT uuid_generate_v4() NOT NULL,
+    created_on timestamp without time zone NOT NULL,
+    report_parameter_id uuid NOT NULL,
+    subscription_id uuid NOT NULL
+);
+
+
+ALTER TABLE subscription_parameter OWNER TO report_server_app;
+
+--
 -- Name: subscription_parameter_value; Type: TABLE; Schema: reporting; Owner: report_server_app; Tablespace: 
 --
 
 CREATE TABLE subscription_parameter_value (
     subscription_parameter_value_id uuid DEFAULT uuid_generate_v4() NOT NULL,
+    boolean_value boolean,
     created_on timestamp without time zone NOT NULL,
+    date_value date,
+    datetime_value timestamp without time zone,
     day_of_month_number integer,
+    day_of_week_in_month_number integer,
+    day_of_week_in_month_ordinal integer,
     day_of_week_number integer,
-    days_relative integer,
+    days_ago integer,
+    duration_to_add_days integer,
+    duration_to_add_hours integer,
+    duration_to_add_minutes integer,
+    duration_to_add_months integer,
+    duration_to_add_seconds integer,
+    duration_to_add_weeks integer,
+    duration_to_add_years integer,
+    float_value double precision,
+    integer_value integer,
     month_number integer,
-    months_relative integer,
+    months_ago integer,
     string_value character varying(80),
     time_value time without time zone,
-    week_of_month_number integer,
-    week_of_year_number integer,
-    weeks_relative integer,
+    weeks_ago integer,
     year_number integer,
-    years_relative integer,
-    report_parameter_id uuid NOT NULL,
-    subscription_id uuid NOT NULL
+    years_ago integer,
+    subscription_parameter_id uuid NOT NULL
 );
 
 
@@ -396,6 +503,13 @@ ALTER TABLE subscription_parameter_value OWNER TO report_server_app;
 --
 
 ALTER TABLE ONLY job ALTER COLUMN job_id SET DEFAULT nextval('job_job_id_seq'::regclass);
+
+
+--
+-- Name: job_parameter_id; Type: DEFAULT; Schema: reporting; Owner: report_server_app
+--
+
+ALTER TABLE ONLY job_parameter ALTER COLUMN job_parameter_id SET DEFAULT nextval('job_parameter_job_parameter_id_seq'::regclass);
 
 
 --
@@ -410,7 +524,7 @@ ALTER TABLE ONLY job_parameter_value ALTER COLUMN job_parameter_value_id SET DEF
 --
 
 COPY configuration (configuration_id, boolean_value, bytea_value, created_on, date_value, datetime_value, double_value, float_value, integer_value, long_value, param_name, param_type, string_value, text_value, time_value, role_id) FROM stdin;
-c5806c4b-ce6b-48db-83dd-566d947c314a	\N	\N	2015-09-17 17:41:19.474705	\N	\N	\N	\N	2	\N	DB_VERSION	INTEGER	2	\N	\N	\N
+5ac6204f-48cd-4acc-910c-8daae4edaa2b	\N	\N	2015-10-14 06:50:58.213984	\N	\N	\N	\N	3	\N	DB_VERSION	INTEGER	3	\N	\N	\N
 \.
 
 
@@ -419,6 +533,17 @@ c5806c4b-ce6b-48db-83dd-566d947c314a	\N	\N	2015-09-17 17:41:19.474705	\N	\N	\N	\
 --
 
 COPY document_format (document_format_id, active, binary_data, birt_format, created_on, file_extension, media_type, name) FROM stdin;
+bc5169e0-3d36-483c-a7b5-a76766587991	t	t	doc	2015-10-14 06:50:58.213984	doc	application/msword	Microsoft Word
+d0225349-1642-46e3-a949-4ce39795907f	t	t	docx	2015-10-14 06:50:58.213984	docx	application/vnd.openxmlformats-officedocument.wordprocessingml.document	Office Open XML Document
+e1d0b3f2-f639-4521-a055-d5465dce29a2	f	f	html	2015-10-14 06:50:58.213984	html	text/html	HTML
+38b73b21-cb66-42cf-932b-1cdf7937525c	t	t	odp	2015-10-14 06:50:58.213984	odp	application/vnd.oasis.opendocument.presentation	OpenDocument Presentation
+05a4ad8d-6f30-4d6d-83d5-995345a8dc58	t	t	ods	2015-10-14 06:50:58.213984	ods	application/vnd.oasis.opendocument.spreadsheet	OpenDocument Spreadsheet
+b4f2249d-f52e-47e2-871c-daf35f4ba78e	t	t	odt	2015-10-14 06:50:58.213984	odt	application/vnd.oasis.opendocument.text	OpenDocument Text
+30800d77-5fdd-44bc-94a3-1502bd307c1d	t	t	pdf	2015-10-14 06:50:58.213984	pdf	application/pdf	PDF
+597f34fb-10d8-4408-971a-1b67472ac588	t	t	ppt	2015-10-14 06:50:58.213984	ppt	application/vnd.ms-powerpoint	PowerPoint
+d7ccb194-91c6-4dce-bbfe-6424f079dc07	t	t	pptx	2015-10-14 06:50:58.213984	pptx	application/vnd.openxmlformats-officedocument.presentationml.presentation	Office Open XML Presentation
+25762ba8-1688-4100-b323-b9e74eba396c	t	t	xls	2015-10-14 06:50:58.213984	xls	application/vnd.ms-excel	Microsoft Excel
+c78ac922-2f37-4855-83ae-b708d453b005	t	t	xlsx	2015-10-14 06:50:58.213984	xlsx	application/vnd.openxmlformats-officedocument.spreadsheetml.sheet	Office Open XML Workbook
 \.
 
 
@@ -426,7 +551,7 @@ COPY document_format (document_format_id, active, binary_data, birt_format, crea
 -- Data for Name: job; Type: TABLE DATA; Schema: reporting; Owner: report_server_app
 --
 
-COPY job (job_id, created_on, document, encoded, file_name, url, document_format_id, report_version_id, role_id) FROM stdin;
+COPY job (job_id, created_on, document, encoded, file_name, job_status_remarks, url, document_format_id, job_status_id, report_version_id, role_id, subscription_id) FROM stdin;
 \.
 
 
@@ -438,10 +563,25 @@ SELECT pg_catalog.setval('job_job_id_seq', 1, false);
 
 
 --
+-- Data for Name: job_parameter; Type: TABLE DATA; Schema: reporting; Owner: report_server_app
+--
+
+COPY job_parameter (job_parameter_id, created_on, job_id, report_parameter_id) FROM stdin;
+\.
+
+
+--
+-- Name: job_parameter_job_parameter_id_seq; Type: SEQUENCE SET; Schema: reporting; Owner: report_server_app
+--
+
+SELECT pg_catalog.setval('job_parameter_job_parameter_id_seq', 1, false);
+
+
+--
 -- Data for Name: job_parameter_value; Type: TABLE DATA; Schema: reporting; Owner: report_server_app
 --
 
-COPY job_parameter_value (job_parameter_value_id, created_on, string_value, job_id, report_parameter_id) FROM stdin;
+COPY job_parameter_value (job_parameter_value_id, boolean_value, created_on, date_value, datetime_value, float_value, integer_value, string_value, time_value, job_parameter_id) FROM stdin;
 \.
 
 
@@ -450,6 +590,18 @@ COPY job_parameter_value (job_parameter_value_id, created_on, string_value, job_
 --
 
 SELECT pg_catalog.setval('job_parameter_value_job_parameter_value_id_seq', 1, false);
+
+
+--
+-- Data for Name: job_status; Type: TABLE DATA; Schema: reporting; Owner: report_server_app
+--
+
+COPY job_status (job_status_id, abbreviation, active, created_on, description) FROM stdin;
+08de9764-735f-4c82-bbe9-3981b29cc133	QUEUED	t	2015-10-14 06:50:58.213984	Queued
+a613aae2-836a-4b03-a75d-cfb8303eaad5	RUNNING	t	2015-10-14 06:50:58.213984	Running
+f378fc09-35e4-4096-b1d1-2db14756b098	COMPLETED	t	2015-10-14 06:50:58.213984	Completed
+2a9cd697-af00-45bc-aa6a-053284b9d9e4	FAILED	t	2015-10-14 06:50:58.213984	Failed
+\.
 
 
 --
@@ -473,10 +625,10 @@ COPY report (report_id, active, created_on, name, number, sort_order, report_cat
 --
 
 COPY report_category (report_category_id, abbreviation, active, created_on, description) FROM stdin;
-7a482694-51d2-42d0-b0e2-19dd13bbbc64	ACCT	t	2015-09-17 17:41:19.474705	Accounting
-bb2bc482-c19a-4c19-a087-e68ffc62b5a0	QFREE	t	2015-09-17 17:41:19.474705	Q-Free internal
-5c3cc664-b685-4f6e-8d9a-2927c6bcffdc	MIR	t	2015-09-17 17:41:19.474705	Manual validation
-72d7cb27-1770-4cc7-b301-44d39ccf1e76	TRA	t	2015-09-17 17:41:19.474705	Traffic
+7a482694-51d2-42d0-b0e2-19dd13bbbc64	ACCT	t	2015-10-14 06:50:58.213984	Accounting
+bb2bc482-c19a-4c19-a087-e68ffc62b5a0	QFREE	t	2015-10-14 06:50:58.213984	Q-Free internal
+5c3cc664-b685-4f6e-8d9a-2927c6bcffdc	MIR	t	2015-10-14 06:50:58.213984	Manual validation
+72d7cb27-1770-4cc7-b301-44d39ccf1e76	TRA	t	2015-10-14 06:50:58.213984	Traffic
 \.
 
 
@@ -500,11 +652,19 @@ COPY report_version (report_version_id, active, created_on, file_name, rptdesign
 -- Data for Name: role; Type: TABLE DATA; Schema: reporting; Owner: report_server_app
 --
 
-COPY role (role_id, created_on, encoded_password, full_name, login_role, username) FROM stdin;
-29fe8a1f-7826-4df0-8bfd-151b54198655	2015-05-07 09:10:00	44rSFJQ9qtHWTBAvrsKd5K/p2j0=	User Number 1	t	user1
-fa06393a-d341-4bf6-b047-1a8c6a383483	2015-05-07 09:12:01	KqYKj/f81HPTIeAUav2eJt85UUc=	User Number 2	f	user2
-b85fd129-17d9-40e7-ac11-7541040f8627	2015-05-07 09:13:22	ERnP037iRzV+A0oI2ETuol9v0g8=	User Number 3	t	user3
-46e477dc-085f-4714-a24f-742428579fcc	2015-05-07 09:14:09	oddYTarKRzjUma1wgohrARFyddg=	User Number 4	t	user4
+COPY role (role_id, created_on, email, encoded_password, full_name, login_role, time_zone_id, username) FROM stdin;
+29fe8a1f-7826-4df0-8bfd-151b54198655	2015-05-07 09:10:00	user1@somedomain.com	44rSFJQ9qtHWTBAvrsKd5K/p2j0=	User Number 1	t	CET	user1
+fa06393a-d341-4bf6-b047-1a8c6a383483	2015-05-07 09:12:01	user2@somedomain.com	KqYKj/f81HPTIeAUav2eJt85UUc=	User Number 2	f	CET	user2
+b85fd129-17d9-40e7-ac11-7541040f8627	2015-05-07 09:13:22	user3@somedomain.com	ERnP037iRzV+A0oI2ETuol9v0g8=	User Number 3	t	Canada/Pacific	user3
+46e477dc-085f-4714-a24f-742428579fcc	2015-05-07 09:14:09	user4@somedomain.com	oddYTarKRzjUma1wgohrARFyddg=	User Number 4	t	GMT	user4
+\.
+
+
+--
+-- Data for Name: role_parameter; Type: TABLE DATA; Schema: reporting; Owner: report_server_app
+--
+
+COPY role_parameter (role_parameter_id, created_on, report_parameter_id, role_id) FROM stdin;
 \.
 
 
@@ -512,7 +672,7 @@ b85fd129-17d9-40e7-ac11-7541040f8627	2015-05-07 09:13:22	ERnP037iRzV+A0oI2ETuol9
 -- Data for Name: role_parameter_value; Type: TABLE DATA; Schema: reporting; Owner: report_server_app
 --
 
-COPY role_parameter_value (role_parameter_value_id, created_on, string_value, report_parameter_id, role_id) FROM stdin;
+COPY role_parameter_value (role_parameter_value_id, boolean_value, created_on, date_value, datetime_value, float_value, integer_value, string_value, time_value, role_parameter_id) FROM stdin;
 \.
 
 
@@ -544,7 +704,15 @@ COPY selection_list_value (selection_list_value_id, created_on, order_index, val
 -- Data for Name: subscription; Type: TABLE DATA; Schema: reporting; Owner: report_server_app
 --
 
-COPY subscription (subscription_id, created_on, cron_schedule, description, email, run_once_at, document_format_id, report_version_id, role_id) FROM stdin;
+COPY subscription (subscription_id, active, created_on, delivery_cron_schedule, delivery_datetime_run_at, delivery_time_zone_id, description, email, enabled, document_format_id, report_version_id, role_id) FROM stdin;
+\.
+
+
+--
+-- Data for Name: subscription_parameter; Type: TABLE DATA; Schema: reporting; Owner: report_server_app
+--
+
+COPY subscription_parameter (subscription_parameter_id, created_on, report_parameter_id, subscription_id) FROM stdin;
 \.
 
 
@@ -552,7 +720,7 @@ COPY subscription (subscription_id, created_on, cron_schedule, description, emai
 -- Data for Name: subscription_parameter_value; Type: TABLE DATA; Schema: reporting; Owner: report_server_app
 --
 
-COPY subscription_parameter_value (subscription_parameter_value_id, created_on, day_of_month_number, day_of_week_number, days_relative, month_number, months_relative, string_value, time_value, week_of_month_number, week_of_year_number, weeks_relative, year_number, years_relative, report_parameter_id, subscription_id) FROM stdin;
+COPY subscription_parameter_value (subscription_parameter_value_id, boolean_value, created_on, date_value, datetime_value, day_of_month_number, day_of_week_in_month_number, day_of_week_in_month_ordinal, day_of_week_number, days_ago, duration_to_add_days, duration_to_add_hours, duration_to_add_minutes, duration_to_add_months, duration_to_add_seconds, duration_to_add_weeks, duration_to_add_years, float_value, integer_value, month_number, months_ago, string_value, time_value, weeks_ago, year_number, years_ago, subscription_parameter_id) FROM stdin;
 \.
 
 
@@ -573,6 +741,14 @@ ALTER TABLE ONLY document_format
 
 
 --
+-- Name: job_parameter_pkey; Type: CONSTRAINT; Schema: reporting; Owner: report_server_app; Tablespace: 
+--
+
+ALTER TABLE ONLY job_parameter
+    ADD CONSTRAINT job_parameter_pkey PRIMARY KEY (job_parameter_id);
+
+
+--
 -- Name: job_parameter_value_pkey; Type: CONSTRAINT; Schema: reporting; Owner: report_server_app; Tablespace: 
 --
 
@@ -586,6 +762,14 @@ ALTER TABLE ONLY job_parameter_value
 
 ALTER TABLE ONLY job
     ADD CONSTRAINT job_pkey PRIMARY KEY (job_id);
+
+
+--
+-- Name: job_status_pkey; Type: CONSTRAINT; Schema: reporting; Owner: report_server_app; Tablespace: 
+--
+
+ALTER TABLE ONLY job_status
+    ADD CONSTRAINT job_status_pkey PRIMARY KEY (job_status_id);
 
 
 --
@@ -629,6 +813,14 @@ ALTER TABLE ONLY report_version
 
 
 --
+-- Name: role_parameter_pkey; Type: CONSTRAINT; Schema: reporting; Owner: report_server_app; Tablespace: 
+--
+
+ALTER TABLE ONLY role_parameter
+    ADD CONSTRAINT role_parameter_pkey PRIMARY KEY (role_parameter_id);
+
+
+--
 -- Name: role_parameter_value_pkey; Type: CONSTRAINT; Schema: reporting; Owner: report_server_app; Tablespace: 
 --
 
@@ -669,6 +861,14 @@ ALTER TABLE ONLY selection_list_value
 
 
 --
+-- Name: subscription_parameter_pkey; Type: CONSTRAINT; Schema: reporting; Owner: report_server_app; Tablespace: 
+--
+
+ALTER TABLE ONLY subscription_parameter
+    ADD CONSTRAINT subscription_parameter_pkey PRIMARY KEY (subscription_parameter_id);
+
+
+--
 -- Name: subscription_parameter_value_pkey; Type: CONSTRAINT; Schema: reporting; Owner: report_server_app; Tablespace: 
 --
 
@@ -693,11 +893,11 @@ ALTER TABLE ONLY configuration
 
 
 --
--- Name: uc_jobparametervalue_job_parameter_value; Type: CONSTRAINT; Schema: reporting; Owner: report_server_app; Tablespace: 
+-- Name: uc_jobparameter_job_parameter; Type: CONSTRAINT; Schema: reporting; Owner: report_server_app; Tablespace: 
 --
 
-ALTER TABLE ONLY job_parameter_value
-    ADD CONSTRAINT uc_jobparametervalue_job_parameter_value UNIQUE (job_id, report_parameter_id, string_value);
+ALTER TABLE ONLY job_parameter
+    ADD CONSTRAINT uc_jobparameter_job_parameter UNIQUE (job_id, report_parameter_id);
 
 
 --
@@ -733,11 +933,11 @@ ALTER TABLE ONLY role
 
 
 --
--- Name: uc_roleparametervalue_role_parameter_value; Type: CONSTRAINT; Schema: reporting; Owner: report_server_app; Tablespace: 
+-- Name: uc_roleparameter_role_parameter; Type: CONSTRAINT; Schema: reporting; Owner: report_server_app; Tablespace: 
 --
 
-ALTER TABLE ONLY role_parameter_value
-    ADD CONSTRAINT uc_roleparametervalue_role_parameter_value UNIQUE (role_id, report_parameter_id, string_value);
+ALTER TABLE ONLY role_parameter
+    ADD CONSTRAINT uc_roleparameter_role_parameter UNIQUE (role_id, report_parameter_id);
 
 
 --
@@ -757,6 +957,14 @@ ALTER TABLE ONLY role_role
 
 
 --
+-- Name: uc_subscriptionparameter_subscription_parameter; Type: CONSTRAINT; Schema: reporting; Owner: report_server_app; Tablespace: 
+--
+
+ALTER TABLE ONLY subscription_parameter
+    ADD CONSTRAINT uc_subscriptionparameter_subscription_parameter UNIQUE (subscription_id, report_parameter_id);
+
+
+--
 -- Name: fk_configuration_role; Type: FK CONSTRAINT; Schema: reporting; Owner: report_server_app
 --
 
@@ -773,11 +981,19 @@ ALTER TABLE ONLY job
 
 
 --
--- Name: fk_job_report; Type: FK CONSTRAINT; Schema: reporting; Owner: report_server_app
+-- Name: fk_job_jobstatus; Type: FK CONSTRAINT; Schema: reporting; Owner: report_server_app
 --
 
 ALTER TABLE ONLY job
-    ADD CONSTRAINT fk_job_report FOREIGN KEY (report_version_id) REFERENCES report_version(report_version_id);
+    ADD CONSTRAINT fk_job_jobstatus FOREIGN KEY (job_status_id) REFERENCES job_status(job_status_id);
+
+
+--
+-- Name: fk_job_reportversion; Type: FK CONSTRAINT; Schema: reporting; Owner: report_server_app
+--
+
+ALTER TABLE ONLY job
+    ADD CONSTRAINT fk_job_reportversion FOREIGN KEY (report_version_id) REFERENCES report_version(report_version_id);
 
 
 --
@@ -789,19 +1005,35 @@ ALTER TABLE ONLY job
 
 
 --
--- Name: fk_jobparametervalue_job; Type: FK CONSTRAINT; Schema: reporting; Owner: report_server_app
+-- Name: fk_job_subscription; Type: FK CONSTRAINT; Schema: reporting; Owner: report_server_app
+--
+
+ALTER TABLE ONLY job
+    ADD CONSTRAINT fk_job_subscription FOREIGN KEY (subscription_id) REFERENCES subscription(subscription_id);
+
+
+--
+-- Name: fk_jobparameter_job; Type: FK CONSTRAINT; Schema: reporting; Owner: report_server_app
+--
+
+ALTER TABLE ONLY job_parameter
+    ADD CONSTRAINT fk_jobparameter_job FOREIGN KEY (job_id) REFERENCES job(job_id);
+
+
+--
+-- Name: fk_jobparameter_reportparameter; Type: FK CONSTRAINT; Schema: reporting; Owner: report_server_app
+--
+
+ALTER TABLE ONLY job_parameter
+    ADD CONSTRAINT fk_jobparameter_reportparameter FOREIGN KEY (report_parameter_id) REFERENCES report_parameter(report_parameter_id);
+
+
+--
+-- Name: fk_jobparametervalue_jobparameter; Type: FK CONSTRAINT; Schema: reporting; Owner: report_server_app
 --
 
 ALTER TABLE ONLY job_parameter_value
-    ADD CONSTRAINT fk_jobparametervalue_job FOREIGN KEY (job_id) REFERENCES job(job_id);
-
-
---
--- Name: fk_jobparametervalue_reportparameter; Type: FK CONSTRAINT; Schema: reporting; Owner: report_server_app
---
-
-ALTER TABLE ONLY job_parameter_value
-    ADD CONSTRAINT fk_jobparametervalue_reportparameter FOREIGN KEY (report_parameter_id) REFERENCES report_parameter(report_parameter_id);
+    ADD CONSTRAINT fk_jobparametervalue_jobparameter FOREIGN KEY (job_parameter_id) REFERENCES job_parameter(job_parameter_id);
 
 
 --
@@ -821,11 +1053,11 @@ ALTER TABLE ONLY report_parameter
 
 
 --
--- Name: fk_reportparameter_report; Type: FK CONSTRAINT; Schema: reporting; Owner: report_server_app
+-- Name: fk_reportparameter_reportversion; Type: FK CONSTRAINT; Schema: reporting; Owner: report_server_app
 --
 
 ALTER TABLE ONLY report_parameter
-    ADD CONSTRAINT fk_reportparameter_report FOREIGN KEY (report_version_id) REFERENCES report_version(report_version_id);
+    ADD CONSTRAINT fk_reportparameter_reportversion FOREIGN KEY (report_version_id) REFERENCES report_version(report_version_id);
 
 
 --
@@ -837,19 +1069,27 @@ ALTER TABLE ONLY report_version
 
 
 --
--- Name: fk_roleparametervalue_reportparameter; Type: FK CONSTRAINT; Schema: reporting; Owner: report_server_app
+-- Name: fk_roleparameter_reportparameter; Type: FK CONSTRAINT; Schema: reporting; Owner: report_server_app
+--
+
+ALTER TABLE ONLY role_parameter
+    ADD CONSTRAINT fk_roleparameter_reportparameter FOREIGN KEY (report_parameter_id) REFERENCES report_parameter(report_parameter_id);
+
+
+--
+-- Name: fk_roleparameter_role; Type: FK CONSTRAINT; Schema: reporting; Owner: report_server_app
+--
+
+ALTER TABLE ONLY role_parameter
+    ADD CONSTRAINT fk_roleparameter_role FOREIGN KEY (role_id) REFERENCES role(role_id);
+
+
+--
+-- Name: fk_roleparametervalue_roleparameter; Type: FK CONSTRAINT; Schema: reporting; Owner: report_server_app
 --
 
 ALTER TABLE ONLY role_parameter_value
-    ADD CONSTRAINT fk_roleparametervalue_reportparameter FOREIGN KEY (report_parameter_id) REFERENCES report_parameter(report_parameter_id);
-
-
---
--- Name: fk_roleparametervalue_role; Type: FK CONSTRAINT; Schema: reporting; Owner: report_server_app
---
-
-ALTER TABLE ONLY role_parameter_value
-    ADD CONSTRAINT fk_roleparametervalue_role FOREIGN KEY (role_id) REFERENCES role(role_id);
+    ADD CONSTRAINT fk_roleparametervalue_roleparameter FOREIGN KEY (role_parameter_id) REFERENCES role_parameter(role_parameter_id);
 
 
 --
@@ -917,19 +1157,27 @@ ALTER TABLE ONLY subscription
 
 
 --
--- Name: fk_subscriptionparametervalue_reportparameter; Type: FK CONSTRAINT; Schema: reporting; Owner: report_server_app
+-- Name: fk_subscriptionparameter_reportparameter; Type: FK CONSTRAINT; Schema: reporting; Owner: report_server_app
+--
+
+ALTER TABLE ONLY subscription_parameter
+    ADD CONSTRAINT fk_subscriptionparameter_reportparameter FOREIGN KEY (report_parameter_id) REFERENCES report_parameter(report_parameter_id);
+
+
+--
+-- Name: fk_subscriptionparameter_subscription; Type: FK CONSTRAINT; Schema: reporting; Owner: report_server_app
+--
+
+ALTER TABLE ONLY subscription_parameter
+    ADD CONSTRAINT fk_subscriptionparameter_subscription FOREIGN KEY (subscription_id) REFERENCES subscription(subscription_id);
+
+
+--
+-- Name: fk_subscriptionparametervalue_subscriptionparameter; Type: FK CONSTRAINT; Schema: reporting; Owner: report_server_app
 --
 
 ALTER TABLE ONLY subscription_parameter_value
-    ADD CONSTRAINT fk_subscriptionparametervalue_reportparameter FOREIGN KEY (report_parameter_id) REFERENCES report_parameter(report_parameter_id);
-
-
---
--- Name: fk_subscriptionparametervalue_subscription; Type: FK CONSTRAINT; Schema: reporting; Owner: report_server_app
---
-
-ALTER TABLE ONLY subscription_parameter_value
-    ADD CONSTRAINT fk_subscriptionparametervalue_subscription FOREIGN KEY (subscription_id) REFERENCES subscription(subscription_id);
+    ADD CONSTRAINT fk_subscriptionparametervalue_subscriptionparameter FOREIGN KEY (subscription_parameter_id) REFERENCES subscription_parameter(subscription_parameter_id);
 
 
 --
