@@ -19,7 +19,7 @@ I.	===== Upgrading the report server database =====
 	command.
 
 4.	Execute the following in a bash shell from the upgrade_report_server 
-	directory:
+	directory on the PostgreSQL host machine:
 
 		./upgrade_report_server_db.sh
 
