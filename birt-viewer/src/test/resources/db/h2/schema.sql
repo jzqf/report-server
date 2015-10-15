@@ -2,22 +2,27 @@
 
 -- These commands are needed when using an embedded H2 database that is used for
 -- testing, even if a new database is created for each run. It seems that this
--- script can be run (by Spring?) before individual test methods without first
+-- script is run (by Spring?) before individual test methods *without* first
 -- deleting the H2 database. Hence, this script must be able to execute for an
 -- EXISTING database that already has these objects created. This behaviour only
--- started after I added Spring Boot to this application.
+-- started after I added Spring Boot to this application. Therefore, it is 
+-- necessary to drop all tables before creating them again.
 
 CREATE SCHEMA IF NOT EXISTS reporting;
 
 DROP TABLE IF EXISTS reporting.configuration CASCADE;
 DROP TABLE IF EXISTS reporting.role_report CASCADE;
-DROP TABLE IF EXISTS reporting.role_parameter_value CASCADE;
 DROP TABLE IF EXISTS reporting.role_role CASCADE;
 --
+DROP TABLE IF EXISTS reporting.role_parameter_value CASCADE;
+DROP TABLE IF EXISTS reporting.role_parameter CASCADE;
+--
 DROP TABLE IF EXISTS reporting.job_parameter_value CASCADE;
+DROP TABLE IF EXISTS reporting.job_parameter CASCADE;
 DROP TABLE IF EXISTS reporting.job CASCADE;
 --
 DROP TABLE IF EXISTS reporting.subscription_parameter_value CASCADE;
+DROP TABLE IF EXISTS reporting.subscription_parameter CASCADE;
 DROP TABLE IF EXISTS reporting.subscription CASCADE;
 --
 DROP TABLE IF EXISTS reporting.selection_list_value CASCADE;
@@ -31,7 +36,12 @@ DROP TABLE IF EXISTS reporting.role CASCADE;
 DROP TABLE IF EXISTS reporting.document_format CASCADE;
 DROP TABLE IF EXISTS reporting.report_category CASCADE;
 DROP TABLE IF EXISTS reporting.parameter_group CASCADE;
+DROP TABLE IF EXISTS reporting.job_status CASCADE;
 --------------------------------------------------------------------------------
+
+--
+-- PostgreSQL database dump
+--
 
 --
 -- Name: configuration; Type: TABLE; Schema: reporting; Owner: report_server_app; Tablespace: 
@@ -87,14 +97,26 @@ CREATE TABLE reporting.job (
     document text,
     encoded boolean,
     file_name character varying(128),
+    job_status_remarks text,
     url character varying(1024),
     document_format_id uuid NOT NULL,
+    job_status_id uuid NOT NULL,
     report_version_id uuid NOT NULL,
-    role_id uuid NOT NULL
+    role_id uuid NOT NULL,
+    subscription_id uuid
 );
 
 
+--
+-- Name: job_parameter; Type: TABLE; Schema: reporting; Owner: report_server_app; Tablespace: 
+--
 
+CREATE TABLE reporting.job_parameter (
+    job_parameter_id identity NOT NULL,
+    created_on timestamp NOT NULL,
+    job_id bigint NOT NULL,
+    report_parameter_id uuid NOT NULL
+);
 
 
 --
@@ -103,12 +125,29 @@ CREATE TABLE reporting.job (
 
 CREATE TABLE reporting.job_parameter_value (
     job_parameter_value_id identity NOT NULL,
+    boolean_value boolean,
     created_on timestamp NOT NULL,
-    string_value character varying(80) NOT NULL,
-    job_id bigint NOT NULL,
-    report_parameter_id uuid NOT NULL
+    date_value date,
+    datetime_value timestamp,
+    float_value double precision,
+    integer_value integer,
+    string_value character varying(80),
+    time_value time,
+    job_parameter_id bigint NOT NULL
 );
 
+
+--
+-- Name: job_status; Type: TABLE; Schema: reporting; Owner: report_server_app; Tablespace: 
+--
+
+CREATE TABLE reporting.job_status (
+    job_status_id uuid NOT NULL,
+    abbreviation character varying(32) NOT NULL,
+    active boolean NOT NULL,
+    created_on timestamp NOT NULL,
+    description character varying(32) NOT NULL
+);
 
 
 
@@ -219,10 +258,26 @@ CREATE TABLE reporting.report_version (
 CREATE TABLE reporting.role (
     role_id uuid NOT NULL,
     created_on timestamp NOT NULL,
+    email character varying(160),
     encoded_password character varying(32) NOT NULL,
     full_name character varying(32),
     login_role boolean NOT NULL,
+    time_zone_id character varying(80),
     username character varying(32) NOT NULL
+);
+
+
+
+
+--
+-- Name: role_parameter; Type: TABLE; Schema: reporting; Owner: report_server_app; Tablespace: 
+--
+
+CREATE TABLE reporting.role_parameter (
+    role_parameter_id uuid NOT NULL,
+    created_on timestamp NOT NULL,
+    report_parameter_id uuid NOT NULL,
+    role_id uuid NOT NULL
 );
 
 
@@ -234,10 +289,15 @@ CREATE TABLE reporting.role (
 
 CREATE TABLE reporting.role_parameter_value (
     role_parameter_value_id uuid NOT NULL,
+    boolean_value boolean,
     created_on timestamp NOT NULL,
-    string_value character varying(80) NOT NULL,
-    report_parameter_id uuid NOT NULL,
-    role_id uuid NOT NULL
+    date_value date,
+    datetime_value timestamp,
+    float_value double precision,
+    integer_value integer,
+    string_value character varying(80),
+    time_value time,
+    role_parameter_id uuid NOT NULL
 );
 
 
@@ -293,14 +353,31 @@ CREATE TABLE reporting.selection_list_value (
 
 CREATE TABLE reporting.subscription (
     subscription_id uuid NOT NULL,
+    active boolean NOT NULL,
     created_on timestamp NOT NULL,
-    cron_schedule character varying(80),
-    description character varying(80),
-    email character varying(80) NOT NULL,
-    run_once_at timestamp,
+    delivery_cron_schedule character varying(80),
+    delivery_datetime_run_at timestamp,
+    delivery_time_zone_id character varying(80),
+    description character varying(1024),
+    email character varying(160),
+    enabled boolean NOT NULL,
     document_format_id uuid NOT NULL,
     report_version_id uuid NOT NULL,
     role_id uuid NOT NULL
+);
+
+
+
+
+--
+-- Name: subscription_parameter; Type: TABLE; Schema: reporting; Owner: report_server_app; Tablespace: 
+--
+
+CREATE TABLE reporting.subscription_parameter (
+    subscription_parameter_id uuid NOT NULL,
+    created_on timestamp NOT NULL,
+    report_parameter_id uuid NOT NULL,
+    subscription_id uuid NOT NULL
 );
 
 
@@ -312,23 +389,33 @@ CREATE TABLE reporting.subscription (
 
 CREATE TABLE reporting.subscription_parameter_value (
     subscription_parameter_value_id uuid NOT NULL,
+    boolean_value boolean,
     created_on timestamp NOT NULL,
+    date_value date,
+    datetime_value timestamp,
     day_of_month_number integer,
+    day_of_week_in_month_number integer,
+    day_of_week_in_month_ordinal integer,
     day_of_week_number integer,
-    days_relative integer,
+    days_ago integer,
+    duration_to_add_days integer,
+    duration_to_add_hours integer,
+    duration_to_add_minutes integer,
+    duration_to_add_months integer,
+    duration_to_add_seconds integer,
+    duration_to_add_weeks integer,
+    duration_to_add_years integer,
+    float_value double precision,
+    integer_value integer,
     month_number integer,
-    months_relative integer,
+    months_ago integer,
     string_value character varying(80),
     time_value time,
-    week_of_month_number integer,
-    week_of_year_number integer,
-    weeks_relative integer,
+    weeks_ago integer,
     year_number integer,
-    years_relative integer,
-    report_parameter_id uuid NOT NULL,
-    subscription_id uuid NOT NULL
+    years_ago integer,
+    subscription_parameter_id uuid NOT NULL
 );
-
 
 
 
@@ -347,6 +434,14 @@ ALTER TABLE reporting.configuration
 
 ALTER TABLE reporting.document_format
     ADD CONSTRAINT document_format_pkey PRIMARY KEY (document_format_id);
+
+
+--
+-- Name: job_status_pkey; Type: CONSTRAINT; Schema: reporting; Owner: report_server_app; Tablespace: 
+--
+
+ALTER TABLE reporting.job_status
+    ADD CONSTRAINT job_status_pkey PRIMARY KEY (job_status_id);
 
 
 --
@@ -390,6 +485,14 @@ ALTER TABLE reporting.report_version
 
 
 --
+-- Name: role_parameter_pkey; Type: CONSTRAINT; Schema: reporting; Owner: report_server_app; Tablespace: 
+--
+
+ALTER TABLE reporting.role_parameter
+    ADD CONSTRAINT role_parameter_pkey PRIMARY KEY (role_parameter_id);
+
+
+--
 -- Name: role_parameter_value_pkey; Type: CONSTRAINT; Schema: reporting; Owner: report_server_app; Tablespace: 
 --
 
@@ -430,6 +533,14 @@ ALTER TABLE reporting.selection_list_value
 
 
 --
+-- Name: subscription_parameter_pkey; Type: CONSTRAINT; Schema: reporting; Owner: report_server_app; Tablespace: 
+--
+
+ALTER TABLE reporting.subscription_parameter
+    ADD CONSTRAINT subscription_parameter_pkey PRIMARY KEY (subscription_parameter_id);
+
+
+--
 -- Name: subscription_parameter_value_pkey; Type: CONSTRAINT; Schema: reporting; Owner: report_server_app; Tablespace: 
 --
 
@@ -454,11 +565,11 @@ ALTER TABLE reporting.configuration
 
 
 --
--- Name: uc_jobparametervalue_job_parameter_value; Type: CONSTRAINT; Schema: reporting; Owner: report_server_app; Tablespace: 
+-- Name: uc_jobparameter_job_parameter; Type: CONSTRAINT; Schema: reporting; Owner: report_server_app; Tablespace: 
 --
 
-ALTER TABLE reporting.job_parameter_value
-    ADD CONSTRAINT uc_jobparametervalue_job_parameter_value UNIQUE (job_id, report_parameter_id, string_value);
+ALTER TABLE reporting.job_parameter
+    ADD CONSTRAINT uc_jobparameter_job_parameter UNIQUE (job_id, report_parameter_id);
 
 
 --
@@ -494,11 +605,11 @@ ALTER TABLE reporting.role
 
 
 --
--- Name: uc_roleparametervalue_role_parameter_value; Type: CONSTRAINT; Schema: reporting; Owner: report_server_app; Tablespace: 
+-- Name: uc_roleparameter_role_parameter; Type: CONSTRAINT; Schema: reporting; Owner: report_server_app; Tablespace: 
 --
 
-ALTER TABLE reporting.role_parameter_value
-    ADD CONSTRAINT uc_roleparametervalue_role_parameter_value UNIQUE (role_id, report_parameter_id, string_value);
+ALTER TABLE reporting.role_parameter
+    ADD CONSTRAINT uc_roleparameter_role_parameter UNIQUE (role_id, report_parameter_id);
 
 
 --
@@ -518,6 +629,14 @@ ALTER TABLE reporting.role_role
 
 
 --
+-- Name: uc_subscriptionparameter_subscription_parameter; Type: CONSTRAINT; Schema: reporting; Owner: report_server_app; Tablespace: 
+--
+
+ALTER TABLE reporting.subscription_parameter
+    ADD CONSTRAINT uc_subscriptionparameter_subscription_parameter UNIQUE (subscription_id, report_parameter_id);
+
+
+--
 -- Name: fk_configuration_role; Type: FK CONSTRAINT; Schema: reporting; Owner: report_server_app
 --
 
@@ -534,11 +653,19 @@ ALTER TABLE reporting.job
 
 
 --
--- Name: fk_job_report; Type: FK CONSTRAINT; Schema: reporting; Owner: report_server_app
+-- Name: fk_job_jobstatus; Type: FK CONSTRAINT; Schema: reporting; Owner: report_server_app
 --
 
 ALTER TABLE reporting.job
-    ADD CONSTRAINT fk_job_report FOREIGN KEY (report_version_id) REFERENCES report_version(report_version_id);
+    ADD CONSTRAINT fk_job_jobstatus FOREIGN KEY (job_status_id) REFERENCES job_status(job_status_id);
+
+
+--
+-- Name: fk_job_reportversion; Type: FK CONSTRAINT; Schema: reporting; Owner: report_server_app
+--
+
+ALTER TABLE reporting.job
+    ADD CONSTRAINT fk_job_reportversion FOREIGN KEY (report_version_id) REFERENCES report_version(report_version_id);
 
 
 --
@@ -550,19 +677,35 @@ ALTER TABLE reporting.job
 
 
 --
--- Name: fk_jobparametervalue_job; Type: FK CONSTRAINT; Schema: reporting; Owner: report_server_app
+-- Name: fk_job_subscription; Type: FK CONSTRAINT; Schema: reporting; Owner: report_server_app
+--
+
+ALTER TABLE reporting.job
+    ADD CONSTRAINT fk_job_subscription FOREIGN KEY (subscription_id) REFERENCES subscription(subscription_id);
+
+
+--
+-- Name: fk_jobparameter_job; Type: FK CONSTRAINT; Schema: reporting; Owner: report_server_app
+--
+
+ALTER TABLE reporting.job_parameter
+    ADD CONSTRAINT fk_jobparameter_job FOREIGN KEY (job_id) REFERENCES job(job_id);
+
+
+--
+-- Name: fk_jobparameter_reportparameter; Type: FK CONSTRAINT; Schema: reporting; Owner: report_server_app
+--
+
+ALTER TABLE reporting.job_parameter
+    ADD CONSTRAINT fk_jobparameter_reportparameter FOREIGN KEY (report_parameter_id) REFERENCES report_parameter(report_parameter_id);
+
+
+--
+-- Name: fk_jobparametervalue_jobparameter; Type: FK CONSTRAINT; Schema: reporting; Owner: report_server_app
 --
 
 ALTER TABLE reporting.job_parameter_value
-    ADD CONSTRAINT fk_jobparametervalue_job FOREIGN KEY (job_id) REFERENCES job(job_id);
-
-
---
--- Name: fk_jobparametervalue_reportparameter; Type: FK CONSTRAINT; Schema: reporting; Owner: report_server_app
---
-
-ALTER TABLE reporting.job_parameter_value
-    ADD CONSTRAINT fk_jobparametervalue_reportparameter FOREIGN KEY (report_parameter_id) REFERENCES report_parameter(report_parameter_id);
+    ADD CONSTRAINT fk_jobparametervalue_jobparameter FOREIGN KEY (job_parameter_id) REFERENCES job_parameter(job_parameter_id);
 
 
 --
@@ -582,11 +725,11 @@ ALTER TABLE reporting.report_parameter
 
 
 --
--- Name: fk_reportparameter_report; Type: FK CONSTRAINT; Schema: reporting; Owner: report_server_app
+-- Name: fk_reportparameter_reportversion; Type: FK CONSTRAINT; Schema: reporting; Owner: report_server_app
 --
 
 ALTER TABLE reporting.report_parameter
-    ADD CONSTRAINT fk_reportparameter_report FOREIGN KEY (report_version_id) REFERENCES report_version(report_version_id);
+    ADD CONSTRAINT fk_reportparameter_reportversion FOREIGN KEY (report_version_id) REFERENCES report_version(report_version_id);
 
 
 --
@@ -598,19 +741,27 @@ ALTER TABLE reporting.report_version
 
 
 --
--- Name: fk_roleparametervalue_reportparameter; Type: FK CONSTRAINT; Schema: reporting; Owner: report_server_app
+-- Name: fk_roleparameter_reportparameter; Type: FK CONSTRAINT; Schema: reporting; Owner: report_server_app
+--
+
+ALTER TABLE reporting.role_parameter
+    ADD CONSTRAINT fk_roleparameter_reportparameter FOREIGN KEY (report_parameter_id) REFERENCES report_parameter(report_parameter_id);
+
+
+--
+-- Name: fk_roleparameter_role; Type: FK CONSTRAINT; Schema: reporting; Owner: report_server_app
+--
+
+ALTER TABLE reporting.role_parameter
+    ADD CONSTRAINT fk_roleparameter_role FOREIGN KEY (role_id) REFERENCES role(role_id);
+
+
+--
+-- Name: fk_roleparametervalue_roleparameter; Type: FK CONSTRAINT; Schema: reporting; Owner: report_server_app
 --
 
 ALTER TABLE reporting.role_parameter_value
-    ADD CONSTRAINT fk_roleparametervalue_reportparameter FOREIGN KEY (report_parameter_id) REFERENCES report_parameter(report_parameter_id);
-
-
---
--- Name: fk_roleparametervalue_role; Type: FK CONSTRAINT; Schema: reporting; Owner: report_server_app
---
-
-ALTER TABLE reporting.role_parameter_value
-    ADD CONSTRAINT fk_roleparametervalue_role FOREIGN KEY (role_id) REFERENCES role(role_id);
+    ADD CONSTRAINT fk_roleparametervalue_roleparameter FOREIGN KEY (role_parameter_id) REFERENCES role_parameter(role_parameter_id);
 
 
 --
@@ -678,16 +829,24 @@ ALTER TABLE reporting.subscription
 
 
 --
--- Name: fk_subscriptionparametervalue_reportparameter; Type: FK CONSTRAINT; Schema: reporting; Owner: report_server_app
+-- Name: fk_subscriptionparameter_reportparameter; Type: FK CONSTRAINT; Schema: reporting; Owner: report_server_app
+--
+
+ALTER TABLE reporting.subscription_parameter
+    ADD CONSTRAINT fk_subscriptionparameter_reportparameter FOREIGN KEY (report_parameter_id) REFERENCES report_parameter(report_parameter_id);
+
+
+--
+-- Name: fk_subscriptionparameter_subscription; Type: FK CONSTRAINT; Schema: reporting; Owner: report_server_app
+--
+
+ALTER TABLE reporting.subscription_parameter
+    ADD CONSTRAINT fk_subscriptionparameter_subscription FOREIGN KEY (subscription_id) REFERENCES subscription(subscription_id);
+
+
+--
+-- Name: fk_subscriptionparametervalue_subscriptionparameter; Type: FK CONSTRAINT; Schema: reporting; Owner: report_server_app
 --
 
 ALTER TABLE reporting.subscription_parameter_value
-    ADD CONSTRAINT fk_subscriptionparametervalue_reportparameter FOREIGN KEY (report_parameter_id) REFERENCES report_parameter(report_parameter_id);
-
-
---
--- Name: fk_subscriptionparametervalue_subscription; Type: FK CONSTRAINT; Schema: reporting; Owner: report_server_app
---
-
-ALTER TABLE reporting.subscription_parameter_value
-    ADD CONSTRAINT fk_subscriptionparametervalue_subscription FOREIGN KEY (subscription_id) REFERENCES subscription(subscription_id);
+    ADD CONSTRAINT fk_subscriptionparametervalue_subscriptionparameter FOREIGN KEY (subscription_parameter_id) REFERENCES subscription_parameter(subscription_parameter_id);

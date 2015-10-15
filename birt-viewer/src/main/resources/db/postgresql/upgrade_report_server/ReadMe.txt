@@ -9,8 +9,8 @@ This document covers upgrading both of these components.
 
 I.	===== Upgrading the report server database =====
 
-1.	Stop the report server application using the administrative HTML interface 
-	provided by the application server, Tomcat. 
+1.	Stop and then *undeploy* the report server application using the Tomcat
+	administrative HTML interface. 
 
 2.	Perform a backup of the report server database or of the entire PostgresQL 
 	cluster.
@@ -19,7 +19,7 @@ I.	===== Upgrading the report server database =====
 	command.
 
 4.	Execute the following in a bash shell from the upgrade_report_server 
-	directory:
+	directory on the PostgreSQL host machine:
 
 		./upgrade_report_server_db.sh
 
@@ -44,31 +44,21 @@ I.	===== Upgrading the report server database =====
 	By default, the script will connect to the local PostgreSQL cluster using 
 	the default database name and TCP port, but these can be overridden, if 
 	necessary, using command line options.
-	
-5.	Do not restart the report server application yet. This will be done below
-	when the new application, packaged as report-server.war, is deployed. 
-	
-	If the application is started now, it will likely fail database validation 
-	tests because the old version of the application will not be aware of the 
-	new database structure.
 
 
 II.	===== Upgrading the report server application =====
 
-1.	Stop and undeploy the current report server application using the 
-	administrative HTML interface provided by the application server, Tomcat.
-
-2.	Deploy report-server.war for the new version of the report server 
-	application using the same web interface. This step should also start the 
-	application. If the application does not start, check the container log 
-	file, which for Tomcat can be found here:
+1.	Deploy report-server.war for the new version of the report server 
+	application using the Tomcat administrative HTML interface. . This step 
+	should also start the application. If the application does not start, check 
+	the container log file, which for Tomcat can be found here:
 
 		<CATALINA_HOME>/logs/obo-report-server/obo-report-server.log
 	
-	Important:	The new report-server.war file must be deployed (or at least
-				restarted) after the database is upgraded.
+	Important:	The new report-server.war file must be deployed  *after* the 
+				database is upgraded.
 
-3.	Test that the report server is running by visiting the following URL:
+2.	Test that the report server is running by visiting the following URL:
 
 		<host>/report-server/rest/appversion
 
