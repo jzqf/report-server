@@ -736,7 +736,7 @@ public class DateUtils {
 	 * @return
 	 */
 	public static LocalTime localTimeFromEntityTimeDate(Date entityTimeDate) {
-		logger.info("entityTimeDate = {}", entityTimeDate);
+		logger.debug("entityTimeDate = {}", entityTimeDate);
 
 		/*
 		 * entityTimeDate may come from a Date field of an entity class that
@@ -771,16 +771,16 @@ public class DateUtils {
 		Calendar calendar = Calendar.getInstance();
 		calendar.setTime(entityTimeDate);
 		Date calendarDate = calendar.getTime();
-		logger.info("calendarDate = {}", calendarDate);
+		logger.debug("calendarDate = {}", calendarDate);
 
 		Instant instant = calendarDate.toInstant();
-		logger.info("instant = {}", instant);
+		logger.debug("instant = {}", instant);
 
 		ZonedDateTime zonedDateTime = ZonedDateTime.ofInstant(instant, ZoneId.systemDefault());
-		logger.info("zonedDateTime = {}", zonedDateTime);
+		logger.debug("zonedDateTime = {}", zonedDateTime);
 
 		LocalTime localTime = zonedDateTime.toLocalTime();
-		logger.info("localTime = {}", localTime);
+		logger.debug("localTime = {}", localTime);
 
 		return localTime;
 	}

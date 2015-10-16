@@ -34,6 +34,7 @@ import com.qfree.obo.report.domain.JobStatus;
 import com.qfree.obo.report.domain.Subscription;
 import com.qfree.obo.report.domain.SubscriptionParameter;
 import com.qfree.obo.report.domain.SubscriptionParameterValue;
+import com.qfree.obo.report.exceptions.UntreatedCaseException;
 import com.qfree.obo.report.scheduling.schedulers.SubscriptionJobProcessorScheduler;
 import com.qfree.obo.report.util.DateUtils;
 
@@ -180,8 +181,10 @@ public class SubscriptionScheduledJob {
 	 * Creating a new Job and its related entities can be done very quickly.
 	 * Another scheduled Quartz job, SubscriptionJobProcessorScheduledJob will
 	 * discover these Job entities and run them.
+	 * 
+	 * @throws UntreatedCaseException
 	 */
-	public void run() {
+	public void run() throws UntreatedCaseException {
 
 		/*
 		 * To avoid the potential of a messy situation where an unreasonable 
@@ -192,8 +195,8 @@ public class SubscriptionScheduledJob {
 		if (System.currentTimeMillis() - lastRunMs > MIN_TIME_BETWEEN_RUNS_MS) {
 			lastRunMs = System.currentTimeMillis(); // Update "last run" time
 
-			logger.info("");
-			logger.info("");
+			logger.debug("");
+			logger.debug("");
 			logger.info("Creating Job for subscriptionId = {}...", subscriptionId);
 
 			Subscription subscription = subscriptionRepository.findOne(subscriptionId);
@@ -223,6 +226,9 @@ public class SubscriptionScheduledJob {
 				 * Create one JobParameter for each SubscriptionParameter:
 				 */
 				for (SubscriptionParameter subscriptionParameter : subscription.getSubscriptionParameters()) {
+
+					logger.info("Creating JobParameter for ReportRarameter \"{}\"",
+							subscriptionParameter.getReportParameter().getName());
 
 					JobParameter jobParameter = new JobParameter(job, subscriptionParameter.getReportParameter());
 					jobParameters.add(jobParameter);
@@ -275,6 +281,8 @@ public class SubscriptionScheduledJob {
 										subscriptionParameterValue.getDurationToAddMinutes() != null ||
 										subscriptionParameterValue.getDurationToAddSeconds() != null)) {
 
+							logger.debug("Generating dynamic date or datetime value...");
+
 							/*
 							 * Assume for the time being that the report expects date 
 							 * or datetime parameters with no time zone information.
@@ -283,7 +291,7 @@ public class SubscriptionScheduledJob {
 							 * support for time zones in the future.
 							 */
 							LocalDateTime localDateTime = LocalDateTime.now();
-							logger.info("localDateTime = {}", localDateTime);
+							logger.debug("localDateTime = LocalDateTime.now() = {}", localDateTime);
 
 							if (subscriptionParameterValue.getYearNumber() != null) {
 								/*
@@ -291,7 +299,7 @@ public class SubscriptionScheduledJob {
 								 */
 								try {
 									localDateTime = localDateTime.withYear(subscriptionParameterValue.getYearNumber());
-									logger.info("After setting year number to {}. localDateTime = {}",
+									logger.debug("After setting year number to {}. localDateTime = {}",
 											subscriptionParameterValue.getYearNumber(),
 											localDateTime);
 								} catch (DateTimeException e) {
@@ -306,7 +314,7 @@ public class SubscriptionScheduledJob {
 								try {
 									localDateTime = localDateTime
 											.plusYears(-subscriptionParameterValue.getYearsAgo().longValue());
-									logger.info("After moving localDateTime back {} years. localDateTime = {}",
+									logger.debug("After moving localDateTime back {} years. localDateTime = {}",
 											subscriptionParameterValue.getYearsAgo(), localDateTime);
 								} catch (DateTimeException e) {
 									logger.warn(
@@ -322,7 +330,7 @@ public class SubscriptionScheduledJob {
 								try {
 									localDateTime = localDateTime
 											.withMonth(subscriptionParameterValue.getMonthNumber());
-									logger.info("After setting month number to {}. localDateTime = {}",
+									logger.debug("After setting month number to {}. localDateTime = {}",
 											subscriptionParameterValue.getMonthNumber(),
 											localDateTime);
 								} catch (DateTimeException e) {
@@ -337,7 +345,7 @@ public class SubscriptionScheduledJob {
 								try {
 									localDateTime = localDateTime
 											.plusMonths(-subscriptionParameterValue.getMonthsAgo().longValue());
-									logger.info("After moving localDateTime back {} months. localDateTime = {}",
+									logger.debug("After moving localDateTime back {} months. localDateTime = {}",
 											subscriptionParameterValue.getMonthsAgo(), localDateTime);
 								} catch (DateTimeException e) {
 									logger.warn(
@@ -353,7 +361,7 @@ public class SubscriptionScheduledJob {
 								try {
 									localDateTime = localDateTime
 											.plusWeeks(-subscriptionParameterValue.getWeeksAgo().longValue());
-									logger.info("After moving localDateTime back {} weeks. localDateTime = {}",
+									logger.debug("After moving localDateTime back {} weeks. localDateTime = {}",
 											subscriptionParameterValue.getWeeksAgo(), localDateTime);
 								} catch (DateTimeException e) {
 									logger.warn(
@@ -369,7 +377,7 @@ public class SubscriptionScheduledJob {
 								try {
 									localDateTime = localDateTime
 											.plusDays(-subscriptionParameterValue.getDaysAgo().longValue());
-									logger.info("After moving localDateTime back {} days. localDateTime = {}",
+									logger.debug("After moving localDateTime back {} days. localDateTime = {}",
 											subscriptionParameterValue.getDaysAgo(), localDateTime);
 								} catch (DateTimeException e) {
 									logger.warn(
@@ -387,7 +395,7 @@ public class SubscriptionScheduledJob {
 								try {
 									localDateTime = localDateTime.with(ChronoField.DAY_OF_WEEK,
 											subscriptionParameterValue.getDayOfWeekNumber().longValue());
-									logger.info(
+									logger.debug(
 											"After setting day-of-week of localDateTime to {}, even if it causes the month to change. localDateTime = {}",
 											subscriptionParameterValue.getDayOfWeekNumber(), localDateTime);
 								} catch (DateTimeException | ArithmeticException e) {
@@ -406,7 +414,7 @@ public class SubscriptionScheduledJob {
 										 */
 										localDateTime = localDateTime.with(ChronoField.DAY_OF_MONTH,
 												subscriptionParameterValue.getDayOfMonthNumber().longValue());
-										logger.info(
+										logger.debug(
 												"After setting day-of-month of localDateTime to {}. localDateTime = {}",
 												subscriptionParameterValue.getDayOfMonthNumber(), localDateTime);
 									} else if (subscriptionParameterValue.getDayOfMonthNumber() < 0
@@ -422,12 +430,12 @@ public class SubscriptionScheduledJob {
 										 */
 										long lastDayOfMonth = localDateTime.range(ChronoField.DAY_OF_MONTH)
 												.getMaximum();
-										logger.info("lastDayOfMonth = {}", lastDayOfMonth);
+										logger.debug("lastDayOfMonth = {}", lastDayOfMonth);
 										localDateTime = localDateTime.with(ChronoField.DAY_OF_MONTH,
 												lastDayOfMonth
 														+ subscriptionParameterValue.getDayOfMonthNumber().longValue()
 														+ 1);
-										logger.info(
+										logger.debug(
 												"After setting day-of-month of localDateTime to {}. localDateTime = {}",
 												lastDayOfMonth
 														+ subscriptionParameterValue.getDayOfMonthNumber().longValue()
@@ -463,7 +471,7 @@ public class SubscriptionScheduledJob {
 											subscriptionParameterValue.getDayOfWeekInMonthOrdinal(),
 											DayOfWeek.of(subscriptionParameterValue.getDayOfWeekInMonthNumber()));
 									localDateTime = localDateTime.with(dayOfWeekInMonthAdjuster);
-									logger.info(
+									logger.debug(
 											"After setting Nth day-of-week with subscriptionParameterValue.getDayOfWeekInMonthOrdinal()={}, subscriptionParameterValue.getDayOfWeekInMonthNumber()={}. localDateTime = {}",
 											subscriptionParameterValue.getDayOfWeekInMonthOrdinal(),
 											subscriptionParameterValue.getDayOfWeekInMonthNumber(), localDateTime);
@@ -480,7 +488,7 @@ public class SubscriptionScheduledJob {
 									localDateTime = localDateTime.plus(
 											subscriptionParameterValue.getDurationToAddYears().longValue(),
 											ChronoUnit.YEARS);
-									logger.info("After adding {} years. localDateTime = {}",
+									logger.debug("After adding {} years. localDateTime = {}",
 											subscriptionParameterValue.getDurationToAddYears(),
 											localDateTime);
 								} catch (DateTimeException | ArithmeticException e) {
@@ -494,7 +502,7 @@ public class SubscriptionScheduledJob {
 									localDateTime = localDateTime.plus(
 											subscriptionParameterValue.getDurationToAddMonths().longValue(),
 											ChronoUnit.MONTHS);
-									logger.info("After adding {} months. localDateTime = {}",
+									logger.debug("After adding {} months. localDateTime = {}",
 											subscriptionParameterValue.getDurationToAddMonths(),
 											localDateTime);
 								} catch (DateTimeException | ArithmeticException e) {
@@ -508,7 +516,7 @@ public class SubscriptionScheduledJob {
 									localDateTime = localDateTime.plus(
 											subscriptionParameterValue.getDurationToAddWeeks().longValue(),
 											ChronoUnit.WEEKS);
-									logger.info("After adding {} weeks. localDateTime = {}",
+									logger.debug("After adding {} weeks. localDateTime = {}",
 											subscriptionParameterValue.getDurationToAddWeeks(),
 											localDateTime);
 								} catch (DateTimeException | ArithmeticException e) {
@@ -522,7 +530,7 @@ public class SubscriptionScheduledJob {
 									localDateTime = localDateTime.plus(
 											subscriptionParameterValue.getDurationToAddDays().longValue(),
 											ChronoUnit.DAYS);
-									logger.info("After adding {} days. localDateTime = {}",
+									logger.debug("After adding {} days. localDateTime = {}",
 											subscriptionParameterValue.getDurationToAddDays(),
 											localDateTime);
 								} catch (DateTimeException | ArithmeticException e) {
@@ -536,7 +544,7 @@ public class SubscriptionScheduledJob {
 									localDateTime = localDateTime.plus(
 											subscriptionParameterValue.getDurationToAddHours().longValue(),
 											ChronoUnit.HOURS);
-									logger.info("After adding {} hours. localDateTime = {}",
+									logger.debug("After adding {} hours. localDateTime = {}",
 											subscriptionParameterValue.getDurationToAddHours(),
 											localDateTime);
 								} catch (DateTimeException | ArithmeticException e) {
@@ -550,7 +558,7 @@ public class SubscriptionScheduledJob {
 									localDateTime = localDateTime.plus(
 											subscriptionParameterValue.getDurationToAddMinutes().longValue(),
 											ChronoUnit.MINUTES);
-									logger.info("After adding {} minutes. localDateTime = {}",
+									logger.debug("After adding {} minutes. localDateTime = {}",
 											subscriptionParameterValue.getDurationToAddMinutes(),
 											localDateTime);
 								} catch (DateTimeException | ArithmeticException e) {
@@ -564,7 +572,7 @@ public class SubscriptionScheduledJob {
 									localDateTime = localDateTime.plus(
 											subscriptionParameterValue.getDurationToAddSeconds().longValue(),
 											ChronoUnit.SECONDS);
-									logger.info("After adding {} seconds. localDateTime = {}",
+									logger.debug("After adding {} seconds. localDateTime = {}",
 											subscriptionParameterValue.getDurationToAddSeconds(),
 											localDateTime);
 								} catch (DateTimeException | ArithmeticException e) {
@@ -579,38 +587,67 @@ public class SubscriptionScheduledJob {
 							 * "Datetime", the time part of localDateTime must be discarded.
 							 * 
 							 * This LocalDate may also be used for a report parameter of type 
-							 * "Datetime", provided a value was specified for fakeEntityTimeDate.
-							 * In this case we combine the LocalDate with the specified
-							 * fakeEntityTimeDate to create a LocalDateTime.
+							 * "Datetime", provided a value was specified for the "timeValue"
+							 * attribute of the SubscriptionParameterValue. 
 							 */
 							LocalDate localDate = localDateTime.toLocalDate();
-							logger.info("localDate = {}", localDate);
+							logger.debug("localDate = {}", localDate);
 
 							if (parameterDataType.equals(IParameterDefn.TYPE_DATE)) {
 
-								//DATE:
+								Date dateValue = Date
+										.from(localDate.atStartOfDay().atZone(ZoneId.systemDefault()).toInstant());
+								logger.debug("Dynamically generated dateValue = ", dateValue);
+
+								JobParameterValue jobParameterValue = new JobParameterValue(jobParameter,
+										null, dateValue, null, null, null, null, null);
+								jobParameterValues.add(jobParameterValue);
 
 							} else if (parameterDataType.equals(IParameterDefn.TYPE_DATE_TIME)) {
 
-								Date fakeEntityTimeDate = new Date();
-								logger.info("fakeEntityTimeDate = {}", fakeEntityTimeDate);
-								if (fakeEntityTimeDate != null) {
-									LocalTime localTime = DateUtils.localTimeFromEntityTimeDate(fakeEntityTimeDate);
-									logger.info("localTime = {}", localTime);
+								if (subscriptionParameterValue.getTimeValue() != null) {
+									/*
+									 * If a value exists for subscriptionParameterValue.getTimeValue(), 
+									 * we combine the LocalDate with this specified time value to 
+									 * create a LocalDateTime.
+									 */
+									Date entityTimeDate = subscriptionParameterValue.getTimeValue();
+									logger.debug("entityTimeDate = {}", entityTimeDate);
+									LocalTime localTime = DateUtils.localTimeFromEntityTimeDate(entityTimeDate);
+									logger.debug("localTime = {}", localTime);
 
 									localDateTime = LocalDateTime.of(localDate, localTime);
-									logger.info("localDateTime = {}", localDateTime);
+									logger.debug("localDateTime = {}", localDateTime);
 
 								} else {
-									//DO NOTHING HERE?????
+									/*
+									 * If a value not *not* exist for 
+									 * subscriptionParameterValue.getTimeValue(), then there is 
+									 * nothing to do here. We just convert the value of localDateTime
+									 * that was computed above to the final Date that we will use for
+									 * the "datetimeValue" attribute of a new JobParameterValue entity.
+									 */
 								}
+
 								Date datetimeValue = Date
 										.from(localDateTime.atZone(ZoneId.systemDefault()).toInstant());
-								logger.info("datetimeValue = {}", datetimeValue);
+								logger.debug("Dynamically generated datetimeValue = {}", datetimeValue);
+
+								JobParameterValue jobParameterValue = new JobParameterValue(jobParameter,
+										null, null, datetimeValue, null, null, null, null);
+								jobParameterValues.add(jobParameterValue);
+
 							} else {
-
-								//TODO throw unused case exception!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
+								/*
+								 * This exception should never really be thrown, because
+								 * I check for this case above, but it will catch coding
+								 * errors if I do something stupid.
+								 */
+								String errorMessage = String.format(
+										"subscriptionParameter.getReportParameter().getDataType() = %s, subscriptionParameterValue = %s",
+										subscriptionParameter.getReportParameter().getDataType(),
+										subscriptionParameterValue);
+								throw new UntreatedCaseException(errorMessage);
 							}
 
 						} else {
@@ -644,9 +681,6 @@ public class SubscriptionScheduledJob {
 				} catch (SchedulerException e) {
 					logger.error("Exception thrown when triggering the job processor.", e);
 				}
-
-				logger.info("");
-				logger.info("");
 
 			} else {
 				logger.error("No Subscription exists for subscriptionId = {}", subscriptionId);

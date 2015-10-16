@@ -747,7 +747,7 @@ public class SubscriptionController extends AbstractBaseController {
 									subscriptionParameterValue.getYearNumber() == null &&
 									subscriptionParameterValue.getYearsAgo() == null) {
 								errorMessage = String.format(
-										"The Datetime value for report parameter '%s' of report '%s' is null or cannot be determined",
+										"The Date value for report parameter '%s' of report '%s' is null or cannot be determined",
 										subscriptionParameter.getReportParameter().getName(),
 										subscriptionParameter.getSubscription().getReportVersion()
 												.getFileName());
