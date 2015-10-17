@@ -271,15 +271,17 @@ public class SubscriptionScheduledJob {
 										subscriptionParameterValue.getDaysAgo() != null ||
 										subscriptionParameterValue.getDayOfWeekNumber() != null ||
 										subscriptionParameterValue.getDayOfMonthNumber() != null ||
-										subscriptionParameterValue.getDayOfWeekInMonthOrdinal() != null ||
-										subscriptionParameterValue.getDayOfWeekInMonthNumber() != null ||
-										subscriptionParameterValue.getDurationToAddYears() != null ||
-										subscriptionParameterValue.getDurationToAddMonths() != null ||
-										subscriptionParameterValue.getDurationToAddWeeks() != null ||
-										subscriptionParameterValue.getDurationToAddDays() != null ||
-										subscriptionParameterValue.getDurationToAddHours() != null ||
-										subscriptionParameterValue.getDurationToAddMinutes() != null ||
-										subscriptionParameterValue.getDurationToAddSeconds() != null)) {
+										(subscriptionParameterValue.getDayOfWeekInMonthOrdinal() != null &&
+												subscriptionParameterValue.getDayOfWeekInMonthNumber() != null)
+						//||subscriptionParameterValue.getDurationToAddYears() != null ||
+						//subscriptionParameterValue.getDurationToAddMonths() != null ||
+						//subscriptionParameterValue.getDurationToAddWeeks() != null ||
+						//subscriptionParameterValue.getDurationToAddDays() != null ||
+						//subscriptionParameterValue.getDurationToAddHours() != null ||
+						//subscriptionParameterValue.getDurationToAddMinutes() != null ||
+						//subscriptionParameterValue.getDurationToAddSeconds() != null
+
+						)) {
 
 							logger.debug("Generating dynamic date or datetime value...");
 
@@ -579,6 +581,37 @@ public class SubscriptionScheduledJob {
 									logger.warn(
 											"Adjustment cannot be made for subscriptionParameterValue.getDurationToAddSeconds()={}. localDateTime = {}. Exception: {}",
 											subscriptionParameterValue.getDurationToAddSeconds(), localDateTime, e);
+								}
+							}
+
+							/*
+							 * If we are dealing with a date report parameter and the
+							 * attribute "durationSubtractOneDayForDates" is set to
+							 * true, then it is necessary to subtract one day from 
+							 * localDateTime.
+							 */
+							if (parameterDataType.equals(IParameterDefn.TYPE_DATE)
+									&& subscriptionParameterValue.getDurationSubtractOneDayForDates()) {
+								/*
+								 * But we only subtract one day *if* a "duration" 
+								 * attribute has been set that shifts the date in
+								 * units of at least one day, i.e., year, month,
+								 * week or day.
+								 */
+								if (subscriptionParameterValue.getDurationToAddYears() != null
+										|| subscriptionParameterValue.getDurationToAddMonths() != null
+										|| subscriptionParameterValue.getDurationToAddWeeks() != null
+										|| subscriptionParameterValue.getDurationToAddDays() != null) {
+									logger.debug(
+											"Subtracting one day from localDateTime because durationToAddYears=true");
+									try {
+										localDateTime = localDateTime.plus(-1L, ChronoUnit.DAYS);
+										logger.debug("After subtracting 1 day . localDateTime = {}", localDateTime);
+									} catch (DateTimeException | ArithmeticException e) {
+										logger.warn(
+												"Exception thrown subtracting one day from localDateTime. localDateTime = {}. Exception: {}",
+												localDateTime, e);
+									}
 								}
 							}
 

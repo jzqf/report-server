@@ -107,6 +107,9 @@ public class SubscriptionParameterValueResource extends AbstractBaseResource {
 	private Integer durationToAddSeconds;
 
 	@XmlElement
+	private Boolean durationSubtractOneDayForDates;
+
+	@XmlElement
 	@XmlJavaTypeAdapter(DatetimeAdapter.class)
 	private Date createdOn;
 
@@ -188,6 +191,7 @@ public class SubscriptionParameterValueResource extends AbstractBaseResource {
 			this.durationToAddHours = subscriptionParameterValue.getDurationToAddHours();
 			this.durationToAddMinutes = subscriptionParameterValue.getDurationToAddMinutes();
 			this.durationToAddSeconds = subscriptionParameterValue.getDurationToAddSeconds();
+			this.durationSubtractOneDayForDates = subscriptionParameterValue.getDurationSubtractOneDayForDates();
 			this.createdOn = subscriptionParameterValue.getCreatedOn();
 		}
 	}
@@ -425,6 +429,14 @@ public class SubscriptionParameterValueResource extends AbstractBaseResource {
 		this.durationToAddSeconds = durationToAddSeconds;
 	}
 
+	public Boolean getDurationSubtractOneDayForDates() {
+		return durationSubtractOneDayForDates;
+	}
+
+	public void setDurationSubtractOneDayForDates(Boolean durationSubtractOneDayForDates) {
+		this.durationSubtractOneDayForDates = durationSubtractOneDayForDates;
+	}
+
 	public Date getCreatedOn() {
 		return createdOn;
 	}
@@ -488,6 +500,8 @@ public class SubscriptionParameterValueResource extends AbstractBaseResource {
 		builder.append(durationToAddMinutes);
 		builder.append(", durationToAddSeconds=");
 		builder.append(durationToAddSeconds);
+		builder.append(", durationSubtractOneDayForDates=");
+		builder.append(durationSubtractOneDayForDates);
 		builder.append(", createdOn=");
 		builder.append(createdOn);
 		builder.append("]");

@@ -323,7 +323,8 @@ public class SubscriptionParameterController extends AbstractBaseController {
 		if (subscriptionParameterValueCollectionResourcePayload != null) {
 			List<SubscriptionParameterValueResource> subscriptionParameterValueResourcesFromPayload = subscriptionParameterValueCollectionResourcePayload
 					.getItems();
-			if (subscriptionParameterValueResourcesFromPayload != null && subscriptionParameterValueResourcesFromPayload.size() > 0) {
+			if (subscriptionParameterValueResourcesFromPayload != null
+					&& subscriptionParameterValueResourcesFromPayload.size() > 0) {
 
 				/*
 				 * If multivalued=true for the report parameter, there can be 
@@ -344,30 +345,28 @@ public class SubscriptionParameterController extends AbstractBaseController {
 				 * Delete the current selection of SubscriptionParameterValue
 				 * entities associated with the SubscriptionParameter.
 				 */
-				List<SubscriptionParameterValue> subscriptionParameterValues = subscriptionParameter
-						.getSubscriptionParameterValues();
-				if (subscriptionParameterValues != null && subscriptionParameterValues.size() > 0) {
+				if (subscriptionParameter.getSubscriptionParameterValues() != null &&
+						subscriptionParameter.getSubscriptionParameterValues().size() > 0) {
 					logger.debug("Deleting {} SubscriptionParameterValue entities in list: {}",
-							subscriptionParameterValues.size(), subscriptionParameterValues);
-					if (subscriptionParameter.getSubscriptionParameterValues() != null) {
-						/*
-						 * The one-to-many link from the SubscriptionParameter entity
-						 * class to the SubscriptionParameterValue entity class has
-						 * "cascade = CascadeType.ALL". This means that in order to
-						 * delete individual SubscriptionParameterValue entities, it 
-						 * is necessary to first remove them from the list
-						 * subscriptionParameter.getSubscriptionParameterValues().
-						 * But this relation also has "orphanRemoval = true", so when 
-						 * I remove the SubscriptionParameterValue entities from
-						 * the list here with "clear()", JPA will also ensure that
-						 * they get deleted from the underlying database.
-						 * 
-						 * It is not necessary to also execute:
-						 * 
-						 * subscriptionParameterValueRepository.delete(subscriptionParameterValues);
-						 */
-						subscriptionParameter.getSubscriptionParameterValues().clear();
-					}
+							subscriptionParameter.getSubscriptionParameterValues().size(),
+							subscriptionParameter.getSubscriptionParameterValues());
+					/*
+					* The one-to-many link from the SubscriptionParameter entity
+					* class to the SubscriptionParameterValue entity class has
+					* "cascade = CascadeType.ALL". This means that in order to
+					* delete individual SubscriptionParameterValue entities, it 
+					* is necessary to first remove them from the list
+					* subscriptionParameter.getSubscriptionParameterValues().
+					* But this relation also has "orphanRemoval = true", so when 
+					* I remove the SubscriptionParameterValue entities from
+					* the list here with "clear()", JPA will also ensure that
+					* they get deleted from the underlying database.
+					* 
+					* So it is not necessary to also execute:
+					* 
+					* subscriptionParameterValueRepository.delete(subscriptionParameter.getSubscriptionParameterValues());
+					*/
+					subscriptionParameter.getSubscriptionParameterValues().clear();
 				} else {
 					logger.debug("No SubscriptionParameterValue entities to be deleted.");
 				}
@@ -386,14 +385,25 @@ public class SubscriptionParameterController extends AbstractBaseController {
 				 * objects provided in the PUT data.
 				 */
 				for (SubscriptionParameterValueResource subscriptionParameterValueResource : subscriptionParameterValueResourcesFromPayload) {
+
 					logger.debug("subscriptionParameterValueResource (for creating SubscriptionParameterValue) = {}",
 							subscriptionParameterValueResource);
+					/*
+					 * This transfers the attributes of 
+					 * subscriptionParameterValueResource to the newly
+					 * constructed SubscriptionParameterValue.
+					 */
 					SubscriptionParameterValue subscriptionParameterValue = new SubscriptionParameterValue(
 							subscriptionParameter, subscriptionParameterValueResource);
 					logger.debug("subscriptionParameterValue (to persist) = {}", subscriptionParameterValue);
+
 					/*
 					 * Check that the data type of the supplied values agree 
-					 * with the report parameter data type.
+					 * with the report parameter data type. This large block
+					 * of code does not assign any values - it just checks 
+					 * that the necessary attributes of 
+					 * subscriptionParameterValueResource are not null, 
+					 * depending on the data type of the repory parameter.
 					 */
 					switch (subscriptionParameter.getReportParameter().getDataType()) {
 					case IParameterDefn.TYPE_ANY:
@@ -436,9 +446,29 @@ public class SubscriptionParameterController extends AbstractBaseController {
 						}
 						break;
 					case IParameterDefn.TYPE_DATE_TIME:
-						if (subscriptionParameterValueResource.getDatetimeValue() == null) {
-							throw new RestApiException(RestError.FORBIDDEN_ATTRIBUTE_NULL,
-									SubscriptionParameterValue.class, "datetimeValue");
+						if (subscriptionParameterValue.getYearNumber() != null ||
+								subscriptionParameterValue.getYearsAgo() != null ||
+								subscriptionParameterValue.getMonthNumber() != null ||
+								subscriptionParameterValue.getMonthsAgo() != null ||
+								subscriptionParameterValue.getWeeksAgo() != null ||
+								subscriptionParameterValue.getDaysAgo() != null ||
+								subscriptionParameterValue.getDayOfWeekNumber() != null ||
+								subscriptionParameterValue.getDayOfMonthNumber() != null ||
+								(subscriptionParameterValue.getDayOfWeekInMonthOrdinal() != null &&
+										subscriptionParameterValue.getDayOfWeekInMonthNumber() != null)) {
+							/*
+							 * OK, we will be computing a dynamic value for the datetime.
+							 */
+						} else {
+							/*
+							 * We are *not* computing a dynamic value for the datetime,
+							 * so there must be a static value assigned to the 
+							 * attribute "datetimeValue".
+							 */
+							if (subscriptionParameterValueResource.getDatetimeValue() == null) {
+								throw new RestApiException(RestError.FORBIDDEN_ATTRIBUTE_NULL,
+										SubscriptionParameterValue.class, "datetimeValue");
+							}
 						}
 						break;
 					case IParameterDefn.TYPE_BOOLEAN:
@@ -454,9 +484,29 @@ public class SubscriptionParameterController extends AbstractBaseController {
 						}
 						break;
 					case IParameterDefn.TYPE_DATE:
-						if (subscriptionParameterValueResource.getDateValue() == null) {
-							throw new RestApiException(RestError.FORBIDDEN_ATTRIBUTE_NULL,
-									SubscriptionParameterValue.class, "dateValue");
+						if (subscriptionParameterValue.getYearNumber() != null ||
+								subscriptionParameterValue.getYearsAgo() != null ||
+								subscriptionParameterValue.getMonthNumber() != null ||
+								subscriptionParameterValue.getMonthsAgo() != null ||
+								subscriptionParameterValue.getWeeksAgo() != null ||
+								subscriptionParameterValue.getDaysAgo() != null ||
+								subscriptionParameterValue.getDayOfWeekNumber() != null ||
+								subscriptionParameterValue.getDayOfMonthNumber() != null ||
+								(subscriptionParameterValue.getDayOfWeekInMonthOrdinal() != null &&
+										subscriptionParameterValue.getDayOfWeekInMonthNumber() != null)) {
+							/*
+							 * OK, we will be computing a dynamic value for the date.
+							 */
+						} else {
+							/*
+							 * We are *not* computing a dynamic value for the date,
+							 * so there must be a static value assigned to the 
+							 * attribute "datetimeValue".
+							 */
+							if (subscriptionParameterValueResource.getDateValue() == null) {
+								throw new RestApiException(RestError.FORBIDDEN_ATTRIBUTE_NULL,
+										SubscriptionParameterValue.class, "dateValue");
+							}
 						}
 						break;
 					case IParameterDefn.TYPE_TIME:
@@ -580,7 +630,7 @@ public class SubscriptionParameterController extends AbstractBaseController {
 		// }
 		SubscriptionParameterValueCollectionResource subscriptionParameterValueCollectionResource = new SubscriptionParameterValueCollectionResource(
 				subscriptionParameter, uriInfo, queryParams, apiVersion);
-		
+
 		return subscriptionParameterValueCollectionResource;
 	}
 
