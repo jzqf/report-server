@@ -16,6 +16,7 @@ import org.slf4j.LoggerFactory;
 
 import com.qfree.obo.report.domain.DocumentFormat;
 import com.qfree.obo.report.domain.Job;
+import com.qfree.obo.report.domain.Role;
 import com.qfree.obo.report.domain.Subscription;
 import com.qfree.obo.report.rest.server.RestUtils.RestApiVersion;
 
@@ -158,6 +159,27 @@ public class JobResource extends AbstractBaseResource {
 
 		if (subscription.getJobs() != null) {
 			List<Job> jobs = subscription.getJobs();
+			List<JobResource> jobResources = new ArrayList<>(jobs.size());
+			for (Job job : jobs) {
+				//List<String> showAll = queryParams.get(ResourcePath.SHOWALL_QP_KEY);
+				//if (job.getActive() ||
+				//		RestUtils.FILTER_INACTIVE_RECORDS == false ||
+				//		ResourcePath.showAll(Job.class, showAll)) {
+				jobResources.add(new JobResource(job, uriInfo, queryParams, apiVersion));
+				//}
+			}
+			return jobResources;
+		} else {
+			return null;
+		}
+
+	}
+
+	public static List<JobResource> listFromRole(Role role, UriInfo uriInfo, Map<String, List<String>> queryParams,
+			RestApiVersion apiVersion) {
+
+		if (role.getJobs() != null) {
+			List<Job> jobs = role.getJobs();
 			List<JobResource> jobResources = new ArrayList<>(jobs.size());
 			for (Job job : jobs) {
 				//List<String> showAll = queryParams.get(ResourcePath.SHOWALL_QP_KEY);

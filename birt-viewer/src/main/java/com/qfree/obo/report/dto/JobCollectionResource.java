@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 
 import com.qfree.obo.report.domain.DocumentFormat;
 import com.qfree.obo.report.domain.Job;
+import com.qfree.obo.report.domain.Role;
 import com.qfree.obo.report.domain.Subscription;
 import com.qfree.obo.report.rest.server.RestUtils.RestApiVersion;
 
@@ -42,6 +43,15 @@ public class JobCollectionResource extends AbstractCollectionResource<JobResourc
 				JobResource.listFromSubscription(subscription, uriInfo, queryParams, apiVersion),
 				Job.class,
 				AbstractBaseResource.createHref(uriInfo, Subscription.class, subscription.getSubscriptionId(), null),
+				ResourcePath.JOBS_PATH, uriInfo, queryParams, apiVersion);
+	}
+
+	public JobCollectionResource(Role role, UriInfo uriInfo,
+			Map<String, List<String>> queryParams, RestApiVersion apiVersion) {
+		this(
+				JobResource.listFromRole(role, uriInfo, queryParams, apiVersion),
+				Job.class,
+				AbstractBaseResource.createHref(uriInfo, Role.class, role.getRoleId(), null),
 				ResourcePath.JOBS_PATH, uriInfo, queryParams, apiVersion);
 	}
 
