@@ -104,7 +104,7 @@ public class Role implements Serializable {
 	 *     Deleting a Role will delete all of its Subscription's.
 	 */
 	@OneToMany(mappedBy = "role", cascade = CascadeType.ALL)
-	private List<Subscription> roleSubscriptions;
+	private List<Subscription> subscriptions;
 
 	/*
 	 * cascade = CascadeType.ALL:
@@ -277,12 +277,12 @@ public class Role implements Serializable {
 		this.roleReports = roleReports;
 	}
 
-	public List<Subscription> getRoleSubscriptions() {
-		return roleSubscriptions;
+	public List<Subscription> getSubscriptions() {
+		return subscriptions;
 	}
 
-	public void setRoleSubscriptions(List<Subscription> roleSubscriptions) {
-		this.roleSubscriptions = roleSubscriptions;
+	public void setSubscriptions(List<Subscription> roleSubscriptions) {
+		this.subscriptions = roleSubscriptions;
 	}
 
 	public List<RoleParameter> getRoleParameters() {
