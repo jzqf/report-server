@@ -213,6 +213,9 @@ public class RestErrorResource {
 		FORBIDDEN_ENABLED_SUBSCRIPTION_NULL_PARAM_VALUE(
 				Response.Status.FORBIDDEN, "403.23",
 				"The value of a report parameter is null, but required=true", null),
+		FORBIDDEN_CANCEL_JOB_WRONG_STATUS(
+				Response.Status.FORBIDDEN, "403.24",
+				"Only a Job with JobStatus=\"QUEUED\" can be canceled", null),
 
 		/**
 		 * {@code 404 Not Found}.

@@ -19,6 +19,7 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.validation.constraints.NotNull;
 
+import com.qfree.obo.report.dto.JobResource;
 import com.qfree.obo.report.util.DateUtils;
 
 /**
@@ -199,23 +200,26 @@ public class Job implements Serializable {
 	private Job() {
 	}
 
-	//	public Job(
-	//			JobStatus jobStatus,
-	//			ReportVersion reportVersion,
-	//			Role role,
-	//			DocumentFormat documentFormat) {
-	//		this(
-	//				jobStatus,
-	//				null,
-	//				reportVersion,
-	//				role,
-	//				documentFormat,
-	//				null,
-	//				null,
-	//				null,
-	//				null,
-	//				DateUtils.nowUtc());
-	//	}
+	public Job(
+			JobResource jobResource,
+			JobStatus jobStatus,
+			DocumentFormat documentFormat,
+			ReportVersion reportVersion,
+			Role role,
+			Subscription subscription) {
+		this(
+				subscription,
+				jobStatus,
+				jobResource.getJobStatusRemarks(),
+				reportVersion,
+				role,
+				documentFormat,
+				jobResource.getUrl(),
+				jobResource.getFileName(),
+				jobResource.getDocument(),
+				jobResource.getEncoded(),
+				DateUtils.nowUtc());
+	}
 
 	public Job(
 			Subscription subscription,
@@ -283,12 +287,16 @@ public class Job implements Serializable {
 		return jobStatusRemarks;
 	}
 
-	public void setJobStatusRemarks(String jobStatusRemarks) {
-		this.jobStatusRemarks = jobStatusRemarks;
+	public Subscription getSubscription() {
+		return subscription;
 	}
 
-	public Date getCreatedOn() {
-		return this.createdOn;
+	public void setSubscription(Subscription subscription) {
+		this.subscription = subscription;
+	}
+
+	public void setJobStatusRemarks(String jobStatusRemarks) {
+		this.jobStatusRemarks = jobStatusRemarks;
 	}
 
 	public ReportVersion getReportVersion() {
@@ -353,6 +361,10 @@ public class Job implements Serializable {
 
 	public void setEncoded(Boolean encoded) {
 		this.encoded = encoded;
+	}
+
+	public Date getCreatedOn() {
+		return this.createdOn;
 	}
 
 	@Override

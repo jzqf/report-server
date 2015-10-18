@@ -43,6 +43,7 @@ public class JobStatus implements Serializable {
 	public static final UUID RUNNING_ID = UUID.fromString("a613aae2-836a-4b03-a75d-cfb8303eaad5");
 	public static final UUID COMPLETED_ID = UUID.fromString("f378fc09-35e4-4096-b1d1-2db14756b098");
 	public static final UUID FAILED_ID = UUID.fromString("2a9cd697-af00-45bc-aa6a-053284b9d9e4");
+	public static final UUID CANCELED_ID = UUID.fromString("5125c537-e178-42de-b4dd-e538fa3da802");
 
 	@Id
 	//	@GeneratedValue(strategy = GenerationType.IDENTITY)

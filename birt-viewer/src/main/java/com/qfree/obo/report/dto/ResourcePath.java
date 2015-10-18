@@ -5,6 +5,8 @@ import java.util.List;
 import com.qfree.obo.report.domain.Configuration;
 import com.qfree.obo.report.domain.DocumentFormat;
 import com.qfree.obo.report.domain.Job;
+import com.qfree.obo.report.domain.JobParameter;
+import com.qfree.obo.report.domain.JobParameterValue;
 import com.qfree.obo.report.domain.JobStatus;
 import com.qfree.obo.report.domain.ParameterGroup;
 import com.qfree.obo.report.domain.Report;
@@ -34,6 +36,16 @@ public enum ResourcePath {
 			ResourcePath.JOB_EXPAND_PARAM,
 			ResourcePath.JOB_SHOWALL_PARAM,
 			Job.class),
+	JOBPARAMETERS(
+			ResourcePath.JOBPARAMETERS_PATH,
+			ResourcePath.JOBPARAMETER_EXPAND_PARAM,
+			ResourcePath.JOBPARAMETER_SHOWALL_PARAM,
+			JobParameter.class),
+	JOBPARAMETERVALUES(
+			ResourcePath.JOBPARAMETERVALUES_PATH,
+			ResourcePath.JOBPARAMETERVALUE_EXPAND_PARAM,
+			ResourcePath.JOBPARAMETERVALUE_SHOWALL_PARAM,
+			JobParameterValue.class),
 	JOBSTATUSES(
 			ResourcePath.JOBSTATUSES_PATH,
 			ResourcePath.JOBSTATUS_EXPAND_PARAM,
@@ -102,6 +114,8 @@ public enum ResourcePath {
 	public static final String CONFIGURATIONS_PATH = ResourcePath.PATH_SEPARATOR + "configurations";
 	public static final String DOCUMENTFORMATS_PATH = ResourcePath.PATH_SEPARATOR + "documentFormats";
 	public static final String JOBS_PATH = ResourcePath.PATH_SEPARATOR + "jobs";
+	public static final String JOBPARAMETERS_PATH = ResourcePath.PATH_SEPARATOR + "jobParameters";
+	public static final String JOBPARAMETERVALUES_PATH = ResourcePath.PATH_SEPARATOR + "jobParameterValues";
 	public static final String JOBSTATUSES_PATH = ResourcePath.PATH_SEPARATOR + "jobStatuses";
 	public static final String PARAMETERGROUPS_PATH = ResourcePath.PATH_SEPARATOR + "parameterGroups";
 	public static final String REPORTCATEGORIES_PATH = ResourcePath.PATH_SEPARATOR + "reportCategories";
@@ -133,6 +147,8 @@ public enum ResourcePath {
 	public static final String CONFIGURATION_EXPAND_PARAM = "configurations";
 	public static final String DOCUMENTFORMAT_EXPAND_PARAM = "documentFormats";
 	public static final String JOB_EXPAND_PARAM = "jobs";
+	public static final String JOBPARAMETER_EXPAND_PARAM = "jobParameters";
+	public static final String JOBPARAMETERVALUE_EXPAND_PARAM = "jobParameterValues";
 	public static final String JOBSTATUS_EXPAND_PARAM = "jobStatuses";
 	public static final String PARAMETERGROUP_EXPAND_PARAM = "parameterGroups";
 	public static final String REPORT_EXPAND_PARAM = "reports";
@@ -165,6 +181,8 @@ public enum ResourcePath {
 	public static final String CONFIGURATION_SHOWALL_PARAM = CONFIGURATION_EXPAND_PARAM;
 	public static final String DOCUMENTFORMAT_SHOWALL_PARAM = DOCUMENTFORMAT_EXPAND_PARAM;
 	public static final String JOB_SHOWALL_PARAM = JOB_EXPAND_PARAM;
+	public static final String JOBPARAMETER_SHOWALL_PARAM = JOBPARAMETER_EXPAND_PARAM;
+	public static final String JOBPARAMETERVALUE_SHOWALL_PARAM = JOBPARAMETERVALUE_EXPAND_PARAM;
 	public static final String JOBSTATUS_SHOWALL_PARAM = JOBSTATUS_EXPAND_PARAM;
 	public static final String PARAMETERGROUP_SHOWALL_PARAM = PARAMETERGROUP_EXPAND_PARAM;
 	public static final String REPORT_SHOWALL_PARAM = REPORT_EXPAND_PARAM;

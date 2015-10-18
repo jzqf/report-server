@@ -256,7 +256,11 @@ public class SubscriptionScheduledJob {
 						 *        a. that have a single SubscriptionParameterValue
 						 *        b. of type "date" or "datetime"
 						 *        c. at least one "dynamic" attribute of the
-						 *           SubscriptionParameterValue is set
+						 *           SubscriptionParameterValue is set. We do not
+						 *           test below if any of the "duration" attributes
+						 *           is not null because they can only be used 
+						 *           together with the other "dynamic" attributes,
+						 *           which we *do* test for not null.
 						 */
 						if (subscriptionParameterValues.size() == 1
 
@@ -271,6 +275,10 @@ public class SubscriptionScheduledJob {
 										subscriptionParameterValue.getDaysAgo() != null ||
 										subscriptionParameterValue.getDayOfWeekNumber() != null ||
 										subscriptionParameterValue.getDayOfMonthNumber() != null ||
+										/*
+										 * These two parameters must *both* be not
+										 * null in order to be used.
+										 */
 										(subscriptionParameterValue.getDayOfWeekInMonthOrdinal() != null &&
 												subscriptionParameterValue.getDayOfWeekInMonthNumber() != null)
 						//||subscriptionParameterValue.getDurationToAddYears() != null ||
