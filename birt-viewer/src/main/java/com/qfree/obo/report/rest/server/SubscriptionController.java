@@ -44,6 +44,7 @@ import com.qfree.obo.report.domain.Subscription;
 import com.qfree.obo.report.domain.SubscriptionParameter;
 import com.qfree.obo.report.domain.SubscriptionParameterValue;
 import com.qfree.obo.report.dto.DocumentFormatResource;
+import com.qfree.obo.report.dto.JobCollectionResource;
 import com.qfree.obo.report.dto.ReportVersionResource;
 import com.qfree.obo.report.dto.ResourcePath;
 import com.qfree.obo.report.dto.RestErrorResource.RestError;
@@ -950,5 +951,36 @@ public class SubscriptionController extends AbstractBaseController {
 		Subscription subscription = subscriptionRepository.findOne(id);
 		RestUtils.ifNullThen404(subscription, Subscription.class, "subscriptionId", id.toString());
 		return new SubscriptionParameterCollectionResource(subscription, uriInfo, queryParams, apiVersion);
+	}
+
+	/*
+	 * Return the Job entities associated with a single Subscription that is 
+	 * specified by its id. This endpoint can be tested with:
+	 * 
+	 *   $ mvn clean spring-boot:run
+	 *   $ curl -X GET -iH "Accept: application/json;v=1" \
+	 *   http://localhost:8080/rest/subscriptions/c7f1d394-9814-4ede-bb01-2700187d79ca/jobs
+	 * 
+	 * @Transactional is used to avoid org.hibernate.LazyInitializationException
+	 * being thrown.
+	 */
+	@Path("/{id}" + ResourcePath.JOBS_PATH)
+	@GET
+	@Transactional
+	@Produces(MediaType.APPLICATION_JSON)
+	public JobCollectionResource getJobsBySubscriptionId(
+			@PathParam("id") final UUID id,
+			@HeaderParam("Accept") final String acceptHeader,
+			@QueryParam(ResourcePath.EXPAND_QP_NAME) final List<String> expand,
+			@QueryParam(ResourcePath.SHOWALL_QP_NAME) final List<String> showAll,
+			@Context final UriInfo uriInfo) {
+		Map<String, List<String>> queryParams = new HashMap<>();
+		queryParams.put(ResourcePath.EXPAND_QP_KEY, expand);
+		queryParams.put(ResourcePath.SHOWALL_QP_KEY, showAll);
+		RestApiVersion apiVersion = RestUtils.extractAPIVersion(acceptHeader, RestApiVersion.v1);
+
+		Subscription subscription = subscriptionRepository.findOne(id);
+		RestUtils.ifNullThen404(subscription, Subscription.class, "subscriptionId", id.toString());
+		return new JobCollectionResource(subscription, uriInfo, queryParams, apiVersion);
 	}
 }
