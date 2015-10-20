@@ -146,15 +146,19 @@ public class Job implements Serializable {
 	private List<JobParameter> jobParameters;
 
 	/**
-	 * The URL used to request the report from the report server.
+	 * The URL used to request the report from the report server, *excluding*
+	 * the scheme (http:// or https://), server and TCP port. Hence, it really
+	 * isn't a URL so this attribute should probably be renamed to something
+	 * like: "urlPath", or "requestUrlPath or... Or perhaps this attribute
+	 * should simply be eliminated? Time will tell.
 	 * <p>
-	 * This will include the name of the rptdesign document from the report 
+	 * This will include the name of the rptdesign document from the report
 	 * server's file system, the document format (&__format=...) and other
 	 * details.
 	 * <p>
-	 * If this {@link Job} is created for a Subscription, it will include query 
-	 * parameters for all of the report parameters. If this report is run 
-	 * manually, the user will be prompted for the report parameter values when 
+	 * If this {@link Job} is created for a Subscription, it will include query
+	 * parameters for all of the report parameters. If this report is run
+	 * manually, the user will be prompted for the report parameter values when
 	 * the report is run so they will not appear in {@link #url}.
 	 */
 	@Column(name = "url", nullable = true, length = 1024)

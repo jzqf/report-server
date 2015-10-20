@@ -129,7 +129,7 @@ public class DocumentFormatController extends AbstractBaseController {
 	 * 
 	 *   $ mvn clean spring-boot:run
 	 *   $ curl -i -H "Accept: application/json;v=1" -X GET \
-	 *   http://localhost:8081/report-server/rest/documentFormats/30800d77-5fdd-44bc-94a3-1502bd307c1d?expand=documentFormats
+	 *   http://localhost:8080/rest/documentFormats/30800d77-5fdd-44bc-94a3-1502bd307c1d?expand=documentFormats
 	 *   
 	 * @Transactional is used to avoid org.hibernate.LazyInitializationException
 	 * being thrown when evaluating documentFormat.getSubscriptions() in
