@@ -638,7 +638,7 @@ public class SubscriptionScheduledJob {
 
 								Date dateValue = Date
 										.from(localDate.atStartOfDay().atZone(ZoneId.systemDefault()).toInstant());
-								logger.debug("Dynamically generated dateValue = ", dateValue);
+								logger.debug("Dynamically generated dateValue = {}", dateValue);
 
 								JobParameterValue jobParameterValue = new JobParameterValue(jobParameter,
 										null, dateValue, null, null, null, null, null);
@@ -656,10 +656,8 @@ public class SubscriptionScheduledJob {
 									logger.debug("entityTimeDate = {}", entityTimeDate);
 									LocalTime localTime = DateUtils.localTimeFromEntityTimeDate(entityTimeDate);
 									logger.debug("localTime = {}", localTime);
-
 									localDateTime = LocalDateTime.of(localDate, localTime);
 									logger.debug("localDateTime = {}", localDateTime);
-
 								} else {
 									/*
 									 * If a value not *not* exist for 

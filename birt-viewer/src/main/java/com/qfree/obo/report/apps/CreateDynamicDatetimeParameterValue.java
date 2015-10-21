@@ -15,8 +15,6 @@ import java.util.Date;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.qfree.obo.report.util.DateUtils;
-
 public class CreateDynamicDatetimeParameterValue {
 
 	private static final Logger logger = LoggerFactory.getLogger(CreateDynamicDatetimeParameterValue.class);
@@ -25,37 +23,161 @@ public class CreateDynamicDatetimeParameterValue {
 	}
 
 	public static void main(String[] args) {
+		logger.info("\n\n");
+
+		LocalTime localTimeForDatetimeValue = null;
+		//		localTimeForDatetimeValue = LocalTime.parse("00:00:00");
+		//		localTimeForDatetimeValue = LocalTime.parse("23:59:59.999");
+
+		Boolean getDurationSubtractOneDayForDates = true;
 
 		Integer getYearNumber = null;
-		//		Integer getYearNumber = 2013;
-		//		Integer getYearsAgo = null;
-		Integer getYearsAgo = 1;
-
+		Integer getYearsAgo = null;
 		Integer getMonthNumber = null;
-		//		Integer getMonthNumber = 2;
-		//		Integer getMonthsAgo = null;
-		Integer getMonthsAgo = 3;
+		Integer getMonthsAgo = null;
+		Integer getWeeksAgo = null;
+		Integer getDaysAgo = null;
+		Integer getDayOfWeekNumber = null;
+		Integer getDayOfMonthNumber = null;
+		Integer getDayOfWeekInMonthOrdinal = null;
+		Integer getDayOfWeekInMonthNumber = null;
+		Integer getDurationToAddYears = null;
+		Integer getDurationToAddMonths = null;
+		Integer getDurationToAddWeeks = null;
+		Integer getDurationToAddDays = null;
+		Integer getDurationToAddHours = null;
+		Integer getDurationToAddMinutes = null;
+		Integer getDurationToAddSeconds = null;
 
-		Integer getWeeksAgo = 1;
+		// Now:
+		//		getDaysAgo = 0;
 
-		Integer getDaysAgo = 28;
+		// 24 hours ago:
+		getDaysAgo = 1;
 
-		Integer getDayOfWeekNumber = 1;
+		// First day of current year:
+		//		getMonthNumber = 1;
+		//		getDayOfMonthNumber = 1;
 
-		Integer getDayOfMonthNumber = -1;
+		// First day of previous year:
+		//		getYearsAgo = 1;
+		//		getMonthNumber = 1;
+		//		getDayOfMonthNumber = 1;
 
-		Integer getDayOfWeekInMonthOrdinal = 2; // 2nd
-		Integer getDayOfWeekInMonthNumber = 5; // Friday
+		// Start of first day of previous month:
+		//		getMonthsAgo = 1;
+		//		getDayOfMonthNumber = 1;
 
-		Integer getDurationToAddYears = 1;
-		Integer getDurationToAddMonths = 2;
-		Integer getDurationToAddWeeks = 3;
-		Integer getDurationToAddDays = 4;
-		Integer getDurationToAddHours = 5;
-		Integer getDurationToAddMinutes = 6;
-		Integer getDurationToAddSeconds = 7;
+		// End of last day of previous month (solution #1 for datetimes):
+		//		localTimeForDatetimeValue = LocalTime.parse("23:59:59.999");
+		//		getMonthsAgo = 1;
+		//		getDayOfMonthNumber = -1;
 
-		LocalDateTime localDateTime = LocalDateTime.now();
+		// End of last day of previous month (solution #2 for datetimes):
+		//		localTimeForDatetimeValue = LocalTime.parse("00:00:00");
+		//		getDayOfMonthNumber = 1;
+
+		// Start of Monday of previous week:
+		//		localTimeForDatetimeValue = LocalTime.parse("00:00:00");
+		//		getWeeksAgo = 1;
+		//		getDayOfWeekNumber = 1;
+
+		// Friday of previous week:
+		//		getWeeksAgo = 1;
+		//		getDayOfWeekNumber = 5;
+
+		// End of Friday of previous week:
+		//		localTimeForDatetimeValue = LocalTime.parse("00:00:00");
+		//		getWeeksAgo = 1;
+		//		getDayOfWeekNumber = 6;
+
+		// Start of first Monday in the current month:
+		//		localTimeForDatetimeValue = LocalTime.parse("00:00:00");
+		//		getDayOfWeekInMonthOrdinal = 1;
+		//		getDayOfWeekInMonthNumber = 1;
+
+		// (End of) Friday after the first Monday in the current month:
+		//		localTimeForDatetimeValue = LocalTime.parse("00:00:00");
+		//		getDayOfWeekInMonthOrdinal = 1;
+		//		getDayOfWeekInMonthNumber = 1;
+		//		getDurationToAddDays = 5;
+
+		//		getYearNumber = ;
+		//		getYearsAgo = ;
+		//		getMonthNumber = ;
+		//		getMonthsAgo = ;
+		//		getWeeksAgo = ;
+		//		getDaysAgo = ;
+		//		getDayOfWeekNumber = ;
+		//		getDayOfMonthNumber = ;
+		//		getDayOfWeekInMonthOrdinal = ;
+		//		getDayOfWeekInMonthNumber = ;
+		//		getDurationToAddYears = ;
+		//		getDurationToAddMonths = ;
+		//		getDurationToAddWeeks = ;
+		//		getDurationToAddDays = ;
+		//		getDurationToAddHours = ;
+		//		getDurationToAddMinutes = ;
+		//		getDurationToAddSeconds = ;
+
+		logger.info("timeValue = {}", localTimeForDatetimeValue);
+
+		if (getYearNumber != null) {
+			logger.info("yearNumber = {}", getYearNumber);
+		}
+		if (getYearsAgo != null) {
+			logger.info("yearsAgo = {}", getYearsAgo);
+		}
+		if (getMonthNumber != null) {
+			logger.info("monthNumber = {}", getMonthNumber);
+		}
+		if (getMonthsAgo != null) {
+			logger.info("monthsAgo = {}", getMonthsAgo);
+		}
+		if (getWeeksAgo != null) {
+			logger.info("weeksAgo = {}", getWeeksAgo);
+		}
+		if (getDaysAgo != null) {
+			logger.info("daysAgo = {}", getDaysAgo);
+		}
+		if (getDayOfWeekNumber != null) {
+			logger.info("dayOfWeekNumber = {}", getDayOfWeekNumber);
+		}
+		if (getDayOfMonthNumber != null) {
+			logger.info("dayOfMonthNumber = {}", getDayOfMonthNumber);
+		}
+		if (getDayOfWeekInMonthOrdinal != null) {
+			logger.info("dayOfWeekInMonthOrdinal = {}", getDayOfWeekInMonthOrdinal);
+		}
+		if (getDayOfWeekInMonthNumber != null) {
+			logger.info("dayOfWeekInMonthNumber = {}", getDayOfWeekInMonthNumber);
+		}
+		if (getDurationToAddYears != null) {
+			logger.info("durationToAddYears = {}", getDurationToAddYears);
+		}
+		if (getDurationToAddMonths != null) {
+			logger.info("durationToAddMonths = {}", getDurationToAddMonths);
+		}
+		if (getDurationToAddWeeks != null) {
+			logger.info("durationToAddWeeks = {}", getDurationToAddWeeks);
+		}
+		if (getDurationToAddDays != null) {
+			logger.info("durationToAddDays = {}", getDurationToAddDays);
+		}
+		if (getDurationToAddHours != null) {
+			logger.info("durationToAddHours = {}", getDurationToAddHours);
+		}
+		if (getDurationToAddMinutes != null) {
+			logger.info("durationToAddMinutes = {}", getDurationToAddMinutes);
+		}
+		if (getDurationToAddSeconds != null) {
+			logger.info("durationToAddSeconds = {}", getDurationToAddSeconds);
+		}
+
+		logger.info("-------------------------------------------");
+
+		//LocalDateTime localDateTime = LocalDateTime.now();
+		LocalDateTime localDateTime = LocalDateTime.of(2015, 11, 25, 03, 15, 30);
 		logger.info("localDateTime = {}", localDateTime);
 
 		if (getYearNumber != null) {
@@ -64,7 +186,7 @@ public class CreateDynamicDatetimeParameterValue {
 			 */
 			try {
 				localDateTime = localDateTime.withYear(getYearNumber);
-				logger.info("After setting year number to {}. localDateTime = {}", getYearNumber, localDateTime);
+				logger.debug("After setting year number to {}. localDateTime = {}", getYearNumber, localDateTime);
 			} catch (DateTimeException e) {
 				logger.warn("Illegal value for getYearNumber: {}. localDateTime = {}. Exception: {}",
 						getYearNumber, localDateTime, e);
@@ -75,7 +197,8 @@ public class CreateDynamicDatetimeParameterValue {
 			 */
 			try {
 				localDateTime = localDateTime.plusYears(-getYearsAgo.longValue());
-				logger.info("After moving localDateTime back {} years. localDateTime = {}", getYearsAgo, localDateTime);
+				logger.debug("After moving localDateTime back {} years. localDateTime = {}", getYearsAgo,
+						localDateTime);
 			} catch (DateTimeException e) {
 				logger.warn("Illegal value for getYearsAgo: {}. localDateTime = {}. Exception: {}",
 						getYearsAgo, localDateTime, e);
@@ -88,7 +211,7 @@ public class CreateDynamicDatetimeParameterValue {
 			 */
 			try {
 				localDateTime = localDateTime.withMonth(getMonthNumber);
-				logger.info("After setting month number to {}. localDateTime = {}", getMonthNumber, localDateTime);
+				logger.debug("After setting month number to {}. localDateTime = {}", getMonthNumber, localDateTime);
 			} catch (DateTimeException e) {
 				logger.warn("Illegal value for getMonthNumber: {}. localDateTime = {}. Exception: {}",
 						getMonthNumber, localDateTime, e);
@@ -99,7 +222,7 @@ public class CreateDynamicDatetimeParameterValue {
 			 */
 			try {
 				localDateTime = localDateTime.plusMonths(-getMonthsAgo.longValue());
-				logger.info("After moving localDateTime back {} months. localDateTime = {}",
+				logger.debug("After moving localDateTime back {} months. localDateTime = {}",
 						getMonthsAgo, localDateTime);
 			} catch (DateTimeException e) {
 				logger.warn("Illegal value for getMonthsAgo: {}. localDateTime = {}. Exception: {}",
@@ -113,7 +236,8 @@ public class CreateDynamicDatetimeParameterValue {
 			 */
 			try {
 				localDateTime = localDateTime.plusWeeks(-getWeeksAgo.longValue());
-				logger.info("After moving localDateTime back {} weeks. localDateTime = {}", getWeeksAgo, localDateTime);
+				logger.debug("After moving localDateTime back {} weeks. localDateTime = {}", getWeeksAgo,
+						localDateTime);
 			} catch (DateTimeException e) {
 				logger.warn("Illegal value for getWeeksAgo: {}. localDateTime = {}. Exception: {}",
 						getWeeksAgo, localDateTime, e);
@@ -126,7 +250,7 @@ public class CreateDynamicDatetimeParameterValue {
 			 */
 			try {
 				localDateTime = localDateTime.plusDays(-getDaysAgo.longValue());
-				logger.info("After moving localDateTime back {} days. localDateTime = {}", getDaysAgo, localDateTime);
+				logger.debug("After moving localDateTime back {} days. localDateTime = {}", getDaysAgo, localDateTime);
 			} catch (DateTimeException e) {
 				logger.warn("Illegal value for getDaysAgo: {}. localDateTime = {}. Exception: {}",
 						getDaysAgo, localDateTime, e);
@@ -141,7 +265,7 @@ public class CreateDynamicDatetimeParameterValue {
 			 */
 			try {
 				localDateTime = localDateTime.with(ChronoField.DAY_OF_WEEK, getDayOfWeekNumber.longValue());
-				logger.info(
+				logger.debug(
 						"After setting day-of-week of localDateTime to {}, even if it causes the month to change. localDateTime = {}",
 						getDayOfWeekNumber, localDateTime);
 			} catch (DateTimeException | ArithmeticException e) {
@@ -157,7 +281,7 @@ public class CreateDynamicDatetimeParameterValue {
 					 * Move the day-of-month number (1-31) of localDateTime.
 					 */
 					localDateTime = localDateTime.with(ChronoField.DAY_OF_MONTH, getDayOfMonthNumber.longValue());
-					logger.info("After setting day-of-month of localDateTime to {}. localDateTime = {}",
+					logger.debug("After setting day-of-month of localDateTime to {}. localDateTime = {}",
 							getDayOfMonthNumber, localDateTime);
 				} else if (getDayOfMonthNumber < 0 && getDayOfMonthNumber >= -31) {
 					/*
@@ -170,10 +294,10 @@ public class CreateDynamicDatetimeParameterValue {
 					 *     ...
 					 */
 					long lastDayOfMonth = localDateTime.range(ChronoField.DAY_OF_MONTH).getMaximum();
-					logger.info("lastDayOfMonth = {}", lastDayOfMonth);
+					logger.debug("lastDayOfMonth = {}", lastDayOfMonth);
 					localDateTime = localDateTime.with(ChronoField.DAY_OF_MONTH,
 							lastDayOfMonth + getDayOfMonthNumber.longValue() + 1);
-					logger.info("After setting day-of-month of localDateTime to {}. localDateTime = {}",
+					logger.debug("After setting day-of-month of localDateTime to {}. localDateTime = {}",
 							lastDayOfMonth + getDayOfMonthNumber.longValue() + 1, localDateTime);
 				} else {
 					/*
@@ -200,7 +324,7 @@ public class CreateDynamicDatetimeParameterValue {
 						getDayOfWeekInMonthOrdinal,
 						DayOfWeek.of(getDayOfWeekInMonthNumber));
 				localDateTime = localDateTime.with(dayOfWeekInMonthAdjuster);
-				logger.info(
+				logger.debug(
 						"After setting Nth day-of-week with getDayOfWeekInMonthOrdinal={}, getDayOfWeekInMonthNumber={}. localDateTime = {}",
 						getDayOfWeekInMonthOrdinal, getDayOfWeekInMonthNumber, localDateTime);
 			} catch (DateTimeException | ArithmeticException e) {
@@ -213,7 +337,7 @@ public class CreateDynamicDatetimeParameterValue {
 		if(getDurationToAddYears != null){
 			try {
 				localDateTime = localDateTime.plus(getDurationToAddYears.longValue(), ChronoUnit.YEARS);
-				logger.info("After adding {} years. localDateTime = {}", getDurationToAddYears, localDateTime);
+				logger.debug("After adding {} years. localDateTime = {}", getDurationToAddYears, localDateTime);
 			} catch (DateTimeException | ArithmeticException e) {
 				logger.warn(
 						"Adjustment cannot be made for getDurationToAddYears={}. localDateTime = {}. Exception: {}",
@@ -223,7 +347,7 @@ public class CreateDynamicDatetimeParameterValue {
 		if (getDurationToAddMonths != null){
 			try {
 				localDateTime = localDateTime.plus(getDurationToAddMonths.longValue(), ChronoUnit.MONTHS);
-				logger.info("After adding {} months. localDateTime = {}", getDurationToAddMonths, localDateTime);
+				logger.debug("After adding {} months. localDateTime = {}", getDurationToAddMonths, localDateTime);
 			} catch (DateTimeException | ArithmeticException e) {
 				logger.warn(
 						"Adjustment cannot be made for getDurationToAddMonths={}. localDateTime = {}. Exception: {}",
@@ -233,7 +357,7 @@ public class CreateDynamicDatetimeParameterValue {
 		if (getDurationToAddWeeks != null){
 			try {
 				localDateTime = localDateTime.plus(getDurationToAddWeeks.longValue(), ChronoUnit.WEEKS);
-				logger.info("After adding {} weeks. localDateTime = {}", getDurationToAddWeeks, localDateTime);
+				logger.debug("After adding {} weeks. localDateTime = {}", getDurationToAddWeeks, localDateTime);
 			} catch (DateTimeException | ArithmeticException e) {
 				logger.warn(
 						"Adjustment cannot be made for getDurationToAddWeeks={}. localDateTime = {}. Exception: {}",
@@ -243,7 +367,7 @@ public class CreateDynamicDatetimeParameterValue {
 		if (getDurationToAddDays != null){
 			try {
 				localDateTime = localDateTime.plus(getDurationToAddDays.longValue(), ChronoUnit.DAYS);
-				logger.info("After adding {} days. localDateTime = {}", getDurationToAddDays, localDateTime);
+				logger.debug("After adding {} days. localDateTime = {}", getDurationToAddDays, localDateTime);
 			} catch (DateTimeException | ArithmeticException e) {
 				logger.warn(
 						"Adjustment cannot be made for getDurationToAddDays={}. localDateTime = {}. Exception: {}",
@@ -253,7 +377,7 @@ public class CreateDynamicDatetimeParameterValue {
 		if (getDurationToAddHours != null){
 			try {
 				localDateTime = localDateTime.plus(getDurationToAddHours.longValue(), ChronoUnit.HOURS);
-				logger.info("After adding {} hours. localDateTime = {}", getDurationToAddHours, localDateTime);
+				logger.debug("After adding {} hours. localDateTime = {}", getDurationToAddHours, localDateTime);
 			} catch (DateTimeException | ArithmeticException e) {
 				logger.warn(
 						"Adjustment cannot be made for getDurationToAddHours={}. localDateTime = {}. Exception: {}",
@@ -263,7 +387,7 @@ public class CreateDynamicDatetimeParameterValue {
 		if (getDurationToAddMinutes != null){
 			try {
 				localDateTime = localDateTime.plus(getDurationToAddMinutes.longValue(), ChronoUnit.MINUTES);
-				logger.info("After adding {} minutes. localDateTime = {}", getDurationToAddMinutes, localDateTime);
+				logger.debug("After adding {} minutes. localDateTime = {}", getDurationToAddMinutes, localDateTime);
 			} catch (DateTimeException | ArithmeticException e) {
 				logger.warn(
 						"Adjustment cannot be made for getDurationToAddMinutes={}. localDateTime = {}. Exception: {}",
@@ -273,7 +397,7 @@ public class CreateDynamicDatetimeParameterValue {
 		if (getDurationToAddSeconds != null) {
 			try {
 				localDateTime = localDateTime.plus(getDurationToAddSeconds.longValue(), ChronoUnit.SECONDS);
-				logger.info("After adding {} seconds. localDateTime = {}", getDurationToAddSeconds, localDateTime);
+				logger.debug("After adding {} seconds. localDateTime = {}", getDurationToAddSeconds, localDateTime);
 			} catch (DateTimeException | ArithmeticException e) {
 				logger.warn(
 						"Adjustment cannot be made for getDurationToAddSeconds={}. localDateTime = {}. Exception: {}",
@@ -281,35 +405,57 @@ public class CreateDynamicDatetimeParameterValue {
 			}
 		}
 
+		//DATE:
 		/*
 		 * If we are computing a report parameter of type "Date", not 
 		 * "Datetime", the time part of localDateTime must be discarded.
-		 * 
-		 * This LocalDate may also be used for a report parameter of type 
-		 * "Datetime", provided a value was specified for fakeEntityTimeDate.
-		 * In this case we combine the LocalDate with the specified
-		 * fakeEntityTimeDate to create a LocalDateTime.
 		 */
-		LocalDate localDate = localDateTime.toLocalDate();
-		logger.info("localDate = {}", localDate);
-
-		//DATE:
+		LocalDateTime localDateTimeForDateValue = localDateTime;
+		if (getDurationSubtractOneDayForDates) {
+			/*
+			 * But we only subtract one day *if* a "duration" 
+			 * attribute has been set that shifts the date in
+			 * units of at least one day, i.e., year, month,
+			 * week or day.
+			 */
+			if (getDurationToAddYears != null
+					|| getDurationToAddMonths != null
+					|| getDurationToAddWeeks != null
+					|| getDurationToAddDays != null) {
+				logger.debug(
+						"Subtracting one day from localDateTimeForDateValue because durationToAddYears=true");
+				try {
+					localDateTimeForDateValue = localDateTimeForDateValue.plus(-1L, ChronoUnit.DAYS);
+					logger.debug("After subtracting 1 day . localDateTimeForDateValue = {}", localDateTimeForDateValue);
+				} catch (DateTimeException | ArithmeticException e) {
+					logger.warn(
+							"Exception thrown subtracting one day from localDateTimeForDateValue. localDateTimeForDateValue = {}. Exception: {}",
+							localDateTimeForDateValue, e);
+				}
+			}
+		}
+		LocalDate localDateForDateValue = localDateTimeForDateValue.toLocalDate();
+		logger.info("*** localDateForDateValue = {}", localDateForDateValue);
+		Date dateValue = Date
+				.from(localDateForDateValue.atStartOfDay().atZone(ZoneId.systemDefault()).toInstant());
+		logger.info("Dynamically generated dateValue = {}", dateValue);
 
 		//DATETIME:
-		Date fakeEntityTimeDate = new Date();
-		logger.info("fakeEntityTimeDate = {}", fakeEntityTimeDate);
-		if (fakeEntityTimeDate != null) {
-			LocalTime localTime = DateUtils.localTimeFromEntityTimeDate(fakeEntityTimeDate);
-			logger.info("localTime = {}", localTime);
-
-			localDateTime = LocalDateTime.of(localDate, localTime);
-			logger.info("localDateTime = {}", localDateTime);
-
-		} else {
-			//DO NOTHING HERE?????
+		/*
+		 * If we are computing a report parameter of type "Datetime", not 
+		 * "Date", the time part of localDateTime must be discarded *if* a value
+		 * was specified for localTimeForDatetimeValue.  In this case we combine
+		 * the LocalDate with the specified LocalTime to create a LocalDateTime.
+		 */
+		LocalDate localDateForDatetimeValue = localDateTime.toLocalDate();
+		logger.info("localDateForDatetimeValue = {}", localDateForDatetimeValue);
+		LocalDateTime localDateTimeForDatetimeValue = localDateTime;
+		if (localTimeForDatetimeValue != null) {
+			localDateTimeForDatetimeValue = LocalDateTime.of(localDateForDatetimeValue, localTimeForDatetimeValue);
 		}
-		Date datetimeValue = Date.from(localDateTime.atZone(ZoneId.systemDefault()).toInstant());
-		logger.info("datetimeValue = {}", datetimeValue);
+		logger.info("*** localDateTimeForDatetimeValue = {}", localDateTimeForDatetimeValue);
+		Date datetimeValue = Date.from(localDateTimeForDatetimeValue.atZone(ZoneId.systemDefault()).toInstant());
+		logger.info("Dynamically generated datetimeValue = {}", datetimeValue);
 
 	}
 }
