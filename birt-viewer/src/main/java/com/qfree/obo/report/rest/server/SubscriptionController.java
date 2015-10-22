@@ -31,11 +31,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.qfree.obo.report.db.DocumentFormatRepository;
-import com.qfree.obo.report.db.ReportVersionRepository;
 import com.qfree.obo.report.db.RoleParameterRepository;
 import com.qfree.obo.report.db.RoleParameterValueRepository;
-import com.qfree.obo.report.db.RoleRepository;
 import com.qfree.obo.report.db.SubscriptionRepository;
 import com.qfree.obo.report.domain.ReportParameter;
 import com.qfree.obo.report.domain.RoleParameter;
@@ -68,9 +65,9 @@ public class SubscriptionController extends AbstractBaseController {
 
 	private final SubscriptionRepository subscriptionRepository;
 	private final SubscriptionService subscriptionService;
-	private final DocumentFormatRepository documentFormatRepository;
-	private final ReportVersionRepository reportVersionRepository;
-	private final RoleRepository roleRepository;
+	//	private final DocumentFormatRepository documentFormatRepository;
+	//	private final ReportVersionRepository reportVersionRepository;
+	//	private final RoleRepository roleRepository;
 	private final RoleParameterRepository roleParameterRepository;
 	private final RoleParameterValueRepository roleParameterValueRepository;
 	private final SubscriptionScheduler subscriptionScheduler;
@@ -79,17 +76,17 @@ public class SubscriptionController extends AbstractBaseController {
 	public SubscriptionController(
 			SubscriptionRepository subscriptionRepository,
 			SubscriptionService subscriptionService,
-			DocumentFormatRepository documentFormatRepository,
-			ReportVersionRepository reportVersionRepository,
-			RoleRepository roleRepository,
+			//	DocumentFormatRepository documentFormatRepository,
+			//	ReportVersionRepository reportVersionRepository,
+			//	RoleRepository roleRepository,
 			RoleParameterRepository roleParameterRepository,
 			RoleParameterValueRepository roleParameterValueRepository,
 			SubscriptionScheduler subscriptionScheduler) {
 		this.subscriptionRepository = subscriptionRepository;
 		this.subscriptionService = subscriptionService;
-		this.documentFormatRepository = documentFormatRepository;
-		this.reportVersionRepository = reportVersionRepository;
-		this.roleRepository = roleRepository;
+		//	this.documentFormatRepository = documentFormatRepository;
+		//	this.reportVersionRepository = reportVersionRepository;
+		//	this.roleRepository = roleRepository;
 		this.roleParameterRepository = roleParameterRepository;
 		this.roleParameterValueRepository = roleParameterValueRepository;
 		this.subscriptionScheduler = subscriptionScheduler;
@@ -784,10 +781,12 @@ public class SubscriptionController extends AbstractBaseController {
 		 * scheduling have been modified. If so, we reschedule the job below.
 		 */
 		boolean rescheduleJob = CompareUtils.different(subscriptionResource.getEnabled(), subscription.getEnabled())
-				|| CompareUtils.different(subscriptionResource.getDeliveryCronSchedule(), subscription.getDeliveryCronSchedule())
+				|| CompareUtils.different(subscriptionResource.getDeliveryCronSchedule(),
+						subscription.getDeliveryCronSchedule())
 				|| CompareUtils.different(subscriptionResource.getDeliveryTimeZoneId(),
 						subscription.getDeliveryTimeZoneId())
-				|| CompareUtils.different(subscriptionResource.getDeliveryDatetimeRunAt(), subscription.getDeliveryDatetimeRunAt());
+				|| CompareUtils.different(subscriptionResource.getDeliveryDatetimeRunAt(),
+						subscription.getDeliveryDatetimeRunAt());
 
 		/*
 		 * Save updated entity. This must come *after* we check if fields of the

@@ -29,13 +29,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.qfree.obo.report.db.DocumentFormatRepository;
 import com.qfree.obo.report.db.JobRepository;
 import com.qfree.obo.report.db.JobStatusRepository;
-import com.qfree.obo.report.db.ReportVersionRepository;
-import com.qfree.obo.report.db.RoleParameterRepository;
-import com.qfree.obo.report.db.RoleParameterValueRepository;
-import com.qfree.obo.report.db.RoleRepository;
 import com.qfree.obo.report.domain.Job;
 import com.qfree.obo.report.domain.JobStatus;
 import com.qfree.obo.report.dto.JobParameterCollectionResource;
@@ -44,7 +39,6 @@ import com.qfree.obo.report.dto.ResourcePath;
 import com.qfree.obo.report.dto.RestErrorResource.RestError;
 import com.qfree.obo.report.exceptions.RestApiException;
 import com.qfree.obo.report.rest.server.RestUtils.RestApiVersion;
-import com.qfree.obo.report.service.JobService;
 
 @Component
 @Path(ResourcePath.JOBS_PATH)
@@ -53,31 +47,31 @@ public class JobController extends AbstractBaseController {
 	private static final Logger logger = LoggerFactory.getLogger(JobController.class);
 
 	private final JobRepository jobRepository;
-	private final JobService jobService;
-	private final DocumentFormatRepository documentFormatRepository;
-	private final ReportVersionRepository reportVersionRepository;
-	private final RoleRepository roleRepository;
-	private final RoleParameterRepository roleParameterRepository;
-	private final RoleParameterValueRepository roleParameterValueRepository;
+	//	private final JobService jobService;
+	//	private final DocumentFormatRepository documentFormatRepository;
+	//	private final ReportVersionRepository reportVersionRepository;
+	//	private final RoleRepository roleRepository;
+	//	private final RoleParameterRepository roleParameterRepository;
+	//	private final RoleParameterValueRepository roleParameterValueRepository;
 	private final JobStatusRepository jobStatusRepository;
 
 	@Autowired
 	public JobController(
 			JobRepository jobRepository,
-			JobService jobService,
-			DocumentFormatRepository documentFormatRepository,
-			ReportVersionRepository reportVersionRepository,
-			RoleRepository roleRepository,
-			RoleParameterRepository roleParameterRepository,
-			RoleParameterValueRepository roleParameterValueRepository,
+			//	JobService jobService,
+			//	DocumentFormatRepository documentFormatRepository,
+			//	ReportVersionRepository reportVersionRepository,
+			//	RoleRepository roleRepository,
+			//	RoleParameterRepository roleParameterRepository,
+			//	RoleParameterValueRepository roleParameterValueRepository,
 			JobStatusRepository jobStatusRepository) {
 		this.jobRepository = jobRepository;
-		this.jobService = jobService;
-		this.documentFormatRepository = documentFormatRepository;
-		this.reportVersionRepository = reportVersionRepository;
-		this.roleRepository = roleRepository;
-		this.roleParameterRepository = roleParameterRepository;
-		this.roleParameterValueRepository = roleParameterValueRepository;
+		//	this.jobService = jobService;
+		//	this.documentFormatRepository = documentFormatRepository;
+		//	this.reportVersionRepository = reportVersionRepository;
+		//	this.roleRepository = roleRepository;
+		//	this.roleParameterRepository = roleParameterRepository;
+		//	this.roleParameterValueRepository = roleParameterValueRepository;
 		this.jobStatusRepository = jobStatusRepository;
 	}
 

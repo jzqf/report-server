@@ -154,6 +154,15 @@ public class Job implements Serializable {
 	@Column(name = "report_ran_at", nullable = true)
 	private Date reportRanAt;
 
+	/**
+	 * E-mail address to which the rendered report will be sent. This allows a
+	 * subscription to be set up that delivers reports to other than a role's
+	 * primary e-mail address store with the Role entity.
+	 */
+	// @NotBlank
+	@Column(name = "email", nullable = true, length = 160)
+	private String email;
+
 	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name = "report_emailed_at", nullable = true)
 	private Date reportEmailedAt;
@@ -235,6 +244,7 @@ public class Job implements Serializable {
 				jobResource.getEncoded(),
 				null,
 				null,
+				null,
 				DateUtils.nowUtc());
 	}
 
@@ -262,6 +272,7 @@ public class Job implements Serializable {
 				encoded,
 				null,
 				null,
+				null,
 				DateUtils.nowUtc());
 	}
 
@@ -277,6 +288,7 @@ public class Job implements Serializable {
 			String document,
 			Boolean encoded,
 			Date reportRanAt,
+			String email,
 			Date reportEmailedAt,
 			Date createdOn) {
 		this.subscription = subscription;
@@ -291,6 +303,7 @@ public class Job implements Serializable {
 		this.document = document;
 		this.encoded = encoded;
 		this.reportRanAt = null;
+		this.email = email;
 		this.reportEmailedAt = null;
 		this.createdOn = (createdOn != null) ? createdOn : DateUtils.nowUtc();
 	}
@@ -354,6 +367,14 @@ public class Job implements Serializable {
 
 	public void setReportRanAt(Date reportRanAt) {
 		this.reportRanAt = reportRanAt;
+	}
+
+	public String getEmail() {
+		return email;
+	}
+
+	public void setEmail(String email) {
+		this.email = email;
 	}
 
 	public Date getReportEmailedAt() {
@@ -441,6 +462,8 @@ public class Job implements Serializable {
 		builder.append(jobStatusSetAt);
 		builder.append(", reportRanAt=");
 		builder.append(reportRanAt);
+		builder.append(", email=");
+		builder.append(email);
 		builder.append(", reportEmailedAt=");
 		builder.append(reportEmailedAt);
 		builder.append(", createdOn=");
