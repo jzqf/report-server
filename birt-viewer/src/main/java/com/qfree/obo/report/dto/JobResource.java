@@ -28,12 +28,6 @@ public class JobResource extends AbstractBaseResource {
 	@XmlElement
 	private Long jobId;
 
-	@XmlElement(name = "jobStatus")
-	private JobStatusResource jobStatusResource;
-
-	@XmlElement
-	private String jobStatusRemarks;
-
 	@XmlElement(name = "subscription")
 	private SubscriptionResource subscriptionResource;
 
@@ -45,6 +39,24 @@ public class JobResource extends AbstractBaseResource {
 
 	@XmlElement(name = "documentFormat")
 	private DocumentFormatResource documentFormatResource;
+
+	@XmlElement(name = "jobStatus")
+	private JobStatusResource jobStatusResource;
+
+	@XmlElement
+	@XmlJavaTypeAdapter(DatetimeAdapter.class)
+	private Date jobStatusSetAt;
+
+	@XmlElement
+	private String jobStatusRemarks;
+
+	@XmlElement
+	@XmlJavaTypeAdapter(DatetimeAdapter.class)
+	private Date reportRanAt;
+
+	@XmlElement
+	@XmlJavaTypeAdapter(DatetimeAdapter.class)
+	private Date reportEmailedAt;
 
 	@XmlElement
 	private String url;
@@ -108,7 +120,8 @@ public class JobResource extends AbstractBaseResource {
 			
 			this.jobStatusResource = new JobStatusResource(job.getJobStatus(),
 					uriInfo, newQueryParams, apiVersion);
-			this.jobStatusRemarks = jobStatusRemarks;
+			this.jobStatusSetAt = job.getJobStatusSetAt();
+			this.jobStatusRemarks = job.getJobStatusRemarks();
 
 			this.subscriptionResource = new SubscriptionResource(job.getSubscription(),
 					uriInfo, newQueryParams, apiVersion);
@@ -126,6 +139,8 @@ public class JobResource extends AbstractBaseResource {
 			this.fileName = job.getFileName();
 			this.document = job.getDocument();
 			this.encoded = job.getEncoded();
+			this.reportRanAt = job.getReportRanAt();
+			this.reportEmailedAt = job.getReportEmailedAt();
 			this.createdOn = job.getCreatedOn();
 
 			this.jobParameterCollectionResource = new JobParameterCollectionResource(
@@ -204,18 +219,6 @@ public class JobResource extends AbstractBaseResource {
 		this.jobId = jobId;
 	}
 
-	public JobStatusResource getJobStatusResource() {
-		return jobStatusResource;
-	}
-
-	public void setJobStatusResource(JobStatusResource jobStatusResource) {
-		this.jobStatusResource = jobStatusResource;
-	}
-
-	public String getJobStatusRemarks() {
-		return jobStatusRemarks;
-	}
-
 	public void setJobStatusRemarks(String jobStatusRemarks) {
 		this.jobStatusRemarks = jobStatusRemarks;
 	}
@@ -242,6 +245,49 @@ public class JobResource extends AbstractBaseResource {
 
 	public void setDocumentFormatResource(DocumentFormatResource documentFormatResource) {
 		this.documentFormatResource = documentFormatResource;
+	}
+
+	public JobStatusResource getJobStatusResource() {
+		return jobStatusResource;
+	}
+
+	public void setJobStatusResource(JobStatusResource jobStatusResource) {
+		this.jobStatusResource = jobStatusResource;
+		/*
+		 * No, do not set jobStatusSetAt here. This setter can be called when
+		 * creating a JobResource from JSON data that has been POSTed or PUTed
+		 * to a REST endpoint. Only in the Job setter "setJobStatusResource"
+		 * should jobStatusSetAt be set.
+		 */
+		//this.jobStatusSetAt = DateUtils.nowUtc(); ? // Do not uncomment
+	}
+
+	public String getJobStatusRemarks() {
+		return jobStatusRemarks;
+	}
+
+	public Date getJobStatusSetAt() {
+		return jobStatusSetAt;
+	}
+
+	public void setJobStatusSetAt(Date jobStatusSetAt) {
+		this.jobStatusSetAt = jobStatusSetAt;
+	}
+
+	public Date getReportRanAt() {
+		return reportRanAt;
+	}
+
+	public void setReportRanAt(Date reportRanAt) {
+		this.reportRanAt = reportRanAt;
+	}
+
+	public Date getReportEmailedAt() {
+		return reportEmailedAt;
+	}
+
+	public void setReportEmailedAt(Date reportEmailedAt) {
+		this.reportEmailedAt = reportEmailedAt;
 	}
 
 	public String getUrl() {
@@ -326,6 +372,12 @@ public class JobResource extends AbstractBaseResource {
 		builder.append(document);
 		builder.append(", encoded=");
 		builder.append(encoded);
+		builder.append(", jobStatusSetAt=");
+		builder.append(jobStatusSetAt);
+		builder.append(", reportRanAt=");
+		builder.append(reportRanAt);
+		builder.append(", reportEmailedAt=");
+		builder.append(reportEmailedAt);
 		builder.append(", createdOn=");
 		builder.append(createdOn);
 		builder.append("]");
