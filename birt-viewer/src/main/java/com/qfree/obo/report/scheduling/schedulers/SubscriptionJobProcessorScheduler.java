@@ -1,5 +1,7 @@
 package com.qfree.obo.report.scheduling.schedulers;
 
+import java.util.List;
+
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 
@@ -17,6 +19,10 @@ import org.springframework.scheduling.quartz.SchedulerFactoryBean;
 import org.springframework.scheduling.quartz.SimpleTriggerFactoryBean;
 import org.springframework.stereotype.Component;
 
+import com.qfree.obo.report.db.JobRepository;
+import com.qfree.obo.report.db.JobStatusRepository;
+import com.qfree.obo.report.domain.Job;
+import com.qfree.obo.report.domain.JobStatus;
 import com.qfree.obo.report.scheduling.jobs.SubscriptionJobProcessorScheduledJob;
 
 /**
@@ -48,13 +54,19 @@ public class SubscriptionJobProcessorScheduler {
 
 	private final SchedulerFactoryBean schedulerFactoryBean;
 	private final SubscriptionJobProcessorScheduledJob subscriptionJobProcessorScheduledJob;
+	private final JobRepository jobRepository;
+	private final JobStatusRepository jobStatusRepository;
 
 	@Autowired
 	public SubscriptionJobProcessorScheduler(
 			SchedulerFactoryBean schedulerFactoryBean,
-			SubscriptionJobProcessorScheduledJob subscriptionJobProcessorScheduledJob) {
+			SubscriptionJobProcessorScheduledJob subscriptionJobProcessorScheduledJob,
+			JobRepository jobRepository,
+			JobStatusRepository jobStatusRepository) {
 		this.schedulerFactoryBean = schedulerFactoryBean;
 		this.subscriptionJobProcessorScheduledJob = subscriptionJobProcessorScheduledJob;
+		this.jobRepository = jobRepository;
+		this.jobStatusRepository = jobStatusRepository;
 	}
 
 	/*
@@ -155,6 +167,46 @@ public class SubscriptionJobProcessorScheduler {
 		 * scheduled.
 		 */
 		if (!scheduler.checkExists(JOB_KEY)) {
+
+			if (env.getProperty("startup.schedule.jobprocessor.requeuerunningjobs").equals("true")) {
+				/*
+				 * If any Job entities have status "RUNNING", we change that to
+				 * "QUEUED" here. This is to treat the (hopefully unlikely) case
+				 * where something goes wrong when the Job processor, i.e.,
+				 * SubscriptionJobProcessorScheduledJob.run(), is processing a
+				 * subscription Job. This could be a power failure, nasty 
+				 * exception, ... In that case, the Job will be left in the 
+				 * state "RUNNING", and it will not get processed whenever the 
+				 * Job processor is restarted.
+				 * 
+				 * Under the assumption that any Job entities found here, before
+				 * the Job processor is started/scheduled, have somehow been 
+				 * left in the state "RUNNING" but were never fully processed,
+				 * we set their status back to "QUEUED" so that they will be
+				 * picked up the next itme that the Job processor rubs.
+				 * 
+				 * It is essential that we do not run the Job processor in 
+				 * multiple threads; otherwise, this block of code might requeue
+				 * Jobs that are actively being processed. If we *do* implement
+				 * a multi-threaded Job processor, then we should only perform
+				 * this requeuing that is done here if we know that *NONE* of
+				 * those threads are running.
+				 */
+
+				JobStatus jobStatus_QUEUED = jobStatusRepository.findOne(JobStatus.QUEUED_ID);
+
+				List<Job> runningJobs = jobRepository.findByJobStatusJobStatusId(JobStatus.RUNNING_ID);
+				if (runningJobs.size() > 0) {
+					logger.warn("{} running Jobs to re-queue", runningJobs.size());
+					for (Job job : runningJobs) {
+						logger.debug("job = {}", job);
+						logger.info("Setting status to \"QUEUED\" for job = {}", job);
+						job.setJobStatus(jobStatus_QUEUED);
+						job = jobRepository.save(job);
+					}
+				}
+
+			}
 
 			/*
 			 * Create a factory for obtaining a Quartz JobDetail.
