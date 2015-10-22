@@ -223,6 +223,27 @@ public class SubscriptionParameterController extends AbstractBaseController {
 	 *   integerValue = 123
 	 *   integerValue = 500
 	 *   integerValue = 999
+	 * 
+	 * Note: The format for specifying values for the "datetimeValue" attribute
+	 *       depends on a configuration parameter. Currently, this parameter is:
+	 *       DatetimeReportParameterDateTimeAdapter.DATETIME_REPORT_PARAMETERS_NO_TIMEZONE = true
+	 *       This means that "datetimeValue" attribute values should be expressed
+	 *       as "local datetime values", e.g.,
+	 *       
+	 *       "datetimeValue":"2016-09-24T22:30:00.000"
+	 *       
+	 *       This requires that the query associated with the report is written
+	 *       to assume a particular time zone.
+	 *       
+	 *       If, however, this configuration parameter is changed to false, use:
+	 *       
+	 *       "datetimeValue":"2016-09-24T22:30:00.000Z"
+	 *       
+	 *       This requires that the query associated with the report is written
+	 *       to assume that the datetime value is expressed relative to GMT/UTC.
+	 *       
+	 *       Note that these two datetime values represent different instants in
+	 *       time, unless the server's time zone happens to be GMT/UTC.
 	 *   
 	 * @Transactional is used to avoid org.hibernate.LazyInitializationException
 	 * being thrown.

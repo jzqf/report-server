@@ -9,14 +9,33 @@ import javax.xml.bind.annotation.adapters.XmlAdapter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.qfree.obo.report.scheduling.schedulers.SubscriptionScheduler;
 import com.qfree.obo.report.util.DateUtils;
 
 /**
- * Adapter class for the SubscriptionResource.deliveryDatetimeRunAt field to
- * serialize Java Date objects as strings as well as deserializes strings into
- * Java Date objects.
+ * Adapter class for resource fields that represent BIRT report parameter
+ * datetime values.
  * 
+ * <p>
+ * Two behaviours are supported. Both assume that the {@link java.util.Date} has
+ * come from an entity class object where the value was stored in a database
+ * column of type "timestamp without time zone". The difference is how the value
+ * should be interpretted:
+ * 
+ * <ol>
+ * <li>The date and time portions are relative to UTC.</li>
+ * <li>The date and time portions are expressed in the local, default time zone
+ * for the server.</li>
+ * </ol>
+ * 
+ * <p>
+ * The behaviour impplemented here depends on the configuration parameter
+ * {@link #DATETIME_REPORT_PARAMETERS_NO_TIMEZONE}.
+ * 
+ * <p>
+ * This class serializes {@link java.util.Date} objects as strings as well as
+ * deserializes strings into Java Date objects.
+ * 
+ * <p>
  * Note: According to the Javadoc for the marshal & unmarshal methods, if
  * there's an error during the conversion, the exception will be eaten . The
  * caller is responsible for reporting the error to the user through
@@ -26,24 +45,25 @@ import com.qfree.obo.report.util.DateUtils;
  * @author jeffreyz
  *
  */
-public class SubscriptionRunAtDateTimeAdapter extends XmlAdapter<String, Date> {
+public class DatetimeReportParameterDateTimeAdapter extends XmlAdapter<String, Date> {
 
-	private static final Logger logger = LoggerFactory.getLogger(SubscriptionRunAtDateTimeAdapter.class);
+	private static final Logger logger = LoggerFactory.getLogger(DatetimeReportParameterDateTimeAdapter.class);
 
-	//	private final SimpleDateFormat format_ISO8601 = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
-	//	private final SimpleDateFormat format_LocalDateTime = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");
+	private static final boolean DATETIME_REPORT_PARAMETERS_NO_TIMEZONE = true;
 
+	/**
+	 * This method marshals a {@link Date} to a string that will be returned as
+	 * a JSON attribute of a ReST resource object.
+	 */
 	@Override
 	public String marshal(Date date) throws Exception {
 		logger.debug("date = {}", date);
 
 		try {
-			if (SubscriptionScheduler.RUNAT_ENTITY_DATE_TZ_DYNAMIC) {
+			if (DATETIME_REPORT_PARAMETERS_NO_TIMEZONE) {
 				return DateUtils.localDateTimeStringFromServerTZDate(date);
-				//					return format_LocalDateTime.format(date);
 			} else {
 				return DateUtils.Iso8601StringFromUtcDate(date);
-				//					return format_ISO8601.format(date);
 			}
 		} catch (Exception e) {
 			logger.error("Exception caught formatting date '{}'. Exception: ", date.toString(), e);
@@ -55,11 +75,6 @@ public class SubscriptionRunAtDateTimeAdapter extends XmlAdapter<String, Date> {
 	 * This method unmarshals datetimes specified as strings in JSON resources
 	 * to Java Date's. The JSON objects are are submitted to this application
 	 * via HTTP POST or PUT.
-	 * 
-	 * <p>
-	 * The format expected for the string encoding of the datetimes depends on
-	 * the configuration parameter
-	 * {@link SubscriptionScheduler#RUNAT_ENTITY_DATE_TZ_DYNAMIC}:
 	 * 
 	 * <p>
 	 * <code>true</code>: The string must be expressed in a format that can be
@@ -82,7 +97,7 @@ public class SubscriptionRunAtDateTimeAdapter extends XmlAdapter<String, Date> {
 
 		if (dateAsString != null && !dateAsString.equals("")) {
 			try {
-				if (SubscriptionScheduler.RUNAT_ENTITY_DATE_TZ_DYNAMIC) {
+				if (DATETIME_REPORT_PARAMETERS_NO_TIMEZONE) {
 					return DateUtils.dateServerTZFromLocalDatetimeString(dateAsString);
 				} else {
 					return DateUtils.dateUtcFromIso8601String(dateAsString);

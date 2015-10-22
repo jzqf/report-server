@@ -39,7 +39,7 @@ public class SubscriptionParameterValueResource extends AbstractBaseResource {
 	private Date dateValue;
 
 	@XmlElement
-	@XmlJavaTypeAdapter(DatetimeAdapter.class)
+	@XmlJavaTypeAdapter(DatetimeReportParameterDateTimeAdapter.class)
 	private Date datetimeValue;
 
 	@XmlElement

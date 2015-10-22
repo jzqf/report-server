@@ -22,6 +22,9 @@ public class DateUtils {
 
 	private static final Logger logger = LoggerFactory.getLogger(DateUtils.class);
 
+	private static final SimpleDateFormat FORMAT_ISO8601 = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+	private static final SimpleDateFormat FORMAT_LOCALDATETIME = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");
+
 	/**
 	 * Returns a {@link Date} corresponding to the current datetime such that if
 	 * it is stored in a PostgreSQL table column of type "timestamp without
@@ -156,6 +159,34 @@ public class DateUtils {
 	}
 
 	/**
+	 * Performs the opposite operation as
+	 * {@link #dateUtcFromIso8601String(String)}.
+	 * 
+	 * <p>
+	 * This method will take the output of
+	 * {@link #dateUtcFromIso8601String(String)} and return a string that is
+	 * equivalent to that originally used. Equivalent means that it represents
+	 * the same date, not that the strings will be identical.
+	 * 
+	 * @param date
+	 * @return
+	 */
+	public static String Iso8601StringFromUtcDate(Date date) {
+
+		if (date != null) {
+			//try {
+			return FORMAT_ISO8601.format(date);
+			//} catch (Exception e) {
+			//	logger.error("Exception caught formatting date '{}'. Exception: ", date.toString(), e);
+			//	return (String) null;
+			//}
+		} else {
+			return (String) null;
+		}
+
+	}
+
+	/**
 	 * Converts a string that represents a datetime to a java.util.Date on the
 	 * report server (this application) that has the same date and same time
 	 * value.
@@ -187,6 +218,34 @@ public class DateUtils {
 	}
 
 	/**
+	 * Performs the opposite operation as
+	 * {@link #dateServerTZFromLocalDatetimeString(String)}.
+	 * 
+	 * <p>
+	 * This method will take the output of
+	 * {@link #dateServerTZFromLocalDatetimeString(String)} and return a string
+	 * that is equivalent to that originally used. Equivalent means that it
+	 * represents the same date, not that the strings will be identical.
+	 * 
+	 * @param date
+	 * @return
+	 */
+	public static String localDateTimeStringFromServerTZDate(Date date) {
+
+		if (date != null) {
+			//try {
+			return FORMAT_LOCALDATETIME.format(date);
+			//} catch (Exception e) {
+			//	logger.error("Exception caught formatting date '{}'. Exception: ", date.toString(), e);
+			//	return (String) null;
+			//}
+		} else {
+			return (String) null;
+		}
+
+	}
+
+	/**
 	 * Converts a string that represents a datetime to a java.util.Date.
 	 * 
 	 * This assumes that the string was obtained from a BIRT rptdesign file via
@@ -207,7 +266,7 @@ public class DateUtils {
 	 */
 	public static Date dateFromBirtDatetimeString(String birtDatetimeString) {
 
-		//TODO Convert these to static final fields
+		//TODO Convert these to private static final fields
 		DateTimeFormatter dateTimeFormatter1 = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 		DateTimeFormatter dateTimeFormatter2 = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS");
 		DateTimeFormatter dateTimeFormatter3 = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.S");
@@ -258,7 +317,7 @@ public class DateUtils {
 	 */
 	public static String birtDatetimeStringFromDate(Date date) {
 
-		//TOODO Make this a static final field.
+		//TODO Make this a private static final field.
 		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
 		if (date != null) {
 			//try {
@@ -328,7 +387,7 @@ public class DateUtils {
 	 */
 	public static String birtDateStringFromDate(Date date) {
 
-		//TOODO Make this a static final field.
+		//TODO Make this a private static final field.
 		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
 		if (date != null) {
 			//try {
@@ -405,7 +464,7 @@ public class DateUtils {
 	 */
 	public static String birtTimeStringFromDate(Date date) {
 
-		//TOODO Make this a static final field.
+		//TODO Make this a private static final field.
 		SimpleDateFormat format = new SimpleDateFormat("HH:mm:ss.SSS");
 		if (date != null) {
 			//try {
@@ -864,6 +923,37 @@ public class DateUtils {
 		//localDatetimeString = "2015-10-04T20:45:00Z"; // <- DateTimeParseException thrown
 		//System.out.println(String.format("dateServerTZFromLocalDatetimeString(\"%s\") = %s", localDatetimeString,
 		//		dateServerTZFromLocalDatetimeString(localDatetimeString)));
+
+		String utcDateString;
+		Date utcDate;
+		String recoveredString;
+
+		utcDateString = "2015-05-30T12:00:00.000Z";
+		utcDate = dateUtcFromIso8601String(utcDateString);
+		recoveredString = Iso8601StringFromUtcDate(utcDate);
+		logger.info("\nutcDateString   = {}, \nutcDate         = {}, \nrecoveredString = {}",
+				utcDateString, utcDate, recoveredString);
+
+		utcDateString = "2015-05-30T12:00:00.000+00:00";
+		utcDate = dateUtcFromIso8601String(utcDateString);
+		recoveredString = Iso8601StringFromUtcDate(utcDate);
+		logger.info("\nutcDateString   = {}, \nutcDate         = {}, \nrecoveredString = {}",
+				utcDateString, utcDate, recoveredString);
+
+		utcDateString = "2015-05-30T12:00:00.000+02:00";
+		utcDate = dateUtcFromIso8601String(utcDateString);
+		recoveredString = Iso8601StringFromUtcDate(utcDate);
+		logger.info("\nutcDateString   = {}, \nutcDate         = {}, \nrecoveredString = {}",
+				utcDateString, utcDate, recoveredString);
+
+		String localDateTimeString;
+		Date serverTZDate;
+
+		localDateTimeString = "1961-11-04T16:00:00.001";
+		serverTZDate = dateServerTZFromLocalDatetimeString(localDateTimeString);
+		recoveredString = localDateTimeStringFromServerTZDate(serverTZDate);
+		logger.info("\nlocalDateTimeString = {}, \nserverTZDate        = {}, \nrecoveredString     = {}",
+				localDateTimeString, serverTZDate, recoveredString);
 
 	}
 }
