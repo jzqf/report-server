@@ -31,6 +31,18 @@ public enum ResourcePath {
 			ResourcePath.DOCUMENTFORMAT_EXPAND_PARAM,
 			ResourcePath.DOCUMENTFORMAT_SHOWALL_PARAM,
 			DocumentFormat.class),
+	/*
+	 * Passing null here for entityClass causes problems. Do not uncoment this
+	 * code here unless you are prepared to track down the issue. For example,
+	 * it will cause a NullPointerException in forEntity(...) below, among
+	 * other problems (some unit tests will fail). No big deal - we do not need
+	 * to uncomment these lines here for any good reason.
+	 */
+	//	JOBPROCESSOR(
+	//			ResourcePath.JOBPROCESSOR_PATH,
+	//			ResourcePath.JOBPROCESSOR_EXPAND_PARAM,
+	//			ResourcePath.JOBPROCESSOR_SHOWALL_PARAM,
+	//			null),
 	JOBS(
 			ResourcePath.JOBS_PATH,
 			ResourcePath.JOB_EXPAND_PARAM,
@@ -113,6 +125,7 @@ public enum ResourcePath {
 	 */
 	public static final String CONFIGURATIONS_PATH = ResourcePath.PATH_SEPARATOR + "configurations";
 	public static final String DOCUMENTFORMATS_PATH = ResourcePath.PATH_SEPARATOR + "documentFormats";
+	public static final String JOBPROCESSOR_PATH = ResourcePath.PATH_SEPARATOR + "jobProcessor";
 	public static final String JOBS_PATH = ResourcePath.PATH_SEPARATOR + "jobs";
 	public static final String JOBPARAMETERS_PATH = ResourcePath.PATH_SEPARATOR + "jobParameters";
 	public static final String JOBPARAMETERVALUES_PATH = ResourcePath.PATH_SEPARATOR + "jobParameterValues";
@@ -146,6 +159,7 @@ public enum ResourcePath {
 	 */
 	public static final String CONFIGURATION_EXPAND_PARAM = "configurations";
 	public static final String DOCUMENTFORMAT_EXPAND_PARAM = "documentFormats";
+	public static final String JOBPROCESSOR_EXPAND_PARAM = "jobProcessor";
 	public static final String JOB_EXPAND_PARAM = "jobs";
 	public static final String JOBPARAMETER_EXPAND_PARAM = "jobParameters";
 	public static final String JOBPARAMETERVALUE_EXPAND_PARAM = "jobParameterValues";
@@ -180,6 +194,7 @@ public enum ResourcePath {
 	 */
 	public static final String CONFIGURATION_SHOWALL_PARAM = CONFIGURATION_EXPAND_PARAM;
 	public static final String DOCUMENTFORMAT_SHOWALL_PARAM = DOCUMENTFORMAT_EXPAND_PARAM;
+	public static final String JOBPROCESSOR_SHOWALL_PARAM = JOBPROCESSOR_EXPAND_PARAM;
 	public static final String JOB_SHOWALL_PARAM = JOB_EXPAND_PARAM;
 	public static final String JOBPARAMETER_SHOWALL_PARAM = JOBPARAMETER_EXPAND_PARAM;
 	public static final String JOBPARAMETERVALUE_SHOWALL_PARAM = JOBPARAMETERVALUE_EXPAND_PARAM;

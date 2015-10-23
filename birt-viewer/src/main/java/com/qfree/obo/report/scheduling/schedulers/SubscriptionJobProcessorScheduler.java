@@ -1,5 +1,6 @@
 package com.qfree.obo.report.scheduling.schedulers;
 
+import java.util.Date;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
@@ -8,6 +9,7 @@ import javax.annotation.PreDestroy;
 import org.quartz.JobKey;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
+import org.quartz.Trigger;
 import org.quartz.TriggerKey;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,7 +25,9 @@ import com.qfree.obo.report.db.JobRepository;
 import com.qfree.obo.report.db.JobStatusRepository;
 import com.qfree.obo.report.domain.Job;
 import com.qfree.obo.report.domain.JobStatus;
+import com.qfree.obo.report.dto.JobProcessorResource;
 import com.qfree.obo.report.scheduling.jobs.SubscriptionJobProcessorScheduledJob;
+import com.qfree.obo.report.util.DateUtils;
 
 /**
  * This bean manages the scheduling of SubscriptionJobProcessorScheduledJob.
@@ -126,21 +130,34 @@ public class SubscriptionJobProcessorScheduler {
 
 	public void scheduleJob() throws ClassNotFoundException, NoSuchMethodException, SchedulerException {
 
-		String repeatIntervalAsString = env.getProperty("schedule.jobprocessor.repeatinterval");
-		logger.debug("schedule.jobprocessor.repeatinterval = {}", repeatIntervalAsString);
-
-		String startDelayAsString = env.getProperty("schedule.jobprocessor.startDelay");
-		logger.debug("schedule.jobprocessor.startDelay = {}", startDelayAsString);
-
-		long repeatIntervalSeconds = Long.parseLong(repeatIntervalAsString);
-		long startDelaySeconds = Long.parseLong(startDelayAsString);
-
-		scheduleJob(repeatIntervalSeconds, startDelaySeconds);
+		//		String repeatIntervalAsString = env.getProperty("schedule.jobprocessor.repeatinterval");
+		//		logger.debug("schedule.jobprocessor.repeatinterval = {}", repeatIntervalAsString);
+		//
+		//		String startDelayAsString = env.getProperty("schedule.jobprocessor.startDelay");
+		//		logger.debug("schedule.jobprocessor.startDelay = {}", startDelayAsString);
+		//
+		//		long repeatIntervalSeconds = Long.parseLong(repeatIntervalAsString);
+		//		long startDelaySeconds = Long.parseLong(startDelayAsString);
+		//
+		//		scheduleJob(repeatIntervalSeconds, startDelaySeconds);
+		scheduleJob(null, null);
 
 	}
 
-	public void scheduleJob(long repeatIntervalSeconds, long startDelaySeconds)
+	public void scheduleJob(Long repeatIntervalSeconds, Long startDelaySeconds)
 			throws ClassNotFoundException, NoSuchMethodException, SchedulerException {
+
+		if (repeatIntervalSeconds == null) {
+			String repeatIntervalAsString = env.getProperty("schedule.jobprocessor.repeatinterval");
+			logger.debug("schedule.jobprocessor.repeatinterval = {}", repeatIntervalAsString);
+			repeatIntervalSeconds = Long.parseLong(repeatIntervalAsString);
+		}
+
+		if (startDelaySeconds == null) {
+			String startDelayAsString = env.getProperty("schedule.jobprocessor.startDelay");
+			logger.debug("schedule.jobprocessor.startDelay = {}", startDelayAsString);
+			startDelaySeconds = Long.parseLong(startDelayAsString);
+		}
 
 		if (!schedulerFactoryBean.isRunning()) {
 			logger.warn("Attempt to schedule the subscription job processor, but the scheduler is not running");
@@ -341,6 +358,59 @@ public class SubscriptionJobProcessorScheduler {
 		//} else {
 		//	logger.warn("Attempt to unschedule the subscription job processor, but the scheduler is not running");
 		//	}
+	}
+
+	public JobProcessorResource getJobProcessorResource() {
+
+		JobProcessorResource jobProcessorResource = new JobProcessorResource();
+		Scheduler scheduler = schedulerFactoryBean.getScheduler();
+
+		try {
+			/*
+			 * Check if the Subscription Job Processor is scheduled at all:
+			 */
+			if (scheduler.checkExists(JOB_KEY)) {
+				jobProcessorResource.setScheduled(true);
+				/*
+				 * Get job's trigger. There should only be one trigger.
+				 */
+				List<Trigger> triggers = null; //new ArrayList<>();
+				triggers = (List<Trigger>) scheduler.getTriggersOfJob(JOB_KEY);
+				if (triggers != null && triggers.size() > 0) {
+					Date nextFireTime = triggers.get(0).getNextFireTime();
+
+					/*
+					 * REST resources returned to a client are expressed in 
+					 * ISO-8601 format with time zone "Z" (which means that they
+					 * are relative to UTC). Here, we convert nextFireTime to
+					 * a different java.util.Date object that will provide this
+					 * behaviour.
+					 */
+					jobProcessorResource.setNextFireTime(DateUtils.normalDateToUtcTimezoneDate(nextFireTime));
+					if (triggers.size() > 1) {
+						logger.error("There are {} triggers for the Subscription Job Processor", triggers.size());
+						jobProcessorResource.setSchedulingNotice("There are " + triggers.size() + " triggers");
+					}
+				} else {
+					logger.warn("Trigger does not exist for Subscription Job Processor");
+					jobProcessorResource.setSchedulingNotice("Trigger does not exist");
+				}
+			} else {
+				jobProcessorResource.setScheduled(false);
+			}
+
+			if (!schedulerFactoryBean.isRunning()) {
+				//if(schedulingStatusResource.getSchedulingNotice()==null){
+				jobProcessorResource.setSchedulingNotice("The scheduler is not running");
+				//}
+			}
+
+		} catch (SchedulerException e) {
+			logger.error("Exception thrown attempting to get scheduing status for Subscription Job Processor", e);
+			jobProcessorResource.setSchedulingNotice("Problem retrieving subscription status");
+		}
+
+		return jobProcessorResource;
 	}
 
 	@PreDestroy
