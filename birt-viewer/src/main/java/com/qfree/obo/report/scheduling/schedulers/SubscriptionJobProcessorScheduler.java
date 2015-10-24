@@ -26,6 +26,7 @@ import com.qfree.obo.report.db.JobStatusRepository;
 import com.qfree.obo.report.domain.Job;
 import com.qfree.obo.report.domain.JobStatus;
 import com.qfree.obo.report.dto.JobProcessorResource;
+import com.qfree.obo.report.exceptions.JobProcessorAlreadyScheduledException;
 import com.qfree.obo.report.scheduling.jobs.SubscriptionJobProcessorScheduledJob;
 import com.qfree.obo.report.util.DateUtils;
 
@@ -118,7 +119,8 @@ public class SubscriptionJobProcessorScheduler {
 
 			try {
 				scheduleJob();
-			} catch (ClassNotFoundException | NoSuchMethodException | SchedulerException e) {
+			} catch (ClassNotFoundException | NoSuchMethodException | SchedulerException
+					| JobProcessorAlreadyScheduledException e) {
 				logger.error("Could not start the subscription job processor during application startup", e);
 			}
 
@@ -128,7 +130,8 @@ public class SubscriptionJobProcessorScheduler {
 
 	}
 
-	public void scheduleJob() throws ClassNotFoundException, NoSuchMethodException, SchedulerException {
+	public void scheduleJob() throws ClassNotFoundException, NoSuchMethodException, SchedulerException,
+			JobProcessorAlreadyScheduledException {
 
 		//		String repeatIntervalAsString = env.getProperty("schedule.jobprocessor.repeatinterval");
 		//		logger.debug("schedule.jobprocessor.repeatinterval = {}", repeatIntervalAsString);
@@ -145,7 +148,8 @@ public class SubscriptionJobProcessorScheduler {
 	}
 
 	public void scheduleJob(Long repeatIntervalSeconds, Long startDelaySeconds)
-			throws ClassNotFoundException, NoSuchMethodException, SchedulerException {
+			throws ClassNotFoundException, NoSuchMethodException, SchedulerException,
+			JobProcessorAlreadyScheduledException {
 
 		if (repeatIntervalSeconds == null) {
 			String repeatIntervalAsString = env.getProperty("schedule.jobprocessor.repeatinterval");
@@ -160,6 +164,12 @@ public class SubscriptionJobProcessorScheduler {
 		}
 
 		if (!schedulerFactoryBean.isRunning()) {
+			/*
+			 * I let this go with a warning, because I think it it _probably_
+			 * possible to schedule jobs while the scheduler is not running, 
+			 * although the jobs certainly will not get triggered while the
+			 * scheduler is not running.
+			 */
 			logger.warn("Attempt to schedule the subscription job processor, but the scheduler is not running");
 		}
 
@@ -275,13 +285,9 @@ public class SubscriptionJobProcessorScheduler {
 					subscriptionJobProcessorTriggerFactory.getObject());
 
 		} else {
-			logger.warn(
-					"Attempt to schedule the subscription job processor, but it is already registered with the scheduler");
-			/*
-			 * TODO At this point we could try resuming the job IN CASE it was paused
-			 * However, it is not clear at this point if that is the best behaviour to 
-			 * implement, so I will do nothing for now.
-			 */
+			//logger.warn(
+			//		"Attempt to schedule the subscription job processor, but it is already registered with the scheduler");
+			throw new JobProcessorAlreadyScheduledException();
 		}
 
 	}

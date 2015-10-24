@@ -216,6 +216,10 @@ public class RestErrorResource {
 		FORBIDDEN_CANCEL_JOB_WRONG_STATUS(
 				Response.Status.FORBIDDEN, "403.24",
 				"Only a Job with JobStatus=\"QUEUED\" can be canceled", null),
+		FORBIDDEN_JOB_PROCESSOR_ALREADY_SCHEDULED(
+				Response.Status.FORBIDDEN, "403.25",
+				"Attempt made to schedule the subscription job processor, but it is already registered with the scheduler",
+				null),
 
 		/**
 		 * {@code 404 Not Found}.
@@ -352,7 +356,7 @@ public class RestErrorResource {
 		INTERNAL_SERVER_ERROR_DATA_TYPE_ANY(Response.Status.INTERNAL_SERVER_ERROR, "500.5",
 				"Report parameter encountered with data type = IParameterDefn.TYPE_ANY", null),
 		INTERNAL_SERVER_ERROR_SCHEDULER(Response.Status.INTERNAL_SERVER_ERROR, "500.6",
-				"The Quartz scheduler threw an exaception", null),
+				"The Quartz scheduler threw an exception.", null),
 		/**
 		 * {@code 501 Not Implemented}.
 		 * @see <a href="http://tools.ietf.org/html/rfc2616#section-10.5.2">HTTP/1.1</a>

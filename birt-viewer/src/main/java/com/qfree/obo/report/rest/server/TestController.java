@@ -378,19 +378,19 @@ public class TestController extends AbstractBaseController {
 		return "Return something here after scheduling the task?";
 	}
 
-	@GET
-	@Path("/scheduleJobProcessor")
-	@Produces(MediaType.TEXT_PLAIN)
-	public String scheduleJobProcessor(
-			@HeaderParam("Accept") final String acceptHeader,
-			@Context final UriInfo uriInfo) throws SchedulerException, ClassNotFoundException, NoSuchMethodException {
-		RestApiVersion apiVersion = RestUtils.extractAPIVersion(acceptHeader, RestApiVersion.v1);
-
-		logger.info("Scheduling job processor");
-		subscriptionJobProcessorScheduler.scheduleJob();
-
-		return "Job processor scheduled";
-	}
+	//	@GET
+	//	@Path("/scheduleJobProcessor")
+	//	@Produces(MediaType.TEXT_PLAIN)
+	//	public String scheduleJobProcessor(
+	//			@HeaderParam("Accept") final String acceptHeader,
+	//			@Context final UriInfo uriInfo) throws SchedulerException, ClassNotFoundException, NoSuchMethodException, JobProcessorAlreadyScheduledException {
+	//		RestApiVersion apiVersion = RestUtils.extractAPIVersion(acceptHeader, RestApiVersion.v1);
+	//
+	//		logger.info("Scheduling job processor");
+	//		subscriptionJobProcessorScheduler.scheduleJob();
+	//
+	//		return "Job processor scheduled";
+	//	}
 
 	@GET
 	@Path("/triggerJobProcessor")

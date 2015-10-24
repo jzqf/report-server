@@ -15,6 +15,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.UriInfo;
 
+import org.quartz.SchedulerException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +23,9 @@ import org.springframework.stereotype.Component;
 
 import com.qfree.obo.report.dto.JobProcessorResource;
 import com.qfree.obo.report.dto.ResourcePath;
+import com.qfree.obo.report.dto.RestErrorResource.RestError;
+import com.qfree.obo.report.exceptions.JobProcessorAlreadyScheduledException;
+import com.qfree.obo.report.exceptions.RestApiException;
 import com.qfree.obo.report.rest.server.RestUtils.RestApiVersion;
 import com.qfree.obo.report.scheduling.schedulers.SubscriptionJobProcessorScheduler;
 
@@ -100,6 +104,14 @@ public class JobProcessorController extends AbstractBaseController {
 			if (repeatIntervalSeconds < 30L) {
 				repeatIntervalSeconds = 30L;
 			}
+		}
+
+		try {
+			subscriptionJobProcessorScheduler.scheduleJob(repeatIntervalSeconds, 0L);
+		} catch (JobProcessorAlreadyScheduledException e) {
+			throw new RestApiException(RestError.FORBIDDEN_JOB_PROCESSOR_ALREADY_SCHEDULED);
+		} catch (ClassNotFoundException | NoSuchMethodException | SchedulerException e) {
+			throw new RestApiException(RestError.INTERNAL_SERVER_ERROR_SCHEDULER, e);
 		}
 
 		return subscriptionJobProcessorScheduler.getJobProcessorResource();
