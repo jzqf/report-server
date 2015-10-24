@@ -34,6 +34,8 @@ import com.qfree.obo.report.domain.JobStatus;
 import com.qfree.obo.report.domain.Subscription;
 import com.qfree.obo.report.domain.SubscriptionParameter;
 import com.qfree.obo.report.domain.SubscriptionParameterValue;
+import com.qfree.obo.report.exceptions.JobProcessorNotScheduledCannotTrigger;
+import com.qfree.obo.report.exceptions.JobProcessorSchedulerNotRunningCannotTrigger;
 import com.qfree.obo.report.exceptions.UntreatedCaseException;
 import com.qfree.obo.report.scheduling.schedulers.SubscriptionJobProcessorScheduler;
 import com.qfree.obo.report.util.DateUtils;
@@ -717,7 +719,8 @@ public class SubscriptionScheduledJob {
 				*/
 				try {
 					subscriptionJobProcessorScheduler.triggerJob();
-				} catch (SchedulerException e) {
+				} catch (SchedulerException | JobProcessorSchedulerNotRunningCannotTrigger
+						| JobProcessorNotScheduledCannotTrigger e) {
 					logger.error("Exception thrown when triggering the job processor.", e);
 				}
 

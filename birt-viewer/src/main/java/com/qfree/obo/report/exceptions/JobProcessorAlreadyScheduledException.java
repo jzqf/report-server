@@ -1,8 +1,8 @@
 package com.qfree.obo.report.exceptions;
 
 /**
- * Attempt to schedule the subscription job processor, but it is already
- * registered with the scheduler.
+ * Exception thrown when an attempt is made to schedule the subscription job
+ * processor, but it is already registered with the scheduler.
  * 
  * @author jeffreyz
  *

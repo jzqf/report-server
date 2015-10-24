@@ -220,6 +220,34 @@ public class RestErrorResource {
 				Response.Status.FORBIDDEN, "403.25",
 				"Attempt made to schedule the subscription job processor, but it is already registered with the scheduler",
 				null),
+		FORBIDDEN_JOB_PROCESSOR_NOT_SCHEDULED_CANNOT_UNSCHEDULE(
+				Response.Status.FORBIDDEN, "403.26",
+				"Attempt made to unschedule the subscription job processor, but it is not registered with the scheduler",
+				null),
+		FORBIDDEN_JOB_PROCESSOR_NOT_SCHEDULED_CANNOT_TRIGGER(
+				Response.Status.FORBIDDEN, "403.27",
+				"Attempt made to trigger the subscription job processor, but it is not registered with the scheduler",
+				null),
+		FORBIDDEN_JOB_PROCESSOR_NOT_RUNNING_CANNOT_TRIGGER(
+				Response.Status.FORBIDDEN, "403.28",
+				"Attempt made to trigger the subscription job processor, but the scheduler is not running",
+				null),
+		FORBIDDEN_JOB_PROCESSOR_NOT_SCHEDULED_CANNOT_PAUSE(
+				Response.Status.FORBIDDEN, "403.27",
+				"Attempt made to pause the subscription job processor, but it is not registered with the scheduler",
+				null),
+		FORBIDDEN_JOB_PROCESSOR_NOT_RUNNING_CANNOT_PAUSE(
+				Response.Status.FORBIDDEN, "403.28",
+				"Attempt made to pause the subscription job processor, but the scheduler is not running",
+				null),
+		FORBIDDEN_JOB_PROCESSOR_NOT_SCHEDULED_CANNOT_RESUME(
+				Response.Status.FORBIDDEN, "403.27",
+				"Attempt made to resume the subscription job processor, but it is not registered with the scheduler",
+				null),
+		FORBIDDEN_JOB_PROCESSOR_NOT_RUNNING_CANNOT_RESUME(
+				Response.Status.FORBIDDEN, "403.28",
+				"Attempt made to resume the subscription job processor, but the scheduler is not running",
+				null),
 
 		/**
 		 * {@code 404 Not Found}.

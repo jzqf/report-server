@@ -27,6 +27,13 @@ import com.qfree.obo.report.domain.Job;
 import com.qfree.obo.report.domain.JobStatus;
 import com.qfree.obo.report.dto.JobProcessorResource;
 import com.qfree.obo.report.exceptions.JobProcessorAlreadyScheduledException;
+import com.qfree.obo.report.exceptions.JobProcessorNotScheduledCannotPause;
+import com.qfree.obo.report.exceptions.JobProcessorNotScheduledCannotResume;
+import com.qfree.obo.report.exceptions.JobProcessorNotScheduledCannotStop;
+import com.qfree.obo.report.exceptions.JobProcessorNotScheduledCannotTrigger;
+import com.qfree.obo.report.exceptions.JobProcessorSchedulerNotRunningCannotPause;
+import com.qfree.obo.report.exceptions.JobProcessorSchedulerNotRunningCannotResume;
+import com.qfree.obo.report.exceptions.JobProcessorSchedulerNotRunningCannotTrigger;
 import com.qfree.obo.report.scheduling.jobs.SubscriptionJobProcessorScheduledJob;
 import com.qfree.obo.report.util.DateUtils;
 
@@ -283,6 +290,8 @@ public class SubscriptionJobProcessorScheduler {
 			scheduler.scheduleJob(
 					subscriptionJobProcessorJobDetailFactory.getObject(),
 					subscriptionJobProcessorTriggerFactory.getObject());
+			//scheduler.addJob(subscriptionJobProcessorJobDetailFactory.getObject(), true);
+			//scheduler.scheduleJob(subscriptionJobProcessorTriggerFactory.getObject());
 
 		} else {
 			//logger.warn(
@@ -300,56 +309,67 @@ public class SubscriptionJobProcessorScheduler {
 	 * will not UNpause the job.
 	 * 
 	 * @throws SchedulerException
+	 * @throws JobProcessorSchedulerNotRunningCannotTrigger
+	 * @throws JobProcessorNotScheduledCannotTrigger
 	 */
-	public void triggerJob() throws SchedulerException {
+	public void triggerJob() throws SchedulerException, JobProcessorSchedulerNotRunningCannotTrigger,
+			JobProcessorNotScheduledCannotTrigger {
 		if (schedulerFactoryBean.isRunning()) {
 			Scheduler scheduler = schedulerFactoryBean.getScheduler();
 			if (scheduler.checkExists(JOB_KEY)) {
 				logger.info("Triggering the subscription job processor to run immediately");
 				scheduler.triggerJob(JOB_KEY);
 			} else {
-				logger.warn(
-						"Attempt to trigger the subscription job processor, but it is not registered with the scheduler");
+				//logger.warn(
+				//		"Attempt to trigger the subscription job processor, but it is not registered with the scheduler");
+				throw new JobProcessorNotScheduledCannotTrigger();
 			}
 		} else {
-			logger.warn(
-					"Attempt to trigger the subscription job processor, but the scheduler is not running");
+			//logger.warn(
+			//		"Attempt to trigger the subscription job processor, but the scheduler is not running");
+			throw new JobProcessorSchedulerNotRunningCannotTrigger();
 		}
 	}
 
-	public void pauseJob() throws SchedulerException {
+	public void pauseJob()
+			throws SchedulerException, JobProcessorNotScheduledCannotPause, JobProcessorSchedulerNotRunningCannotPause {
 		if (schedulerFactoryBean.isRunning()) {
 			Scheduler scheduler = schedulerFactoryBean.getScheduler();
 			if (scheduler.checkExists(JOB_KEY)) {
 				logger.info("Pausing the subscription job processor");
 				scheduler.pauseJob(JOB_KEY);
 			} else {
-				logger.warn(
-						"Attempt to pause the subscription job processor, but it is not registered with the scheduler");
+				//logger.warn(
+				//		"Attempt to pause the subscription job processor, but it is not registered with the scheduler");
+				throw new JobProcessorNotScheduledCannotPause();
 			}
 		} else {
-			logger.warn(
-					"Attempt to pause the subscription job processor, but the scheduler is not running");
+			//logger.warn(
+			//		"Attempt to pause the subscription job processor, but the scheduler is not running");
+			throw new JobProcessorSchedulerNotRunningCannotPause();
 		}
 	}
 
-	public void resumeJob() throws SchedulerException {
+	public void resumeJob() throws SchedulerException, JobProcessorNotScheduledCannotResume,
+			JobProcessorSchedulerNotRunningCannotResume {
 		if (schedulerFactoryBean.isRunning()) {
 			Scheduler scheduler = schedulerFactoryBean.getScheduler();
 			if (scheduler.checkExists(JOB_KEY)) {
 				logger.info("Resuming the subscription job processor");
 				scheduler.resumeJob(JOB_KEY);
 			} else {
-				logger.warn(
-						"Attempt to resume the subscription job processor, but it is not registered with the scheduler");
+				//logger.warn(
+				//		"Attempt to resume the subscription job processor, but it is not registered with the scheduler");
+				throw new JobProcessorNotScheduledCannotResume();
 			}
 		} else {
-			logger.warn(
-					"Attempt to resume the subscription job processor, but the scheduler is not running");
+			//logger.warn(
+			//		"Attempt to resume the subscription job processor, but the scheduler is not running");
+			throw new JobProcessorSchedulerNotRunningCannotResume();
 		}
 	}
 
-	public void unscheduleJob() throws SchedulerException {
+	public void unscheduleJob() throws SchedulerException, JobProcessorNotScheduledCannotStop {
 		//if (schedulerFactoryBean.isRunning()) {
 
 		Scheduler scheduler = schedulerFactoryBean.getScheduler();
@@ -357,8 +377,9 @@ public class SubscriptionJobProcessorScheduler {
 			logger.info("Deleting the subscription job processor from the Quartz scheduler");
 			scheduler.deleteJob(JOB_KEY);
 		} else {
-			logger.warn(
-					"Attempt to unschedule the subscription job processor, but it is not registered with the scheduler");
+			//logger.warn(
+			//		"Attempt to unschedule the subscription job processor, but it is not registered with the scheduler");
+			throw new JobProcessorNotScheduledCannotStop();
 		}
 
 		//} else {
@@ -378,7 +399,23 @@ public class SubscriptionJobProcessorScheduler {
 			if (scheduler.checkExists(JOB_KEY)) {
 				jobProcessorResource.setScheduled(true);
 				/*
-				 * Get job's trigger. There should only be one trigger.
+				 * Get job's trigger. We have only set one trigger, but testing
+				 * has shown that  there are ALWAYS 2 triggers for the job. The
+				 * second trigger has characteristics that indicate it is 
+				 * automatically created by Quartz or Spring. Examples of these
+				 * characteristics are:
+				 * 
+				 *   trigger.getJobKey()       = JobProcessor_JobGroup.JobProcessor_JobName
+				 *   trigger.getKey()          = DEFAULT.MT_1n8n14enj1rpi
+				 *   trigger.getPriority()     = 5
+				 *   trigger.getNextFireTime() = null
+				 * 
+				 * I don't know how to eliminate this trigger or even if that
+				 * would be a good idea, so I just ignore it here. 
+				 * 
+				 * It seems that this is always the 2nd trigger in the list of
+				 * triggers, but to be safe here, I locate the Trigger that
+				 * matches the key that we know it should have.
 				 */
 				List<Trigger> triggers = null; //new ArrayList<>();
 				triggers = (List<Trigger>) scheduler.getTriggersOfJob(JOB_KEY);
@@ -393,10 +430,21 @@ public class SubscriptionJobProcessorScheduler {
 					 * behaviour.
 					 */
 					jobProcessorResource.setNextFireTime(DateUtils.normalDateToUtcTimezoneDate(nextFireTime));
-					if (triggers.size() > 1) {
-						logger.error("There are {} triggers for the Subscription Job Processor", triggers.size());
-						jobProcessorResource.setSchedulingNotice("There are " + triggers.size() + " triggers");
-					}
+					/*
+					 * The following block of code is commented out because it seems
+					 * that					 */
+					//if (triggers.size() > 1) {
+					//	logger.error("There are {} triggers for the Subscription Job Processor", triggers.size());
+					//	jobProcessorResource.setSchedulingNotice("There are " + triggers.size() + " triggers");
+					//	for (Trigger trigger : triggers) {
+					//		logger.info("Trigger {}: trigger.getDescription()  = {}", trigger, trigger.getDescription());
+					//		logger.info("Trigger {}: trigger.getJobKey()       = {}", trigger, trigger.getJobKey());
+					//		logger.info("Trigger {}: trigger.getKey()          = {}", trigger, trigger.getKey());
+					//		logger.info("Trigger {}: trigger.getNextFireTime() = {}", trigger, trigger.getNextFireTime());
+					//		logger.info("Trigger {}: trigger.getPriority()     = {}", trigger, trigger.getPriority());
+					//		logger.info("Trigger {}: trigger.getStartTime()    = {}", trigger, trigger.getStartTime());
+					//	}
+					//}
 				} else {
 					logger.warn("Trigger does not exist for Subscription Job Processor");
 					jobProcessorResource.setSchedulingNotice("Trigger does not exist");
@@ -427,6 +475,9 @@ public class SubscriptionJobProcessorScheduler {
 			logger.error(
 					"Exception thrown when attempting to delete the subscription job processor from the Quartz scheduler",
 					e);
+		} catch (JobProcessorNotScheduledCannotStop e) {
+			logger.warn(
+					"Attempt to unschedule the subscription job processor, but it is not registered with the scheduler");
 		}
 	}
 

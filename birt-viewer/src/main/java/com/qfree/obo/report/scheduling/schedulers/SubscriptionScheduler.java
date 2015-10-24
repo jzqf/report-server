@@ -531,9 +531,13 @@ public class SubscriptionScheduler {
 				if (triggers != null && triggers.size() > 0) {
 					Date nextFireTime = triggers.get(0).getNextFireTime();
 					logger.info("Unscheduling subscription with: jobKey = {}, nextFireTime = {}", jobKey, nextFireTime);
-					if (triggers.size() > 1) {
-						logger.error("There are {} triggers for subscription job key: {}", triggers.size(), jobKey);
-					}
+					/*
+					 * See SubscriptionJobProcessorScheduler.getJobProcessorResource()
+					 * why I have commented out this block of code.
+					 */
+					//if (triggers.size() > 1) {
+					//	logger.error("There are {} triggers for subscription job key: {}", triggers.size(), jobKey);
+					//}
 				} else {
 					logger.error("The is no trigger for subscription job key: {}", jobKey);
 				}
@@ -587,7 +591,12 @@ public class SubscriptionScheduler {
 			if (scheduler.checkExists(jobKey)) {
 				schedulingStatusResource.setScheduled(true);
 				/*
-				 * Get job's trigger. There should only be one trigger.
+				 * Get job's trigger. We have only set one trigger, but there
+				 * may actually be two - see the comments in
+				 * SubscriptionJobProcessorScheduler.getJobProcessorResource()
+				 * for a discussion of how there can be two triggers. But it
+				 * seems that the first trigger is always the one that we set
+				 * for the job.
 				 */
 				List<Trigger> triggers = null; //new ArrayList<>();
 				triggers = (List<Trigger>) scheduler.getTriggersOfJob(jobKey);
@@ -602,10 +611,14 @@ public class SubscriptionScheduler {
 					 * behaviour.
 					 */
 					schedulingStatusResource.setNextFireTime(DateUtils.normalDateToUtcTimezoneDate(nextFireTime));
-					if (triggers.size() > 1) {
-						logger.error("There are {} triggers for subscription: {}", triggers.size(), subscription);
-						schedulingStatusResource.setSchedulingNotice("There are " + triggers.size() + " triggers");
-					}
+					/*
+					 * See SubscriptionJobProcessorScheduler.getJobProcessorResource()
+					 * why I have commented out this block of code.
+					 */
+					//if (triggers.size() > 1) {
+					//	logger.error("There are {} triggers for subscription: {}", triggers.size(), subscription);
+					//	schedulingStatusResource.setSchedulingNotice("There are " + triggers.size() + " triggers");
+					//}
 				} else {
 					/*
 					 * This is not necessarily an error. It can occur during 
