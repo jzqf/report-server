@@ -10,6 +10,7 @@ import org.quartz.JobKey;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
 import org.quartz.Trigger;
+import org.quartz.Trigger.TriggerState;
 import org.quartz.TriggerKey;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -398,9 +399,10 @@ public class SubscriptionJobProcessorScheduler {
 			 */
 			if (scheduler.checkExists(JOB_KEY)) {
 				jobProcessorResource.setScheduled(true);
+
 				/*
 				 * Get job's trigger. We have only set one trigger, but testing
-				 * has shown that  there are ALWAYS 2 triggers for the job. The
+				 * has shown that there are ALWAYS 2 triggers for the job. The
 				 * second trigger has characteristics that indicate it is 
 				 * automatically created by Quartz or Spring. Examples of these
 				 * characteristics are:
@@ -417,11 +419,20 @@ public class SubscriptionJobProcessorScheduler {
 				 * triggers, but to be safe here, I locate the Trigger that
 				 * matches the key that we know it should have.
 				 */
-				List<Trigger> triggers = null; //new ArrayList<>();
-				triggers = (List<Trigger>) scheduler.getTriggersOfJob(JOB_KEY);
-				if (triggers != null && triggers.size() > 0) {
-					Date nextFireTime = triggers.get(0).getNextFireTime();
+				Trigger triggerWithMatchingKey = null;
+				List<Trigger> triggers = (List<Trigger>) scheduler.getTriggersOfJob(JOB_KEY);
+				for (Trigger trigger : triggers) {
+					if (trigger.getKey().equals(TRIGGER_KEY)) {
+						logger.info("Found trigger with key {}", TRIGGER_KEY);
+						triggerWithMatchingKey = trigger;
+						break;
+					}
+				}
+				if (triggerWithMatchingKey != null) {
+					TriggerState triggerState = scheduler.getTriggerState(TRIGGER_KEY);
+					logger.info("triggerState = {}", triggerState);
 
+					Date nextFireTime = triggerWithMatchingKey.getNextFireTime();
 					/*
 					 * REST resources returned to a client are expressed in 
 					 * ISO-8601 format with time zone "Z" (which means that they
@@ -430,25 +441,11 @@ public class SubscriptionJobProcessorScheduler {
 					 * behaviour.
 					 */
 					jobProcessorResource.setNextFireTime(DateUtils.normalDateToUtcTimezoneDate(nextFireTime));
-					/*
-					 * The following block of code is commented out because it seems
-					 * that					 */
-					//if (triggers.size() > 1) {
-					//	logger.error("There are {} triggers for the Subscription Job Processor", triggers.size());
-					//	jobProcessorResource.setSchedulingNotice("There are " + triggers.size() + " triggers");
-					//	for (Trigger trigger : triggers) {
-					//		logger.info("Trigger {}: trigger.getDescription()  = {}", trigger, trigger.getDescription());
-					//		logger.info("Trigger {}: trigger.getJobKey()       = {}", trigger, trigger.getJobKey());
-					//		logger.info("Trigger {}: trigger.getKey()          = {}", trigger, trigger.getKey());
-					//		logger.info("Trigger {}: trigger.getNextFireTime() = {}", trigger, trigger.getNextFireTime());
-					//		logger.info("Trigger {}: trigger.getPriority()     = {}", trigger, trigger.getPriority());
-					//		logger.info("Trigger {}: trigger.getStartTime()    = {}", trigger, trigger.getStartTime());
-					//	}
-					//}
 				} else {
 					logger.warn("Trigger does not exist for Subscription Job Processor");
 					jobProcessorResource.setSchedulingNotice("Trigger does not exist");
 				}
+
 			} else {
 				jobProcessorResource.setScheduled(false);
 			}
