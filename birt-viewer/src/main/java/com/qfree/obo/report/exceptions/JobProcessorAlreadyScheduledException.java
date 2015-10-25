@@ -9,6 +9,8 @@ package com.qfree.obo.report.exceptions;
  */
 public class JobProcessorAlreadyScheduledException extends ReportingException {
 
+	private static final long serialVersionUID = 1L;
+
 	public JobProcessorAlreadyScheduledException() {
 		// TODO Auto-generated constructor stub
 	}

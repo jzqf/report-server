@@ -595,22 +595,16 @@ public class SubscriptionScheduler {
 				List<Trigger> triggers = (List<Trigger>) scheduler.getTriggersOfJob(jobKey);
 				for (Trigger trigger : triggers) {
 					if (trigger.getKey().equals(triggerKey)) {
-						logger.info("Found trigger with key {}", triggerKey);
 						triggerWithMatchingKey = trigger;
 						break;
 					}
 				}
 				if (triggerWithMatchingKey != null) {
 					TriggerState triggerState = scheduler.getTriggerState(triggerKey);
-					logger.info("triggerState = {}", triggerState);
+					logger.debug("triggerState = {}", triggerState);
+					schedulingStatusResource.setTriggerState(triggerState.toString());
 
 					Date nextFireTime = triggerWithMatchingKey.getNextFireTime();
-
-					//				List<Trigger> triggers = null; //new ArrayList<>();
-					//				triggers = (List<Trigger>) scheduler.getTriggersOfJob(jobKey);
-					//				if (triggers != null && triggers.size() > 0) {
-					//					Date nextFireTime = triggers.get(0).getNextFireTime();
-
 					/*
 					 * REST resources returned to a client are expressed in 
 					 * ISO-8601 format with time zone "Z" (which means that they

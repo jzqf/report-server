@@ -57,6 +57,16 @@ public class JobProcessorResource extends AbstractBaseResource {
 	private String schedulingNotice;
 
 	/**
+	 * The state of the Quartz trigger for the Subscription Job Processor.
+	 * 
+	 * <p>
+	 * This is a dynamic, "read-only" field that is computed when an instance is
+	 * constructed.
+	 */
+	@XmlElement
+	private String triggerState;
+
+	/**
 	 * The repeat interval in seconds of the Subscription Job Processor. This is
 	 * when scheduling theSubscription Job Processor with the
 	 * <a href="https://quartz-scheduler.org/">Quartz</a> scheduler.
@@ -79,10 +89,12 @@ public class JobProcessorResource extends AbstractBaseResource {
 			Boolean scheduled,
 			Date nextFireTime,
 			String schedulingNotice,
+			String triggerState,
 			Long repeatInterval) {
 		this.scheduled = scheduled;
 		this.nextFireTime = nextFireTime;
 		this.schedulingNotice = schedulingNotice;
+		this.triggerState = triggerState;
 		this.repeatInterval = repeatInterval;
 	}
 
@@ -110,6 +122,14 @@ public class JobProcessorResource extends AbstractBaseResource {
 		this.schedulingNotice = schedulingNotice;
 	}
 
+	public String getTriggerState() {
+		return triggerState;
+	}
+
+	public void setTriggerState(String triggerState) {
+		this.triggerState = triggerState;
+	}
+
 	public Long getRepeatInterval() {
 		return repeatInterval;
 	}
@@ -127,6 +147,8 @@ public class JobProcessorResource extends AbstractBaseResource {
 		builder.append(nextFireTime);
 		builder.append(", schedulingNotice=");
 		builder.append(schedulingNotice);
+		builder.append(", triggerState=");
+		builder.append(triggerState);
 		builder.append(", repeatInterval=");
 		builder.append(repeatInterval);
 		builder.append("]");

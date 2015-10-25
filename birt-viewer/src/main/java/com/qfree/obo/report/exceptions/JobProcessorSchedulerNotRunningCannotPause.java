@@ -9,6 +9,8 @@ package com.qfree.obo.report.exceptions;
  */
 public class JobProcessorSchedulerNotRunningCannotPause extends ReportingException {
 
+	private static final long serialVersionUID = 1L;
+
 	public JobProcessorSchedulerNotRunningCannotPause() {
 		// TODO Auto-generated constructor stub
 	}

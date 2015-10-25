@@ -423,14 +423,14 @@ public class SubscriptionJobProcessorScheduler {
 				List<Trigger> triggers = (List<Trigger>) scheduler.getTriggersOfJob(JOB_KEY);
 				for (Trigger trigger : triggers) {
 					if (trigger.getKey().equals(TRIGGER_KEY)) {
-						logger.info("Found trigger with key {}", TRIGGER_KEY);
 						triggerWithMatchingKey = trigger;
 						break;
 					}
 				}
 				if (triggerWithMatchingKey != null) {
 					TriggerState triggerState = scheduler.getTriggerState(TRIGGER_KEY);
-					logger.info("triggerState = {}", triggerState);
+					logger.debug("triggerState = {}", triggerState);
+					jobProcessorResource.setTriggerState(triggerState.toString());
 
 					Date nextFireTime = triggerWithMatchingKey.getNextFireTime();
 					/*
