@@ -16,6 +16,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.qfree.obo.report.domain.DocumentFormat;
+import com.qfree.obo.report.domain.Role;
 import com.qfree.obo.report.domain.Subscription;
 import com.qfree.obo.report.rest.server.RestUtils;
 import com.qfree.obo.report.rest.server.RestUtils.RestApiVersion;
@@ -194,10 +195,30 @@ public class SubscriptionResource extends AbstractBaseResource {
 			for (Subscription subscription : subscriptions) {
 				List<String> showAll = queryParams.get(ResourcePath.SHOWALL_QP_KEY);
 				if (subscription.getActive() ||
-						RestUtils.FILTER_INACTIVE_RECORDS == false ||
-						ResourcePath.showAll(Subscription.class, showAll)) {
-					subscriptionResources.add(
-							new SubscriptionResource(subscription, uriInfo, queryParams, apiVersion));
+						RestUtils.FILTER_INACTIVE_RECORDS == false
+						|| ResourcePath.showAll(Subscription.class, showAll)) {
+					subscriptionResources.add(new SubscriptionResource(subscription, uriInfo, queryParams, apiVersion));
+				}
+			}
+			return subscriptionResources;
+		} else {
+			return null;
+		}
+
+	}
+
+	public static List<SubscriptionResource> listFromRole(Role role, UriInfo uriInfo,
+			Map<String, List<String>> queryParams, RestApiVersion apiVersion) {
+
+		if (role.getSubscriptions() != null) {
+			List<Subscription> subscriptions = role.getSubscriptions();
+			List<SubscriptionResource> subscriptionResources = new ArrayList<>(subscriptions.size());
+			for (Subscription subscription : subscriptions) {
+				List<String> showAll = queryParams.get(ResourcePath.SHOWALL_QP_KEY);
+				if (subscription.getActive() ||
+						RestUtils.FILTER_INACTIVE_RECORDS == false
+						|| ResourcePath.showAll(Subscription.class, showAll)) {
+					subscriptionResources.add(new SubscriptionResource(subscription, uriInfo, queryParams, apiVersion));
 				}
 			}
 			return subscriptionResources;
@@ -352,5 +373,4 @@ public class SubscriptionResource extends AbstractBaseResource {
 		builder.append("]");
 		return builder.toString();
 	}
-
 }

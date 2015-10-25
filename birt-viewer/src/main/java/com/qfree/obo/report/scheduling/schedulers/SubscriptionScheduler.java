@@ -15,6 +15,8 @@ import org.quartz.JobKey;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
 import org.quartz.Trigger;
+import org.quartz.Trigger.TriggerState;
+import org.quartz.TriggerKey;
 import org.quartz.impl.matchers.GroupMatcher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -456,6 +458,17 @@ public class SubscriptionScheduler {
 	}
 
 	/**
+	 * Get the Quartz "trigger key" for a Subscription.
+	 * 
+	 * @param subscription
+	 * @return
+	 */
+	private TriggerKey subscriptionTriggerKey(Subscription subscription) {
+		TriggerKey triggerKey = TriggerKey.triggerKey(subscription.getSubscriptionId().toString(), TRIGGER_GROUP);
+		return triggerKey;
+	}
+
+	/**
 	 * Forces the scheduled subscription job to run immediately.
 	 * 
 	 * This will force the scheduled subscription job to run even if the job is
@@ -519,24 +532,6 @@ public class SubscriptionScheduler {
 
 		try {
 			for (JobKey jobKey : scheduler.getJobKeys(GroupMatcher.jobGroupEquals(JOB_GROUP))) {
-				//String jobName = jobKey.getName();
-				//String jobGroup = jobKey.getGroup();
-
-				/*
-				 * Get job's trigger (not really needed here, but we can log a
-				 * little more information with it).
-				 */
-				List<Trigger> triggers = null; //new ArrayList<>();
-				triggers = (List<Trigger>) scheduler.getTriggersOfJob(jobKey);
-				if (triggers != null && triggers.size() > 0) {
-					Date nextFireTime = triggers.get(0).getNextFireTime();
-					logger.info("Unscheduling subscription with: jobKey = {}, nextFireTime = {}", jobKey, nextFireTime);
-					if (triggers.size() > 1) {
-						logger.error("There are {} triggers for subscription job key: {}", triggers.size(), jobKey);
-					}
-				} else {
-					logger.error("The is no trigger for subscription job key: {}", jobKey);
-				}
 				try {
 					unscheduleJob(jobKey);
 				} catch (SchedulerException e) {
@@ -577,6 +572,7 @@ public class SubscriptionScheduler {
 	public SchedulingStatusResource getSchedulingStatusResource(Subscription subscription) {
 
 		JobKey jobKey = subscriptionJobKey(subscription);
+		TriggerKey triggerKey = subscriptionTriggerKey(subscription);
 		SchedulingStatusResource schedulingStatusResource = new SchedulingStatusResource();
 		Scheduler scheduler = schedulerFactoryBean.getScheduler();
 
@@ -587,13 +583,28 @@ public class SubscriptionScheduler {
 			if (scheduler.checkExists(jobKey)) {
 				schedulingStatusResource.setScheduled(true);
 				/*
-				 * Get job's trigger. There should only be one trigger.
+				 * Get job's trigger. We have only set one trigger, but there
+				 * may actually be two - see the comments in
+				 * SubscriptionJobProcessorScheduler.getJobProcessorResource()
+				 * for a discussion of how there can be two triggers. Anyway,
+				 * instead of assuming that the first Trigger in the list 
+				 * "triggers" is the Trigger we are looking for, we iterate
+				 * through the list and match its key.
 				 */
-				List<Trigger> triggers = null; //new ArrayList<>();
-				triggers = (List<Trigger>) scheduler.getTriggersOfJob(jobKey);
-				if (triggers != null && triggers.size() > 0) {
-					Date nextFireTime = triggers.get(0).getNextFireTime();
+				Trigger triggerWithMatchingKey = null;
+				List<Trigger> triggers = (List<Trigger>) scheduler.getTriggersOfJob(jobKey);
+				for (Trigger trigger : triggers) {
+					if (trigger.getKey().equals(triggerKey)) {
+						triggerWithMatchingKey = trigger;
+						break;
+					}
+				}
+				if (triggerWithMatchingKey != null) {
+					TriggerState triggerState = scheduler.getTriggerState(triggerKey);
+					logger.debug("triggerState = {}", triggerState);
+					schedulingStatusResource.setTriggerState(triggerState.toString());
 
+					Date nextFireTime = triggerWithMatchingKey.getNextFireTime();
 					/*
 					 * REST resources returned to a client are expressed in 
 					 * ISO-8601 format with time zone "Z" (which means that they
@@ -602,10 +613,6 @@ public class SubscriptionScheduler {
 					 * behaviour.
 					 */
 					schedulingStatusResource.setNextFireTime(DateUtils.normalDateToUtcTimezoneDate(nextFireTime));
-					if (triggers.size() > 1) {
-						logger.error("There are {} triggers for subscription: {}", triggers.size(), subscription);
-						schedulingStatusResource.setSchedulingNotice("There are " + triggers.size() + " triggers");
-					}
 				} else {
 					/*
 					 * This is not necessarily an error. It can occur during 

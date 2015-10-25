@@ -11,6 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.qfree.obo.report.domain.DocumentFormat;
+import com.qfree.obo.report.domain.Role;
 import com.qfree.obo.report.domain.Subscription;
 import com.qfree.obo.report.rest.server.RestUtils.RestApiVersion;
 
@@ -32,8 +33,16 @@ public class SubscriptionCollectionResource extends AbstractCollectionResource<S
 				Subscription.class,
 				AbstractBaseResource.createHref(uriInfo, DocumentFormat.class, documentFormat.getDocumentFormatId(),
 						null),
-				ResourcePath.SUBSCRIPTIONS_PATH,
-				uriInfo, queryParams, apiVersion);
+				ResourcePath.SUBSCRIPTIONS_PATH, uriInfo, queryParams, apiVersion);
+	}
+
+	public SubscriptionCollectionResource(Role role, UriInfo uriInfo, Map<String, List<String>> queryParams,
+			RestApiVersion apiVersion) {
+		this(
+				SubscriptionResource.listFromRole(role, uriInfo, queryParams, apiVersion),
+				Subscription.class,
+				AbstractBaseResource.createHref(uriInfo, Role.class, role.getRoleId(), null),
+				ResourcePath.SUBSCRIPTIONS_PATH, uriInfo, queryParams, apiVersion);
 	}
 
 	public SubscriptionCollectionResource(List<SubscriptionResource> items, Class<?> entityClass,

@@ -378,92 +378,92 @@ public class TestController extends AbstractBaseController {
 		return "Return something here after scheduling the task?";
 	}
 
-	@GET
-	@Path("/scheduleJobProcessor")
-	@Produces(MediaType.TEXT_PLAIN)
-	public String scheduleJobProcessor(
-			@HeaderParam("Accept") final String acceptHeader,
-			@Context final UriInfo uriInfo) throws SchedulerException, ClassNotFoundException, NoSuchMethodException {
-		RestApiVersion apiVersion = RestUtils.extractAPIVersion(acceptHeader, RestApiVersion.v1);
+	//	@GET
+	//	@Path("/scheduleJobProcessor")
+	//	@Produces(MediaType.TEXT_PLAIN)
+	//	public String scheduleJobProcessor(
+	//			@HeaderParam("Accept") final String acceptHeader,
+	//			@Context final UriInfo uriInfo) throws SchedulerException, ClassNotFoundException, NoSuchMethodException, JobProcessorAlreadyScheduledException {
+	//		RestApiVersion apiVersion = RestUtils.extractAPIVersion(acceptHeader, RestApiVersion.v1);
+	//
+	//		logger.info("Scheduling job processor");
+	//		subscriptionJobProcessorScheduler.scheduleJob();
+	//
+	//		return "Job processor scheduled";
+	//	}
 
-		logger.info("Scheduling job processor");
-		subscriptionJobProcessorScheduler.scheduleJob();
+	//	@GET
+	//	@Path("/triggerJobProcessor")
+	//	@Produces(MediaType.TEXT_PLAIN)
+	//	public String triggerJobProcessor(
+	//			@HeaderParam("Accept") final String acceptHeader,
+	//			@Context final UriInfo uriInfo) throws SchedulerException, JobProcessorSchedulerNotRunningCannotTrigger, JobProcessorNotScheduledCannotTrigger {
+	//		RestApiVersion apiVersion = RestUtils.extractAPIVersion(acceptHeader, RestApiVersion.v1);
+	//
+	//		logger.info("Triggering job processor...");
+	//		subscriptionJobProcessorScheduler.triggerJob();
+	//
+	//		return "Triggered job processor";
+	//	}
 
-		return "Job processor scheduled";
-	}
+	//	@GET
+	//	@Path("/pauseJobProcessor")
+	//	@Produces(MediaType.TEXT_PLAIN)
+	//	public String pauseJobProcessor(
+	//			@HeaderParam("Accept") final String acceptHeader,
+	//			@Context final UriInfo uriInfo) throws SchedulerException, JobProcessorNotScheduledCannotPause, JobProcessorSchedulerNotRunningCannotPause {
+	//		RestApiVersion apiVersion = RestUtils.extractAPIVersion(acceptHeader, RestApiVersion.v1);
+	//
+	//		logger.info("Pausing job processor");
+	//		subscriptionJobProcessorScheduler.pauseJob();
+	//
+	//		return "Paused job processor";
+	//	}
 
-	@GET
-	@Path("/triggerJobProcessor")
-	@Produces(MediaType.TEXT_PLAIN)
-	public String triggerJobProcessor(
-			@HeaderParam("Accept") final String acceptHeader,
-			@Context final UriInfo uriInfo) throws SchedulerException {
-		RestApiVersion apiVersion = RestUtils.extractAPIVersion(acceptHeader, RestApiVersion.v1);
+	//	@GET
+	//	@Path("/resumeJobProcessor")
+	//	@Produces(MediaType.TEXT_PLAIN)
+	//	public String resumeJobProcessor(
+	//			@HeaderParam("Accept") final String acceptHeader,
+	//			@Context final UriInfo uriInfo) throws SchedulerException, JobProcessorNotScheduledCannotResume, JobProcessorSchedulerNotRunningCannotResume {
+	//		RestApiVersion apiVersion = RestUtils.extractAPIVersion(acceptHeader, RestApiVersion.v1);
+	//
+	//		logger.info("Resuming job processor...");
+	//		subscriptionJobProcessorScheduler.resumeJob();
+	//
+	//		return "Resumed job processor";
+	//	}
 
-		logger.info("Triggering job processor...");
-		subscriptionJobProcessorScheduler.triggerJob();
-
-		return "Triggered job processor";
-	}
-
-	@GET
-	@Path("/pauseJobProcessor")
-	@Produces(MediaType.TEXT_PLAIN)
-	public String pauseJobProcessor(
-			@HeaderParam("Accept") final String acceptHeader,
-			@Context final UriInfo uriInfo) throws SchedulerException {
-		RestApiVersion apiVersion = RestUtils.extractAPIVersion(acceptHeader, RestApiVersion.v1);
-
-		logger.info("Pausing job processor");
-		subscriptionJobProcessorScheduler.pauseJob();
-
-		return "Paused job processor";
-	}
-
-	@GET
-	@Path("/resumeJobProcessor")
-	@Produces(MediaType.TEXT_PLAIN)
-	public String resumeJobProcessor(
-			@HeaderParam("Accept") final String acceptHeader,
-			@Context final UriInfo uriInfo) throws SchedulerException {
-		RestApiVersion apiVersion = RestUtils.extractAPIVersion(acceptHeader, RestApiVersion.v1);
-
-		logger.info("Resuming job processor...");
-		subscriptionJobProcessorScheduler.resumeJob();
-
-		return "Resumed job processor";
-	}
-
-	@GET
-	@Path("/unscheduleJobProcessor")
-	@Produces(MediaType.TEXT_PLAIN)
-	public String unscheduleJobProcessor(
-			@HeaderParam("Accept") final String acceptHeader,
-			@Context final UriInfo uriInfo) throws SchedulerException {
-		RestApiVersion apiVersion = RestUtils.extractAPIVersion(acceptHeader, RestApiVersion.v1);
-
-		//		logger.info("schedulerFactoryBean.stop()");
-		//		schedulerFactoryBean.stop();
-		//
-		//		logger.info("schedulerFactoryBean.isRunning() = {}", schedulerFactoryBean.isRunning());
-		//
-		//		Scheduler scheduler = schedulerFactoryBean.getScheduler();
-		//		try {
-		//			logger.info("scheduler.isShutdown() = {}", scheduler.isShutdown());
-		//		} catch (SchedulerException e) {
-		//			e.printStackTrace();
-		//		}
-
-		/*
-		 * This will start the scheduler again, so "stop()" is really like "pause()".
-		 */
-		//		logger.info("schedulerFactoryBean.start()");
-		//		schedulerFactoryBean.start();
-
-		subscriptionJobProcessorScheduler.unscheduleJob();
-
-		return "Job processor unscheduled";
-	}
+	//	@GET
+	//	@Path("/unscheduleJobProcessor")
+	//	@Produces(MediaType.TEXT_PLAIN)
+	//	public String unscheduleJobProcessor(
+	//			@HeaderParam("Accept") final String acceptHeader,
+	//			@Context final UriInfo uriInfo) throws SchedulerException, JobProcessorNotScheduledCannotStop {
+	//		RestApiVersion apiVersion = RestUtils.extractAPIVersion(acceptHeader, RestApiVersion.v1);
+	//
+	//		//		logger.info("schedulerFactoryBean.stop()");
+	//		//		schedulerFactoryBean.stop();
+	//		//
+	//		//		logger.info("schedulerFactoryBean.isRunning() = {}", schedulerFactoryBean.isRunning());
+	//		//
+	//		//		Scheduler scheduler = schedulerFactoryBean.getScheduler();
+	//		//		try {
+	//		//			logger.info("scheduler.isShutdown() = {}", scheduler.isShutdown());
+	//		//		} catch (SchedulerException e) {
+	//		//			e.printStackTrace();
+	//		//		}
+	//
+	//		/*
+	//		 * This will start the scheduler again, so "stop()" is really like "pause()".
+	//		 */
+	//		//		logger.info("schedulerFactoryBean.start()");
+	//		//		schedulerFactoryBean.start();
+	//
+	//		subscriptionJobProcessorScheduler.unscheduleJob();
+	//
+	//		return "Job processor unscheduled";
+	//	}
 
 	@GET
 	@Path("/scheduleAllJobs")

@@ -349,6 +349,22 @@ public class SubscriptionParameterValue implements Serializable {
 	@Column(name = "duration_to_add_seconds", nullable = true)
 	private Integer durationToAddSeconds;
 
+	/**
+	 * If true, then durations for report parameters of type "date" (not
+	 * "datetime") will be reduced by one day.
+	 * 
+	 * This adjustment ensures that "to dates" are correct if a specified number
+	 * of days are added to a "from date" in order to compute a "to date". For
+	 * example, consider a time period of a single day. In this case we want the
+	 * the "from date" and the "to date" to be the same. Therefore, if we
+	 * specify durationToAddDays=1 in order to represent a time period of one
+	 * day, we need to subtract off one day from the "to date" so that it is
+	 * identical to the "from date".
+	 */
+	@NotNull
+	@Column(name = "duration_subtract_one_day_for_dates", nullable = false)
+	private Boolean durationSubtractOneDayForDates;
+
 	@NotNull
 	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name = "created_on", nullable = false)
@@ -361,6 +377,7 @@ public class SubscriptionParameterValue implements Serializable {
 		this(
 				null,
 				subscriptionParameter,
+				null,
 				null,
 				null,
 				null,
@@ -413,7 +430,8 @@ public class SubscriptionParameterValue implements Serializable {
 			Integer durationToAddDays,
 			Integer durationToAddHours,
 			Integer durationToAddMinutes,
-			Integer durationToAddSeconds) {
+			Integer durationToAddSeconds,
+			Boolean durationSubtractOneDayForDates) {
 		this(
 				null,
 				subscriptionParameter,
@@ -441,6 +459,7 @@ public class SubscriptionParameterValue implements Serializable {
 				durationToAddHours,
 				durationToAddMinutes,
 				durationToAddSeconds,
+				durationSubtractOneDayForDates,
 				DateUtils.nowUtc());
 	}
 
@@ -457,6 +476,7 @@ public class SubscriptionParameterValue implements Serializable {
 				roleParameterValue.getIntegerValue(),
 				roleParameterValue.getStringValue(),
 				roleParameterValue.getTimeValue(),
+				null,
 				null,
 				null,
 				null,
@@ -507,6 +527,7 @@ public class SubscriptionParameterValue implements Serializable {
 				subscriptionParameterValueResource.getDurationToAddHours(),
 				subscriptionParameterValueResource.getDurationToAddMinutes(),
 				subscriptionParameterValueResource.getDurationToAddSeconds(),
+				subscriptionParameterValueResource.getDurationSubtractOneDayForDates(),
 				subscriptionParameterValueResource.getCreatedOn());
 	}
 
@@ -537,6 +558,7 @@ public class SubscriptionParameterValue implements Serializable {
 			Integer durationToAddHours,
 			Integer durationToAddMinutes,
 			Integer durationToAddSeconds,
+			Boolean durationSubtractOneDayForDates,
 			Date createdOn) {
 		super();
 		this.subscriptionParameterValueId = subscriptionParameterValueId;
@@ -565,6 +587,8 @@ public class SubscriptionParameterValue implements Serializable {
 		this.durationToAddHours = durationToAddHours;
 		this.durationToAddMinutes = durationToAddMinutes;
 		this.durationToAddSeconds = durationToAddSeconds;
+		this.durationSubtractOneDayForDates = (durationSubtractOneDayForDates != null) ? durationSubtractOneDayForDates
+				: true; // default is true
 		this.createdOn = (createdOn != null) ? createdOn : DateUtils.nowUtc();
 	}
 
@@ -768,6 +792,14 @@ public class SubscriptionParameterValue implements Serializable {
 		this.durationToAddSeconds = durationToAddSeconds;
 	}
 
+	public Boolean getDurationSubtractOneDayForDates() {
+		return durationSubtractOneDayForDates;
+	}
+
+	public void setDurationSubtractOneDayForDates(Boolean durationSubtractOneDayForDates) {
+		this.durationSubtractOneDayForDates = durationSubtractOneDayForDates;
+	}
+
 	public UUID getSubscriptionParameterValueId() {
 		return subscriptionParameterValueId;
 	}
@@ -831,6 +863,8 @@ public class SubscriptionParameterValue implements Serializable {
 		builder.append(durationToAddMinutes);
 		builder.append(", durationToAddSeconds=");
 		builder.append(durationToAddSeconds);
+		builder.append(", durationSubtractOneDayForDates=");
+		builder.append(durationSubtractOneDayForDates);
 		builder.append(", createdOn=");
 		builder.append(createdOn);
 		builder.append("]");

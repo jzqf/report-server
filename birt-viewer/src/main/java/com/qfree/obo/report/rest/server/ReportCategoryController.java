@@ -132,7 +132,7 @@ public class ReportCategoryController extends AbstractBaseController {
 	 * 
 	 *   $ mvn clean spring-boot:run
 	 *   $ curl -i -H "Accept: application/json;v=1" -X GET \
-	 *   http://localhost:8081/report-server/rest/reportCategories/7a482694-51d2-42d0-b0e2-19dd13bbbc64
+	 *   http://localhost:8080/rest/reportCategories/7a482694-51d2-42d0-b0e2-19dd13bbbc64
 	 */
 	@Path("/{id}")
 	@GET
