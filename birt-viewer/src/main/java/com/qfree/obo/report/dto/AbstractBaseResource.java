@@ -33,29 +33,48 @@ public abstract class AbstractBaseResource {
 		super();
 	}
 
-	public AbstractBaseResource(Class<?> entityClass, Object id, UriInfo uriInfo,
-			Map<String, List<String>> queryParams, RestApiVersion apiVersion) {
-		this(null, null, entityClass, id, uriInfo, queryParams, apiVersion);
+	public AbstractBaseResource(
+			Class<?> entityClass,
+			Object id,
+			UriInfo uriInfo,
+			Map<String, List<String>> queryParams,
+			RestApiVersion apiVersion) {
+		this(
+				null,
+				null,
+				entityClass,
+				id,
+				uriInfo,
+				queryParams,
+				apiVersion);
 	}
 
 	/**
 	 * 
-	 * @param baseResourceUri currently only used for collection resources
-	 * @param collectionPath currently only used for collection resources
-	 * @param extraQueryParams currently only used for collection resources
+	 * @param baseResourceUri
+	 *            currently only used for collection resources
+	 * @param collectionPath
+	 *            currently only used for collection resources
+	 * @param extraQueryParams
+	 *            currently only used for collection resources
 	 * @param entityClass
-	 * @param id currently only used for instance resources
+	 * @param id
+	 *            currently only used for instance resources
 	 * @param uriInfo
 	 * @param expand
 	 * @param apiVersion
 	 */
 	public AbstractBaseResource(
-			String baseResourceUri, String collectionPath,
-			Class<?> entityClass, Object id, UriInfo uriInfo, Map<String, List<String>> queryParams,
+			String baseResourceUri,
+			String collectionPath,
+			Class<?> entityClass,
+			Object id,
+			UriInfo uriInfo,
+			Map<String, List<String>> queryParams,
 			RestApiVersion apiVersion) {
 		super();
 		//		this.href = createHref(getFullyQualifiedContextPath(uriInfo), entityClass, id);
-		this.href = createHref(baseResourceUri, collectionPath, uriInfo, entityClass, id,queryParams);
+		this.href = createHref(baseResourceUri, collectionPath, uriInfo, entityClass, id, queryParams);
 		this.mediaType = createMediaType(apiVersion);
 	}
 
@@ -76,7 +95,10 @@ public abstract class AbstractBaseResource {
 	}
 
 	public static String createHref(
-			UriInfo uriInfo, Class<?> entityClass, Object instanceId, Map<String, List<String>> queryParams) {
+			UriInfo uriInfo,
+			Class<?> entityClass,
+			Object instanceId,
+			Map<String, List<String>> queryParams) {
 		return createHref(null, null, uriInfo, entityClass, instanceId, queryParams);
 	}
 

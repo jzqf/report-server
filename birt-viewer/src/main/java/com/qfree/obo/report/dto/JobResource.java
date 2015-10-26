@@ -14,10 +14,8 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.qfree.obo.report.domain.DocumentFormat;
 import com.qfree.obo.report.domain.Job;
-import com.qfree.obo.report.domain.Role;
-import com.qfree.obo.report.domain.Subscription;
+import com.qfree.obo.report.rest.server.RestUtils;
 import com.qfree.obo.report.rest.server.RestUtils.RestApiVersion;
 
 @XmlRootElement
@@ -119,6 +117,13 @@ public class JobResource extends AbstractBaseResource {
 			 */
 			apiVersion = null;
 
+			/*
+			 * If there exists pagination query parameters, remove them because
+			 * they are not used for instance resources????????????????????????????????????????????????
+			 */
+			newQueryParams.remove(ResourcePath.PAGE_OFFSET_QP_KEY);
+			newQueryParams.remove(ResourcePath.PAGE_LIMIT_QP_KEY);
+
 			this.jobId = job.getJobId();
 
 			this.jobStatusResource = new JobStatusResource(job.getJobStatus(),
@@ -152,59 +157,117 @@ public class JobResource extends AbstractBaseResource {
 		}
 	}
 
-	public static List<JobResource> listFromDocumentFormat(DocumentFormat documentFormat, UriInfo uriInfo,
-			Map<String, List<String>> queryParams, RestApiVersion apiVersion) {
+	//	public static List<JobResource> listFromDocumentFormat(DocumentFormat documentFormat, UriInfo uriInfo,
+	//			Map<String, List<String>> queryParams, RestApiVersion apiVersion) {
+	//
+	//		if (documentFormat.getJobs() != null) {
+	//			List<Job> jobs = documentFormat.getJobs();
+	//			List<JobResource> jobResources = new ArrayList<>(jobs.size());
+	//			for (Job job : jobs) {
+	//				//List<String> showAll = queryParams.get(ResourcePath.SHOWALL_QP_KEY);
+	//				//if (job.getActive() ||
+	//				//		RestUtils.FILTER_INACTIVE_RECORDS == false ||
+	//				//		ResourcePath.showAll(Job.class, showAll)) {
+	//				jobResources.add(new JobResource(job, uriInfo, queryParams, apiVersion));
+	//				//}
+	//			}
+	//			return jobResources;
+	//		} else {
+	//			return null;
+	//		}
+	//
+	//	}
+	//
+	//	public static List<JobResource> listFromSubscription(Subscription subscription, UriInfo uriInfo,
+	//			Map<String, List<String>> queryParams, RestApiVersion apiVersion) {
+	//
+	//		if (subscription.getJobs() != null) {
+	//			List<Job> jobs = subscription.getJobs();
+	//			List<JobResource> jobResources = new ArrayList<>(jobs.size());
+	//			for (Job job : jobs) {
+	//				//List<String> showAll = queryParams.get(ResourcePath.SHOWALL_QP_KEY);
+	//				//if (job.getActive() ||
+	//				//		RestUtils.FILTER_INACTIVE_RECORDS == false ||
+	//				//		ResourcePath.showAll(Job.class, showAll)) {
+	//				jobResources.add(new JobResource(job, uriInfo, queryParams, apiVersion));
+	//				//}
+	//			}
+	//			return jobResources;
+	//		} else {
+	//			return null;
+	//		}
+	//
+	//	}
+	//
+	//	public static List<JobResource> listFromRole(
+	//			Role role,
+	//			UriInfo uriInfo,
+	//			Map<String, List<String>> queryParams,
+	//			RestApiVersion apiVersion) {
+	//
+	//		if (role.getJobs() != null) {
+	//
+	//			/*
+	//			 * Create a List of Job entities to return as REST resources. If the
+	//			 * "offset" & "limit" query parameters are specified, we extract a
+	//			 * sublist from the List role.getJobs(); otherwise, we use the whole
+	//			 * list.
+	//			 */
+	//			List<Job> jobs = RestUtils.getPageOfList(role.getJobs(), queryParams);
+	//
+	//			List<JobResource> jobResources = new ArrayList<>(jobs.size());
+	//			for (Job job : jobs) {
+	//				//List<String> showAll = queryParams.get(ResourcePath.SHOWALL_QP_KEY);
+	//				//if (job.getActive() ||
+	//				//		RestUtils.FILTER_INACTIVE_RECORDS == false ||
+	//				//		ResourcePath.showAll(Job.class, showAll)) {
+	//
+	//				// REMOVE PAGINATION QUERY PARAMS HERE AND PASS NULL FOR APIVERSION?
+	//				// *ALSO* DO THIS IN JOBRESEOURCE CONSTRUCTOR AS I DO NOW ABOVE? NO SHOULD NOT BE NECESSARY?i DON'TKNOW. JUST TRY IT.
+	//				// NEED TO WRITE:  RestUtils.queryParamsWithPaginationRemoved(queryParams)? MAYBE, BUT USE IT IN CONSTRUCTOR ABOVE IN super(...), NOT HERE?
+	//				// BUT CAN STILL PASS APIVERSION AS NULL HERE?  HOW ABOUT, INSTEAD, SETTING APIVERSION=NULL IN ALL CONTROLLER METHODS AFTER IT IS USED???? THEN
+	//				//		I DO NOT NEED TO SET IT TO NULL EVERYWHERE ELSE?  TEST FIRST WITH JUST RoleController. MAYBE NOT. 
+	//				//		THIS WOULD INDICATE THAT APIVERSION SHOULD NOT BE A PARAMETER EVERYWHERE? WRONG. IT NEEDS TO BE A PARAMETER AT THE TOP LEVEL ONLY.
+	//				// MAKE CORRESPONDING CHANGES ELSEWHERE.
+	//				//jobResources.add(new JobResource(job, uriInfo, RestUtils.queryParamsWithPaginationRemoved(queryParams), null));			
+	//				jobResources.add(new JobResource(job, uriInfo, queryParams, apiVersion));
+	//				//}
+	//			}
+	//			return jobResources;
+	//		} else {
+	//			return null;
+	//		}
+	//
+	//	}
 
-		if (documentFormat.getJobs() != null) {
-			List<Job> jobs = documentFormat.getJobs();
-			List<JobResource> jobResources = new ArrayList<>(jobs.size());
-			for (Job job : jobs) {
-				//List<String> showAll = queryParams.get(ResourcePath.SHOWALL_QP_KEY);
-				//if (job.getActive() ||
-				//		RestUtils.FILTER_INACTIVE_RECORDS == false ||
-				//		ResourcePath.showAll(Job.class, showAll)) {
-				jobResources.add(new JobResource(job, uriInfo, queryParams, apiVersion));
-				//}
-			}
-			return jobResources;
-		} else {
-			return null;
-		}
-
-	}
-
-	public static List<JobResource> listFromSubscription(Subscription subscription, UriInfo uriInfo,
-			Map<String, List<String>> queryParams, RestApiVersion apiVersion) {
-
-		if (subscription.getJobs() != null) {
-			List<Job> jobs = subscription.getJobs();
-			List<JobResource> jobResources = new ArrayList<>(jobs.size());
-			for (Job job : jobs) {
-				//List<String> showAll = queryParams.get(ResourcePath.SHOWALL_QP_KEY);
-				//if (job.getActive() ||
-				//		RestUtils.FILTER_INACTIVE_RECORDS == false ||
-				//		ResourcePath.showAll(Job.class, showAll)) {
-				jobResources.add(new JobResource(job, uriInfo, queryParams, apiVersion));
-				//}
-			}
-			return jobResources;
-		} else {
-			return null;
-		}
-
-	}
-
-	public static List<JobResource> listFromRole(Role role, UriInfo uriInfo, Map<String, List<String>> queryParams,
+	public static List<JobResource> listFromJobs(List<Job> jobs, UriInfo uriInfo, Map<String, List<String>> queryParams,
 			RestApiVersion apiVersion) {
 
-		if (role.getJobs() != null) {
-			List<Job> jobs = role.getJobs();
-			List<JobResource> jobResources = new ArrayList<>(jobs.size());
-			for (Job job : jobs) {
+		if (jobs != null) {
+
+			/*
+			 * Create a List of Job entities to return as REST resources. If the
+			 * "offset" & "limit" query parameters are specified, we extract a
+			 * sublist from the List jobs; otherwise, we use the whole
+			 * list.
+			 */
+			List<Job> pageOfJobs = RestUtils.getPageOfList(jobs, queryParams);
+
+			List<JobResource> jobResources = new ArrayList<>(pageOfJobs.size());
+			for (Job job : pageOfJobs) {
 				//List<String> showAll = queryParams.get(ResourcePath.SHOWALL_QP_KEY);
 				//if (job.getActive() ||
 				//		RestUtils.FILTER_INACTIVE_RECORDS == false ||
 				//		ResourcePath.showAll(Job.class, showAll)) {
+
+				// REMOVE PAGINATION QUERY PARAMS HERE AND PASS NULL FOR APIVERSION?
+				// *ALSO* DO THIS IN JOBRESEOURCE CONSTRUCTOR AS I DO NOW ABOVE? NO SHOULD NOT BE NECESSARY?i DON'TKNOW. JUST TRY IT.
+				// NEED TO WRITE:  RestUtils.queryParamsWithPaginationRemoved(queryParams)? MAYBE, BUT USE IT IN CONSTRUCTOR ABOVE IN super(...), NOT HERE?
+				// BUT CAN STILL PASS APIVERSION AS NULL HERE?  HOW ABOUT, INSTEAD, SETTING APIVERSION=NULL IN ALL CONTROLLER METHODS AFTER IT IS USED???? THEN
+				//		I DO NOT NEED TO SET IT TO NULL EVERYWHERE ELSE?  TEST FIRST WITH JUST RoleController. MAYBE NOT. 
+				//		THIS WOULD INDICATE THAT APIVERSION SHOULD NOT BE A PARAMETER EVERYWHERE? WRONG. IT NEEDS TO BE A PARAMETER AT THE TOP LEVEL ONLY.
+				// MAKE CORRESPONDING CHANGES ELSEWHERE.
+				//jobResources.add(new JobResource(job, uriInfo, RestUtils.queryParamsWithPaginationRemoved(queryParams), null));			
 				jobResources.add(new JobResource(job, uriInfo, queryParams, apiVersion));
 				//}
 			}
@@ -212,7 +275,6 @@ public class JobResource extends AbstractBaseResource {
 		} else {
 			return null;
 		}
-
 	}
 
 	public Long getJobId() {

@@ -348,15 +348,22 @@ public class RoleController extends AbstractBaseController {
 			@HeaderParam("Accept") final String acceptHeader,
 			@QueryParam(ResourcePath.EXPAND_QP_NAME) final List<String> expand,
 			@QueryParam(ResourcePath.SHOWALL_QP_NAME) final List<String> showAll,
+			@QueryParam(ResourcePath.PAGE_OFFSET_QP_NAME) final List<String> pageOffset,
+			@QueryParam(ResourcePath.PAGE_LIMIT_QP_NAME) final List<String> pageLimit,
 			@Context final UriInfo uriInfo) {
 		Map<String, List<String>> queryParams = new HashMap<>();
 		queryParams.put(ResourcePath.EXPAND_QP_KEY, expand);
 		queryParams.put(ResourcePath.SHOWALL_QP_KEY, showAll);
+		RestUtils.checkPaginationQueryParams(pageOffset, pageLimit, queryParams);
 		RestApiVersion apiVersion = RestUtils.extractAPIVersion(acceptHeader, RestApiVersion.v1);
+
+		logger.info("pageOffset = {}", pageOffset);
+		logger.info("pageLimit = {}", pageLimit);
 
 		Role role = roleRepository.findOne(id);
 		RestUtils.ifNullThen404(role, Role.class, "roleId", id.toString());
 		return new JobCollectionResource(role, uriInfo, queryParams, apiVersion);
+		//return new JobCollectionResource(role.getJobs(), uriInfo, queryParams, apiVersion);
 	}
 
 	/*
