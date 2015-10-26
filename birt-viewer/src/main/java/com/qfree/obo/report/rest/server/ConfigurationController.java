@@ -30,8 +30,9 @@ import com.qfree.obo.report.domain.Configuration;
 import com.qfree.obo.report.dto.ConfigurationCollectionResource;
 import com.qfree.obo.report.dto.ConfigurationResource;
 import com.qfree.obo.report.dto.ResourcePath;
-import com.qfree.obo.report.rest.server.RestUtils.RestApiVersion;
 import com.qfree.obo.report.service.ConfigurationService;
+import com.qfree.obo.report.util.RestUtils;
+import com.qfree.obo.report.util.RestUtils.RestApiVersion;
 
 @Component
 @Path(ResourcePath.CONFIGURATIONS_PATH)

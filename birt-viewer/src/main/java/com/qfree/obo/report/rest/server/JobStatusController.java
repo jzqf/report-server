@@ -26,8 +26,9 @@ import com.qfree.obo.report.domain.JobStatus;
 import com.qfree.obo.report.dto.JobStatusCollectionResource;
 import com.qfree.obo.report.dto.JobStatusResource;
 import com.qfree.obo.report.dto.ResourcePath;
-import com.qfree.obo.report.rest.server.RestUtils.RestApiVersion;
 import com.qfree.obo.report.service.JobStatusService;
+import com.qfree.obo.report.util.RestUtils;
+import com.qfree.obo.report.util.RestUtils.RestApiVersion;
 
 @Component
 @Path(ResourcePath.JOBSTATUSES_PATH)

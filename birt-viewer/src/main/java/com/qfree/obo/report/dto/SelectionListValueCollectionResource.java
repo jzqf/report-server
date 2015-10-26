@@ -12,7 +12,7 @@ import org.slf4j.LoggerFactory;
 
 import com.qfree.obo.report.domain.ReportParameter;
 import com.qfree.obo.report.domain.SelectionListValue;
-import com.qfree.obo.report.rest.server.RestUtils.RestApiVersion;
+import com.qfree.obo.report.util.RestUtils.RestApiVersion;
 
 @XmlRootElement
 public class SelectionListValueCollectionResource extends AbstractCollectionResource<SelectionListValueResource> {

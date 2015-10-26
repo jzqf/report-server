@@ -39,8 +39,8 @@ import com.qfree.obo.report.dto.SelectionListValueResource;
 import com.qfree.obo.report.exceptions.DynamicSelectionListKeyException;
 import com.qfree.obo.report.exceptions.RestApiException;
 import com.qfree.obo.report.exceptions.RptdesignOpenFromStreamException;
-import com.qfree.obo.report.rest.server.RestUtils;
-import com.qfree.obo.report.rest.server.RestUtils.RestApiVersion;
+import com.qfree.obo.report.util.RestUtils;
+import com.qfree.obo.report.util.RestUtils.RestApiVersion;
 
 @Component
 @Transactional

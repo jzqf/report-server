@@ -28,10 +28,10 @@ import com.qfree.obo.report.dto.ReportSyncResource;
 import com.qfree.obo.report.dto.ResourcePath;
 import com.qfree.obo.report.dto.RestErrorResource.RestError;
 import com.qfree.obo.report.exceptions.RestApiException;
-import com.qfree.obo.report.rest.server.RestUtils;
-import com.qfree.obo.report.rest.server.RestUtils.RestApiVersion;
 import com.qfree.obo.report.util.ReportUtils;
+import com.qfree.obo.report.util.RestUtils;
 import com.qfree.obo.report.util.RptdesignFileFilter;
+import com.qfree.obo.report.util.RestUtils.RestApiVersion;
 
 @Component
 @Transactional

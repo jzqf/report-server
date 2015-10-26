@@ -9,7 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.qfree.obo.report.db.JobStatusRepository;
 import com.qfree.obo.report.domain.JobStatus;
 import com.qfree.obo.report.dto.JobStatusResource;
-import com.qfree.obo.report.rest.server.RestUtils;
+import com.qfree.obo.report.util.RestUtils;
 
 @Component
 @Transactional

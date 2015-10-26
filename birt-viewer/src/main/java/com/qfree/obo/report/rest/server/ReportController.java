@@ -34,9 +34,10 @@ import com.qfree.obo.report.dto.ReportResource;
 import com.qfree.obo.report.dto.ReportSyncResource;
 import com.qfree.obo.report.dto.ReportVersionCollectionResource;
 import com.qfree.obo.report.dto.ResourcePath;
-import com.qfree.obo.report.rest.server.RestUtils.RestApiVersion;
 import com.qfree.obo.report.service.ReportService;
 import com.qfree.obo.report.service.ReportSyncService;
+import com.qfree.obo.report.util.RestUtils;
+import com.qfree.obo.report.util.RestUtils.RestApiVersion;
 
 @Component
 @Path(ResourcePath.REPORTS_PATH)

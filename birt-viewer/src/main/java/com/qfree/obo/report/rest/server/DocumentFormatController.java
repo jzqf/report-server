@@ -30,8 +30,9 @@ import com.qfree.obo.report.domain.DocumentFormat;
 import com.qfree.obo.report.dto.DocumentFormatCollectionResource;
 import com.qfree.obo.report.dto.DocumentFormatResource;
 import com.qfree.obo.report.dto.ResourcePath;
-import com.qfree.obo.report.rest.server.RestUtils.RestApiVersion;
 import com.qfree.obo.report.service.DocumentFormatService;
+import com.qfree.obo.report.util.RestUtils;
+import com.qfree.obo.report.util.RestUtils.RestApiVersion;
 
 @Component
 @Path(ResourcePath.DOCUMENTFORMATS_PATH)

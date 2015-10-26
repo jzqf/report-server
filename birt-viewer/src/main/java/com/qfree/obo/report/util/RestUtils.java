@@ -1,4 +1,4 @@
-package com.qfree.obo.report.rest.server;
+package com.qfree.obo.report.util;
 
 import java.io.IOException;
 import java.util.List;
@@ -11,7 +11,6 @@ import org.xml.sax.SAXException;
 import com.qfree.obo.report.dto.ResourcePath;
 import com.qfree.obo.report.dto.RestErrorResource.RestError;
 import com.qfree.obo.report.exceptions.RestApiException;
-import com.qfree.obo.report.util.XmlUtils;
 
 public class RestUtils {
 

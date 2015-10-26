@@ -18,9 +18,9 @@ import org.slf4j.LoggerFactory;
 import com.qfree.obo.report.domain.DocumentFormat;
 import com.qfree.obo.report.domain.Role;
 import com.qfree.obo.report.domain.Subscription;
-import com.qfree.obo.report.rest.server.RestUtils;
-import com.qfree.obo.report.rest.server.RestUtils.RestApiVersion;
 import com.qfree.obo.report.service.SubscriptionService;
+import com.qfree.obo.report.util.RestUtils;
+import com.qfree.obo.report.util.RestUtils.RestApiVersion;
 
 @XmlRootElement
 public class SubscriptionResource extends AbstractBaseResource {

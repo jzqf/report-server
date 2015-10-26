@@ -19,7 +19,7 @@ import com.qfree.obo.report.domain.Role;
 import com.qfree.obo.report.dto.ConfigurationResource;
 import com.qfree.obo.report.dto.ConfigurationResource;
 import com.qfree.obo.report.dto.RoleResource;
-import com.qfree.obo.report.rest.server.RestUtils;
+import com.qfree.obo.report.util.RestUtils;
 
 @Component
 @Transactional

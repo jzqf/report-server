@@ -9,7 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.qfree.obo.report.db.RoleRepository;
 import com.qfree.obo.report.domain.Role;
 import com.qfree.obo.report.dto.RoleResource;
-import com.qfree.obo.report.rest.server.RestUtils;
+import com.qfree.obo.report.util.RestUtils;
 
 @Component
 @Transactional

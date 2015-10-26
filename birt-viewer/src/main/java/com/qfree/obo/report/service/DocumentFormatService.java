@@ -9,7 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.qfree.obo.report.db.DocumentFormatRepository;
 import com.qfree.obo.report.domain.DocumentFormat;
 import com.qfree.obo.report.dto.DocumentFormatResource;
-import com.qfree.obo.report.rest.server.RestUtils;
+import com.qfree.obo.report.util.RestUtils;
 
 @Component
 @Transactional

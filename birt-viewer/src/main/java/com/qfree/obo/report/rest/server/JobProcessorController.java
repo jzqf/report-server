@@ -33,8 +33,9 @@ import com.qfree.obo.report.exceptions.JobProcessorSchedulerNotRunningCannotPaus
 import com.qfree.obo.report.exceptions.JobProcessorSchedulerNotRunningCannotResume;
 import com.qfree.obo.report.exceptions.JobProcessorSchedulerNotRunningCannotTrigger;
 import com.qfree.obo.report.exceptions.RestApiException;
-import com.qfree.obo.report.rest.server.RestUtils.RestApiVersion;
 import com.qfree.obo.report.scheduling.schedulers.SubscriptionJobProcessorScheduler;
+import com.qfree.obo.report.util.RestUtils;
+import com.qfree.obo.report.util.RestUtils.RestApiVersion;
 
 @Component
 @Path(ResourcePath.JOBPROCESSOR_PATH)
