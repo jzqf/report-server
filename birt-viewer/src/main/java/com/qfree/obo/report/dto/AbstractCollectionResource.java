@@ -74,63 +74,84 @@ public abstract class AbstractCollectionResource<T extends AbstractBaseResource>
 	public AbstractCollectionResource() {
 	}
 
-	public AbstractCollectionResource(List<T> items, Class<?> entityClass,
-			UriInfo uriInfo, Map<String, List<String>> queryParams, RestApiVersion apiVersion) {
+	public AbstractCollectionResource(
+			List<T> items, // <- This argument can be eliminated, since it is not used
+			Class<?> entityClass,
+			UriInfo uriInfo,
+			Map<String, List<String>> queryParams,
+			RestApiVersion apiVersion) {
 		this(items, entityClass, null, null, uriInfo, queryParams, apiVersion);
 	}
 
-	public AbstractCollectionResource(List<T> items, Class<?> entityClass,
-			String baseResourceUri, String collectionPath,
-			UriInfo uriInfo, Map<String, List<String>> queryParams, RestApiVersion apiVersion) {
+	public AbstractCollectionResource(
+			List<T> items, // <- This argument can be eliminated, since it is not used
+			Class<?> entityClass,
+			String baseResourceUri,
+			String collectionPath,
+			UriInfo uriInfo,
+			Map<String, List<String>> queryParams,
+			RestApiVersion apiVersion) {
 		super(baseResourceUri, collectionPath, entityClass, null, uriInfo, queryParams, apiVersion);
 		//	List<String> expand = queryParams.get(ResourcePath.EXPAND_QP_KEY);
 		//	if (ResourcePath.expand(entityClass, expand)) {
 		//		this.items = items;
 		//	}
+	}
 
-		//	this.offset = RestUtils.paginationOffsetQueryParam(queryParams);
-		//	this.limit = RestUtils.paginationLimitQueryParam(queryParams);
-		//	if (this.offset != null && this.limit != null) {
-		//
-		//		/*
-		//		 * Remember.
-		//		 */
-		//		List<String> currentPageOffset=queryParams.get(ResourcePath.PAGE_OFFSET_QP_KEY);
-		//		
-		//		// MUST OVERRIDE "OFFSET" & "LIMIT" or perhaps only "offset"?
-		//		List<String> pageOffset = new ArrayList<>();
-		//		Integer offset;
-		//
-		//		offset = 0;
-		//		pageOffset.add(offset.toString());
-		//		queryParams.put(ResourcePath.PAGE_OFFSET_QP_KEY, pageOffset); // replace current value
-		//		this.first = createHref(baseResourceUri, collectionPath, uriInfo, entityClass, null, queryParams);
-		//
-		//		if (this.offset > 0) {
-		//			offset = this.offset - this.limit;
-		//			if (offset < 0) {
-		//				offset = 0;
-		//			}
-		//			pageOffset.clear(); // reuse list
-		//			pageOffset.add(offset.toString());
-		//			queryParams.put(ResourcePath.PAGE_OFFSET_QP_KEY, pageOffset); // replace current value
-		//			this.previous = createHref(baseResourceUri, collectionPath, uriInfo, entityClass, null, queryParams);
-		//		}
-		//		
-		//		//	private String next;
-		//		
-		//		//	offset = (items.size()/this.limit)*this.limit	NO THIS WILL NOT WORK BECUASE ITEMS IS ONLY ONE PAGE OF RESOURCES!
-		//		//	pageOffset.clear(); // reuse list
-		//		//	pageOffset.add(offset.toString());
-		//		//	queryParams.put(ResourcePath.PAGE_OFFSET_QP_KEY, pageOffset); // replace current value
-		//		//	this.last = createHref(baseResourceUri, collectionPath, uriInfo, entityClass, null, queryParams);
-		//		
-		//		/*
-		//		 * Restore.
-		//		 */
-		//		queryParams.put(ResourcePath.PAGE_OFFSET_QP_KEY,currentPageOffset);
-		//	}
+	public Integer getOffset() {
+		return offset;
+	}
 
+	public void setOffset(Integer offset) {
+		this.offset = offset;
+	}
+
+	public Integer getLimit() {
+		return limit;
+	}
+
+	public void setLimit(Integer limit) {
+		this.limit = limit;
+	}
+
+	public Integer getSize() {
+		return size;
+	}
+
+	public void setSize(Integer size) {
+		this.size = size;
+	}
+
+	public String getFirst() {
+		return first;
+	}
+
+	public void setFirst(String first) {
+		this.first = first;
+	}
+
+	public String getPrevious() {
+		return previous;
+	}
+
+	public void setPrevious(String previous) {
+		this.previous = previous;
+	}
+
+	public String getNext() {
+		return next;
+	}
+
+	public void setNext(String next) {
+		this.next = next;
+	}
+
+	public String getLast() {
+		return last;
+	}
+
+	public void setLast(String last) {
+		this.last = last;
 	}
 
 }

@@ -363,7 +363,6 @@ public class RoleController extends AbstractBaseController {
 		Role role = roleRepository.findOne(id);
 		RestUtils.ifNullThen404(role, Role.class, "roleId", id.toString());
 		return new JobCollectionResource(role, uriInfo, queryParams, apiVersion);
-		//return new JobCollectionResource(role.getJobs(), uriInfo, queryParams, apiVersion);
 	}
 
 	/*
