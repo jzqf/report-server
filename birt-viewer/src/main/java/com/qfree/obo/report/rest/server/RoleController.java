@@ -337,6 +337,8 @@ public class RoleController extends AbstractBaseController {
 	 *   $ curl -X GET -iH "Accept: application/json;v=1" \
 	 *   http://localhost:8080/rest/roles/b85fd129-17d9-40e7-ac11-7541040f8627/jobs
 	 * 
+	 * Note:  This endpoint supports pagination.
+	 * 
 	 * @Transactional is used to avoid org.hibernate.LazyInitializationException
 	 * being thrown.
 	 */
