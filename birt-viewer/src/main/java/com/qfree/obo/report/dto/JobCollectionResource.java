@@ -93,8 +93,11 @@ public class JobCollectionResource extends AbstractCollectionResource<JobResourc
 				queryParams,
 				apiVersion);
 
+		//TODO CAN THIS BLOCK BE IMPLEMENTED BY A METHOD OF AbstractCollectionResource (FOR CODE RE-USED)???????????
+
 		this.offset = RestUtils.paginationOffsetQueryParam(queryParams);
 		this.limit = RestUtils.paginationLimitQueryParam(queryParams);
+		logger.info("this.offset, this.limit = {}, {}", this.offset, this.limit);
 		if (this.offset != null && this.limit != null) {
 
 			this.size = jobs.size();
@@ -114,7 +117,7 @@ public class JobCollectionResource extends AbstractCollectionResource<JobResourc
 			logger.info("queryParams (first) = {}", queryParams);
 			this.first = createHref(baseResourceUri, collectionPath, uriInfo, entityClass, null, queryParams);
 
-			if (this.offset > 0) {
+			if (this.offset > 0 && this.offset < this.size + this.limit) {
 				/*
 				 * There is at least one *previous* page that can be requested.
 				 */

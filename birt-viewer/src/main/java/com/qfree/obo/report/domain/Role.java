@@ -104,6 +104,7 @@ public class Role implements Serializable {
 	 * cascade = CascadeType.ALL:
 	 *     Deleting a Role will delete all of its Subscription's.
 	 */
+	@OrderBy("createdOn ASC")
 	@OneToMany(mappedBy = "role", cascade = CascadeType.ALL)
 	private List<Subscription> subscriptions;
 

@@ -110,10 +110,13 @@ public class SubscriptionController extends AbstractBaseController {
 			@HeaderParam("Accept") final String acceptHeader,
 			@QueryParam(ResourcePath.EXPAND_QP_NAME) final List<String> expand,
 			@QueryParam(ResourcePath.SHOWALL_QP_NAME) final List<String> showAll,
+			@QueryParam(ResourcePath.PAGE_OFFSET_QP_NAME) final List<String> pageOffset,
+			@QueryParam(ResourcePath.PAGE_LIMIT_QP_NAME) final List<String> pageLimit,
 			@Context final UriInfo uriInfo) {
 		Map<String, List<String>> queryParams = new HashMap<>();
 		queryParams.put(ResourcePath.EXPAND_QP_KEY, expand);
 		queryParams.put(ResourcePath.SHOWALL_QP_KEY, showAll);
+		RestUtils.checkPaginationQueryParams(pageOffset, pageLimit, queryParams);
 		RestApiVersion apiVersion = RestUtils.extractAPIVersion(acceptHeader, RestApiVersion.v1);
 
 		List<Subscription> subscriptions = null;
@@ -122,13 +125,15 @@ public class SubscriptionController extends AbstractBaseController {
 		} else {
 			subscriptions = subscriptionRepository.findAll();
 		}
-		List<SubscriptionResource> subscriptionResources = new ArrayList<>(subscriptions.size());
-		for (Subscription subscription : subscriptions) {
-			subscriptionResources.add(new SubscriptionResource(subscription, subscriptionService,
-					uriInfo, queryParams, apiVersion));
-		}
-		return new SubscriptionCollectionResource(subscriptionResources, Subscription.class,
+		return new SubscriptionCollectionResource(subscriptions, Subscription.class,
 				uriInfo, queryParams, apiVersion);
+		//	List<SubscriptionResource> subscriptionResources = new ArrayList<>(subscriptions.size());
+		//	for (Subscription subscription : subscriptions) {
+		//		subscriptionResources.add(new SubscriptionResource(subscription, subscriptionService,
+		//				uriInfo, queryParams, apiVersion));
+		//	}
+		//	return new SubscriptionCollectionResource(subscriptionResources, Subscription.class,
+		//			uriInfo, queryParams, apiVersion);
 	}
 
 	/*
@@ -983,9 +988,6 @@ public class SubscriptionController extends AbstractBaseController {
 		queryParams.put(ResourcePath.SHOWALL_QP_KEY, showAll);
 		RestUtils.checkPaginationQueryParams(pageOffset, pageLimit, queryParams);
 		RestApiVersion apiVersion = RestUtils.extractAPIVersion(acceptHeader, RestApiVersion.v1);
-
-		logger.info("pageOffset = {}", pageOffset);
-		logger.info("pageLimit = {}", pageLimit);
 
 		Subscription subscription = subscriptionRepository.findOne(id);
 		RestUtils.ifNullThen404(subscription, Subscription.class, "subscriptionId", id.toString());

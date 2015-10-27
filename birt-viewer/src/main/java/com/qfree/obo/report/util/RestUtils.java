@@ -207,6 +207,7 @@ public class RestUtils {
 
 			List<String> pageOffsets = queryParams.get(ResourcePath.PAGE_OFFSET_QP_KEY);
 			List<String> pageLimits = queryParams.get(ResourcePath.PAGE_LIMIT_QP_KEY);
+			logger.info("pageOffsets, pageLimits = ({},{})", pageOffsets, pageLimits);
 			if (pageOffsets.size() > 0 && pageLimits.size() > 0) {
 
 				/*
@@ -239,13 +240,13 @@ public class RestUtils {
 
 				if (pageOffset < 0) {
 					pageOffset = 0;
-				} else if (pageOffset > entityList.size() - 1) {
-					/*
-					 * This will result in a zero-sized list being returned.
-					 * This is correct for a value of "pageOffset" so large as
-					 * this. 
-					 */
-					pageOffset = entityList.size() - 1;
+					//				} else if (pageOffset > entityList.size() - 1) {
+					//					/*
+					//					 * This will result in a zero-sized list being returned.
+					//					 * This is correct for a value of "pageOffset" so large as
+					//					 * this. 
+					//					 */
+					//					pageOffset = entityList.size() - 1;
 				}
 
 				if (pageLimit < 0) {
@@ -254,17 +255,23 @@ public class RestUtils {
 					pageLimit = entityList.size() - pageOffset;
 				}
 
-				//	logger.info("pageOffset = {}", pageOffset);
-				//	logger.info("pageLimit = {}", pageLimit);
+				logger.info("pageOffset, pageLimit = ({}, {})", pageOffset, pageLimit);
 
-				/*
-				 * pageOffset & pageLimit should have been adjusted so that the
-				 * call to "subList(...)" here will not throw an exception.
-				 * Nevertheless, we still wrap it in a "try" to be 100% sure.
-				 */
-				try {
-					entityList = entityList.subList(pageOffset, pageOffset + pageLimit);
-				} catch (Exception e) {
+				if (pageOffset > entityList.size() - 1) {
+					/*
+					 * Return an empty list because pageOffset is too large.
+					 */
+					entityList = entityList.subList(0, 0);
+				} else {
+					/*
+					 * pageOffset & pageLimit should have been adjusted so that the
+					 * call to "subList(...)" here will not throw an exception.
+					 * Nevertheless, we still wrap it in a "try" to be 100% sure.
+					 */
+					try {
+						entityList = entityList.subList(pageOffset, pageOffset + pageLimit);
+					} catch (Exception e) {
+					}
 				}
 
 				//	for (T entity : entityList) {
