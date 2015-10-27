@@ -16,6 +16,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.qfree.obo.report.domain.DocumentFormat;
+import com.qfree.obo.report.util.RestUtils;
 import com.qfree.obo.report.util.RestUtils.RestApiVersion;
 
 @XmlRootElement
@@ -87,6 +88,16 @@ public class DocumentFormatResource extends AbstractBaseResource {
 			 * See ReportResource for a more detailed explanation.
 			 */
 			apiVersion = null;
+
+			/*
+			 * This is how to support pagination in collection resources that
+			 * are attributes of an instance resource. This inserts default
+			 * pagination attributes into the query parameter map 
+			 * "newQueryParams".
+			 */
+			List<String> pageOffset = new ArrayList<>();
+			List<String> pageLimit = new ArrayList<>();
+			RestUtils.checkPaginationQueryParams(pageOffset, pageLimit, newQueryParams);
 
 			this.documentFormatId = documentFormat.getDocumentFormatId();
 			this.name = documentFormat.getName();
