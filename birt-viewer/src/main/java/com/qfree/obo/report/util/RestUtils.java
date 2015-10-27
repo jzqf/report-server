@@ -23,7 +23,7 @@ public class RestUtils {
 	 * Default value for the number of instance resources to make up one "page"
 	 * of a collection resource.
 	 */
-	public static final int PAGINATION_LIMIT_DEFAULT = 10;
+	public static final int PAGINATION_LIMIT_DEFAULT = 25;
 
 	/**
 	 * Version numbers for JAX-RS ReST endpoints exposed by this application.

@@ -85,7 +85,7 @@ public class JobCollectionResource extends AbstractCollectionResource<JobResourc
 			RestApiVersion apiVersion) {
 
 		super(
-				JobResource.listFromJobs(jobs, uriInfo, queryParams, apiVersion), // can be set to null here
+				JobResource.jobResourceListPageFromJobs(jobs, uriInfo, queryParams, apiVersion), // can be set to null here
 				entityClass,
 				baseResourceUri,
 				collectionPath,
@@ -175,7 +175,7 @@ public class JobCollectionResource extends AbstractCollectionResource<JobResourc
 			 * original request does not necessarily apply here.
 			 */
 			apiVersion = null;
-			this.items = JobResource.listFromJobs(jobs, uriInfo, queryParams, apiVersion);
+			this.items = JobResource.jobResourceListPageFromJobs(jobs, uriInfo, queryParams, apiVersion);
 		}
 
 	}
