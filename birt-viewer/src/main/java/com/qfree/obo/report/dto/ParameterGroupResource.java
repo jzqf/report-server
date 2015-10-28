@@ -16,6 +16,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.qfree.obo.report.domain.ParameterGroup;
+import com.qfree.obo.report.util.RestUtils;
 import com.qfree.obo.report.util.RestUtils.RestApiVersion;
 
 @XmlRootElement
@@ -52,7 +53,10 @@ public class ParameterGroupResource extends AbstractBaseResource {
 	 * @param expand
 	 * @param apiVersion
 	 */
-	public ParameterGroupResource(ParameterGroup parameterGroup, UriInfo uriInfo, Map<String, List<String>> queryParams,
+	public ParameterGroupResource(
+			ParameterGroup parameterGroup,
+			UriInfo uriInfo,
+			Map<String, List<String>> queryParams,
 			RestApiVersion apiVersion) {
 
 		super(ParameterGroup.class, parameterGroup.getParameterGroupId(), uriInfo, queryParams, apiVersion);
@@ -91,6 +95,61 @@ public class ParameterGroupResource extends AbstractBaseResource {
 			this.createdOn = parameterGroup.getCreatedOn();
 		}
 		logger.debug("this = {}", this);
+	}
+
+	public static List<ParameterGroupResource> parameterGroupResourceListPageFromParameterGroups(
+			List<ParameterGroup> parameterGroups,
+			UriInfo uriInfo, Map<String, List<String>> queryParams,
+			RestApiVersion apiVersion) {
+
+		if (parameterGroups != null) {
+
+			/*
+			 * The Job entity does not have an "active" field, but if it did and
+			 * if we wanted to return REST resources that correspond to only
+			 * active entities, it would be necessary to do one of two things
+			 * *before* we extract a page of Job entities below. Either:
+			 * 
+			 *   1. Filter the list "parameterGroups" here to eliminate inactive 
+			 *      entities, or:
+			 *   
+			 *   2. Ensure that the list "parameterGroups" was passed to this 
+			 *      method was *already* filtered to remove inactive entities.
+			 */
+
+			/*
+			 * Create a List of ParameterGroup entities to return as REST 
+			 * resources. If the "offset" & "limit" query parameters are 
+			 * specified, we extract a sublist of the List "parameterGroups"; 
+			 * otherwise, we use the whole list.
+			 */
+			List<ParameterGroup> pageOfParameterGroups = RestUtils.getPageOfList(parameterGroups, queryParams);
+
+			/*
+			 * Create a copy of the query parameters map and remove the
+			 * pagination query parameters from it because they do not apply 
+			 * to resources created from this point onwards from this method.
+			 * If "queryParams" does not contain these pagination query 
+			 * parameters, this will still work OK.
+			 */
+			Map<String, List<String>> queryParamsWOPagination = new HashMap<>(queryParams);
+			queryParamsWOPagination.remove(ResourcePath.PAGE_OFFSET_QP_KEY);
+			queryParamsWOPagination.remove(ResourcePath.PAGE_LIMIT_QP_KEY);
+
+			List<ParameterGroupResource> parameterGroupResources = new ArrayList<>(pageOfParameterGroups.size());
+			for (ParameterGroup parameterGroup : pageOfParameterGroups) {
+				/*
+				 * We cannot filter out entities here because then the page size
+				 * will be variable. Instead, it is necessary to filter out
+				 * entities *before* the page of entities is created above.
+				 */
+				parameterGroupResources
+						.add(new ParameterGroupResource(parameterGroup, uriInfo, queryParamsWOPagination, apiVersion));
+			}
+			return parameterGroupResources;
+		} else {
+			return null;
+		}
 	}
 
 	public UUID getParameterGroupId() {
@@ -149,5 +208,4 @@ public class ParameterGroupResource extends AbstractBaseResource {
 		builder.append("]");
 		return builder.toString();
 	}
-
 }
