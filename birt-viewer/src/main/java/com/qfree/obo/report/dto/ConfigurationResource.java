@@ -197,19 +197,12 @@ public class ConfigurationResource extends AbstractBaseResource {
 			List<ConfigurationResource> configurationResources = new ArrayList<>(pageOfConfigurations.size());
 			for (Configuration configuration : pageOfConfigurations) {
 				/*
-				 * We cannot filter out inactive entities here because then the
-				 * page size will be variable. Instead, it is necessary to 
-				 * filter out inactive entities *before* "pageOfConfigurations"
-				 * is created. I will leave these lines below that are commented
-				 * out as a reminder of what can be done if there is no paging.
+				 * We cannot filter out entities here because then the page size
+				 * will be variable. Instead, it is necessary to filter out
+				 * entities *before* the page of entities is created above.
 				 */
-				//List<String> showAll = newQueryParams.get(ResourcePath.SHOWALL_QP_KEY);
-				//if (configuration.getActive() ||
-				//		RestUtils.FILTER_INACTIVE_RECORDS == false ||
-				//		ResourcePath.showAll(Configuration.class, showAll)) {
 				configurationResources
 						.add(new ConfigurationResource(configuration, uriInfo, queryParamsWOPagination, apiVersion));
-				//}
 			}
 			return configurationResources;
 		} else {

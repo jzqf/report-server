@@ -113,6 +113,60 @@ public class DocumentFormatResource extends AbstractBaseResource {
 		logger.debug("this = {}", this);
 	}
 
+	public static List<DocumentFormatResource> documentFormatResourceListPageFromDocumentFormats(
+			List<DocumentFormat> documentFormats, UriInfo uriInfo, Map<String, List<String>> queryParams,
+			RestApiVersion apiVersion) {
+
+		if (documentFormats != null) {
+
+			/*
+			 * The DocumentFormat has an "active" field. In order to return REST 
+			 * resources that correspond to only active entities, it is 
+			 * necessary to do one of two things *before* we extract a page of 
+			 * DocumentFormat entities below. Either:
+			 * 
+			 *   1. Filter the list "documentFormats" here to eliminate inactive 
+			 *      entities, or:
+			 *   
+			 *   2. Ensure that the list "documentFormats" was passed to this 
+			 *      method was *already* filtered to remove inactive entities.
+			 */
+
+			/*
+			 * Create a List of DocumentFormat entities to return as REST 
+			 * resources. If the "offset" & "limit" query parameters are 
+			 * specified, we extract a sublist of the List "documentFormats"; 
+			 * otherwise, we use the whole list.
+			 */
+			List<DocumentFormat> pageOfDocumentFormats = RestUtils.getPageOfList(documentFormats, queryParams);
+
+			/*
+			 * Create a copy of the query parameters map and remove the
+			 * pagination query parameters from it because they do not apply 
+			 * to resources created from this point onwards from this method.
+			 * If "queryParams" does not contain these pagination query 
+			 * parameters, this will still work OK.
+			 */
+			Map<String, List<String>> queryParamsWOPagination = new HashMap<>(queryParams);
+			queryParamsWOPagination.remove(ResourcePath.PAGE_OFFSET_QP_KEY);
+			queryParamsWOPagination.remove(ResourcePath.PAGE_LIMIT_QP_KEY);
+
+			List<DocumentFormatResource> documentFormatResources = new ArrayList<>(pageOfDocumentFormats.size());
+			for (DocumentFormat documentFormat : pageOfDocumentFormats) {
+				/*
+				 * We cannot filter out entities here because then the page size
+				 * will be variable. Instead, it is necessary to filter out
+				 * entities *before* the page of entities is created above.
+				 */
+				documentFormatResources
+						.add(new DocumentFormatResource(documentFormat, uriInfo, queryParamsWOPagination, apiVersion));
+			}
+			return documentFormatResources;
+		} else {
+			return null;
+		}
+	}
+
 	public UUID getDocumentFormatId() {
 		return documentFormatId;
 	}
@@ -207,5 +261,4 @@ public class DocumentFormatResource extends AbstractBaseResource {
 		builder.append("]");
 		return builder.toString();
 	}
-
 }

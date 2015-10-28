@@ -10,12 +10,12 @@ import javax.xml.bind.annotation.XmlRootElement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.qfree.obo.report.domain.DocumentFormat;
 import com.qfree.obo.report.util.RestUtils.RestApiVersion;
 
 @XmlRootElement
-public class DocumentFormatCollectionResource extends AbstractCollectionResource<DocumentFormatResource> {
-	// public class DocumentFormatCollectionResource extends
-	// AbstractBaseResource {
+public class DocumentFormatCollectionResource
+		extends AbstractCollectionResourceXXXXXX<DocumentFormatResource, DocumentFormat> {
 
 	private static final Logger logger = LoggerFactory.getLogger(DocumentFormatCollectionResource.class);
 
@@ -25,15 +25,49 @@ public class DocumentFormatCollectionResource extends AbstractCollectionResource
 	public DocumentFormatCollectionResource() {
 	}
 
-	public DocumentFormatCollectionResource(List<DocumentFormatResource> items, Class<?> entityClass,
-			UriInfo uriInfo, Map<String, List<String>> queryParams, RestApiVersion apiVersion) {
+	public DocumentFormatCollectionResource(
+			List<DocumentFormat> documentFormats,
+			Class<DocumentFormat> entityClass,
+			UriInfo uriInfo,
+			Map<String, List<String>> queryParams,
+			RestApiVersion apiVersion) {
+		this(
+				documentFormats,
+				entityClass,
+				null,
+				null,
+				uriInfo,
+				queryParams,
+				apiVersion);
+	}
 
-		super(items, entityClass, uriInfo, queryParams, apiVersion);  // if class extends AbstractCollectionResource<ReportResource>
-		//super(entityClass, null, uriInfo, queryParams, apiVersion);  // if class extends AbstractBaseResource
+	public DocumentFormatCollectionResource(
+			List<DocumentFormat> documentFormats,
+			Class<DocumentFormat> entityClass,
+			String baseResourceUri,
+			String collectionPath,
+			UriInfo uriInfo,
+			Map<String, List<String>> queryParams,
+			RestApiVersion apiVersion) {
+
+		super(
+				documentFormats,
+				entityClass,
+				baseResourceUri,
+				collectionPath,
+				uriInfo,
+				queryParams,
+				apiVersion);
 
 		List<String> expand = queryParams.get(ResourcePath.EXPAND_QP_KEY);
 		if (ResourcePath.expand(entityClass, expand)) {
-			this.items = items;
+			/*
+			 * We pass null for apiVersion since the version used in the 
+			 * original request does not necessarily apply here.
+			 */
+			apiVersion = null;
+			this.items = DocumentFormatResource.documentFormatResourceListPageFromDocumentFormats(
+					documentFormats, uriInfo, queryParams, apiVersion);
 		}
 	}
 

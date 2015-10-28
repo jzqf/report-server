@@ -1,6 +1,5 @@
 package com.qfree.obo.report.rest.server;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -81,12 +80,8 @@ public class DocumentFormatController extends AbstractBaseController {
 		} else {
 			documentFormats = documentFormatRepository.findAll();
 		}
-		List<DocumentFormatResource> documentFormatResources = new ArrayList<>(documentFormats.size());
-		for (DocumentFormat documentFormat : documentFormats) {
-			documentFormatResources.add(new DocumentFormatResource(documentFormat, uriInfo, queryParams, apiVersion));
-		}
-		return new DocumentFormatCollectionResource(documentFormatResources, DocumentFormat.class, uriInfo,
-				queryParams, apiVersion);
+		return new DocumentFormatCollectionResource(documentFormats, DocumentFormat.class,
+				uriInfo, queryParams, apiVersion);
 	}
 
 	// /*
