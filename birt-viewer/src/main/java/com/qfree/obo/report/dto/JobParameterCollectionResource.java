@@ -41,21 +41,21 @@ public class JobParameterCollectionResource
 				apiVersion);
 	}
 
-	public JobParameterCollectionResource(
-			List<JobParameter> jobParameters,
-			Class<JobParameter> entityClass,
-			UriInfo uriInfo,
-			Map<String, List<String>> queryParams,
-			RestApiVersion apiVersion) {
-		this(
-				jobParameters,
-				entityClass,
-				null,
-				null,
-				uriInfo,
-				queryParams,
-				apiVersion);
-	}
+	//	public JobParameterCollectionResource(
+	//			List<JobParameter> jobParameters,
+	//			Class<JobParameter> entityClass,
+	//			UriInfo uriInfo,
+	//			Map<String, List<String>> queryParams,
+	//			RestApiVersion apiVersion) {
+	//		this(
+	//				jobParameters,
+	//				entityClass,
+	//				null,
+	//				null,
+	//				uriInfo,
+	//				queryParams,
+	//				apiVersion);
+	//	}
 
 	public JobParameterCollectionResource(
 			List<JobParameter> jobParameters,
