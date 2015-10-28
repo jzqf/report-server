@@ -36,7 +36,7 @@ public class DocumentFormatResource extends AbstractBaseResource {
 	private String fileExtension;
 
 	@XmlElement
-	private String mediaType;
+	private String internetMediaType;
 
 	@XmlElement
 	private String birtFormat;
@@ -102,7 +102,7 @@ public class DocumentFormatResource extends AbstractBaseResource {
 			this.documentFormatId = documentFormat.getDocumentFormatId();
 			this.name = documentFormat.getName();
 			this.fileExtension = documentFormat.getFileExtension();
-			this.mediaType = documentFormat.getMediaType();
+			this.internetMediaType = documentFormat.getInternetMediaType();
 			this.birtFormat = documentFormat.getBirtFormat();
 			this.binaryData = documentFormat.getBinaryData();
 			this.active = documentFormat.getActive();
@@ -191,12 +191,12 @@ public class DocumentFormatResource extends AbstractBaseResource {
 		this.fileExtension = fileExtension;
 	}
 
-	public String getMediaType() {
-		return mediaType;
+	public String getInternetMediaType() {
+		return internetMediaType;
 	}
 
-	public void setMediaType(String mediaType) {
-		this.mediaType = mediaType;
+	public void setInternetMediaType(String internetMediaType) {
+		this.internetMediaType = internetMediaType;
 	}
 
 	public String getBirtFormat() {
@@ -248,8 +248,8 @@ public class DocumentFormatResource extends AbstractBaseResource {
 		builder.append(name);
 		builder.append(", fileExtension=");
 		builder.append(fileExtension);
-		builder.append(", mediaType=");
-		builder.append(mediaType);
+		builder.append(", internetMediaType=");
+		builder.append(internetMediaType);
 		builder.append(", birtFormat=");
 		builder.append(birtFormat);
 		builder.append(", binaryData=");

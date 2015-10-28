@@ -210,7 +210,7 @@ public class DocumentFormatController extends AbstractBaseController {
 		documentFormatResource.setBinaryData(documentFormat.getBinaryData());
 		documentFormatResource.setBirtFormat(documentFormat.getBirtFormat());
 		documentFormatResource.setFileExtension(documentFormat.getFileExtension());
-		documentFormatResource.setMediaType(documentFormat.getMediaType());
+		documentFormatResource.setInternetMediaType(documentFormat.getInternetMediaType());
 		documentFormatResource.setName(documentFormat.getName());
 		documentFormatResource.setCreatedOn(documentFormat.getCreatedOn());
 
