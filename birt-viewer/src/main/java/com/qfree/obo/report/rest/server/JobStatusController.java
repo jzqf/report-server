@@ -1,6 +1,5 @@
 package com.qfree.obo.report.rest.server;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -56,7 +55,6 @@ public class JobStatusController extends AbstractBaseController {
 	 */
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
-	//	public List<JobStatusResource> getList(
 	public JobStatusCollectionResource getList(
 			@HeaderParam("Accept") final String acceptHeader,
 			@QueryParam(ResourcePath.EXPAND_QP_NAME) final List<String> expand,
@@ -73,13 +71,7 @@ public class JobStatusController extends AbstractBaseController {
 		} else {
 			jobStatuses = jobStatusRepository.findAll();
 		}
-		List<JobStatusResource> jobStatusResources = new ArrayList<>(jobStatuses.size());
-		for (JobStatus jobStatus : jobStatuses) {
-			jobStatusResources.add(new JobStatusResource(jobStatus, uriInfo, queryParams, apiVersion));
-		}
-		//		return jobStatusResources;
-		return new JobStatusCollectionResource(jobStatusResources, JobStatus.class, uriInfo,
-				queryParams, apiVersion);
+		return new JobStatusCollectionResource(jobStatuses, JobStatus.class, uriInfo, queryParams, apiVersion);
 	}
 
 	//	/*

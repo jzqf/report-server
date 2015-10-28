@@ -114,7 +114,9 @@ public class DocumentFormatResource extends AbstractBaseResource {
 	}
 
 	public static List<DocumentFormatResource> documentFormatResourceListPageFromDocumentFormats(
-			List<DocumentFormat> documentFormats, UriInfo uriInfo, Map<String, List<String>> queryParams,
+			List<DocumentFormat> documentFormats,
+			UriInfo uriInfo,
+			Map<String, List<String>> queryParams,
 			RestApiVersion apiVersion) {
 
 		if (documentFormats != null) {
