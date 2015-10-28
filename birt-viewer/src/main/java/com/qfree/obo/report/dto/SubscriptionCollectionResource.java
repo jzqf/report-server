@@ -1,6 +1,5 @@
 package com.qfree.obo.report.dto;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -14,7 +13,6 @@ import org.slf4j.LoggerFactory;
 import com.qfree.obo.report.domain.DocumentFormat;
 import com.qfree.obo.report.domain.Role;
 import com.qfree.obo.report.domain.Subscription;
-import com.qfree.obo.report.util.RestUtils;
 import com.qfree.obo.report.util.RestUtils.RestApiVersion;
 
 @XmlRootElement
@@ -114,8 +112,10 @@ public class SubscriptionCollectionResource extends AbstractCollectionResource<S
 			RestApiVersion apiVersion) {
 
 		super(
-				SubscriptionResource.subscriptionResourceListPageFromSubscriptions(
-						subscriptions, uriInfo, queryParams, apiVersion), // can be set to null here
+				//	SubscriptionResource.subscriptionResourceListPageFromSubscriptions(
+				//			subscriptions, uriInfo, queryParams, apiVersion), // can be set to null here
+				999999,
+				subscriptions,
 				entityClass,
 				baseResourceUri,
 				collectionPath,
@@ -123,83 +123,7 @@ public class SubscriptionCollectionResource extends AbstractCollectionResource<S
 				queryParams,
 				apiVersion);
 
-		//TODO CAN THIS BLOCK BE IMPLEMENTED BY A METHOD OF AbstractCollectionResource (FOR CODE RE-USED)???????????
-
-		this.offset = RestUtils.paginationOffsetQueryParam(queryParams);
-		this.limit = RestUtils.paginationLimitQueryParam(queryParams);
-		logger.info("this.offset, this.limit = {}, {}", this.offset, this.limit);
-		if (this.offset != null && this.limit != null) {
-
-			this.size = subscriptions.size();
-
-			/*
-			 * Remember so I can restore below.
-			 */
-			List<String> currentPageOffset = queryParams.get(ResourcePath.PAGE_OFFSET_QP_KEY);
-
-			List<String> pageOffset = new ArrayList<>();
-			Integer offset;
-
-			offset = 0;
-			pageOffset.add(offset.toString());
-			logger.info("pageOffset (first) = {}", pageOffset);
-			queryParams.put(ResourcePath.PAGE_OFFSET_QP_KEY, pageOffset); // replace current value
-			logger.info("queryParams (first) = {}", queryParams);
-			this.first = createHref(baseResourceUri, collectionPath, uriInfo, entityClass, null, queryParams);
-
-			if (this.offset > 0 && this.offset < this.size + this.limit) {
-				/*
-				 * There is at least one *previous* page that can be requested.
-				 */
-				offset = this.offset - this.limit;
-				if (offset < 0) {
-					offset = 0;
-				}
-				pageOffset.clear(); // reuse list
-				pageOffset.add(offset.toString());
-				logger.info("pageOffset (previous) = {}", pageOffset);
-				queryParams.put(ResourcePath.PAGE_OFFSET_QP_KEY, pageOffset); // replace current value
-				logger.info("queryParams (previous) = {}", queryParams);
-				this.previous = createHref(baseResourceUri, collectionPath, uriInfo, entityClass, null, queryParams);
-			}
-
-			if (this.offset < this.size - this.limit) {
-				/*
-				 * There is at least one more page that can be requested.
-				 */
-				offset = this.offset + this.limit;
-				pageOffset.clear(); // reuse list
-				pageOffset.add(offset.toString());
-				logger.info("pageOffset (next) = {}", pageOffset);
-				queryParams.put(ResourcePath.PAGE_OFFSET_QP_KEY, pageOffset); // replace current value
-				logger.info("queryParams (next) = {}", queryParams);
-				this.next = createHref(baseResourceUri, collectionPath, uriInfo, entityClass, null, queryParams);
-			}
-
-			offset = (this.size / this.limit) * this.limit;
-			if (offset.equals(this.size)) {
-				/*
-				 * If the size of the list of Job entities is an exact multiple
-				 * of this.limit, then we reduce "offset" by this.limit; 
-				 * otherwise, the "last" URI will have no items in it.
-				 */
-				offset -= this.limit;
-			}
-			if (offset < 0) {
-				offset = 0;
-			}
-			pageOffset.clear(); // reuse list
-			pageOffset.add(offset.toString());
-			logger.info("pageOffset (last) = {}", pageOffset);
-			queryParams.put(ResourcePath.PAGE_OFFSET_QP_KEY, pageOffset); // replace current value
-			logger.info("queryParams (last) = {}", queryParams);
-			this.last = createHref(baseResourceUri, collectionPath, uriInfo, entityClass, null, queryParams);
-
-			/*
-			 * Restore.
-			 */
-			queryParams.put(ResourcePath.PAGE_OFFSET_QP_KEY, currentPageOffset);
-		}
+		//		init(subscriptions, entityClass, baseResourceUri, collectionPath, uriInfo, queryParams);
 
 		List<String> expand = queryParams.get(ResourcePath.EXPAND_QP_KEY);
 		if (ResourcePath.expand(entityClass, expand)) {

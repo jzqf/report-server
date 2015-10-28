@@ -1,5 +1,6 @@
 package com.qfree.obo.report.dto;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -10,6 +11,7 @@ import javax.xml.bind.annotation.XmlTransient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.qfree.obo.report.util.RestUtils;
 import com.qfree.obo.report.util.RestUtils.RestApiVersion;
 
 /*
@@ -41,7 +43,7 @@ public abstract class AbstractCollectionResource<T extends AbstractBaseResource>
 
 	/**
 	 * Total number of entities available in all pages, i,e., the number of
-	 * resources that would be returned if there were no pagniation.
+	 * resources that would be returned if there were no pagination.
 	 */
 	@XmlElement
 	protected Integer size;
@@ -74,6 +76,7 @@ public abstract class AbstractCollectionResource<T extends AbstractBaseResource>
 	public AbstractCollectionResource() {
 	}
 
+	//TODO ELIMINATE THIS CONSTRUCTOR, IF POSSIBLE!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 	public AbstractCollectionResource(
 			List<T> items, // <- This argument can be eliminated, since it is not used
 			Class<?> entityClass,
@@ -83,6 +86,7 @@ public abstract class AbstractCollectionResource<T extends AbstractBaseResource>
 		this(items, entityClass, null, null, uriInfo, queryParams, apiVersion);
 	}
 
+	//TODO ELIMINATE THIS CONSTRUCTOR, IF POSSIBLE!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 	public AbstractCollectionResource(
 			List<T> items, // <- This argument can be eliminated, since it is not used
 			Class<?> entityClass,
@@ -96,6 +100,119 @@ public abstract class AbstractCollectionResource<T extends AbstractBaseResource>
 		//	if (ResourcePath.expand(entityClass, expand)) {
 		//		this.items = items;
 		//	}
+	}
+
+	public AbstractCollectionResource(
+			int iiiiiiiiiiiiiiiiiiiiiiiiiii,
+			List<?> entities,
+			Class<?> entityClass,
+			String baseResourceUri,
+			String collectionPath,
+			UriInfo uriInfo,
+			Map<String, List<String>> queryParams,
+			RestApiVersion apiVersion) {
+		super(baseResourceUri, collectionPath, entityClass, null, uriInfo, queryParams, apiVersion);
+
+		//	List<String> expand = queryParams.get(ResourcePath.EXPAND_QP_KEY);
+		//	if (ResourcePath.expand(entityClass, expand)) {
+		//		this.items = entities;
+		//	}
+
+		init(entities, entityClass, baseResourceUri, collectionPath, uriInfo, queryParams);
+
+	}
+
+	/**
+	 * Initializes the fields of
+	 * 
+	 * @param entities
+	 * @param entityClass
+	 * @param baseResourceUri
+	 * @param collectionPath
+	 * @param uriInfo
+	 * @param queryParams
+	 */
+	protected void init(List<?> entities,
+			Class<?> entityClass,
+			String baseResourceUri,
+			String collectionPath,
+			UriInfo uriInfo,
+			Map<String, List<String>> queryParams) {
+		this.offset = RestUtils.paginationOffsetQueryParam(queryParams);
+		this.limit = RestUtils.paginationLimitQueryParam(queryParams);
+		logger.info("this.offset, this.limit = {}, {}", this.offset, this.limit);
+		if (this.offset != null && this.limit != null) {
+
+			this.size = entities.size();
+
+			/*
+			 * Remember so I can restore below.
+			 */
+			List<String> currentPageOffset = queryParams.get(ResourcePath.PAGE_OFFSET_QP_KEY);
+
+			List<String> pageOffset = new ArrayList<>();
+			Integer offset;
+
+			offset = 0;
+			pageOffset.add(offset.toString());
+			logger.info("pageOffset (first) = {}", pageOffset);
+			queryParams.put(ResourcePath.PAGE_OFFSET_QP_KEY, pageOffset); // replace current value
+			logger.info("queryParams (first) = {}", queryParams);
+			this.first = createHref(baseResourceUri, collectionPath, uriInfo, entityClass, null, queryParams);
+
+			if (this.offset > 0 && this.offset < this.size + this.limit) {
+				/*
+				 * There is at least one *previous* page that can be requested.
+				 */
+				offset = this.offset - this.limit;
+				if (offset < 0) {
+					offset = 0;
+				}
+				pageOffset.clear(); // reuse list
+				pageOffset.add(offset.toString());
+				logger.info("pageOffset (previous) = {}", pageOffset);
+				queryParams.put(ResourcePath.PAGE_OFFSET_QP_KEY, pageOffset); // replace current value
+				logger.info("queryParams (previous) = {}", queryParams);
+				this.previous = createHref(baseResourceUri, collectionPath, uriInfo, entityClass, null, queryParams);
+			}
+
+			if (this.offset < this.size - this.limit) {
+				/*
+				 * There is at least one more page that can be requested.
+				 */
+				offset = this.offset + this.limit;
+				pageOffset.clear(); // reuse list
+				pageOffset.add(offset.toString());
+				logger.info("pageOffset (next) = {}", pageOffset);
+				queryParams.put(ResourcePath.PAGE_OFFSET_QP_KEY, pageOffset); // replace current value
+				logger.info("queryParams (next) = {}", queryParams);
+				this.next = createHref(baseResourceUri, collectionPath, uriInfo, entityClass, null, queryParams);
+			}
+
+			offset = (this.size / this.limit) * this.limit;
+			if (offset.equals(this.size)) {
+				/*
+				 * If the size of the list of entities is an exact multiple
+				 * of this.limit, then we reduce "offset" by this.limit; 
+				 * otherwise, the "last" URI will have no items in it.
+				 */
+				offset -= this.limit;
+			}
+			if (offset < 0) {
+				offset = 0;
+			}
+			pageOffset.clear(); // reuse list
+			pageOffset.add(offset.toString());
+			logger.info("pageOffset (last) = {}", pageOffset);
+			queryParams.put(ResourcePath.PAGE_OFFSET_QP_KEY, pageOffset); // replace current value
+			logger.info("queryParams (last) = {}", queryParams);
+			this.last = createHref(baseResourceUri, collectionPath, uriInfo, entityClass, null, queryParams);
+
+			/*
+			 * Restore.
+			 */
+			queryParams.put(ResourcePath.PAGE_OFFSET_QP_KEY, currentPageOffset);
+		}
 	}
 
 	public Integer getOffset() {
