@@ -74,8 +74,6 @@ public class RoleController extends AbstractBaseController {
 	 */
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
-	//	public List<RoleResource> getList(
-	//	public CollectionResource<RoleResource> getList(
 	public RoleCollectionResource getList(
 			@HeaderParam("Accept") final String acceptHeader,
 			@QueryParam(ResourcePath.EXPAND_QP_NAME) final List<String> expand,
@@ -86,14 +84,8 @@ public class RoleController extends AbstractBaseController {
 		queryParams.put(ResourcePath.SHOWALL_QP_KEY, showAll);
 		RestApiVersion apiVersion = RestUtils.extractAPIVersion(acceptHeader, RestApiVersion.v1);
 
-		// List<Role> roles = roleRepository.findByActiveTrue();
 		List<Role> roles = roleRepository.findAll();
-		List<RoleResource> roleResources = new ArrayList<>(roles.size());
-		for (Role role : roles) {
-			roleResources.add(new RoleResource(role, uriInfo, queryParams, apiVersion));
-		}
-		//		return roleResources;
-		return new RoleCollectionResource(roleResources, Role.class, uriInfo, queryParams, apiVersion);
+		return new RoleCollectionResource(roles, Role.class, uriInfo, queryParams, apiVersion);
 	}
 
 	/*
