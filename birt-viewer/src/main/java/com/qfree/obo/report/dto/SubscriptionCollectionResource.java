@@ -16,7 +16,7 @@ import com.qfree.obo.report.domain.Subscription;
 import com.qfree.obo.report.util.RestUtils.RestApiVersion;
 
 @XmlRootElement
-public class SubscriptionCollectionResource extends AbstractCollectionResource<SubscriptionResource> {
+public class SubscriptionCollectionResource extends AbstractCollectionResourceXXXXXX<SubscriptionResource, Subscription> {
 
 	private static final Logger logger = LoggerFactory.getLogger(SubscriptionCollectionResource.class);
 
@@ -33,10 +33,9 @@ public class SubscriptionCollectionResource extends AbstractCollectionResource<S
 			RestApiVersion apiVersion) {
 		this(
 				documentFormat.getSubscriptions(),
-				//				SubscriptionResource.listFromDocumentFormat(documentFormat, uriInfo, queryParams, apiVersion),
 				Subscription.class,
-				AbstractBaseResource.createHref(uriInfo, DocumentFormat.class, documentFormat.getDocumentFormatId(),
-						null),
+				AbstractBaseResource.createHref(
+						uriInfo, DocumentFormat.class, documentFormat.getDocumentFormatId(), null),
 				ResourcePath.SUBSCRIPTIONS_PATH,
 				uriInfo,
 				queryParams,
@@ -50,7 +49,6 @@ public class SubscriptionCollectionResource extends AbstractCollectionResource<S
 			RestApiVersion apiVersion) {
 		this(
 				role.getSubscriptions(),
-				//				SubscriptionResource.listFromRole(role, uriInfo, queryParams, apiVersion),
 				Subscription.class,
 				AbstractBaseResource.createHref(uriInfo, Role.class, role.getRoleId(), null),
 				ResourcePath.SUBSCRIPTIONS_PATH,
@@ -61,14 +59,12 @@ public class SubscriptionCollectionResource extends AbstractCollectionResource<S
 
 	public SubscriptionCollectionResource(
 			List<Subscription> subscriptions,
-			//			List<SubscriptionResource> items,
-			Class<?> entityClass,
+			Class<Subscription> entityClass,
 			UriInfo uriInfo,
 			Map<String, List<String>> queryParams,
 			RestApiVersion apiVersion) {
 		this(
 				subscriptions,
-				//				items,
 				entityClass,
 				null,
 				null,
@@ -77,34 +73,9 @@ public class SubscriptionCollectionResource extends AbstractCollectionResource<S
 				apiVersion);
 	}
 
-	//TODO ELMINATE THIS CONSTRUCTOR!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!111
-	//	public SubscriptionCollectionResource(
-	//			List<SubscriptionResource> items,
-	//			Class<?> entityClass,
-	//			String baseResourceUri,
-	//			String collectionPath,
-	//			UriInfo uriInfo,
-	//			Map<String, List<String>> queryParams,
-	//			RestApiVersion apiVersion) {
-	//
-	//		super(
-	//				items,
-	//				entityClass,
-	//				baseResourceUri,
-	//				collectionPath,
-	//				uriInfo,
-	//				queryParams,
-	//				apiVersion);
-	//
-	//		List<String> expand = queryParams.get(ResourcePath.EXPAND_QP_KEY);
-	//		if (ResourcePath.expand(entityClass, expand)) {
-	//			this.items = items;
-	//		}
-	//	}
-
 	public SubscriptionCollectionResource(
 			List<Subscription> subscriptions,
-			Class<?> entityClass,
+			Class<Subscription> entityClass,
 			String baseResourceUri,
 			String collectionPath,
 			UriInfo uriInfo,
@@ -112,9 +83,6 @@ public class SubscriptionCollectionResource extends AbstractCollectionResource<S
 			RestApiVersion apiVersion) {
 
 		super(
-				//	SubscriptionResource.subscriptionResourceListPageFromSubscriptions(
-				//			subscriptions, uriInfo, queryParams, apiVersion), // can be set to null here
-				999999,
 				subscriptions,
 				entityClass,
 				baseResourceUri,
@@ -122,8 +90,6 @@ public class SubscriptionCollectionResource extends AbstractCollectionResource<S
 				uriInfo,
 				queryParams,
 				apiVersion);
-
-		//		init(subscriptions, entityClass, baseResourceUri, collectionPath, uriInfo, queryParams);
 
 		List<String> expand = queryParams.get(ResourcePath.EXPAND_QP_KEY);
 		if (ResourcePath.expand(entityClass, expand)) {
@@ -148,12 +114,26 @@ public class SubscriptionCollectionResource extends AbstractCollectionResource<S
 	@Override
 	public String toString() {
 		StringBuilder builder = new StringBuilder();
-		builder.append("SubscriptionCollectionResource [href=");
+		builder.append("SubscriptionCollectionResource [items=");
+		builder.append(items);
+		builder.append(", offset=");
+		builder.append(offset);
+		builder.append(", limit=");
+		builder.append(limit);
+		builder.append(", size=");
+		builder.append(size);
+		builder.append(", first=");
+		builder.append(first);
+		builder.append(", previous=");
+		builder.append(previous);
+		builder.append(", next=");
+		builder.append(next);
+		builder.append(", last=");
+		builder.append(last);
+		builder.append(", href=");
 		builder.append(href);
 		builder.append(", mediaType=");
 		builder.append(mediaType);
-		builder.append(", items=");
-		builder.append(items);
 		builder.append("]");
 		return builder.toString();
 	}

@@ -17,7 +17,7 @@ import com.qfree.obo.report.domain.Subscription;
 import com.qfree.obo.report.util.RestUtils.RestApiVersion;
 
 @XmlRootElement
-public class JobCollectionResource extends AbstractCollectionResource<JobResource> {
+public class JobCollectionResource extends AbstractCollectionResourceXXXXXX<JobResource, Job> {
 
 	private static final Logger logger = LoggerFactory.getLogger(JobCollectionResource.class);
 
@@ -75,7 +75,7 @@ public class JobCollectionResource extends AbstractCollectionResource<JobResourc
 
 	public JobCollectionResource(
 			List<Job> jobs,
-			Class<?> entityClass,
+			Class<Job> entityClass,
 			String baseResourceUri,
 			String collectionPath,
 			UriInfo uriInfo,
@@ -83,8 +83,6 @@ public class JobCollectionResource extends AbstractCollectionResource<JobResourc
 			RestApiVersion apiVersion) {
 
 		super(
-				//	JobResource.jobResourceListPageFromJobs(jobs, uriInfo, queryParams, apiVersion), // can be set to null here
-				999999,
 				jobs,
 				entityClass,
 				baseResourceUri,
@@ -92,8 +90,6 @@ public class JobCollectionResource extends AbstractCollectionResource<JobResourc
 				uriInfo,
 				queryParams,
 				apiVersion);
-
-		//		init(jobs, entityClass, baseResourceUri, collectionPath, uriInfo, queryParams);
 
 		List<String> expand = queryParams.get(ResourcePath.EXPAND_QP_KEY);
 		if (ResourcePath.expand(entityClass, expand)) {
