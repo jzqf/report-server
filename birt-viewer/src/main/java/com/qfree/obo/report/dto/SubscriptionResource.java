@@ -15,8 +15,6 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.qfree.obo.report.domain.DocumentFormat;
-import com.qfree.obo.report.domain.Role;
 import com.qfree.obo.report.domain.Subscription;
 import com.qfree.obo.report.service.SubscriptionService;
 import com.qfree.obo.report.util.RestUtils;
@@ -186,47 +184,47 @@ public class SubscriptionResource extends AbstractBaseResource {
 		}
 	}
 
-	public static List<SubscriptionResource> listFromDocumentFormat(DocumentFormat documentFormat, UriInfo uriInfo,
-			Map<String, List<String>> queryParams, RestApiVersion apiVersion) {
+	//	public static List<SubscriptionResource> listFromDocumentFormat(DocumentFormat documentFormat, UriInfo uriInfo,
+	//			Map<String, List<String>> queryParams, RestApiVersion apiVersion) {
+	//
+	//		if (documentFormat.getSubscriptions() != null) {
+	//			List<Subscription> subscriptions = documentFormat.getSubscriptions();
+	//			List<SubscriptionResource> subscriptionResources = new ArrayList<>(subscriptions.size());
+	//			for (Subscription subscription : subscriptions) {
+	//				List<String> showAll = queryParams.get(ResourcePath.SHOWALL_QP_KEY);
+	//				if (subscription.getActive() ||
+	//						RestUtils.FILTER_INACTIVE_RECORDS == false
+	//						|| ResourcePath.showAll(Subscription.class, showAll)) {
+	//					subscriptionResources.add(new SubscriptionResource(subscription, uriInfo, queryParams, apiVersion));
+	//				}
+	//			}
+	//			return subscriptionResources;
+	//		} else {
+	//			return null;
+	//		}
+	//
+	//	}
 
-		if (documentFormat.getSubscriptions() != null) {
-			List<Subscription> subscriptions = documentFormat.getSubscriptions();
-			List<SubscriptionResource> subscriptionResources = new ArrayList<>(subscriptions.size());
-			for (Subscription subscription : subscriptions) {
-				List<String> showAll = queryParams.get(ResourcePath.SHOWALL_QP_KEY);
-				if (subscription.getActive() ||
-						RestUtils.FILTER_INACTIVE_RECORDS == false
-						|| ResourcePath.showAll(Subscription.class, showAll)) {
-					subscriptionResources.add(new SubscriptionResource(subscription, uriInfo, queryParams, apiVersion));
-				}
-			}
-			return subscriptionResources;
-		} else {
-			return null;
-		}
-
-	}
-
-	public static List<SubscriptionResource> listFromRole(Role role, UriInfo uriInfo,
-			Map<String, List<String>> queryParams, RestApiVersion apiVersion) {
-
-		if (role.getSubscriptions() != null) {
-			List<Subscription> subscriptions = role.getSubscriptions();
-			List<SubscriptionResource> subscriptionResources = new ArrayList<>(subscriptions.size());
-			for (Subscription subscription : subscriptions) {
-				List<String> showAll = queryParams.get(ResourcePath.SHOWALL_QP_KEY);
-				if (subscription.getActive() ||
-						RestUtils.FILTER_INACTIVE_RECORDS == false
-						|| ResourcePath.showAll(Subscription.class, showAll)) {
-					subscriptionResources.add(new SubscriptionResource(subscription, uriInfo, queryParams, apiVersion));
-				}
-			}
-			return subscriptionResources;
-		} else {
-			return null;
-		}
-
-	}
+	//	public static List<SubscriptionResource> listFromRole(Role role, UriInfo uriInfo,
+	//			Map<String, List<String>> queryParams, RestApiVersion apiVersion) {
+	//
+	//		if (role.getSubscriptions() != null) {
+	//			List<Subscription> subscriptions = role.getSubscriptions();
+	//			List<SubscriptionResource> subscriptionResources = new ArrayList<>(subscriptions.size());
+	//			for (Subscription subscription : subscriptions) {
+	//				List<String> showAll = queryParams.get(ResourcePath.SHOWALL_QP_KEY);
+	//				if (subscription.getActive() ||
+	//						RestUtils.FILTER_INACTIVE_RECORDS == false
+	//						|| ResourcePath.showAll(Subscription.class, showAll)) {
+	//					subscriptionResources.add(new SubscriptionResource(subscription, uriInfo, queryParams, apiVersion));
+	//				}
+	//			}
+	//			return subscriptionResources;
+	//		} else {
+	//			return null;
+	//		}
+	//
+	//	}
 
 	public static List<SubscriptionResource> subscriptionResourceListPageFromSubscriptions(
 			List<Subscription> subscriptions,
@@ -237,11 +235,10 @@ public class SubscriptionResource extends AbstractBaseResource {
 		if (subscriptions != null) {
 
 			/*
-			 * The Subscription entity does not have an "active" field, but if 
-			 * it did and if we wanted to return REST resources that correspond
-			 * to only active entities, it would be necessary to do one of two 
-			 * things *before* we extract a page of Subscription entities below.
-			 * Either:
+			 * The Subscription has an "active" field. In order to return REST 
+			 * resources that correspond to only active entities, it is 
+			 * necessary to do one of two things *before* we extract a page of 
+			 * Subscription entities below. Either:
 			 * 
 			 *   1. Filter the list "subscriptions" here to eliminate inactive 
 			 *      entities, or:
