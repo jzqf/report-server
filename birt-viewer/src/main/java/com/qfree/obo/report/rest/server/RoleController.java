@@ -33,7 +33,6 @@ import com.qfree.obo.report.domain.Role;
 import com.qfree.obo.report.domain.UuidCustomType;
 import com.qfree.obo.report.dto.JobCollectionResource;
 import com.qfree.obo.report.dto.ReportCollectionResource;
-import com.qfree.obo.report.dto.ReportResource;
 import com.qfree.obo.report.dto.ResourcePath;
 import com.qfree.obo.report.dto.RoleCollectionResource;
 import com.qfree.obo.report.dto.RoleResource;
@@ -121,7 +120,7 @@ public class RoleController extends AbstractBaseController {
 
 		Role role = roleService.saveNewFromResource(roleResource);
 		//	if (RestUtils.AUTO_EXPAND_PRIMARY_RESOURCES) {
-		addToExpandList(expand, Role.class);  // Force primary resource to be "expanded"
+		addToExpandList(expand, Role.class); // Force primary resource to be "expanded"
 		//	}
 		RoleResource resource = new RoleResource(role, uriInfo, queryParams, apiVersion);
 		return created(resource);
@@ -171,8 +170,8 @@ public class RoleController extends AbstractBaseController {
 	 */
 	/**
 	 * Return all Report instances that the Role with a specified id has access
-	 * to. This does NOT include transitive access rights that are associated 
-	 * with ancestor (parents, grandparents, ...) roles. Each Report will have 
+	 * to. This does NOT include transitive access rights that are associated
+	 * with ancestor (parents, grandparents, ...) roles. Each Report will have
 	 * zero or more ReportVersions.
 	 * 
 	 * @param id
@@ -283,13 +282,7 @@ public class RoleController extends AbstractBaseController {
 		for (Report report : reports) {
 			logger.debug("report = {}", report.getName());
 		}
-
-		List<ReportResource> reportResources = new ArrayList<>(reports.size());
-		for (Report report : reports) {
-			reportResources.add(new ReportResource(report, uriInfo, queryParams, apiVersion));
-		}
-		//		return reportResources;
-		return new ReportCollectionResource(reportResources, Report.class, uriInfo, queryParams, apiVersion);
+		return new ReportCollectionResource(reports, Report.class, uriInfo, queryParams, apiVersion);
 	}
 
 	/*

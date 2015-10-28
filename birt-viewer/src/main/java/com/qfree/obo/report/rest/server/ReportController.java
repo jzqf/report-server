@@ -1,6 +1,5 @@
 package com.qfree.obo.report.rest.server;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -72,7 +71,6 @@ public class ReportController extends AbstractBaseController {
 	@Transactional
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
-	//	public List<ReportResource> getList(
 	public ReportCollectionResource getList(
 			@HeaderParam("Accept") final String acceptHeader,
 			@QueryParam(ResourcePath.EXPAND_QP_NAME) final List<String> expand,
@@ -89,12 +87,7 @@ public class ReportController extends AbstractBaseController {
 		} else {
 			reports = reportRepository.findAll();
 		}
-		List<ReportResource> reportResources = new ArrayList<>(reports.size());
-		for (Report report : reports) {
-			reportResources.add(new ReportResource(report, uriInfo, queryParams, apiVersion));
-		}
-		//		return reportResources;
-		return new ReportCollectionResource(reportResources, Report.class, uriInfo, queryParams, apiVersion);
+		return new ReportCollectionResource(reports, Report.class, uriInfo, queryParams, apiVersion);
 	}
 
 	/*
