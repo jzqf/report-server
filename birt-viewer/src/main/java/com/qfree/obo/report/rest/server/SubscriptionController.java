@@ -127,13 +127,6 @@ public class SubscriptionController extends AbstractBaseController {
 		}
 		return new SubscriptionCollectionResource(subscriptions, Subscription.class,
 				uriInfo, queryParams, apiVersion);
-		//	List<SubscriptionResource> subscriptionResources = new ArrayList<>(subscriptions.size());
-		//	for (Subscription subscription : subscriptions) {
-		//		subscriptionResources.add(new SubscriptionResource(subscription, subscriptionService,
-		//				uriInfo, queryParams, apiVersion));
-		//	}
-		//	return new SubscriptionCollectionResource(subscriptionResources, Subscription.class,
-		//			uriInfo, queryParams, apiVersion);
 	}
 
 	/*
