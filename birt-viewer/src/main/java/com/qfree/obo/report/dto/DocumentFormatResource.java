@@ -160,8 +160,8 @@ public class DocumentFormatResource extends AbstractBaseResource {
 				 * will be variable. Instead, it is necessary to filter out
 				 * entities *before* the page of entities is created above.
 				 */
-				documentFormatResources
-						.add(new DocumentFormatResource(documentFormat, uriInfo, queryParamsWOPagination, apiVersion));
+				documentFormatResources.add(
+						new DocumentFormatResource(documentFormat, uriInfo, queryParamsWOPagination, apiVersion));
 			}
 			return documentFormatResources;
 		} else {

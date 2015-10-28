@@ -15,8 +15,8 @@ import com.qfree.obo.report.domain.ReportVersion;
 import com.qfree.obo.report.util.RestUtils.RestApiVersion;
 
 @XmlRootElement
-public class ReportVersionCollectionResource extends AbstractCollectionResource<ReportVersionResource> {
-	//public class ReportVersionCollectionResource extends AbstractBaseResource {
+public class ReportVersionCollectionResource
+		extends AbstractCollectionResourceXXXXXX<ReportVersionResource, ReportVersion> {
 
 	private static final Logger logger = LoggerFactory.getLogger(ReportVersionCollectionResource.class);
 
@@ -26,32 +26,64 @@ public class ReportVersionCollectionResource extends AbstractCollectionResource<
 	public ReportVersionCollectionResource() {
 	}
 
-	public ReportVersionCollectionResource(Report report, UriInfo uriInfo,
-			Map<String, List<String>> queryParams, RestApiVersion apiVersion) {
+	public ReportVersionCollectionResource(
+			Report report,
+			UriInfo uriInfo,
+			Map<String, List<String>> queryParams,
+			RestApiVersion apiVersion) {
 		this(
-				ReportVersionResource.listFromReport(report, uriInfo, queryParams, apiVersion),
+				report.getReportVersions(),
 				ReportVersion.class,
 				AbstractBaseResource.createHref(uriInfo, Report.class, report.getReportId(), null),
 				ResourcePath.REPORTVERSIONS_PATH,
-				uriInfo, queryParams, apiVersion);
+				uriInfo,
+				queryParams,
+				apiVersion);
 	}
 
-	public ReportVersionCollectionResource(List<ReportVersionResource> items, Class<?> entityClass,
-			UriInfo uriInfo, Map<String, List<String>> queryParams, RestApiVersion apiVersion) {
-		this(items, entityClass, null, null, uriInfo, queryParams, apiVersion);
+	public ReportVersionCollectionResource(
+			List<ReportVersion> reportVersions,
+			Class<ReportVersion> entityClass,
+			UriInfo uriInfo,
+			Map<String, List<String>> queryParams,
+			RestApiVersion apiVersion) {
+		this(
+				reportVersions,
+				entityClass,
+				null,
+				null,
+				uriInfo,
+				queryParams,
+				apiVersion);
 	}
 
-	public ReportVersionCollectionResource(List<ReportVersionResource> items, Class<?> entityClass,
-			String baseResourceUri, String collectionPath,
-			UriInfo uriInfo, Map<String, List<String>> queryParams, RestApiVersion apiVersion) {
+	public ReportVersionCollectionResource(
+			List<ReportVersion> reportVersions,
+			Class<ReportVersion> entityClass,
+			String baseResourceUri,
+			String collectionPath,
+			UriInfo uriInfo,
+			Map<String, List<String>> queryParams,
+			RestApiVersion apiVersion) {
 
-		super(items, entityClass, baseResourceUri, collectionPath, uriInfo, queryParams, apiVersion);  // if class extends AbstractCollectionResource<ReportVersionResource>
-		//super(items, entityClass, uriInfo, expand, apiVersion);  // if class extends AbstractCollectionResource<ReportVersionResource>
-		//super(entityClass, null, uriInfo, expand, apiVersion);  // if class extends AbstractBaseResource
+		super(
+				reportVersions,
+				entityClass,
+				baseResourceUri,
+				collectionPath,
+				uriInfo,
+				queryParams,
+				apiVersion);
 
 		List<String> expand = queryParams.get(ResourcePath.EXPAND_QP_KEY);
 		if (ResourcePath.expand(entityClass, expand)) {
-			this.items = items;
+			/*
+			 * We pass null for apiVersion since the version used in the 
+			 * original request does not necessarily apply here.
+			 */
+			apiVersion = null;
+			this.items = ReportVersionResource.reportVersionResourceListPageFromReportVersions(
+					reportVersions, uriInfo, queryParams, apiVersion);
 		}
 	}
 

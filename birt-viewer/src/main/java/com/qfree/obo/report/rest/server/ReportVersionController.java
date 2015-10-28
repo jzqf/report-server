@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
@@ -94,7 +93,6 @@ public class ReportVersionController extends AbstractBaseController {
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	@Transactional
-	//	public List<ReportVersionResource> getList(
 	public ReportVersionCollectionResource getList(
 			@HeaderParam("Accept") final String acceptHeader,
 			@QueryParam(ResourcePath.EXPAND_QP_NAME) final List<String> expand,
@@ -111,13 +109,8 @@ public class ReportVersionController extends AbstractBaseController {
 		} else {
 			reportVersions = reportVersionRepository.findAll();
 		}
-		List<ReportVersionResource> reportVersionResources = new ArrayList<>(reportVersions.size());
-		for (ReportVersion reportVersion : reportVersions) {
-			reportVersionResources.add(new ReportVersionResource(reportVersion, uriInfo, queryParams, apiVersion));
-		}
-		//		return reportVersionResources;
-		return new ReportVersionCollectionResource(reportVersionResources, ReportVersion.class, uriInfo, queryParams,
-				apiVersion);
+		return new ReportVersionCollectionResource(reportVersions, ReportVersion.class,
+				uriInfo, queryParams, apiVersion);
 	}
 
 	/*
