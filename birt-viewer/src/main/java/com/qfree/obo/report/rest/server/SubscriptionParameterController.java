@@ -641,9 +641,8 @@ public class SubscriptionParameterController extends AbstractBaseController {
 		logger.debug("subscriptionParameter = {}", subscriptionParameter);
 
 		/*
-		 * Save updated entity.
-		 * 
-		 * 
+		 * Save updated entity. Not needed because we are not updating the
+		 * SubscriptionParameter here.
 		 */
 		//subscriptionParameter = subscriptionParameterService.saveExistingFromResource(subscriptionParameterResource);
 

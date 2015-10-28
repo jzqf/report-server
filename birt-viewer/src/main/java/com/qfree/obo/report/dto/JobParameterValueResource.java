@@ -123,7 +123,9 @@ public class JobParameterValueResource extends AbstractBaseResource {
 	}
 
 	public static List<JobParameterValueResource> jobParameterValueResourceListPageFromJobParameterValues(
-			List<JobParameterValue> jobParameterValues, UriInfo uriInfo, Map<String, List<String>> queryParams,
+			List<JobParameterValue> jobParameterValues,
+			UriInfo uriInfo,
+			Map<String, List<String>> queryParams,
 			RestApiVersion apiVersion) {
 
 		if (jobParameterValues != null) {
