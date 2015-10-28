@@ -61,7 +61,10 @@ public class RoleResource extends AbstractBaseResource {
 	 * @param expand
 	 * @param apiVersion
 	 */
-	public RoleResource(Role role, UriInfo uriInfo, Map<String, List<String>> queryParams,
+	public RoleResource(
+			Role role,
+			UriInfo uriInfo,
+			Map<String, List<String>> queryParams,
 			RestApiVersion apiVersion) {
 
 		super(Role.class, role.getRoleId(), uriInfo, queryParams, apiVersion);
@@ -105,8 +108,11 @@ public class RoleResource extends AbstractBaseResource {
 		logger.debug("this = {}", this);
 	}
 
-	public static List<RoleResource> roleResourceListPageFromRoles(List<Role> roles, UriInfo uriInfo,
-			Map<String, List<String>> queryParams, RestApiVersion apiVersion) {
+	public static List<RoleResource> roleResourceListPageFromRoles(
+			List<Role> roles,
+			UriInfo uriInfo,
+			Map<String, List<String>> queryParams,
+			RestApiVersion apiVersion) {
 
 		if (roles != null) {
 
