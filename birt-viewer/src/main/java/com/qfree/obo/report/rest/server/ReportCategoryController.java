@@ -1,6 +1,5 @@
 package com.qfree.obo.report.rest.server;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -78,13 +77,8 @@ public class ReportCategoryController extends AbstractBaseController {
 		} else {
 			reportCategories = reportCategoryRepository.findAll();
 		}
-		List<ReportCategoryResource> reportCategoryResources = new ArrayList<>(reportCategories.size());
-		for (ReportCategory reportCategory : reportCategories) {
-			reportCategoryResources.add(new ReportCategoryResource(reportCategory, uriInfo, queryParams, apiVersion));
-		}
-		//		return reportCategoryResources;
-		return new ReportCategoryCollectionResource(reportCategoryResources, ReportCategory.class, uriInfo,
-				queryParams, apiVersion);
+		return new ReportCategoryCollectionResource(reportCategories, ReportCategory.class,
+				uriInfo, queryParams, apiVersion);
 	}
 
 	/*

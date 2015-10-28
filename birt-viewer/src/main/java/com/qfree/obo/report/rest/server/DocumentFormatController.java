@@ -152,8 +152,8 @@ public class DocumentFormatController extends AbstractBaseController {
 		// }
 		DocumentFormat documentFormat = documentFormatRepository.findOne(id);
 		RestUtils.ifNullThen404(documentFormat, DocumentFormat.class, "documentFormatId", id.toString());
-		DocumentFormatResource documentFormatResource = new DocumentFormatResource(documentFormat, uriInfo, queryParams,
-				apiVersion);
+		DocumentFormatResource documentFormatResource = new DocumentFormatResource(documentFormat,
+				uriInfo, queryParams, apiVersion);
 		return documentFormatResource;
 	}
 

@@ -16,6 +16,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.qfree.obo.report.domain.ReportCategory;
+import com.qfree.obo.report.util.RestUtils;
 import com.qfree.obo.report.util.RestUtils.RestApiVersion;
 
 @XmlRootElement
@@ -89,6 +90,62 @@ public class ReportCategoryResource extends AbstractBaseResource {
 		logger.debug("this = {}", this);
 	}
 
+	public static List<ReportCategoryResource> reportCategoryResourceListPageFromReportCategories(
+			List<ReportCategory> reportCategories,
+			UriInfo uriInfo,
+			Map<String, List<String>> queryParams,
+			RestApiVersion apiVersion) {
+
+		if (reportCategories != null) {
+
+			/*
+			 * The ReportCategory has an "active" field. In order to return REST 
+			 * resources that correspond to only active entities, it is 
+			 * necessary to do one of two things *before* we extract a page of 
+			 * ReportCategory entities below. Either:
+			 * 
+			 *   1. Filter the list "reportCategories" here to eliminate inactive 
+			 *      entities, or:
+			 *   
+			 *   2. Ensure that the list "reportCategories" was passed to this 
+			 *      method was *already* filtered to remove inactive entities.
+			 */
+
+			/*
+			 * Create a List of ReportCategory entities to return as REST 
+			 * resources. If the "offset" & "limit" query parameters are 
+			 * specified, we extract a sublist of the List "reportCategories"; 
+			 * otherwise, we use the whole list.
+			 */
+			List<ReportCategory> pageOfReportCategories = RestUtils.getPageOfList(reportCategories, queryParams);
+
+			/*
+			 * Create a copy of the query parameters map and remove the
+			 * pagination query parameters from it because they do not apply 
+			 * to resources created from this point onwards from this method.
+			 * If "queryParams" does not contain these pagination query 
+			 * parameters, this will still work OK.
+			 */
+			Map<String, List<String>> queryParamsWOPagination = new HashMap<>(queryParams);
+			queryParamsWOPagination.remove(ResourcePath.PAGE_OFFSET_QP_KEY);
+			queryParamsWOPagination.remove(ResourcePath.PAGE_LIMIT_QP_KEY);
+
+			List<ReportCategoryResource> reportCategoryResources = new ArrayList<>(pageOfReportCategories.size());
+			for (ReportCategory reportCategory : pageOfReportCategories) {
+				/*
+				 * We cannot filter out entities here because then the page size
+				 * will be variable. Instead, it is necessary to filter out
+				 * entities *before* the page of entities is created above.
+				 */
+				reportCategoryResources
+						.add(new ReportCategoryResource(reportCategory, uriInfo, queryParamsWOPagination, apiVersion));
+			}
+			return reportCategoryResources;
+		} else {
+			return null;
+		}
+	}
+
 	public UUID getReportCategoryId() {
 		return reportCategoryId;
 	}
@@ -145,11 +202,4 @@ public class ReportCategoryResource extends AbstractBaseResource {
 		builder.append("]");
 		return builder.toString();
 	}
-
-
-	//	@Override
-	//	public String toString() {
-	//		return "ReportCategoryResource [href=" + href + "]";
-	//	}
-
 }

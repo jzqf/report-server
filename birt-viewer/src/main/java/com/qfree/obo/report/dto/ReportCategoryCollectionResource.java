@@ -10,11 +10,12 @@ import javax.xml.bind.annotation.XmlRootElement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.qfree.obo.report.domain.ReportCategory;
 import com.qfree.obo.report.util.RestUtils.RestApiVersion;
 
 @XmlRootElement
-public class ReportCategoryCollectionResource extends AbstractCollectionResource<ReportCategoryResource> {
-	//public class ReportCategoryCollectionResource extends AbstractBaseResource {
+public class ReportCategoryCollectionResource
+		extends AbstractCollectionResourceXXXXXX<ReportCategoryResource, ReportCategory> {
 
 	private static final Logger logger = LoggerFactory.getLogger(ReportCategoryCollectionResource.class);
 
@@ -24,15 +25,49 @@ public class ReportCategoryCollectionResource extends AbstractCollectionResource
 	public ReportCategoryCollectionResource() {
 	}
 
-	public ReportCategoryCollectionResource(List<ReportCategoryResource> items, Class<?> entityClass,
-			UriInfo uriInfo, Map<String, List<String>> queryParams, RestApiVersion apiVersion) {
+	public ReportCategoryCollectionResource(
+			List<ReportCategory> reportCategories,
+			Class<ReportCategory> entityClass,
+			UriInfo uriInfo,
+			Map<String, List<String>> queryParams,
+			RestApiVersion apiVersion) {
+		this(
+				reportCategories,
+				entityClass,
+				null,
+				null,
+				uriInfo,
+				queryParams,
+				apiVersion);
+	}
 
-		super(items, entityClass, uriInfo, queryParams, apiVersion);  // if class extends AbstractCollectionResource<ReportResource>
-		//super(entityClass, null, uriInfo, queryParams, apiVersion);  // if class extends AbstractBaseResource
+	public ReportCategoryCollectionResource(
+			List<ReportCategory> reportCategories,
+			Class<ReportCategory> entityClass,
+			String baseResourceUri,
+			String collectionPath,
+			UriInfo uriInfo,
+			Map<String, List<String>> queryParams,
+			RestApiVersion apiVersion) {
+
+		super(
+				reportCategories,
+				entityClass,
+				baseResourceUri,
+				collectionPath,
+				uriInfo,
+				queryParams,
+				apiVersion);
 
 		List<String> expand = queryParams.get(ResourcePath.EXPAND_QP_KEY);
 		if (ResourcePath.expand(entityClass, expand)) {
-			this.items = items;
+			/*
+			 * We pass null for apiVersion since the version used in the 
+			 * original request does not necessarily apply here.
+			 */
+			apiVersion = null;
+			this.items = ReportCategoryResource.reportCategoryResourceListPageFromReportCategories(
+					reportCategories, uriInfo, queryParams, apiVersion);
 		}
 	}
 
