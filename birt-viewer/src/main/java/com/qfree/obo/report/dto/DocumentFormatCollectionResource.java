@@ -15,7 +15,7 @@ import com.qfree.obo.report.util.RestUtils.RestApiVersion;
 
 @XmlRootElement
 public class DocumentFormatCollectionResource
-		extends AbstractCollectionResourceXXXXXX<DocumentFormatResource, DocumentFormat> {
+		extends AbstractCollectionResource<DocumentFormatResource, DocumentFormat> {
 
 	private static final Logger logger = LoggerFactory.getLogger(DocumentFormatCollectionResource.class);
 

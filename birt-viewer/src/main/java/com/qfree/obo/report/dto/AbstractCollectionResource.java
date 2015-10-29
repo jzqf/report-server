@@ -20,12 +20,12 @@ import com.qfree.obo.report.util.RestUtils.RestApiVersion;
  * level stops that element from being generated.
  */
 @XmlTransient
-public abstract class AbstractCollectionResource<T extends AbstractBaseResource> extends AbstractBaseResource {
+public abstract class AbstractCollectionResource<T extends AbstractBaseResource, U> extends AbstractBaseResource {
 
 	private static final Logger logger = LoggerFactory.getLogger(AbstractCollectionResource.class);
 
 	//	@XmlElement
-	//	private List<RoleResource> items;
+	//	protected List<T> items;
 
 	/**
 	 * Used for pagination to specify how many resources have been skipped to
@@ -76,36 +76,9 @@ public abstract class AbstractCollectionResource<T extends AbstractBaseResource>
 	public AbstractCollectionResource() {
 	}
 
-	//TODO ELIMINATE THIS CONSTRUCTOR, IF POSSIBLE!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 	public AbstractCollectionResource(
-			List<T> items, // <- This argument can be eliminated, since it is not used
-			Class<?> entityClass,
-			UriInfo uriInfo,
-			Map<String, List<String>> queryParams,
-			RestApiVersion apiVersion) {
-		this(items, entityClass, null, null, uriInfo, queryParams, apiVersion);
-	}
-
-	//TODO ELIMINATE THIS CONSTRUCTOR, IF POSSIBLE!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-	public AbstractCollectionResource(
-			List<T> items, // <- This argument can be eliminated, since it is not used
-			Class<?> entityClass,
-			String baseResourceUri,
-			String collectionPath,
-			UriInfo uriInfo,
-			Map<String, List<String>> queryParams,
-			RestApiVersion apiVersion) {
-		super(baseResourceUri, collectionPath, entityClass, null, uriInfo, queryParams, apiVersion);
-		//	List<String> expand = queryParams.get(ResourcePath.EXPAND_QP_KEY);
-		//	if (ResourcePath.expand(entityClass, expand)) {
-		//		this.items = items;
-		//	}
-	}
-
-	public AbstractCollectionResource(
-			int iiiiiiiiiiiiiiiiiiiiiiiiiii,
-			List<?> entities,
-			Class<?> entityClass,
+			List<U> entities,
+			Class<U> entityClass,
 			String baseResourceUri,
 			String collectionPath,
 			UriInfo uriInfo,
@@ -115,29 +88,16 @@ public abstract class AbstractCollectionResource<T extends AbstractBaseResource>
 
 		//	List<String> expand = queryParams.get(ResourcePath.EXPAND_QP_KEY);
 		//	if (ResourcePath.expand(entityClass, expand)) {
-		//		this.items = entities;
+		//		/*
+		//		 * We pass null for apiVersion since the version used in the 
+		//		 * original request does not necessarily apply here.
+		//		 */
+		//		apiVersion = null;
+		//		this.items = (List<T>) JobResource.jobResourceListPageFromJobs((List<Job>) entities, uriInfo, queryParams,
+		//				apiVersion);
+		//		logger.info("this.items = {}", this.items);
 		//	}
 
-		init(entities, entityClass, baseResourceUri, collectionPath, uriInfo, queryParams);
-
-	}
-
-	/**
-	 * Initializes the fields of
-	 * 
-	 * @param entities
-	 * @param entityClass
-	 * @param baseResourceUri
-	 * @param collectionPath
-	 * @param uriInfo
-	 * @param queryParams
-	 */
-	protected void init(List<?> entities,
-			Class<?> entityClass,
-			String baseResourceUri,
-			String collectionPath,
-			UriInfo uriInfo,
-			Map<String, List<String>> queryParams) {
 		this.offset = RestUtils.paginationOffsetQueryParam(queryParams);
 		this.limit = RestUtils.paginationLimitQueryParam(queryParams);
 		logger.info("this.offset, this.limit = {}, {}", this.offset, this.limit);
@@ -213,7 +173,16 @@ public abstract class AbstractCollectionResource<T extends AbstractBaseResource>
 			 */
 			queryParams.put(ResourcePath.PAGE_OFFSET_QP_KEY, currentPageOffset);
 		}
+
 	}
+
+	//	public List<T> getItems() {
+	//		return items;
+	//	}
+	//
+	//	public void setItems(List<T> items) {
+	//		this.items = items;
+	//	}
 
 	public Integer getOffset() {
 		return offset;

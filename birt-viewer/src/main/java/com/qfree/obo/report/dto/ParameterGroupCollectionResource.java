@@ -15,7 +15,7 @@ import com.qfree.obo.report.util.RestUtils.RestApiVersion;
 
 @XmlRootElement
 public class ParameterGroupCollectionResource
-		extends AbstractCollectionResourceXXXXXX<ParameterGroupResource, ParameterGroup> {
+		extends AbstractCollectionResource<ParameterGroupResource, ParameterGroup> {
 
 	private static final Logger logger = LoggerFactory.getLogger(ParameterGroupCollectionResource.class);
 

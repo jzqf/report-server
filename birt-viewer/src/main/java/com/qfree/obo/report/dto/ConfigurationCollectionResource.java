@@ -15,7 +15,7 @@ import com.qfree.obo.report.util.RestUtils.RestApiVersion;
 
 @XmlRootElement
 public class ConfigurationCollectionResource
-		extends AbstractCollectionResourceXXXXXX<ConfigurationResource, Configuration> {
+		extends AbstractCollectionResource<ConfigurationResource, Configuration> {
 
 	private static final Logger logger = LoggerFactory.getLogger(ConfigurationCollectionResource.class);
 

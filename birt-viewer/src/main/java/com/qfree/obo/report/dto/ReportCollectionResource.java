@@ -14,7 +14,7 @@ import com.qfree.obo.report.domain.Report;
 import com.qfree.obo.report.util.RestUtils.RestApiVersion;
 
 @XmlRootElement
-public class ReportCollectionResource extends AbstractCollectionResourceXXXXXX<ReportResource, Report> {
+public class ReportCollectionResource extends AbstractCollectionResource<ReportResource, Report> {
 
 	private static final Logger logger = LoggerFactory.getLogger(ReportCollectionResource.class);
 

@@ -16,7 +16,7 @@ import com.qfree.obo.report.util.RestUtils.RestApiVersion;
 
 @XmlRootElement
 public class JobParameterCollectionResource
-		extends AbstractCollectionResourceXXXXXX<JobParameterResource, JobParameter> {
+		extends AbstractCollectionResource<JobParameterResource, JobParameter> {
 
 	private static final Logger logger = LoggerFactory.getLogger(JobParameterCollectionResource.class);
 

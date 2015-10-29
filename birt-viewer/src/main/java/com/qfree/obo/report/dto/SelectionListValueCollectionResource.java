@@ -16,7 +16,7 @@ import com.qfree.obo.report.util.RestUtils.RestApiVersion;
 
 @XmlRootElement
 public class SelectionListValueCollectionResource
-		extends AbstractCollectionResourceXXXXXX<SelectionListValueResource, SelectionListValue> {
+		extends AbstractCollectionResource<SelectionListValueResource, SelectionListValue> {
 
 	private static final Logger logger = LoggerFactory.getLogger(SelectionListValueCollectionResource.class);
 

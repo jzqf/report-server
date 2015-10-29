@@ -16,7 +16,7 @@ import com.qfree.obo.report.util.RestUtils.RestApiVersion;
 
 @XmlRootElement
 public class SubscriptionParameterValueCollectionResource
-		extends AbstractCollectionResourceXXXXXX<SubscriptionParameterValueResource, SubscriptionParameterValue> {
+		extends AbstractCollectionResource<SubscriptionParameterValueResource, SubscriptionParameterValue> {
 
 	private static final Logger logger = LoggerFactory.getLogger(SubscriptionParameterValueCollectionResource.class);
 
