@@ -149,7 +149,12 @@ public abstract class AbstractCollectionResource<T extends AbstractBaseResource,
 				this.next = createHref(baseResourceUri, collectionPath, uriInfo, entityClass, null, queryParams);
 			}
 
-			offset = (this.size / this.limit) * this.limit;
+			/*
+			 * this.last is always be an integral multiple of this.limit ahead 
+			 * of this.offset, such that "offset" for the this.last page has at
+			 * least one item.
+			 */
+			offset = this.offset + ((this.size - this.offset) / this.limit) * this.limit;
 			if (offset.equals(this.size)) {
 				/*
 				 * If the size of the list of entities is an exact multiple

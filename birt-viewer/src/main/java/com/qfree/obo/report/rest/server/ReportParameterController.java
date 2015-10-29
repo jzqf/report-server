@@ -166,11 +166,17 @@ public class ReportParameterController extends AbstractBaseController {
 	/*
 	 * This endpoint can be tested with:
 	 * 
-	 * $ mvn clean spring-boot:run $ curl -i -H "Accept: application/json;v=1"
-	 * -X GET \
-	 * http://localhost:8080/rest/reportParameters/c7f1d394-9814-4ede-bb01-
-	 * 2700187d79ca
+	 * $ mvn clean spring-boot:run 
+	 * $ curl -X GET -iH "Accept: application/json;v=1" \
+	 * http://localhost:8080/rest/reportParameters/c7f1d394-9814-4ede-bb01-2700187d79ca
 	 * 
+	 * Note: This endpoint will only return a value for the 
+	 *       "selectionListValues" attribute of the ReportParameterResource if 
+	 *       the ReportParameter has a STATIC selection list. If it has a 
+	 *       DYNAMIC selection list, the "selectionListValues" attribute will be
+	 *       absent. See comments below in the body of this method for an 
+	 *       explanation why this is so.
+	 *       
 	 * @Transactional is used to avoid org.hibernate.LazyInitializationException
 	 * being thrown when evaluating reportParameter.getSelectionListValues().
 	 */
@@ -195,16 +201,10 @@ public class ReportParameterController extends AbstractBaseController {
 		ReportParameter reportParameter = reportParameterRepository.findOne(id);
 		/*
 		 * At this point, reportParameter.getSelectionListValues() can be non-
-		 * null only if there exists a STATIC selection list for the report
+		 * null ONLY if there exists a STATIC selection list for the report
 		 * parameter. This is because the ReportParameter is fetched here using
 		 * Spring Data JPA and at no point have I had any chance to run special
 		 * code to fetch *dynamic* selection list values.
-		 * 
-		 * So: This endpoint will only return a non-null
-		 *     SelectionListValueCollectionResource in the "selectionListValues"
-		 *     attribute of the ReportParameterResource if the ReportParameter 
-		 *     has a STATIC selection list. If it has a DYNAMIC selection list,
-		 *     the "selectionListValues" attribute will be null.
 		 */
 		logger.debug("reportParameter.getSelectionListValues() = {}", reportParameter.getSelectionListValues());
 		RestUtils.ifNullThen404(reportParameter, ReportParameter.class, "reportId", id.toString());
