@@ -411,6 +411,8 @@ public class ReportParameterController extends AbstractBaseController {
 			try {
 				logger.info("parentParamValues = {}", parentParamValues);
 				String rptdesign = reportParameter.getReportVersion().getRptdesign();
+
+				//COMMENT OUT (DELETE, EVENTUALLY) THIS LINE.
 				selectionListValueCollectionResource = reportParameterService.getDynamicSelectionList(
 						reportParameter, parentParamValues, rptdesign, uriInfo, queryParams, apiVersion);
 
