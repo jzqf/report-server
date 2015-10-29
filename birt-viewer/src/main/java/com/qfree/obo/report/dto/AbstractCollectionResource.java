@@ -43,7 +43,8 @@ public abstract class AbstractCollectionResource<T extends AbstractBaseResource,
 
 	/**
 	 * Total number of entities available in all pages, i,e., the number of
-	 * resources that would be returned if there were no pagination.
+	 * resources that would be returned if there were no pagination. This can be
+	 * used to compute the number of pages needed to display all entities.
 	 */
 	@XmlElement
 	protected Integer size;
