@@ -337,14 +337,18 @@ public class ReportParameterService {
 	 * @throws RptdesignOpenFromStreamException 
 	 * @throws DynamicSelectionListKeyException 
 	 */
-	public SelectionListValueCollectionResource getDynamicSelectionList(ReportParameter reportParameter,
-			List<String> parentParamValues, String rptdesign, UriInfo uriInfo, Map<String, List<String>> queryParams,
+	public SelectionListValueCollectionResource getDynamicSelectionList(
+			ReportParameter reportParameter,
+			List<String> parentParamValues,
+			String rptdesign,
+			UriInfo uriInfo,
+			Map<String, List<String>> queryParams,
 			RestApiVersion apiVersion)
 					throws RptdesignOpenFromStreamException, BirtException, DynamicSelectionListKeyException {
 
 		Map<Object, String> dynamicList = birtService.getReportParameterDynamicSelectionList(
 				reportParameter.getName(), parentParamValues, rptdesign);
-		logger.debug("dynamicList = {}", dynamicList);
+		logger.info("dynamicList = {}", dynamicList);
 
 		/*
 		 * Create a list of SelectionListValueResource's from the Map 
@@ -378,14 +382,13 @@ public class ReportParameterService {
 			selectionListValueResource.setHref(null);
 			selectionListValueResources.add(selectionListValueResource);
 		}
-		logger.debug("selectionListValueResources = {}", selectionListValueResources);
+		logger.info("selectionListValueResources = {}", selectionListValueResources);
 
-		// SelectionListValueCollectionResource
-		// selectionListValueCollectionResource = new
-		// SelectionListValueCollectionResource(
-		// selectionListValueResources,
-		// SelectionListValue.class,
-		// uriInfo, queryParams, apiVersion);
+		//?????????????????????????????????????????????????????????????????????????????????
+		//ELIMINATE THIS CALL TO THE SelectionListValueCollectionResource CONSTRUCTOR AND
+		//JUST RETURN A LIST OF SelectionListValue ENTITIES INSTEAD, OR IN ANOTHER METHOD,
+		//THEN DELETE THIS METHOD!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+		//?????????????????????????????????????????????????????????????????????????????????
 		SelectionListValueCollectionResource selectionListValueCollectionResource = new SelectionListValueCollectionResource(
 				selectionListValueResources,
 				SelectionListValue.class,
@@ -401,5 +404,86 @@ public class ReportParameterService {
 		// selectionListValueCollectionResource.setHref(null);
 
 		return selectionListValueCollectionResource;
+	}
+
+	public List<SelectionListValue> getDynamicSelectionListValues(
+			ReportParameter reportParameter,
+			List<String> parentParamValues,
+			String rptdesign,
+			UriInfo uriInfo,
+			Map<String, List<String>> queryParams,
+			RestApiVersion apiVersion)
+					throws RptdesignOpenFromStreamException, BirtException, DynamicSelectionListKeyException {
+
+		/*
+		 * This is the dynamic selection list as returned from the BIRT API. It
+		 * is a Map where:
+		 * 
+		 *   map key:   value to ASSIGN to the report parameter.
+		 *   
+		 *   map value: String to DISPLAY for selecting a value (map key) to 
+		 *              assign to the report parameter.
+		 */
+		Map<Object, String> dynamicList = birtService.getReportParameterDynamicSelectionList(
+				reportParameter.getName(), parentParamValues, rptdesign);
+		logger.info("");
+		logger.info("dynamicList = {}", dynamicList);
+
+		/*
+		 * Create a list of SelectionListValue's from the Map 
+		 * dynamicList. This list will be used eventually in calling code to create a 
+		 * SelectionListValueCollectionResource.
+		 */
+		Integer orderIndex = 0;
+		SelectionListValue selectionListValue = null;
+		List<SelectionListValue> selectionListValues = new ArrayList<>(dynamicList.size());
+		for (Entry<Object, String> entry : dynamicList.entrySet()) {
+			orderIndex += 1;
+			/*
+			 * IMPORTANT: This SelectionListValue is not saved/persisted to the
+			 *            report server database. As a result, it's id,
+			 *            selectionListValueId will be null. This is the 
+			 *            intended behaviour because these list values that will
+			 *            be returned as a SelectionListValueCollectionResource
+			 *            are never persisted in the report server database. The
+			 *            only reason for creating a SelectionListValue here is 
+			 *            to use it to construct a SelectionListValueResource.
+			 */
+			selectionListValue = new SelectionListValue(
+					reportParameter,
+					orderIndex,
+					entry.getKey().toString(),
+					entry.getValue());
+			//			/*
+			//			 * selectionListValueResource will have a value for its "href" 
+			//			 * attribute, but it will not be usable. So I set it to null here.
+			//			 */
+			//			logger.debug("selectionListValueResource.getHref() = {}", selectionListValueResource.getHref());
+			//			selectionListValueResource.setHref(null);
+			selectionListValues.add(selectionListValue);
+		}
+		logger.info("");
+		logger.info("selectionListValues = {}", selectionListValues);
+
+		//		//?????????????????????????????????????????????????????????????????????????????????
+		//		//ELIMINATE THIS CALL TO THE SelectionListValueCollectionResource CONSTRUCTOR AND
+		//		//JUST RETURN A LIST OF SelectionListValue ENTITIES INSTEAD, OR IN ANOTHER METHOD,
+		//		//THEN DELETE THIS METHOD!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+		//		//?????????????????????????????????????????????????????????????????????????????????
+		//		SelectionListValueCollectionResource selectionListValueCollectionResource = new SelectionListValueCollectionResource(
+		//				selectionListValues,
+		//				SelectionListValue.class,
+		//				AbstractBaseResource.createHref(uriInfo, ReportParameter.class, reportParameter.getReportParameterId(),
+		//						null),
+		//				ResourcePath.SELECTIONLISTVALUES_PATH,
+		//				uriInfo, queryParams, apiVersion);
+
+		/*
+		 * selectionListValueCollectionResource will have a value for its "href" 
+		 * attribute, but it will not be usable. So I set it to null here.
+		 */
+		// selectionListValueCollectionResource.setHref(null);
+
+		return selectionListValues;
 	}
 }

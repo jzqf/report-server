@@ -36,12 +36,12 @@ public class SelectionListValueCollectionResource extends AbstractCollectionReso
 				uriInfo, queryParams, apiVersion);
 	}
 
-	public SelectionListValueCollectionResource(
-			List<SelectionListValueResource> items,
-			Class<?> entityClass,
-			UriInfo uriInfo, Map<String, List<String>> queryParams, RestApiVersion apiVersion) {
-		this(items, entityClass, null, null, uriInfo, queryParams, apiVersion);
-	}
+	//	public SelectionListValueCollectionResource(
+	//			List<SelectionListValueResource> items,
+	//			Class<?> entityClass,
+	//			UriInfo uriInfo, Map<String, List<String>> queryParams, RestApiVersion apiVersion) {
+	//		this(items, entityClass, null, null, uriInfo, queryParams, apiVersion);
+	//	}
 
 	public SelectionListValueCollectionResource(
 			List<SelectionListValueResource> items,

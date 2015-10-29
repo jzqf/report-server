@@ -32,7 +32,7 @@ import com.qfree.obo.report.db.ReportParameterRepository;
 import com.qfree.obo.report.db.ReportVersionRepository;
 import com.qfree.obo.report.domain.ParameterGroup;
 import com.qfree.obo.report.domain.ReportParameter;
-import com.qfree.obo.report.dto.ReportParameterResource;
+import com.qfree.obo.report.domain.SelectionListValue;
 import com.qfree.obo.report.dto.ReportParameterResource;
 import com.qfree.obo.report.dto.ReportVersionResource;
 import com.qfree.obo.report.dto.ResourcePath;
@@ -192,6 +192,20 @@ public class ReportParameterController extends AbstractBaseController {
 			addToExpandList(expand, ReportParameter.class);
 		}
 		ReportParameter reportParameter = reportParameterRepository.findOne(id);
+		/*
+		 * At this point, reportParameter.getSelectionListValues() can be non-
+		 * null only if there exists a STATIC selection list for the report
+		 * parameter. This is because the ReportParameter is fetched here using
+		 * Spring Data JPA and at no point have I had any chance to run special
+		 * code to fetch *dynamic* selection list values.
+		 * 
+		 * So: This endpoint will only return a non-null
+		 *     SelectionListValueCollectionResource in the "selectionListValues"
+		 *     attribute of the ReportParameterResource if the ReportParameter 
+		 *     has a STATIC selection list. If it has a DYNAMIC selection list,
+		 *     the "selectionListValues" attribute will be null.
+		 */
+		logger.debug("reportParameter.getSelectionListValues() = {}", reportParameter.getSelectionListValues());
 		RestUtils.ifNullThen404(reportParameter, ReportParameter.class, "reportId", id.toString());
 		ReportParameterResource reportParameterResource = new ReportParameterResource(reportParameter, uriInfo,
 				queryParams, apiVersion);
@@ -390,20 +404,42 @@ public class ReportParameterController extends AbstractBaseController {
 		SelectionListValueCollectionResource selectionListValueCollectionResource = null;
 		if (reportParameter.getSelectionListType().equals(IParameterDefn.SELECTION_LIST_DYNAMIC)) {
 			/*
-			 * The selection list is dynamic.
+			 * The selection list is *dynamic*, i.e., it is defined by some sort 
+			 * of database query, instead of consisting of static values that
+			 * were chosen when the rptdesign file was created.
 			 */
 			try {
-				logger.info("dynamicListKeys = {}", parentParamValues);
+				logger.info("parentParamValues = {}", parentParamValues);
 				String rptdesign = reportParameter.getReportVersion().getRptdesign();
 				selectionListValueCollectionResource = reportParameterService.getDynamicSelectionList(
 						reportParameter, parentParamValues, rptdesign, uriInfo, queryParams, apiVersion);
+
+				//FETCH A LIST OF SelectionListValue ENTITIES HERE??????????????????????????????????????????
+				List<SelectionListValue> selectionListValues = reportParameterService.getDynamicSelectionListValues(
+						reportParameter, parentParamValues, rptdesign, uriInfo, queryParams, apiVersion);
+				logger.info("");
+				logger.info("selectionListValues =");
+				for (SelectionListValue selectionListValue : selectionListValues) {
+					logger.info("selectionListValue = {}", selectionListValue);
+				}
+				/*
+				 * Note: The SelectionListValue entities in the list 
+				 *       "selectionListValues" will have 
+				 *       selectionListValueId = null because they were not 
+				 *       retrieved from the database.
+				 *       
+				 *       In addition, "createdOn" for each entity will be the 
+				 *       datetime when the entity object was CONSTRUCTED.
+				 */
+				//PASS THIS LIST TO A SelectionListValueCollectionResource CONSTRUCTOR HERE??????????????????
+
 			} catch (DynamicSelectionListKeyException e) {
 				throw new RestApiException(RestError.FORBIDDEN_DYN_SEL_LIST_PARENT_KEY_COUNT, e.getMessage());
 			}
 
 		} else {
 			/*
-			 * Either the selection list is static or there is no selection list
+			 * Either the selection list is STATIC or there is NO selection list
 			 * at all. It is a simple matter of returning a
 			 * SelectionListValueCollectionResource based on SelectionListValue
 			 * entities stored in the report server database that are linked to

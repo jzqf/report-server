@@ -102,14 +102,33 @@ public class SelectionListValue implements Serializable {
 	private SelectionListValue() {
 	}
 
-	public SelectionListValue(ReportParameter reportParameter, Integer orderIndex,
-			String valueAssigned, String valueDisplayed) {
-		this(null, reportParameter, orderIndex, valueAssigned, valueDisplayed, DateUtils.nowUtc());
+	public SelectionListValue(
+			ReportParameter reportParameter,
+			Integer orderIndex,
+			String valueAssigned,
+			String valueDisplayed) {
+		this(
+				null,
+				reportParameter,
+				orderIndex,
+				valueAssigned,
+				valueDisplayed,
+				DateUtils.nowUtc());
 	}
 
-	public SelectionListValue(ReportParameter reportParameter, Integer orderIndex,
-			String valueAssigned, String valueDisplayed, Date createdOn) {
-		this(null, reportParameter, orderIndex, valueAssigned, valueDisplayed, createdOn);
+	public SelectionListValue(
+			ReportParameter reportParameter,
+			Integer orderIndex,
+			String valueAssigned,
+			String valueDisplayed,
+			Date createdOn) {
+		this(
+				null,
+				reportParameter,
+				orderIndex,
+				valueAssigned,
+				valueDisplayed,
+				createdOn);
 	}
 
 	public SelectionListValue(

@@ -187,6 +187,20 @@ public class ReportParameterResource extends AbstractBaseResource {
 			 * alternative would be to always include the field, but its value
 			 * will be an empty collection resource for the case when there is
 			 * no selection list for the parameter.
+			 * 
+			 * Note: If the ReportParameter "reportParameter" passed to this
+			 *       constructor was fetched using any sort of database query,
+			 *       it will have a non-null "selectionListValues" field only if
+			 *       there exists a STATIC selection list for the report
+			 *       parameter, i.e., there must exist SelectionListValue 
+			 *       entities linked to the ReportParameter, and 
+			 *       SelectionListValue entities are only created for static
+			 *       selection lists.
+			 *       
+			 *       If the ReportParameter has a dynamic selection list, it can
+			 *       be fetched using the endpoint:
+			 *       
+			 *       ReportParameterController.getSelectionListValuesByReportParameterId...).
 			 */
 			logger.info("Parameter = {}: reportParameter.getSelectionListValues() = {}", this.name,
 					reportParameter.getSelectionListValues());
