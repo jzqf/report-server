@@ -15,7 +15,8 @@ import com.qfree.obo.report.domain.SelectionListValue;
 import com.qfree.obo.report.util.RestUtils.RestApiVersion;
 
 @XmlRootElement
-public class SelectionListValueCollectionResource extends AbstractCollectionResource<SelectionListValueResource> {
+public class SelectionListValueCollectionResource
+		extends AbstractCollectionResourceXXXXXX<SelectionListValueResource, SelectionListValue> {
 
 	private static final Logger logger = LoggerFactory.getLogger(SelectionListValueCollectionResource.class);
 
@@ -25,36 +26,65 @@ public class SelectionListValueCollectionResource extends AbstractCollectionReso
 	public SelectionListValueCollectionResource() {
 	}
 
-	public SelectionListValueCollectionResource(ReportParameter reportParameter, UriInfo uriInfo,
-			Map<String, List<String>> queryParams, RestApiVersion apiVersion) {
+	/**
+	 * This constructor is only for <b>static</b> selection lists, since the
+	 * {@link ReportParameter#selectionListValues} field of reportParameter will
+	 * only contain {@link SelectionListValue} entities from the database.
+	 * 
+	 * <p>
+	 * {@link SelectionListValue} entities that are stored in the database are
+	 * <i>only</i> for <b>static</b> selection lists.
+	 * 
+	 * @param reportParameter
+	 * @param uriInfo
+	 * @param queryParams
+	 * @param apiVersion
+	 */
+	public SelectionListValueCollectionResource(
+			ReportParameter reportParameter,
+			UriInfo uriInfo,
+			Map<String, List<String>> queryParams,
+			RestApiVersion apiVersion) {
 		this(
-				SelectionListValueResource.listFromReportParameter(reportParameter, uriInfo, queryParams, apiVersion),
+				reportParameter.getSelectionListValues(),
 				SelectionListValue.class,
 				AbstractBaseResource.createHref(uriInfo, ReportParameter.class, reportParameter.getReportParameterId(),
 						null),
 				ResourcePath.SELECTIONLISTVALUES_PATH,
-				uriInfo, queryParams, apiVersion);
+				uriInfo,
+				queryParams,
+				apiVersion);
 	}
 
-	//	public SelectionListValueCollectionResource(
-	//			List<SelectionListValueResource> items,
-	//			Class<?> entityClass,
-	//			UriInfo uriInfo, Map<String, List<String>> queryParams, RestApiVersion apiVersion) {
-	//		this(items, entityClass, null, null, uriInfo, queryParams, apiVersion);
-	//	}
-
 	public SelectionListValueCollectionResource(
-			List<SelectionListValueResource> items,
-			Class<?> entityClass,
-			String baseResourceUri, String collectionPath,
-			UriInfo uriInfo, Map<String, List<String>> queryParams, RestApiVersion apiVersion) {
+			List<SelectionListValue> selectionListValues,
+			Class<SelectionListValue> entityClass,
+			String baseResourceUri,
+			String collectionPath,
+			UriInfo uriInfo,
+			Map<String, List<String>> queryParams,
+			RestApiVersion apiVersion) {
 
-		super(items, entityClass, baseResourceUri, collectionPath, uriInfo, queryParams, apiVersion);// if class extends AbstractCollectionResource<SelectionListValueResource>
+		super(
+				selectionListValues,
+				entityClass,
+				baseResourceUri,
+				collectionPath,
+				uriInfo,
+				queryParams,
+				apiVersion);
 
 		List<String> expand = queryParams.get(ResourcePath.EXPAND_QP_KEY);
 		if (ResourcePath.expand(entityClass, expand)) {
-			this.items = items;
+			/*
+			 * We pass null for apiVersion since the version used in the 
+			 * original request does not necessarily apply here.
+			 */
+			apiVersion = null;
+			this.items = SelectionListValueResource.selectionListValueResourceListPageFromSelectionListValues(
+					selectionListValues, uriInfo, queryParams, apiVersion);
 		}
+
 	}
 
 	public List<SelectionListValueResource> getItems() {

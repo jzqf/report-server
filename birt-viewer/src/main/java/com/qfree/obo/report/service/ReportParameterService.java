@@ -28,14 +28,10 @@ import com.qfree.obo.report.domain.ParameterGroup;
 import com.qfree.obo.report.domain.ReportParameter;
 import com.qfree.obo.report.domain.ReportVersion;
 import com.qfree.obo.report.domain.SelectionListValue;
-import com.qfree.obo.report.dto.AbstractBaseResource;
 import com.qfree.obo.report.dto.ParameterGroupResource;
 import com.qfree.obo.report.dto.ReportParameterResource;
 import com.qfree.obo.report.dto.ReportVersionResource;
-import com.qfree.obo.report.dto.ResourcePath;
 import com.qfree.obo.report.dto.RestErrorResource.RestError;
-import com.qfree.obo.report.dto.SelectionListValueCollectionResource;
-import com.qfree.obo.report.dto.SelectionListValueResource;
 import com.qfree.obo.report.exceptions.DynamicSelectionListKeyException;
 import com.qfree.obo.report.exceptions.RestApiException;
 import com.qfree.obo.report.exceptions.RptdesignOpenFromStreamException;
@@ -322,90 +318,6 @@ public class ReportParameterService {
 		return parameters;
 	}
 
-	/**
-	 * Returns a SelectionListValueCollectionResource representing the dynamic 
-	 * selection list for a report parameter.
-	 * 
-	 * @param reportParameter
-	 * @param parentParamValues
-	 * @param rptdesign
-	 * @param uriInfo
-	 * @param queryParams
-	 * @param apiVersion
-	 * @return
-	 * @throws BirtException 
-	 * @throws RptdesignOpenFromStreamException 
-	 * @throws DynamicSelectionListKeyException 
-	 */
-	public SelectionListValueCollectionResource getDynamicSelectionList(
-			ReportParameter reportParameter,
-			List<String> parentParamValues,
-			String rptdesign,
-			UriInfo uriInfo,
-			Map<String, List<String>> queryParams,
-			RestApiVersion apiVersion)
-					throws RptdesignOpenFromStreamException, BirtException, DynamicSelectionListKeyException {
-
-		Map<Object, String> dynamicList = birtService.getReportParameterDynamicSelectionList(
-				reportParameter.getName(), parentParamValues, rptdesign);
-		logger.info("dynamicList = {}", dynamicList);
-
-		/*
-		 * Create a list of SelectionListValueResource's from the Map 
-		 * dynamicList. This list is used to create a 
-		 * SelectionListValueCollectionResource to be returned by this method.
-		 */
-		Integer orderIndex = 0;
-		SelectionListValue selectionListValue = null;
-		List<SelectionListValueResource> selectionListValueResources = new ArrayList<>(dynamicList.size());
-		for (Entry<Object, String> entry : dynamicList.entrySet()) {
-			orderIndex += 1;
-			/*
-			 * IMPORTANT: This SelectionListValue is not saved/persisted to the
-			 *            report server database. As a result, it's id,
-			 *            selectionListValueId will be null. This is the 
-			 *            intended behaviour because these list values that will
-			 *            be returned as a SelectionListValueCollectionResource
-			 *            are never persisted in the report server database. The
-			 *            only reason for creating a SelectionListValue here is 
-			 *            to use it to construct a SelectionListValueResource.
-			 */
-			selectionListValue = new SelectionListValue(reportParameter, orderIndex,
-					entry.getKey().toString(), entry.getValue());
-			SelectionListValueResource selectionListValueResource = new SelectionListValueResource(selectionListValue,
-					uriInfo, queryParams, apiVersion);
-			/*
-			 * selectionListValueResource will have a value for its "href" 
-			 * attribute, but it will not be usable. So I set it to null here.
-			 */
-			logger.debug("selectionListValueResource.getHref() = {}", selectionListValueResource.getHref());
-			selectionListValueResource.setHref(null);
-			selectionListValueResources.add(selectionListValueResource);
-		}
-		logger.info("selectionListValueResources = {}", selectionListValueResources);
-
-		//?????????????????????????????????????????????????????????????????????????????????
-		//ELIMINATE THIS CALL TO THE SelectionListValueCollectionResource CONSTRUCTOR AND
-		//JUST RETURN A LIST OF SelectionListValue ENTITIES INSTEAD, OR IN ANOTHER METHOD,
-		//THEN DELETE THIS METHOD!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-		//?????????????????????????????????????????????????????????????????????????????????
-		SelectionListValueCollectionResource selectionListValueCollectionResource = new SelectionListValueCollectionResource(
-				selectionListValueResources,
-				SelectionListValue.class,
-				AbstractBaseResource.createHref(uriInfo, ReportParameter.class, reportParameter.getReportParameterId(),
-						null),
-				ResourcePath.SELECTIONLISTVALUES_PATH,
-				uriInfo, queryParams, apiVersion);
-
-		/*
-		 * selectionListValueCollectionResource will have a value for its "href" 
-		 * attribute, but it will not be usable. So I set it to null here.
-		 */
-		// selectionListValueCollectionResource.setHref(null);
-
-		return selectionListValueCollectionResource;
-	}
-
 	public List<SelectionListValue> getDynamicSelectionListValues(
 			ReportParameter reportParameter,
 			List<String> parentParamValues,
@@ -424,20 +336,19 @@ public class ReportParameterService {
 		 *   map value: String to DISPLAY for selecting a value (map key) to 
 		 *              assign to the report parameter.
 		 */
-		Map<Object, String> dynamicList = birtService.getReportParameterDynamicSelectionList(
+		Map<Object, String> dynamicSelectionList = birtService.getReportParameterDynamicSelectionList(
 				reportParameter.getName(), parentParamValues, rptdesign);
-		logger.info("");
-		logger.info("dynamicList = {}", dynamicList);
+		logger.debug("dynamicSelectionList = {}", dynamicSelectionList);
 
 		/*
-		 * Create a list of SelectionListValue's from the Map 
-		 * dynamicList. This list will be used eventually in calling code to create a 
-		 * SelectionListValueCollectionResource.
+		 * Create a list of SelectionListValue's from the Map
+		 * dynamicSelectionList. This list will be used eventually in calling
+		 * code to create a SelectionListValueCollectionResource.
 		 */
 		Integer orderIndex = 0;
 		SelectionListValue selectionListValue = null;
-		List<SelectionListValue> selectionListValues = new ArrayList<>(dynamicList.size());
-		for (Entry<Object, String> entry : dynamicList.entrySet()) {
+		List<SelectionListValue> selectionListValues = new ArrayList<>(dynamicSelectionList.size());
+		for (Entry<Object, String> entry : dynamicSelectionList.entrySet()) {
 			orderIndex += 1;
 			/*
 			 * IMPORTANT: This SelectionListValue is not saved/persisted to the
@@ -454,35 +365,8 @@ public class ReportParameterService {
 					orderIndex,
 					entry.getKey().toString(),
 					entry.getValue());
-			//			/*
-			//			 * selectionListValueResource will have a value for its "href" 
-			//			 * attribute, but it will not be usable. So I set it to null here.
-			//			 */
-			//			logger.debug("selectionListValueResource.getHref() = {}", selectionListValueResource.getHref());
-			//			selectionListValueResource.setHref(null);
 			selectionListValues.add(selectionListValue);
 		}
-		logger.info("");
-		logger.info("selectionListValues = {}", selectionListValues);
-
-		//		//?????????????????????????????????????????????????????????????????????????????????
-		//		//ELIMINATE THIS CALL TO THE SelectionListValueCollectionResource CONSTRUCTOR AND
-		//		//JUST RETURN A LIST OF SelectionListValue ENTITIES INSTEAD, OR IN ANOTHER METHOD,
-		//		//THEN DELETE THIS METHOD!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-		//		//?????????????????????????????????????????????????????????????????????????????????
-		//		SelectionListValueCollectionResource selectionListValueCollectionResource = new SelectionListValueCollectionResource(
-		//				selectionListValues,
-		//				SelectionListValue.class,
-		//				AbstractBaseResource.createHref(uriInfo, ReportParameter.class, reportParameter.getReportParameterId(),
-		//						null),
-		//				ResourcePath.SELECTIONLISTVALUES_PATH,
-		//				uriInfo, queryParams, apiVersion);
-
-		/*
-		 * selectionListValueCollectionResource will have a value for its "href" 
-		 * attribute, but it will not be usable. So I set it to null here.
-		 */
-		// selectionListValueCollectionResource.setHref(null);
 
 		return selectionListValues;
 	}

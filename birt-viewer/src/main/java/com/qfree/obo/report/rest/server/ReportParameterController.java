@@ -33,6 +33,7 @@ import com.qfree.obo.report.db.ReportVersionRepository;
 import com.qfree.obo.report.domain.ParameterGroup;
 import com.qfree.obo.report.domain.ReportParameter;
 import com.qfree.obo.report.domain.SelectionListValue;
+import com.qfree.obo.report.dto.AbstractBaseResource;
 import com.qfree.obo.report.dto.ReportParameterResource;
 import com.qfree.obo.report.dto.ReportVersionResource;
 import com.qfree.obo.report.dto.ResourcePath;
@@ -412,18 +413,9 @@ public class ReportParameterController extends AbstractBaseController {
 				logger.info("parentParamValues = {}", parentParamValues);
 				String rptdesign = reportParameter.getReportVersion().getRptdesign();
 
-				//COMMENT OUT (DELETE, EVENTUALLY) THIS LINE.
-				selectionListValueCollectionResource = reportParameterService.getDynamicSelectionList(
-						reportParameter, parentParamValues, rptdesign, uriInfo, queryParams, apiVersion);
-
-				//FETCH A LIST OF SelectionListValue ENTITIES HERE??????????????????????????????????????????
 				List<SelectionListValue> selectionListValues = reportParameterService.getDynamicSelectionListValues(
 						reportParameter, parentParamValues, rptdesign, uriInfo, queryParams, apiVersion);
-				logger.info("");
-				logger.info("selectionListValues =");
-				for (SelectionListValue selectionListValue : selectionListValues) {
-					logger.info("selectionListValue = {}", selectionListValue);
-				}
+
 				/*
 				 * Note: The SelectionListValue entities in the list 
 				 *       "selectionListValues" will have 
@@ -433,7 +425,13 @@ public class ReportParameterController extends AbstractBaseController {
 				 *       In addition, "createdOn" for each entity will be the 
 				 *       datetime when the entity object was CONSTRUCTED.
 				 */
-				//PASS THIS LIST TO A SelectionListValueCollectionResource CONSTRUCTOR HERE??????????????????
+				selectionListValueCollectionResource = new SelectionListValueCollectionResource(
+						selectionListValues,
+						SelectionListValue.class,
+						AbstractBaseResource.createHref(
+								uriInfo, ReportParameter.class, reportParameter.getReportParameterId(), null),
+						ResourcePath.SELECTIONLISTVALUES_PATH,
+						uriInfo, queryParams, apiVersion);
 
 			} catch (DynamicSelectionListKeyException e) {
 				throw new RestApiException(RestError.FORBIDDEN_DYN_SEL_LIST_PARENT_KEY_COUNT, e.getMessage());

@@ -202,8 +202,8 @@ public class ReportParameterResource extends AbstractBaseResource {
 			 *       
 			 *       ReportParameterController.getSelectionListValuesByReportParameterId...).
 			 */
-			logger.info("Parameter = {}: reportParameter.getSelectionListValues() = {}", this.name,
-					reportParameter.getSelectionListValues());
+			logger.debug("Parameter = {}: reportParameter.getSelectionListValues() = {}",
+					this.name, reportParameter.getSelectionListValues());
 			if (reportParameter.getSelectionListValues() != null
 					&& reportParameter.getSelectionListValues().size() > 0) {
 				this.selectionListValues = new SelectionListValueCollectionResource(reportParameter,
