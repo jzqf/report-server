@@ -14,9 +14,9 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.qfree.obo.report.domain.Job;
 import com.qfree.obo.report.domain.JobParameter;
-import com.qfree.obo.report.rest.server.RestUtils.RestApiVersion;
+import com.qfree.obo.report.util.RestUtils;
+import com.qfree.obo.report.util.RestUtils.RestApiVersion;
 
 @XmlRootElement
 public class JobParameterResource extends AbstractBaseResource {
@@ -101,22 +101,56 @@ public class JobParameterResource extends AbstractBaseResource {
 		}
 	}
 
-	public static List<JobParameterResource> listFromJob(Job job,
-			UriInfo uriInfo, Map<String, List<String>> queryParams, RestApiVersion apiVersion) {
-		if (job.getJobParameters() != null) {
-			List<JobParameter> jobParameters = job.getJobParameters();
-			List<JobParameterResource> jobParameterResources = new ArrayList<>(
-					jobParameters.size());
-			for (JobParameter jobParameter : jobParameters) {
-				// List<String> showAll =
-				// queryParams.get(ResourcePath.SHOWALL_QP_KEY);
-				// if (jobParameter.isActive() ||
-				// RestUtils.FILTER_INACTIVE_RECORDS == false ||
-				// ResourcePath.showAll(JobParameter.class,
-				// showAll)) {
+	public static List<JobParameterResource> jobParameterResourceListPageFromJobParameters(
+			List<JobParameter> jobParameters,
+			UriInfo uriInfo,
+			Map<String, List<String>> queryParams,
+			RestApiVersion apiVersion) {
+
+		if (jobParameters != null) {
+
+			/*
+			 * The JobParameter entity class does not have an "active" field, 
+			 * but if it did and if we wanted to return REST resources that
+			 * correspond to only active entities, it would be necessary to do
+			 * one of two things *before* we extract a page of JobParameter 
+			 * entities below. Either:
+			 * 
+			 *   1. Filter the list "jobParameters" here to eliminate inactive
+			 *      entities, or:
+			 *   
+			 *   2. Ensure that the list "jobParameters" was passed to this
+			 *      method was *already* filtered to remove inactive entities.
+			 */
+
+			/*
+			 * Create a List of JobParameter entities to return as REST
+			 * resources. If the "offset" & "limit" query parameters are
+			 * specified, we extract a sublist of the List "jobParameters"; 
+			 * otherwise, we use the whole list.
+			 */
+			List<JobParameter> pageOfJobParameters = RestUtils.getPageOfList(jobParameters, queryParams);
+
+			/*
+			 * Create a copy of the query parameters map and remove the
+			 * pagination query parameters from it because they do not apply 
+			 * to resources created from this point onwards from this method.
+			 * If "queryParams" does not contain these pagination query 
+			 * parameters, this will still work OK.
+			 */
+			Map<String, List<String>> queryParamsWOPagination = new HashMap<>(queryParams);
+			queryParamsWOPagination.remove(ResourcePath.PAGE_OFFSET_QP_KEY);
+			queryParamsWOPagination.remove(ResourcePath.PAGE_LIMIT_QP_KEY);
+
+			List<JobParameterResource> jobParameterResources = new ArrayList<>(pageOfJobParameters.size());
+			for (JobParameter jobParameter : pageOfJobParameters) {
+				/*
+				 * We cannot filter out entities here because then the page size
+				 * will be variable. Instead, it is necessary to filter out
+				 * entities *before* the page of entities is created above.
+				 */
 				jobParameterResources.add(
-						new JobParameterResource(jobParameter, uriInfo, queryParams, apiVersion));
-				// }
+						new JobParameterResource(jobParameter, uriInfo, queryParamsWOPagination, apiVersion));
 			}
 			return jobParameterResources;
 		} else {
@@ -181,5 +215,4 @@ public class JobParameterResource extends AbstractBaseResource {
 		builder.append("]");
 		return builder.toString();
 	}
-
 }

@@ -38,7 +38,8 @@ import com.qfree.obo.report.dto.SubscriptionParameterResource;
 import com.qfree.obo.report.dto.SubscriptionParameterValueCollectionResource;
 import com.qfree.obo.report.dto.SubscriptionParameterValueResource;
 import com.qfree.obo.report.exceptions.RestApiException;
-import com.qfree.obo.report.rest.server.RestUtils.RestApiVersion;
+import com.qfree.obo.report.util.RestUtils;
+import com.qfree.obo.report.util.RestUtils.RestApiVersion;
 
 @Component
 @Path(ResourcePath.SUBSCRIPTIONPARAMETERS_PATH)
@@ -640,9 +641,8 @@ public class SubscriptionParameterController extends AbstractBaseController {
 		logger.debug("subscriptionParameter = {}", subscriptionParameter);
 
 		/*
-		 * Save updated entity.
-		 * 
-		 * 
+		 * Save updated entity. Not needed because we are not updating the
+		 * SubscriptionParameter here.
 		 */
 		//subscriptionParameter = subscriptionParameterService.saveExistingFromResource(subscriptionParameterResource);
 

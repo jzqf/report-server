@@ -38,7 +38,8 @@ import com.qfree.obo.report.dto.JobResource;
 import com.qfree.obo.report.dto.ResourcePath;
 import com.qfree.obo.report.dto.RestErrorResource.RestError;
 import com.qfree.obo.report.exceptions.RestApiException;
-import com.qfree.obo.report.rest.server.RestUtils.RestApiVersion;
+import com.qfree.obo.report.util.RestUtils;
+import com.qfree.obo.report.util.RestUtils.RestApiVersion;
 
 @Component
 @Path(ResourcePath.JOBS_PATH)

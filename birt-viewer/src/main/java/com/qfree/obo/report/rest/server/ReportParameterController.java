@@ -32,7 +32,8 @@ import com.qfree.obo.report.db.ReportParameterRepository;
 import com.qfree.obo.report.db.ReportVersionRepository;
 import com.qfree.obo.report.domain.ParameterGroup;
 import com.qfree.obo.report.domain.ReportParameter;
-import com.qfree.obo.report.dto.ReportParameterResource;
+import com.qfree.obo.report.domain.SelectionListValue;
+import com.qfree.obo.report.dto.AbstractBaseResource;
 import com.qfree.obo.report.dto.ReportParameterResource;
 import com.qfree.obo.report.dto.ReportVersionResource;
 import com.qfree.obo.report.dto.ResourcePath;
@@ -41,8 +42,9 @@ import com.qfree.obo.report.dto.SelectionListValueCollectionResource;
 import com.qfree.obo.report.exceptions.DynamicSelectionListKeyException;
 import com.qfree.obo.report.exceptions.RestApiException;
 import com.qfree.obo.report.exceptions.RptdesignOpenFromStreamException;
-import com.qfree.obo.report.rest.server.RestUtils.RestApiVersion;
 import com.qfree.obo.report.service.ReportParameterService;
+import com.qfree.obo.report.util.RestUtils;
+import com.qfree.obo.report.util.RestUtils.RestApiVersion;
 
 @Component
 @Path(ResourcePath.REPORTPARAMETERS_PATH)
@@ -164,11 +166,17 @@ public class ReportParameterController extends AbstractBaseController {
 	/*
 	 * This endpoint can be tested with:
 	 * 
-	 * $ mvn clean spring-boot:run $ curl -i -H "Accept: application/json;v=1"
-	 * -X GET \
-	 * http://localhost:8080/rest/reportParameters/c7f1d394-9814-4ede-bb01-
-	 * 2700187d79ca
+	 * $ mvn clean spring-boot:run 
+	 * $ curl -X GET -iH "Accept: application/json;v=1" \
+	 * http://localhost:8080/rest/reportParameters/c7f1d394-9814-4ede-bb01-2700187d79ca
 	 * 
+	 * Note: This endpoint will only return a value for the 
+	 *       "selectionListValues" attribute of the ReportParameterResource if 
+	 *       the ReportParameter has a STATIC selection list. If it has a 
+	 *       DYNAMIC selection list, the "selectionListValues" attribute will be
+	 *       absent. See comments below in the body of this method for an 
+	 *       explanation why this is so.
+	 *       
 	 * @Transactional is used to avoid org.hibernate.LazyInitializationException
 	 * being thrown when evaluating reportParameter.getSelectionListValues().
 	 */
@@ -191,6 +199,14 @@ public class ReportParameterController extends AbstractBaseController {
 			addToExpandList(expand, ReportParameter.class);
 		}
 		ReportParameter reportParameter = reportParameterRepository.findOne(id);
+		/*
+		 * At this point, reportParameter.getSelectionListValues() can be non-
+		 * null ONLY if there exists a STATIC selection list for the report
+		 * parameter. This is because the ReportParameter is fetched here using
+		 * Spring Data JPA and at no point have I had any chance to run special
+		 * code to fetch *dynamic* selection list values.
+		 */
+		logger.debug("reportParameter.getSelectionListValues() = {}", reportParameter.getSelectionListValues());
 		RestUtils.ifNullThen404(reportParameter, ReportParameter.class, "reportId", id.toString());
 		ReportParameterResource reportParameterResource = new ReportParameterResource(reportParameter, uriInfo,
 				queryParams, apiVersion);
@@ -389,20 +405,41 @@ public class ReportParameterController extends AbstractBaseController {
 		SelectionListValueCollectionResource selectionListValueCollectionResource = null;
 		if (reportParameter.getSelectionListType().equals(IParameterDefn.SELECTION_LIST_DYNAMIC)) {
 			/*
-			 * The selection list is dynamic.
+			 * The selection list is *dynamic*, i.e., it is defined by some sort 
+			 * of database query, instead of consisting of static values that
+			 * were chosen when the rptdesign file was created.
 			 */
 			try {
-				logger.info("dynamicListKeys = {}", parentParamValues);
+				logger.info("parentParamValues = {}", parentParamValues);
 				String rptdesign = reportParameter.getReportVersion().getRptdesign();
-				selectionListValueCollectionResource = reportParameterService.getDynamicSelectionList(
+
+				List<SelectionListValue> selectionListValues = reportParameterService.getDynamicSelectionListValues(
 						reportParameter, parentParamValues, rptdesign, uriInfo, queryParams, apiVersion);
+
+				/*
+				 * Note: The SelectionListValue entities in the list 
+				 *       "selectionListValues" will have 
+				 *       selectionListValueId = null because they were not 
+				 *       retrieved from the database.
+				 *       
+				 *       In addition, "createdOn" for each entity will be the 
+				 *       datetime when the entity object was CONSTRUCTED.
+				 */
+				selectionListValueCollectionResource = new SelectionListValueCollectionResource(
+						selectionListValues,
+						SelectionListValue.class,
+						AbstractBaseResource.createHref(
+								uriInfo, ReportParameter.class, reportParameter.getReportParameterId(), null),
+						ResourcePath.SELECTIONLISTVALUES_PATH,
+						uriInfo, queryParams, apiVersion);
+
 			} catch (DynamicSelectionListKeyException e) {
 				throw new RestApiException(RestError.FORBIDDEN_DYN_SEL_LIST_PARENT_KEY_COUNT, e.getMessage());
 			}
 
 		} else {
 			/*
-			 * Either the selection list is static or there is no selection list
+			 * Either the selection list is STATIC or there is NO selection list
 			 * at all. It is a simple matter of returning a
 			 * SelectionListValueCollectionResource based on SelectionListValue
 			 * entities stored in the report server database that are linked to

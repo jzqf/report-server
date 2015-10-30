@@ -9,7 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.qfree.obo.report.db.ParameterGroupRepository;
 import com.qfree.obo.report.domain.ParameterGroup;
 import com.qfree.obo.report.dto.ParameterGroupResource;
-import com.qfree.obo.report.rest.server.RestUtils;
+import com.qfree.obo.report.util.RestUtils;
 
 @Component
 @Transactional

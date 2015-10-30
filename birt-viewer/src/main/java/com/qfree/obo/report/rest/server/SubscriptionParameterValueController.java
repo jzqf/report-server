@@ -24,7 +24,8 @@ import com.qfree.obo.report.db.SubscriptionParameterValueRepository;
 import com.qfree.obo.report.domain.SubscriptionParameterValue;
 import com.qfree.obo.report.dto.ResourcePath;
 import com.qfree.obo.report.dto.SubscriptionParameterValueResource;
-import com.qfree.obo.report.rest.server.RestUtils.RestApiVersion;
+import com.qfree.obo.report.util.RestUtils;
+import com.qfree.obo.report.util.RestUtils.RestApiVersion;
 
 @Component
 @Path(ResourcePath.SUBSCRIPTIONPARAMETERVALUES_PATH)

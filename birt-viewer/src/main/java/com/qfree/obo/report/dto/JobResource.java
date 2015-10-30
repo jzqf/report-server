@@ -14,11 +14,9 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.qfree.obo.report.domain.DocumentFormat;
 import com.qfree.obo.report.domain.Job;
-import com.qfree.obo.report.domain.Role;
-import com.qfree.obo.report.domain.Subscription;
-import com.qfree.obo.report.rest.server.RestUtils.RestApiVersion;
+import com.qfree.obo.report.util.RestUtils;
+import com.qfree.obo.report.util.RestUtils.RestApiVersion;
 
 @XmlRootElement
 public class JobResource extends AbstractBaseResource {
@@ -119,6 +117,14 @@ public class JobResource extends AbstractBaseResource {
 			 */
 			apiVersion = null;
 
+			/*
+			 * If there exists pagination query parameters, remove them because
+			 * they are not used for instance resources, and they will not apply
+			 * to any resource fields that are collection resources.
+			 */
+			newQueryParams.remove(ResourcePath.PAGE_OFFSET_QP_KEY);
+			newQueryParams.remove(ResourcePath.PAGE_LIMIT_QP_KEY);
+
 			this.jobId = job.getJobId();
 
 			this.jobStatusResource = new JobStatusResource(job.getJobStatus(),
@@ -152,67 +158,58 @@ public class JobResource extends AbstractBaseResource {
 		}
 	}
 
-	public static List<JobResource> listFromDocumentFormat(DocumentFormat documentFormat, UriInfo uriInfo,
-			Map<String, List<String>> queryParams, RestApiVersion apiVersion) {
-
-		if (documentFormat.getJobs() != null) {
-			List<Job> jobs = documentFormat.getJobs();
-			List<JobResource> jobResources = new ArrayList<>(jobs.size());
-			for (Job job : jobs) {
-				//List<String> showAll = queryParams.get(ResourcePath.SHOWALL_QP_KEY);
-				//if (job.getActive() ||
-				//		RestUtils.FILTER_INACTIVE_RECORDS == false ||
-				//		ResourcePath.showAll(Job.class, showAll)) {
-				jobResources.add(new JobResource(job, uriInfo, queryParams, apiVersion));
-				//}
-			}
-			return jobResources;
-		} else {
-			return null;
-		}
-
-	}
-
-	public static List<JobResource> listFromSubscription(Subscription subscription, UriInfo uriInfo,
-			Map<String, List<String>> queryParams, RestApiVersion apiVersion) {
-
-		if (subscription.getJobs() != null) {
-			List<Job> jobs = subscription.getJobs();
-			List<JobResource> jobResources = new ArrayList<>(jobs.size());
-			for (Job job : jobs) {
-				//List<String> showAll = queryParams.get(ResourcePath.SHOWALL_QP_KEY);
-				//if (job.getActive() ||
-				//		RestUtils.FILTER_INACTIVE_RECORDS == false ||
-				//		ResourcePath.showAll(Job.class, showAll)) {
-				jobResources.add(new JobResource(job, uriInfo, queryParams, apiVersion));
-				//}
-			}
-			return jobResources;
-		} else {
-			return null;
-		}
-
-	}
-
-	public static List<JobResource> listFromRole(Role role, UriInfo uriInfo, Map<String, List<String>> queryParams,
+	public static List<JobResource> jobResourceListPageFromJobs(
+			List<Job> jobs,
+			UriInfo uriInfo,
+			Map<String, List<String>> queryParams,
 			RestApiVersion apiVersion) {
 
-		if (role.getJobs() != null) {
-			List<Job> jobs = role.getJobs();
-			List<JobResource> jobResources = new ArrayList<>(jobs.size());
-			for (Job job : jobs) {
-				//List<String> showAll = queryParams.get(ResourcePath.SHOWALL_QP_KEY);
-				//if (job.getActive() ||
-				//		RestUtils.FILTER_INACTIVE_RECORDS == false ||
-				//		ResourcePath.showAll(Job.class, showAll)) {
-				jobResources.add(new JobResource(job, uriInfo, queryParams, apiVersion));
-				//}
+		if (jobs != null) {
+
+			/*
+			 * The Job entity does not have an "active" field, but if it did and
+			 * if we wanted to return REST resources that correspond to only
+			 * active entities, it would be necessary to do one of two things
+			 * *before* we extract a page of Job entities below. Either:
+			 * 
+			 *   1. Filter the list "jobs" here to eliminate inactive entities,
+			 *      or:
+			 *   
+			 *   2. Ensure that the list "jobs" was passed to this method was 
+			 *      *already* filtered to remove inactive entities.
+			 */
+
+			/*
+			 * Create a List of Job entities to return as REST resources. If the
+			 * "offset" & "limit" query parameters are specified, we extract a
+			 * sublist of the List "jobs"; otherwise, we use the whole list.
+			 */
+			List<Job> pageOfJobs = RestUtils.getPageOfList(jobs, queryParams);
+
+			/*
+			 * Create a copy of the query parameters map and remove the
+			 * pagination query parameters from it because they do not apply 
+			 * to resources created from this point onwards from this method.
+			 * If "queryParams" does not contain these pagination query 
+			 * parameters, this will still work OK.
+			 */
+			Map<String, List<String>> queryParamsWOPagination = new HashMap<>(queryParams);
+			queryParamsWOPagination.remove(ResourcePath.PAGE_OFFSET_QP_KEY);
+			queryParamsWOPagination.remove(ResourcePath.PAGE_LIMIT_QP_KEY);
+
+			List<JobResource> jobResources = new ArrayList<>(pageOfJobs.size());
+			for (Job job : pageOfJobs) {
+				/*
+				 * We cannot filter out entities here because then the page size
+				 * will be variable. Instead, it is necessary to filter out
+				 * entities *before* the page of entities is created above.
+				 */
+				jobResources.add(new JobResource(job, uriInfo, queryParamsWOPagination, apiVersion));
 			}
 			return jobResources;
 		} else {
 			return null;
 		}
-
 	}
 
 	public Long getJobId() {

@@ -1,6 +1,5 @@
 package com.qfree.obo.report.rest.server;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -30,8 +29,9 @@ import com.qfree.obo.report.domain.Configuration;
 import com.qfree.obo.report.dto.ConfigurationCollectionResource;
 import com.qfree.obo.report.dto.ConfigurationResource;
 import com.qfree.obo.report.dto.ResourcePath;
-import com.qfree.obo.report.rest.server.RestUtils.RestApiVersion;
 import com.qfree.obo.report.service.ConfigurationService;
+import com.qfree.obo.report.util.RestUtils;
+import com.qfree.obo.report.util.RestUtils.RestApiVersion;
 
 @Component
 @Path(ResourcePath.CONFIGURATIONS_PATH)
@@ -52,7 +52,6 @@ public class ConfigurationController extends AbstractBaseController {
 
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
-	//	public List<ConfigurationResource> getList(
 	public ConfigurationCollectionResource getList(
 			@HeaderParam("Accept") final String acceptHeader,
 			@QueryParam(ResourcePath.EXPAND_QP_NAME) final List<String> expand,
@@ -64,13 +63,8 @@ public class ConfigurationController extends AbstractBaseController {
 		RestApiVersion apiVersion = RestUtils.extractAPIVersion(acceptHeader, RestApiVersion.v1);
 
 		List<Configuration> configurations = configurationRepository.findAll();
-		List<ConfigurationResource> configurationResources = new ArrayList<>(configurations.size());
-		for (Configuration configuration : configurations) {
-			configurationResources.add(new ConfigurationResource(configuration, uriInfo, queryParams, apiVersion));
-		}
-		//		return configurationResources;
-		return new ConfigurationCollectionResource(configurationResources, Configuration.class, uriInfo, queryParams,
-				apiVersion);
+		return new ConfigurationCollectionResource(configurations, Configuration.class, 
+				uriInfo, queryParams, apiVersion);
 	}
 
 	/*

@@ -10,11 +10,11 @@ import javax.xml.bind.annotation.XmlRootElement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.qfree.obo.report.rest.server.RestUtils.RestApiVersion;
+import com.qfree.obo.report.domain.Report;
+import com.qfree.obo.report.util.RestUtils.RestApiVersion;
 
 @XmlRootElement
-public class ReportCollectionResource extends AbstractCollectionResource<ReportResource> {
-	//public class ReportCollectionResource extends AbstractBaseResource {
+public class ReportCollectionResource extends AbstractCollectionResource<ReportResource, Report> {
 
 	private static final Logger logger = LoggerFactory.getLogger(ReportCollectionResource.class);
 
@@ -24,15 +24,48 @@ public class ReportCollectionResource extends AbstractCollectionResource<ReportR
 	public ReportCollectionResource() {
 	}
 
-	public ReportCollectionResource(List<ReportResource> items, Class<?> entityClass,
-			UriInfo uriInfo, Map<String, List<String>> queryParams, RestApiVersion apiVersion) {
+	public ReportCollectionResource(
+			List<Report> reports,
+			Class<Report> entityClass,
+			UriInfo uriInfo,
+			Map<String, List<String>> queryParams,
+			RestApiVersion apiVersion) {
+		this(
+				reports,
+				entityClass,
+				null,
+				null,
+				uriInfo,
+				queryParams,
+				apiVersion);
+	}
 
-		super(items, entityClass, uriInfo, queryParams, apiVersion);  // if class extends AbstractCollectionResource<ReportResource>
-		//super(entityClass, null, uriInfo, queryParams, apiVersion);  // if class extends AbstractBaseResource
+	public ReportCollectionResource(
+			List<Report> reports,
+			Class<Report> entityClass,
+			String baseResourceUri,
+			String collectionPath,
+			UriInfo uriInfo,
+			Map<String, List<String>> queryParams,
+			RestApiVersion apiVersion) {
+
+		super(
+				reports,
+				entityClass,
+				baseResourceUri,
+				collectionPath,
+				uriInfo,
+				queryParams,
+				apiVersion);
 
 		List<String> expand = queryParams.get(ResourcePath.EXPAND_QP_KEY);
 		if (ResourcePath.expand(entityClass, expand)) {
-			this.items = items;
+			/*
+			 * We pass null for apiVersion since the version used in the 
+			 * original request does not necessarily apply here.
+			 */
+			apiVersion = null;
+			this.items = ReportResource.reportResourceListPageFromReports(reports, uriInfo, queryParams, apiVersion);
 		}
 	}
 

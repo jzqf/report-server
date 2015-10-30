@@ -19,6 +19,13 @@ import com.qfree.obo.report.domain.Subscription;
 import com.qfree.obo.report.domain.SubscriptionParameter;
 import com.qfree.obo.report.domain.SubscriptionParameterValue;
 
+/**
+ * Enum to hold settings related to resource paths so that they are not
+ * hardwired into the code.
+ * 
+ * @author jeffreyz
+ *
+ */
 public enum ResourcePath {
 
 	CONFIGURATIONS(
@@ -209,6 +216,19 @@ public enum ResourcePath {
 	public static final String SUBSCRIPTION_SHOWALL_PARAM = SUBSCRIPTION_EXPAND_PARAM;
 	public static final String SUBSCRIPTIONPARAMETER_SHOWALL_PARAM = SUBSCRIPTIONPARAMETER_EXPAND_PARAM;
 	public static final String SUBSCRIPTIONPARAMETERVALUE_SHOWALL_PARAM = SUBSCRIPTIONPARAMETERVALUE_EXPAND_PARAM;
+
+	/*
+	 * This are the names of the collection resource pagination query parameter
+	 * names for HTTP requests. 
+	 */
+	public static final String PAGE_OFFSET_QP_NAME = "offset";
+	public static final String PAGE_LIMIT_QP_NAME = "limit";
+	/*
+	 * These are the map keys associated with the collection resource pagination
+	 * query parameter names for HTTP requests. 
+	 */
+	public static final String PAGE_OFFSET_QP_KEY = PAGE_OFFSET_QP_NAME;
+	public static final String PAGE_LIMIT_QP_KEY = PAGE_LIMIT_QP_NAME;
 
 	/*
 	 * This is the name of query parameter used to specify the value(s) of

@@ -25,7 +25,8 @@ import com.qfree.obo.report.domain.JobParameter;
 import com.qfree.obo.report.dto.JobParameterResource;
 import com.qfree.obo.report.dto.JobParameterValueCollectionResource;
 import com.qfree.obo.report.dto.ResourcePath;
-import com.qfree.obo.report.rest.server.RestUtils.RestApiVersion;
+import com.qfree.obo.report.util.RestUtils;
+import com.qfree.obo.report.util.RestUtils.RestApiVersion;
 
 @Component
 @Path(ResourcePath.JOBPARAMETERS_PATH)

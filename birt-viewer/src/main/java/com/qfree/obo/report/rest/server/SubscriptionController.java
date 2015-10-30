@@ -51,11 +51,12 @@ import com.qfree.obo.report.dto.SubscriptionParameterCollectionResource;
 import com.qfree.obo.report.dto.SubscriptionResource;
 import com.qfree.obo.report.exceptions.NoScheduleForSubscriptionException;
 import com.qfree.obo.report.exceptions.RestApiException;
-import com.qfree.obo.report.rest.server.RestUtils.RestApiVersion;
 import com.qfree.obo.report.scheduling.schedulers.SubscriptionScheduler;
 import com.qfree.obo.report.service.SubscriptionService;
 import com.qfree.obo.report.util.CompareUtils;
 import com.qfree.obo.report.util.DateUtils;
+import com.qfree.obo.report.util.RestUtils;
+import com.qfree.obo.report.util.RestUtils.RestApiVersion;
 
 @Component
 @Path(ResourcePath.SUBSCRIPTIONS_PATH)
@@ -109,10 +110,13 @@ public class SubscriptionController extends AbstractBaseController {
 			@HeaderParam("Accept") final String acceptHeader,
 			@QueryParam(ResourcePath.EXPAND_QP_NAME) final List<String> expand,
 			@QueryParam(ResourcePath.SHOWALL_QP_NAME) final List<String> showAll,
+			@QueryParam(ResourcePath.PAGE_OFFSET_QP_NAME) final List<String> pageOffset,
+			@QueryParam(ResourcePath.PAGE_LIMIT_QP_NAME) final List<String> pageLimit,
 			@Context final UriInfo uriInfo) {
 		Map<String, List<String>> queryParams = new HashMap<>();
 		queryParams.put(ResourcePath.EXPAND_QP_KEY, expand);
 		queryParams.put(ResourcePath.SHOWALL_QP_KEY, showAll);
+		RestUtils.checkPaginationQueryParams(pageOffset, pageLimit, queryParams);
 		RestApiVersion apiVersion = RestUtils.extractAPIVersion(acceptHeader, RestApiVersion.v1);
 
 		List<Subscription> subscriptions = null;
@@ -121,12 +125,7 @@ public class SubscriptionController extends AbstractBaseController {
 		} else {
 			subscriptions = subscriptionRepository.findAll();
 		}
-		List<SubscriptionResource> subscriptionResources = new ArrayList<>(subscriptions.size());
-		for (Subscription subscription : subscriptions) {
-			subscriptionResources.add(new SubscriptionResource(subscription, subscriptionService,
-					uriInfo, queryParams, apiVersion));
-		}
-		return new SubscriptionCollectionResource(subscriptionResources, Subscription.class,
+		return new SubscriptionCollectionResource(subscriptions, Subscription.class,
 				uriInfo, queryParams, apiVersion);
 	}
 
@@ -960,6 +959,8 @@ public class SubscriptionController extends AbstractBaseController {
 	 *   $ curl -X GET -iH "Accept: application/json;v=1" \
 	 *   http://localhost:8080/rest/subscriptions/c7f1d394-9814-4ede-bb01-2700187d79ca/jobs
 	 * 
+	 * Note:  This endpoint supports pagination.
+	 * 
 	 * @Transactional is used to avoid org.hibernate.LazyInitializationException
 	 * being thrown.
 	 */
@@ -972,10 +973,13 @@ public class SubscriptionController extends AbstractBaseController {
 			@HeaderParam("Accept") final String acceptHeader,
 			@QueryParam(ResourcePath.EXPAND_QP_NAME) final List<String> expand,
 			@QueryParam(ResourcePath.SHOWALL_QP_NAME) final List<String> showAll,
+			@QueryParam(ResourcePath.PAGE_OFFSET_QP_NAME) final List<String> pageOffset,
+			@QueryParam(ResourcePath.PAGE_LIMIT_QP_NAME) final List<String> pageLimit,
 			@Context final UriInfo uriInfo) {
 		Map<String, List<String>> queryParams = new HashMap<>();
 		queryParams.put(ResourcePath.EXPAND_QP_KEY, expand);
 		queryParams.put(ResourcePath.SHOWALL_QP_KEY, showAll);
+		RestUtils.checkPaginationQueryParams(pageOffset, pageLimit, queryParams);
 		RestApiVersion apiVersion = RestUtils.extractAPIVersion(acceptHeader, RestApiVersion.v1);
 
 		Subscription subscription = subscriptionRepository.findOne(id);

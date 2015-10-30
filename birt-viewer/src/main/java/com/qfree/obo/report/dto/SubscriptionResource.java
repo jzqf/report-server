@@ -15,12 +15,10 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.qfree.obo.report.domain.DocumentFormat;
-import com.qfree.obo.report.domain.Role;
 import com.qfree.obo.report.domain.Subscription;
-import com.qfree.obo.report.rest.server.RestUtils;
-import com.qfree.obo.report.rest.server.RestUtils.RestApiVersion;
 import com.qfree.obo.report.service.SubscriptionService;
+import com.qfree.obo.report.util.RestUtils;
+import com.qfree.obo.report.util.RestUtils.RestApiVersion;
 
 @XmlRootElement
 public class SubscriptionResource extends AbstractBaseResource {
@@ -186,46 +184,60 @@ public class SubscriptionResource extends AbstractBaseResource {
 		}
 	}
 
-	public static List<SubscriptionResource> listFromDocumentFormat(DocumentFormat documentFormat, UriInfo uriInfo,
-			Map<String, List<String>> queryParams, RestApiVersion apiVersion) {
+	public static List<SubscriptionResource> subscriptionResourceListPageFromSubscriptions(
+			List<Subscription> subscriptions,
+			UriInfo uriInfo,
+			Map<String, List<String>> queryParams,
+			RestApiVersion apiVersion) {
 
-		if (documentFormat.getSubscriptions() != null) {
-			List<Subscription> subscriptions = documentFormat.getSubscriptions();
-			List<SubscriptionResource> subscriptionResources = new ArrayList<>(subscriptions.size());
-			for (Subscription subscription : subscriptions) {
-				List<String> showAll = queryParams.get(ResourcePath.SHOWALL_QP_KEY);
-				if (subscription.getActive() ||
-						RestUtils.FILTER_INACTIVE_RECORDS == false
-						|| ResourcePath.showAll(Subscription.class, showAll)) {
-					subscriptionResources.add(new SubscriptionResource(subscription, uriInfo, queryParams, apiVersion));
-				}
+		if (subscriptions != null) {
+
+			/*
+			 * The Subscription has an "active" field. In order to return REST 
+			 * resources that correspond to only active entities, it is 
+			 * necessary to do one of two things *before* we extract a page of 
+			 * Subscription entities below. Either:
+			 * 
+			 *   1. Filter the list "subscriptions" here to eliminate inactive 
+			 *      entities, or:
+			 *   
+			 *   2. Ensure that the list "subscriptions" was passed to this 
+			 *      method was *already* filtered to remove inactive entities.
+			 */
+
+			/*
+			 * Create a List of Subscription entities to return as REST 
+			 * resources. If the "offset" & "limit" query parameters are 
+			 * specified, we extract a sublist of the List "subscriptions"; 
+			 * otherwise, we use the whole list.
+			 */
+			List<Subscription> pageOfSubscriptions = RestUtils.getPageOfList(subscriptions, queryParams);
+
+			/*
+			 * Create a copy of the query parameters map and remove the
+			 * pagination query parameters from it because they do not apply 
+			 * to resources created from this point onwards from this method.
+			 * If "queryParams" does not contain these pagination query 
+			 * parameters, this will still work OK.
+			 */
+			Map<String, List<String>> queryParamsWOPagination = new HashMap<>(queryParams);
+			queryParamsWOPagination.remove(ResourcePath.PAGE_OFFSET_QP_KEY);
+			queryParamsWOPagination.remove(ResourcePath.PAGE_LIMIT_QP_KEY);
+
+			List<SubscriptionResource> subscriptionResources = new ArrayList<>(pageOfSubscriptions.size());
+			for (Subscription subscription : pageOfSubscriptions) {
+				/*
+				 * We cannot filter out entities here because then the page size
+				 * will be variable. Instead, it is necessary to filter out
+				 * entities *before* the page of entities is created above.
+				 */
+				subscriptionResources
+						.add(new SubscriptionResource(subscription, uriInfo, queryParamsWOPagination, apiVersion));
 			}
 			return subscriptionResources;
 		} else {
 			return null;
 		}
-
-	}
-
-	public static List<SubscriptionResource> listFromRole(Role role, UriInfo uriInfo,
-			Map<String, List<String>> queryParams, RestApiVersion apiVersion) {
-
-		if (role.getSubscriptions() != null) {
-			List<Subscription> subscriptions = role.getSubscriptions();
-			List<SubscriptionResource> subscriptionResources = new ArrayList<>(subscriptions.size());
-			for (Subscription subscription : subscriptions) {
-				List<String> showAll = queryParams.get(ResourcePath.SHOWALL_QP_KEY);
-				if (subscription.getActive() ||
-						RestUtils.FILTER_INACTIVE_RECORDS == false
-						|| ResourcePath.showAll(Subscription.class, showAll)) {
-					subscriptionResources.add(new SubscriptionResource(subscription, uriInfo, queryParams, apiVersion));
-				}
-			}
-			return subscriptionResources;
-		} else {
-			return null;
-		}
-
 	}
 
 	public UUID getSubscriptionId() {

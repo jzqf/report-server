@@ -16,7 +16,7 @@ import com.qfree.obo.report.dto.ReportCategoryResource;
 import com.qfree.obo.report.dto.ReportResource;
 import com.qfree.obo.report.dto.RestErrorResource.RestError;
 import com.qfree.obo.report.exceptions.RestApiException;
-import com.qfree.obo.report.rest.server.RestUtils;
+import com.qfree.obo.report.util.RestUtils;
 
 @Component
 @Transactional

@@ -14,10 +14,10 @@ import com.qfree.obo.report.domain.DocumentFormat;
 import com.qfree.obo.report.domain.Job;
 import com.qfree.obo.report.domain.Role;
 import com.qfree.obo.report.domain.Subscription;
-import com.qfree.obo.report.rest.server.RestUtils.RestApiVersion;
+import com.qfree.obo.report.util.RestUtils.RestApiVersion;
 
 @XmlRootElement
-public class JobCollectionResource extends AbstractCollectionResource<JobResource> {
+public class JobCollectionResource extends AbstractCollectionResource<JobResource, Job> {
 
 	private static final Logger logger = LoggerFactory.getLogger(JobCollectionResource.class);
 
@@ -27,49 +27,80 @@ public class JobCollectionResource extends AbstractCollectionResource<JobResourc
 	public JobCollectionResource() {
 	}
 
-	public JobCollectionResource(DocumentFormat documentFormat, UriInfo uriInfo,
-			Map<String, List<String>> queryParams, RestApiVersion apiVersion) {
+	public JobCollectionResource(
+			DocumentFormat documentFormat,
+			UriInfo uriInfo,
+			Map<String, List<String>> queryParams,
+			RestApiVersion apiVersion) {
 		this(
-				JobResource.listFromDocumentFormat(documentFormat, uriInfo, queryParams, apiVersion),
+				documentFormat.getJobs(),
 				Job.class,
 				AbstractBaseResource.createHref(uriInfo, DocumentFormat.class, documentFormat.getDocumentFormatId(),
 						null),
-				ResourcePath.JOBS_PATH, uriInfo, queryParams, apiVersion);
+				ResourcePath.JOBS_PATH,
+				uriInfo,
+				queryParams,
+				apiVersion);
 	}
 
-	public JobCollectionResource(Subscription subscription, UriInfo uriInfo,
-			Map<String, List<String>> queryParams, RestApiVersion apiVersion) {
+	public JobCollectionResource(
+			Subscription subscription,
+			UriInfo uriInfo,
+			Map<String, List<String>> queryParams,
+			RestApiVersion apiVersion) {
 		this(
-				JobResource.listFromSubscription(subscription, uriInfo, queryParams, apiVersion),
+				subscription.getJobs(),
 				Job.class,
 				AbstractBaseResource.createHref(uriInfo, Subscription.class, subscription.getSubscriptionId(), null),
-				ResourcePath.JOBS_PATH, uriInfo, queryParams, apiVersion);
+				ResourcePath.JOBS_PATH,
+				uriInfo,
+				queryParams,
+				apiVersion);
 	}
 
-	public JobCollectionResource(Role role, UriInfo uriInfo,
-			Map<String, List<String>> queryParams, RestApiVersion apiVersion) {
+	public JobCollectionResource(
+			Role role,
+			UriInfo uriInfo,
+			Map<String, List<String>> queryParams,
+			RestApiVersion apiVersion) {
 		this(
-				JobResource.listFromRole(role, uriInfo, queryParams, apiVersion),
+				role.getJobs(),
 				Job.class,
 				AbstractBaseResource.createHref(uriInfo, Role.class, role.getRoleId(), null),
-				ResourcePath.JOBS_PATH, uriInfo, queryParams, apiVersion);
+				ResourcePath.JOBS_PATH,
+				uriInfo,
+				queryParams,
+				apiVersion);
 	}
 
-	public JobCollectionResource(List<JobResource> items, Class<?> entityClass,
-			UriInfo uriInfo, Map<String, List<String>> queryParams, RestApiVersion apiVersion) {
-		this(items, entityClass, null, null, uriInfo, queryParams, apiVersion);
-	}
+	public JobCollectionResource(
+			List<Job> jobs,
+			Class<Job> entityClass,
+			String baseResourceUri,
+			String collectionPath,
+			UriInfo uriInfo,
+			Map<String, List<String>> queryParams,
+			RestApiVersion apiVersion) {
 
-	public JobCollectionResource(List<JobResource> items, Class<?> entityClass,
-			String baseResourceUri, String collectionPath,
-			UriInfo uriInfo, Map<String, List<String>> queryParams, RestApiVersion apiVersion) {
-
-		super(items, entityClass, baseResourceUri, collectionPath, uriInfo, queryParams, apiVersion);
+		super(
+				jobs,
+				entityClass,
+				baseResourceUri,
+				collectionPath,
+				uriInfo,
+				queryParams,
+				apiVersion);
 
 		List<String> expand = queryParams.get(ResourcePath.EXPAND_QP_KEY);
 		if (ResourcePath.expand(entityClass, expand)) {
-			this.items = items;
+			/*
+			 * We pass null for apiVersion since the version used in the 
+			 * original request does not necessarily apply here.
+			 */
+			apiVersion = null;
+			this.items = JobResource.jobResourceListPageFromJobs(jobs, uriInfo, queryParams, apiVersion);
 		}
+
 	}
 
 	public List<JobResource> getItems() {
@@ -83,12 +114,26 @@ public class JobCollectionResource extends AbstractCollectionResource<JobResourc
 	@Override
 	public String toString() {
 		StringBuilder builder = new StringBuilder();
-		builder.append("JobCollectionResource [href=");
+		builder.append("JobCollectionResource [items=");
+		builder.append(items);
+		builder.append(", offset=");
+		builder.append(offset);
+		builder.append(", limit=");
+		builder.append(limit);
+		builder.append(", size=");
+		builder.append(size);
+		builder.append(", first=");
+		builder.append(first);
+		builder.append(", previous=");
+		builder.append(previous);
+		builder.append(", next=");
+		builder.append(next);
+		builder.append(", last=");
+		builder.append(last);
+		builder.append(", href=");
 		builder.append(href);
 		builder.append(", mediaType=");
 		builder.append(mediaType);
-		builder.append(", items=");
-		builder.append(items);
 		builder.append("]");
 		return builder.toString();
 	}

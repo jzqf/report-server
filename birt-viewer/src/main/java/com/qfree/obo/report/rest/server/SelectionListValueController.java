@@ -31,8 +31,9 @@ import com.qfree.obo.report.domain.SelectionListValue;
 import com.qfree.obo.report.dto.ReportParameterResource;
 import com.qfree.obo.report.dto.ResourcePath;
 import com.qfree.obo.report.dto.SelectionListValueResource;
-import com.qfree.obo.report.rest.server.RestUtils.RestApiVersion;
 import com.qfree.obo.report.service.SelectionListValueService;
+import com.qfree.obo.report.util.RestUtils;
+import com.qfree.obo.report.util.RestUtils.RestApiVersion;
 
 @Component
 @Path(ResourcePath.SELECTIONLISTVALUES_PATH)

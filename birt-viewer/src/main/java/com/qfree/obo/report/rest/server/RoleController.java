@@ -33,13 +33,13 @@ import com.qfree.obo.report.domain.Role;
 import com.qfree.obo.report.domain.UuidCustomType;
 import com.qfree.obo.report.dto.JobCollectionResource;
 import com.qfree.obo.report.dto.ReportCollectionResource;
-import com.qfree.obo.report.dto.ReportResource;
 import com.qfree.obo.report.dto.ResourcePath;
 import com.qfree.obo.report.dto.RoleCollectionResource;
 import com.qfree.obo.report.dto.RoleResource;
 import com.qfree.obo.report.dto.SubscriptionCollectionResource;
-import com.qfree.obo.report.rest.server.RestUtils.RestApiVersion;
 import com.qfree.obo.report.service.RoleService;
+import com.qfree.obo.report.util.RestUtils;
+import com.qfree.obo.report.util.RestUtils.RestApiVersion;
 
 @Component
 @Path(ResourcePath.ROLES_PATH)
@@ -74,8 +74,6 @@ public class RoleController extends AbstractBaseController {
 	 */
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
-	//	public List<RoleResource> getList(
-	//	public CollectionResource<RoleResource> getList(
 	public RoleCollectionResource getList(
 			@HeaderParam("Accept") final String acceptHeader,
 			@QueryParam(ResourcePath.EXPAND_QP_NAME) final List<String> expand,
@@ -86,14 +84,8 @@ public class RoleController extends AbstractBaseController {
 		queryParams.put(ResourcePath.SHOWALL_QP_KEY, showAll);
 		RestApiVersion apiVersion = RestUtils.extractAPIVersion(acceptHeader, RestApiVersion.v1);
 
-		// List<Role> roles = roleRepository.findByActiveTrue();
 		List<Role> roles = roleRepository.findAll();
-		List<RoleResource> roleResources = new ArrayList<>(roles.size());
-		for (Role role : roles) {
-			roleResources.add(new RoleResource(role, uriInfo, queryParams, apiVersion));
-		}
-		//		return roleResources;
-		return new RoleCollectionResource(roleResources, Role.class, uriInfo, queryParams, apiVersion);
+		return new RoleCollectionResource(roles, Role.class, uriInfo, queryParams, apiVersion);
 	}
 
 	/*
@@ -120,7 +112,7 @@ public class RoleController extends AbstractBaseController {
 
 		Role role = roleService.saveNewFromResource(roleResource);
 		//	if (RestUtils.AUTO_EXPAND_PRIMARY_RESOURCES) {
-		addToExpandList(expand, Role.class);  // Force primary resource to be "expanded"
+		addToExpandList(expand, Role.class); // Force primary resource to be "expanded"
 		//	}
 		RoleResource resource = new RoleResource(role, uriInfo, queryParams, apiVersion);
 		return created(resource);
@@ -170,8 +162,8 @@ public class RoleController extends AbstractBaseController {
 	 */
 	/**
 	 * Return all Report instances that the Role with a specified id has access
-	 * to. This does NOT include transitive access rights that are associated 
-	 * with ancestor (parents, grandparents, ...) roles. Each Report will have 
+	 * to. This does NOT include transitive access rights that are associated
+	 * with ancestor (parents, grandparents, ...) roles. Each Report will have
 	 * zero or more ReportVersions.
 	 * 
 	 * @param id
@@ -282,13 +274,7 @@ public class RoleController extends AbstractBaseController {
 		for (Report report : reports) {
 			logger.debug("report = {}", report.getName());
 		}
-
-		List<ReportResource> reportResources = new ArrayList<>(reports.size());
-		for (Report report : reports) {
-			reportResources.add(new ReportResource(report, uriInfo, queryParams, apiVersion));
-		}
-		//		return reportResources;
-		return new ReportCollectionResource(reportResources, Report.class, uriInfo, queryParams, apiVersion);
+		return new ReportCollectionResource(reports, Report.class, uriInfo, queryParams, apiVersion);
 	}
 
 	/*
@@ -336,6 +322,8 @@ public class RoleController extends AbstractBaseController {
 	 *   $ curl -X GET -iH "Accept: application/json;v=1" \
 	 *   http://localhost:8080/rest/roles/b85fd129-17d9-40e7-ac11-7541040f8627/jobs
 	 * 
+	 * Note:  This endpoint supports pagination.
+	 * 
 	 * @Transactional is used to avoid org.hibernate.LazyInitializationException
 	 * being thrown.
 	 */
@@ -348,10 +336,13 @@ public class RoleController extends AbstractBaseController {
 			@HeaderParam("Accept") final String acceptHeader,
 			@QueryParam(ResourcePath.EXPAND_QP_NAME) final List<String> expand,
 			@QueryParam(ResourcePath.SHOWALL_QP_NAME) final List<String> showAll,
+			@QueryParam(ResourcePath.PAGE_OFFSET_QP_NAME) final List<String> pageOffset,
+			@QueryParam(ResourcePath.PAGE_LIMIT_QP_NAME) final List<String> pageLimit,
 			@Context final UriInfo uriInfo) {
 		Map<String, List<String>> queryParams = new HashMap<>();
 		queryParams.put(ResourcePath.EXPAND_QP_KEY, expand);
 		queryParams.put(ResourcePath.SHOWALL_QP_KEY, showAll);
+		RestUtils.checkPaginationQueryParams(pageOffset, pageLimit, queryParams);
 		RestApiVersion apiVersion = RestUtils.extractAPIVersion(acceptHeader, RestApiVersion.v1);
 
 		Role role = roleRepository.findOne(id);
@@ -379,10 +370,13 @@ public class RoleController extends AbstractBaseController {
 			@HeaderParam("Accept") final String acceptHeader,
 			@QueryParam(ResourcePath.EXPAND_QP_NAME) final List<String> expand,
 			@QueryParam(ResourcePath.SHOWALL_QP_NAME) final List<String> showAll,
+			@QueryParam(ResourcePath.PAGE_OFFSET_QP_NAME) final List<String> pageOffset,
+			@QueryParam(ResourcePath.PAGE_LIMIT_QP_NAME) final List<String> pageLimit,
 			@Context final UriInfo uriInfo) {
 		Map<String, List<String>> queryParams = new HashMap<>();
 		queryParams.put(ResourcePath.EXPAND_QP_KEY, expand);
 		queryParams.put(ResourcePath.SHOWALL_QP_KEY, showAll);
+		RestUtils.checkPaginationQueryParams(pageOffset, pageLimit, queryParams);
 		RestApiVersion apiVersion = RestUtils.extractAPIVersion(acceptHeader, RestApiVersion.v1);
 
 		Role role = roleRepository.findOne(id);

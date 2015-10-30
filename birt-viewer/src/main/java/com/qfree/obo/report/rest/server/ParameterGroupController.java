@@ -29,8 +29,9 @@ import com.qfree.obo.report.db.ParameterGroupRepository;
 import com.qfree.obo.report.domain.ParameterGroup;
 import com.qfree.obo.report.dto.ParameterGroupResource;
 import com.qfree.obo.report.dto.ResourcePath;
-import com.qfree.obo.report.rest.server.RestUtils.RestApiVersion;
 import com.qfree.obo.report.service.ParameterGroupService;
+import com.qfree.obo.report.util.RestUtils;
+import com.qfree.obo.report.util.RestUtils.RestApiVersion;
 
 @Component
 @Path(ResourcePath.PARAMETERGROUPS_PATH)

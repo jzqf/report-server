@@ -16,7 +16,8 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import com.qfree.obo.report.domain.Configuration;
 import com.qfree.obo.report.domain.Configuration.ParamName;
 import com.qfree.obo.report.domain.Configuration.ParamType;
-import com.qfree.obo.report.rest.server.RestUtils.RestApiVersion;
+import com.qfree.obo.report.util.RestUtils;
+import com.qfree.obo.report.util.RestUtils.RestApiVersion;
 
 @XmlRootElement
 public class ConfigurationResource extends AbstractBaseResource {
@@ -152,6 +153,62 @@ public class ConfigurationResource extends AbstractBaseResource {
 		}
 	}
 
+	public static List<ConfigurationResource> configurationResourceListPageFromConfigurations(
+			List<Configuration> configurations,
+			UriInfo uriInfo,
+			Map<String, List<String>> queryParams,
+			RestApiVersion apiVersion) {
+
+		if (configurations != null) {
+
+			/*
+			 * The Configuration entity does not have an "active" field, but if 
+			 * it did and if we wanted to return REST resources that correspond
+			 * to only active entities, it would be necessary to do one of two 
+			 * things *before* we extract a page of Configuration entities below.
+			 * Either:
+			 * 
+			 *   1. Filter the list "configurations" here to eliminate inactive 
+			 *      entities, or:
+			 *   
+			 *   2. Ensure that the list "configurations" was passed to this 
+			 *      method was *already* filtered to remove inactive entities.
+			 */
+
+			/*
+			 * Create a List of Configuration entities to return as REST 
+			 * resources. If the "offset" & "limit" query parameters are 
+			 * specified, we extract a sublist of the List "configurations"; 
+			 * otherwise, we use the whole list.
+			 */
+			List<Configuration> pageOfConfigurations = RestUtils.getPageOfList(configurations, queryParams);
+
+			/*
+			 * Create a copy of the query parameters map and remove the
+			 * pagination query parameters from it because they do not apply 
+			 * to resources created from this point onwards from this method.
+			 * If "queryParams" does not contain these pagination query 
+			 * parameters, this will still work OK.
+			 */
+			Map<String, List<String>> queryParamsWOPagination = new HashMap<>(queryParams);
+			queryParamsWOPagination.remove(ResourcePath.PAGE_OFFSET_QP_KEY);
+			queryParamsWOPagination.remove(ResourcePath.PAGE_LIMIT_QP_KEY);
+
+			List<ConfigurationResource> configurationResources = new ArrayList<>(pageOfConfigurations.size());
+			for (Configuration configuration : pageOfConfigurations) {
+				/*
+				 * We cannot filter out entities here because then the page size
+				 * will be variable. Instead, it is necessary to filter out
+				 * entities *before* the page of entities is created above.
+				 */
+				configurationResources
+						.add(new ConfigurationResource(configuration, uriInfo, queryParamsWOPagination, apiVersion));
+			}
+			return configurationResources;
+		} else {
+			return null;
+		}
+	}
 	public UUID getConfigurationId() {
 		return configurationId;
 	}

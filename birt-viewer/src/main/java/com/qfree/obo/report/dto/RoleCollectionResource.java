@@ -10,11 +10,11 @@ import javax.xml.bind.annotation.XmlRootElement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.qfree.obo.report.rest.server.RestUtils.RestApiVersion;
+import com.qfree.obo.report.domain.Role;
+import com.qfree.obo.report.util.RestUtils.RestApiVersion;
 
 @XmlRootElement
-public class RoleCollectionResource extends AbstractCollectionResource<RoleResource> {
-	//public class RoleCollectionResource extends AbstractBaseResource {
+public class RoleCollectionResource extends AbstractCollectionResource<RoleResource, Role> {
 
 	private static final Logger logger = LoggerFactory.getLogger(RoleCollectionResource.class);
 
@@ -24,15 +24,48 @@ public class RoleCollectionResource extends AbstractCollectionResource<RoleResou
 	public RoleCollectionResource() {
 	}
 
-	public RoleCollectionResource(List<RoleResource> items, Class<?> entityClass,
-			UriInfo uriInfo, Map<String, List<String>> queryParams, RestApiVersion apiVersion) {
+	public RoleCollectionResource(
+			List<Role> roles,
+			Class<Role> entityClass,
+			UriInfo uriInfo,
+			Map<String, List<String>> queryParams,
+			RestApiVersion apiVersion) {
+		this(
+				roles,
+				entityClass,
+				null,
+				null,
+				uriInfo,
+				queryParams,
+				apiVersion);
+	}
 
-		super(items, entityClass, uriInfo, queryParams, apiVersion);  // if class extends AbstractCollectionResource<ReportResource>
-		//super(entityClass, null, uriInfo, queryParams, apiVersion);  // if class extends AbstractBaseResource
+	public RoleCollectionResource(
+			List<Role> roles,
+			Class<Role> entityClass,
+			String baseResourceUri,
+			String collectionPath,
+			UriInfo uriInfo,
+			Map<String, List<String>> queryParams,
+			RestApiVersion apiVersion) {
+
+		super(
+				roles,
+				entityClass,
+				baseResourceUri,
+				collectionPath,
+				uriInfo,
+				queryParams,
+				apiVersion);
 
 		List<String> expand = queryParams.get(ResourcePath.EXPAND_QP_KEY);
 		if (ResourcePath.expand(entityClass, expand)) {
-			this.items = items;
+			/*
+			 * We pass null for apiVersion since the version used in the 
+			 * original request does not necessarily apply here.
+			 */
+			apiVersion = null;
+			this.items = RoleResource.roleResourceListPageFromRoles(roles, uriInfo, queryParams, apiVersion);
 		}
 	}
 

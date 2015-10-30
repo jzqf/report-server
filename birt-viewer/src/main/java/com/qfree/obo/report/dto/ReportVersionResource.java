@@ -17,10 +17,9 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.qfree.obo.report.domain.Report;
 import com.qfree.obo.report.domain.ReportVersion;
-import com.qfree.obo.report.rest.server.RestUtils;
-import com.qfree.obo.report.rest.server.RestUtils.RestApiVersion;
+import com.qfree.obo.report.util.RestUtils;
+import com.qfree.obo.report.util.RestUtils.RestApiVersion;
 
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
@@ -128,19 +127,53 @@ public class ReportVersionResource extends AbstractBaseResource {
 		}
 	}
 
-	public static List<ReportVersionResource> listFromReport(Report report, UriInfo uriInfo,
-			Map<String, List<String>> queryParams, RestApiVersion apiVersion) {
-		if (report.getReportVersions() != null) {
-			List<ReportVersion> reportVersions = report.getReportVersions();
-			List<ReportVersionResource> reportVersionResources = new ArrayList<>(reportVersions.size());
-			for (ReportVersion reportVersion : reportVersions) {
-				List<String> showAll = queryParams.get(ResourcePath.SHOWALL_QP_KEY);
-				if (reportVersion.isActive() ||
-						RestUtils.FILTER_INACTIVE_RECORDS == false ||
-						ResourcePath.showAll(ReportVersion.class, showAll)) {
-					reportVersionResources.add(
-							new ReportVersionResource(reportVersion, uriInfo, queryParams, apiVersion));
-				}
+	public static List<ReportVersionResource> reportVersionResourceListPageFromReportVersions(
+			List<ReportVersion> reportVersions, UriInfo uriInfo, Map<String, List<String>> queryParams,
+			RestApiVersion apiVersion) {
+
+		if (reportVersions != null) {
+
+			/*
+			 * The ReportVersion has an "active" field. In order to return REST 
+			 * resources that correspond to only active entities, it is 
+			 * necessary to do one of two things *before* we extract a page of 
+			 * ReportVersion entities below. Either:
+			 * 
+			 *   1. Filter the list "reportVersions" here to eliminate inactive 
+			 *      entities, or:
+			 *   
+			 *   2. Ensure that the list "reportVersions" was passed to this 
+			 *      method was *already* filtered to remove inactive entities.
+			 */
+
+			/*
+			 * Create a List of ReportVersion entities to return as REST 
+			 * resources. If the "offset" & "limit" query parameters are 
+			 * specified, we extract a sublist of the List "reportVersions"; 
+			 * otherwise, we use the whole list.
+			 */
+			List<ReportVersion> pageOfReportVersions = RestUtils.getPageOfList(reportVersions, queryParams);
+
+			/*
+			 * Create a copy of the query parameters map and remove the
+			 * pagination query parameters from it because they do not apply 
+			 * to resources created from this point onwards from this method.
+			 * If "queryParams" does not contain these pagination query 
+			 * parameters, this will still work OK.
+			 */
+			Map<String, List<String>> queryParamsWOPagination = new HashMap<>(queryParams);
+			queryParamsWOPagination.remove(ResourcePath.PAGE_OFFSET_QP_KEY);
+			queryParamsWOPagination.remove(ResourcePath.PAGE_LIMIT_QP_KEY);
+
+			List<ReportVersionResource> reportVersionResources = new ArrayList<>(pageOfReportVersions.size());
+			for (ReportVersion reportVersion : pageOfReportVersions) {
+				/*
+				 * We cannot filter out entities here because then the page size
+				 * will be variable. Instead, it is necessary to filter out
+				 * entities *before* the page of entities is created above.
+				 */
+				reportVersionResources.add(
+						new ReportVersionResource(reportVersion, uriInfo, queryParamsWOPagination, apiVersion));
 			}
 			return reportVersionResources;
 		} else {
@@ -245,5 +278,4 @@ public class ReportVersionResource extends AbstractBaseResource {
 		builder.append("]");
 		return builder.toString();
 	}
-
 }

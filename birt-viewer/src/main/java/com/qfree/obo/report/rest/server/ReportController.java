@@ -1,6 +1,5 @@
 package com.qfree.obo.report.rest.server;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -34,9 +33,10 @@ import com.qfree.obo.report.dto.ReportResource;
 import com.qfree.obo.report.dto.ReportSyncResource;
 import com.qfree.obo.report.dto.ReportVersionCollectionResource;
 import com.qfree.obo.report.dto.ResourcePath;
-import com.qfree.obo.report.rest.server.RestUtils.RestApiVersion;
 import com.qfree.obo.report.service.ReportService;
 import com.qfree.obo.report.service.ReportSyncService;
+import com.qfree.obo.report.util.RestUtils;
+import com.qfree.obo.report.util.RestUtils.RestApiVersion;
 
 @Component
 @Path(ResourcePath.REPORTS_PATH)
@@ -71,7 +71,6 @@ public class ReportController extends AbstractBaseController {
 	@Transactional
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
-	//	public List<ReportResource> getList(
 	public ReportCollectionResource getList(
 			@HeaderParam("Accept") final String acceptHeader,
 			@QueryParam(ResourcePath.EXPAND_QP_NAME) final List<String> expand,
@@ -88,12 +87,7 @@ public class ReportController extends AbstractBaseController {
 		} else {
 			reports = reportRepository.findAll();
 		}
-		List<ReportResource> reportResources = new ArrayList<>(reports.size());
-		for (Report report : reports) {
-			reportResources.add(new ReportResource(report, uriInfo, queryParams, apiVersion));
-		}
-		//		return reportResources;
-		return new ReportCollectionResource(reportResources, Report.class, uriInfo, queryParams, apiVersion);
+		return new ReportCollectionResource(reports, Report.class, uriInfo, queryParams, apiVersion);
 	}
 
 	/*

@@ -12,11 +12,11 @@ import org.slf4j.LoggerFactory;
 
 import com.qfree.obo.report.domain.Job;
 import com.qfree.obo.report.domain.JobParameter;
-import com.qfree.obo.report.rest.server.RestUtils.RestApiVersion;
+import com.qfree.obo.report.util.RestUtils.RestApiVersion;
 
 @XmlRootElement
 public class JobParameterCollectionResource
-		extends AbstractCollectionResource<JobParameterResource> {
+		extends AbstractCollectionResource<JobParameterResource, JobParameter> {
 
 	private static final Logger logger = LoggerFactory.getLogger(JobParameterCollectionResource.class);
 
@@ -26,36 +26,64 @@ public class JobParameterCollectionResource
 	public JobParameterCollectionResource() {
 	}
 
-	public JobParameterCollectionResource(Job job, UriInfo uriInfo,
-			Map<String, List<String>> queryParams, RestApiVersion apiVersion) {
+	public JobParameterCollectionResource(
+			Job job,
+			UriInfo uriInfo,
+			Map<String, List<String>> queryParams,
+			RestApiVersion apiVersion) {
 		this(
-				JobParameterResource.listFromJob(job, uriInfo,
-						queryParams, apiVersion),
+				job.getJobParameters(),
 				JobParameter.class,
-				AbstractBaseResource.createHref(uriInfo, JobParameter.class,
-						job.getJobId(), null),
+				AbstractBaseResource.createHref(uriInfo, Job.class, job.getJobId(), null),
 				ResourcePath.JOBPARAMETERS_PATH,
-				uriInfo, queryParams, apiVersion);
+				uriInfo,
+				queryParams,
+				apiVersion);
 	}
 
-	public JobParameterCollectionResource(
-			List<JobParameterResource> items,
-			Class<?> entityClass,
-			UriInfo uriInfo, Map<String, List<String>> queryParams, RestApiVersion apiVersion) {
-		this(items, entityClass, null, null, uriInfo, queryParams, apiVersion);
-	}
+	//	public JobParameterCollectionResource(
+	//			List<JobParameter> jobParameters,
+	//			Class<JobParameter> entityClass,
+	//			UriInfo uriInfo,
+	//			Map<String, List<String>> queryParams,
+	//			RestApiVersion apiVersion) {
+	//		this(
+	//				jobParameters,
+	//				entityClass,
+	//				null,
+	//				null,
+	//				uriInfo,
+	//				queryParams,
+	//				apiVersion);
+	//	}
 
 	public JobParameterCollectionResource(
-			List<JobParameterResource> items,
-			Class<?> entityClass,
-			String baseResourceUri, String collectionPath,
-			UriInfo uriInfo, Map<String, List<String>> queryParams, RestApiVersion apiVersion) {
+			List<JobParameter> jobParameters,
+			Class<JobParameter> entityClass,
+			String baseResourceUri,
+			String collectionPath,
+			UriInfo uriInfo,
+			Map<String, List<String>> queryParams,
+			RestApiVersion apiVersion) {
 
-		super(items, entityClass, baseResourceUri, collectionPath, uriInfo, queryParams, apiVersion);
+		super(
+				jobParameters,
+				entityClass,
+				baseResourceUri,
+				collectionPath,
+				uriInfo,
+				queryParams,
+				apiVersion);
 
 		List<String> expand = queryParams.get(ResourcePath.EXPAND_QP_KEY);
 		if (ResourcePath.expand(entityClass, expand)) {
-			this.items = items;
+			/*
+			 * We pass null for apiVersion since the version used in the 
+			 * original request does not necessarily apply here.
+			 */
+			apiVersion = null;
+			this.items = JobParameterResource.jobParameterResourceListPageFromJobParameters(
+					jobParameters, uriInfo, queryParams, apiVersion);
 		}
 	}
 

@@ -26,7 +26,7 @@ import com.qfree.obo.report.dto.JobStatusResource;
 import com.qfree.obo.report.dto.ReportVersionResource;
 import com.qfree.obo.report.dto.RoleResource;
 import com.qfree.obo.report.dto.SubscriptionResource;
-import com.qfree.obo.report.rest.server.RestUtils;
+import com.qfree.obo.report.util.RestUtils;
 
 @Component
 @Transactional

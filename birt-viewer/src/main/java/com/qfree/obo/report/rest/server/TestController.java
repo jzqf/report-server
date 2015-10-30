@@ -35,12 +35,13 @@ import org.springframework.scheduling.quartz.SchedulerFactoryBean;
 import org.springframework.stereotype.Component;
 
 import com.qfree.obo.report.domain.Configuration.ParamName;
-import com.qfree.obo.report.rest.server.RestUtils.RestApiVersion;
 import com.qfree.obo.report.scheduling.jobs.SubscriptionScheduledJob;
 import com.qfree.obo.report.scheduling.schedulers.SubscriptionJobProcessorScheduler;
 import com.qfree.obo.report.scheduling.schedulers.SubscriptionScheduler;
 import com.qfree.obo.report.service.BirtService;
 import com.qfree.obo.report.service.ConfigurationService;
+import com.qfree.obo.report.util.RestUtils;
+import com.qfree.obo.report.util.RestUtils.RestApiVersion;
 
 @Component
 @Path("/test")
