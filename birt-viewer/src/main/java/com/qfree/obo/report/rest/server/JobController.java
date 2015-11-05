@@ -20,6 +20,7 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.StreamingOutput;
 import javax.ws.rs.core.UriInfo;
 
 import org.quartz.SchedulerException;
@@ -149,6 +150,34 @@ public class JobController extends AbstractBaseController {
 		RestUtils.ifNullThen404(job, Job.class, "jobId", id.toString());
 		JobResource jobResource = new JobResource(job, uriInfo, queryParams, apiVersion);
 		return jobResource;
+	}
+
+	/*
+	 * This endpoint can be tested with:
+	 * 
+	 *   $ mvn clean spring-boot:run
+	 *   $ curl -X GET -iH "Accept: application/json;v=1" http://localhost:8080/rest/jobs/19/document
+	 * 
+	 */
+	@Path("/{id}/document")
+	@GET
+	@Transactional
+	@Produces("application/pdf")
+	public StreamingOutput getDocumentByJobId(
+			@PathParam("id") final Long id,
+			@HeaderParam("Accept") final String acceptHeader,
+			//	@QueryParam(ResourcePath.EXPAND_QP_NAME) final List<String> expand,
+			//	@QueryParam(ResourcePath.SHOWALL_QP_NAME) final List<String> showAll,
+			@Context final UriInfo uriInfo) {
+		//	Map<String, List<String>> queryParams = new HashMap<>();
+		//	queryParams.put(ResourcePath.EXPAND_QP_KEY, expand);
+		//	queryParams.put(ResourcePath.SHOWALL_QP_KEY, showAll);
+		RestApiVersion apiVersion = RestUtils.extractAPIVersion(acceptHeader, RestApiVersion.v1);
+
+		Job job = jobRepository.findOne(id);
+		RestUtils.ifNullThen404(job, Job.class, "jobId", id.toString());
+
+		return new JobDocumentOutputStream(job);
 	}
 
 	/*
