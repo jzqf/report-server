@@ -25,6 +25,10 @@ public class DateUtils {
 	private static final SimpleDateFormat FORMAT_ISO8601 = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
 	private static final SimpleDateFormat FORMAT_LOCALDATETIME = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");
 
+	public static final String BIRT_DATETIME_FORMAT_STRING = "yyyy-MM-dd HH:mm:ss";
+	public static final String BIRT_DATE_FORMAT_STRING = "yyyy-MM-dd";
+	public static final String BIRT_TIME_FORMAT_STRING = "HH:mm:ss";
+
 	/**
 	 * Returns a {@link Date} corresponding to the current datetime such that if
 	 * it is stored in a PostgreSQL table column of type "timestamp without
@@ -318,7 +322,7 @@ public class DateUtils {
 	public static String birtDatetimeStringFromDate(Date date) {
 
 		//TODO Make this a private static final field.
-		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+		SimpleDateFormat format = new SimpleDateFormat(BIRT_DATETIME_FORMAT_STRING);
 		if (date != null) {
 			//try {
 			return format.format(date);
@@ -388,7 +392,7 @@ public class DateUtils {
 	public static String birtDateStringFromDate(Date date) {
 
 		//TODO Make this a private static final field.
-		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+		SimpleDateFormat format = new SimpleDateFormat(BIRT_DATE_FORMAT_STRING);
 		if (date != null) {
 			//try {
 			return format.format(date);
@@ -465,7 +469,7 @@ public class DateUtils {
 	public static String birtTimeStringFromDate(Date date) {
 
 		//TODO Make this a private static final field.
-		SimpleDateFormat format = new SimpleDateFormat("HH:mm:ss.SSS");
+		SimpleDateFormat format = new SimpleDateFormat(BIRT_TIME_FORMAT_STRING);
 		if (date != null) {
 			//try {
 			return format.format(date);
@@ -695,9 +699,9 @@ public class DateUtils {
 	 * annotated with {@literal @}Temporal(TemporalType.Date)}. This method just
 	 * delegates to {@link #entityTimestampToNormalDate} but it is useful to
 	 * have different methods as markers for the different TemporalType's, in
-	 * case attributes annoated with {@literal @}Temporal(TemporalType.Date)}
+	 * case attributes annotated with {@literal @}Temporal(TemporalType.Date)}
 	 * requires a different treatment than objects annotated with {@literal @}
-	 * Temporal(TemporalType.Timestamp)} in the furture.
+	 * Temporal(TemporalType.Timestamp)} in the future.
 	 * 
 	 * @param entityDate
 	 * @return

@@ -168,7 +168,7 @@ public class ReportParameterService {
 		Map<String, Map<String, Serializable>> parameters = birtService.parseReportParams(reportVersion.getRptdesign());
 
 		/*
-		 * This is used to keep trakc of ParameterGroup entities that have been
+		 * This is used to keep track of ParameterGroup entities that have been
 		 * created here. A new ParameterGroup is created the first time a new
 		 * group is encountered. For those parameters that below to a 
 		 * ParameterGroup that has already been created, the id of that entity

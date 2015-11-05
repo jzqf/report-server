@@ -806,7 +806,7 @@ public class SubscriptionController extends AbstractBaseController {
 		 */
 		if (rescheduleJob) {
 
-			logger.info("Deleting (if it exists) {}", subscription);
+			logger.info("Unscheduling (if it is scheduled) {}", subscription);
 			/*
 			 * If the subscription is scheduled, the scheduled job is deleted.
 			 */

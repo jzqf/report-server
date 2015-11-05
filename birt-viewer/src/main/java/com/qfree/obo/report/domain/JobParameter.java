@@ -157,8 +157,8 @@ public class JobParameter implements Serializable {
 		builder.append(job);
 		builder.append(", reportParameter=");
 		builder.append(reportParameter);
-		builder.append(", jobParameterValues=");
-		builder.append(jobParameterValues);
+		//	builder.append(", jobParameterValues=");
+		//	builder.append(jobParameterValues);  // <- generates circular reference - do not uncomment
 		builder.append(", createdOn=");
 		builder.append(createdOn);
 		builder.append("]");

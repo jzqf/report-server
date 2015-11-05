@@ -556,11 +556,11 @@ public class SubscriptionScheduler {
 
 		Scheduler scheduler = schedulerFactoryBean.getScheduler();
 		if (scheduler.checkExists(jobKey)) {
-			logger.info("Deleting the subscription with job key = '{}' from the Quartz scheduler", jobKey);
+			logger.info("Deleting the Quartz subscription job with job key = '{}' from the Quartz scheduler", jobKey);
 			scheduler.deleteJob(jobKey);
 		} else {
 			logger.warn(
-					"Attempt to unschedule the subscription with job key = '{}', but it is not registered with the scheduler",
+					"Attempt to unschedule the Quartz subscription job with job key = '{}', but it is not registered with the scheduler",
 					jobKey);
 		}
 
