@@ -89,12 +89,33 @@ public class SubscriptionJobProcessorScheduledJob {
 		for (Job job : queuedJobs) {
 
 			try {
-				runAndRender(job);
 
+				/*
+				 * We bypass the report rendering step if it look like it was 
+				 * already performed. This bypass will happen only if "job" was
+				 * left in the state "RUNNING" and it was re-QUEUED elsewhere in 
+				 * order so that it will be fully processed. A newly created
+				 * Job always has document==null, reportRanAt==null, ....
+				 */
+				//				if (job.getDocument() == null) {
+					runAndRenderJob(job);
+				//				}
 
-				//TODO if error emailing document, set status to FAILED, set "Remarks field" and then save Job.
+				/*
+				 * E-mail the rendered report document to the recipient.
+				 */
+				emailJob(job);
 
-				//TODO Set status to COMPLETED here and save Job??????????????????????????????????????????????????????????????????????????????????????????????
+				//	if (1 == 1) {
+				//		throw new RuntimeException("Exception thrown so OUTER? transaction will be rolled back.");
+				//	}
+				/*
+				 * 
+				 */
+				logger.info("Setting status to \"COMPLETED\"");
+				JobStatus jobStatus_COMPLETED = jobStatusRepository.findOne(JobStatus.COMPLETED_ID);
+				job.setJobStatus(jobStatus_COMPLETED);
+				job = jobRepository.save(job); // probably not necessary, but it cannot hurt
 
 			} catch (ReportingException e) {
 				logger.error("Exception thrown processing Job with Id {}:\n{}", job.getJobId(), e);
@@ -107,7 +128,6 @@ public class SubscriptionJobProcessorScheduledJob {
 			}
 
 		}
-
 	}
 
 	/**
@@ -121,11 +141,11 @@ public class SubscriptionJobProcessorScheduledJob {
 	 * @param job
 	 * @throws ReportingException
 	 */
-	private void runAndRender(Job job) throws ReportingException {
-
-		JobStatus jobStatus_RUNNING = jobStatusRepository.findOne(JobStatus.RUNNING_ID);
+	//@Transactional(propagation = Propagation.REQUIRES_NEW)
+	private void runAndRenderJob(Job job) throws ReportingException {
 
 		logger.info("Setting status to \"RUNNING\"");
+		JobStatus jobStatus_RUNNING = jobStatusRepository.findOne(JobStatus.RUNNING_ID);
 		job.setJobStatus(jobStatus_RUNNING);
 		job = jobRepository.save(job); // probably not necessary, but it cannot hurt
 
@@ -237,16 +257,16 @@ public class SubscriptionJobProcessorScheduledJob {
 
 		} else {
 			try {
-			birtService.runAndRender(
-					job.getReportVersion().getRptdesign(),
-					parameterValueArrays,
-					job.getSubscription().getDocumentFormat().getBirtFormat(),
-					outputFileNamePath.toString(),
-					null);
+				birtService.runAndRender(
+						job.getReportVersion().getRptdesign(),
+						parameterValueArrays,
+						job.getSubscription().getDocumentFormat().getBirtFormat(),
+						outputFileNamePath.toString(),
+						null);
 
-			/*
-			 * Load the document that was created into a byte array.
-			 */
+				/*
+				 * Load the document that was created into a byte array.
+				 */
 				renderedReportBytes = Files.readAllBytes(outputFileNamePath);
 			} catch (IOException e) {
 				String errorMessage = String.format("Error loading document \"%s\": %s",
@@ -278,6 +298,39 @@ public class SubscriptionJobProcessorScheduledJob {
 			job.setEncoded(false);
 		}
 		job.setFileName(outputFileName);
+	}
+
+	/**
+	 * E-mails the rendered report associated with the {@link Job} passed to
+	 * this method.
+	 * 
+	 * <p>
+	 * If no exception is thrown, the {@link Job} is updated to hold details
+	 * regarding the delivery of the document.
+	 * 
+	 * @param job
+	 * @throws ReportingException
+	 */
+	private void emailJob(Job job) throws ReportingException {
+
+		//TODO  RUNNING -> ??????????????????????????????????????????????????????????????????????????????
+		//		logger.info("Setting status to \"RUNNING\"");
+		//		JobStatus jobStatus_RUNNING = jobStatusRepository.findOne(JobStatus.RUNNING_ID);
+		//		job.setJobStatus(jobStatus_RUNNING);
+		//		job = jobRepository.save(job); // probably not necessary, but it cannot hurt
+
+		logger.info("E-mailing job = {}", job);
+
+		//			try {
+		//
+		//			} catch (BirtException e) {
+		//				throw new ReportingException("Error running report: " + e.getMessage(), e);
+		//			}
+
+		/*
+		 * Set details associated with the delivery.
+		 */
+		//		job...
 	}
 
 }
