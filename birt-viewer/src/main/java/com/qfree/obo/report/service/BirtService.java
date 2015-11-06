@@ -323,31 +323,27 @@ public class BirtService {
 				|| documentFormat.equals(BIRT_FORMAT_XLS_SPUDSOFT)) {
 
 			renderOption = new RenderOption();
-			//			renderOption.setOutputFormat(documentFormat);
-			//			runAndRenderTask.setRenderOption(renderOption);
 
 		} else if (documentFormat.equals(BIRT_FORMAT_DOCX)) {
 
 			DocxRenderOption docxRenderOption = new DocxRenderOption();
-			//			docxRenderOption.setOutputFormat(documentFormat);
 			docxRenderOption.setCompressionMode(CompressionMode.BEST_COMPRESSION);
-
 			renderOption = (RenderOption) docxRenderOption;
-			//			runAndRenderTask.setRenderOption(docxRenderOption);
 
 		} else if (documentFormat.equals(BIRT_FORMAT_PDF)) {
 
 			PDFRenderOption pdfRenderOption = new PDFRenderOption();
 			pdfRenderOption.setEmbededFont(true);
+			pdfRenderOption.setOption(PDFRenderOption.PDF_HYPHENATION, true);
 			pdfRenderOption.setOption(PDFRenderOption.PDF_PAGE_LIMIT, 100);
 			pdfRenderOption.setOption(PDFRenderOption.PAGE_OVERFLOW, PDFRenderOption.FIT_TO_PAGE_SIZE);
-			//			pdfRenderOption.setOutputFormat(documentFormat);
+			pdfRenderOption.setOption(PDFRenderOption.PDF_TEXT_WRAPPING, true);
 			renderOption = (RenderOption) pdfRenderOption;
-			//			runAndRenderTask.setRenderOption(pdfRenderOption);
 
 		} else if (documentFormat.equals(BIRT_FORMAT_XLS) || documentFormat.equals(BIRT_FORMAT_XLSX)) {
 
 			EXCELRenderOption excelRenderOption = new EXCELRenderOption();
+			renderOption.setOption(RenderOption.HTML_PAGINATION, false);
 			if (documentFormat.equals(BIRT_FORMAT_XLSX)) {
 				excelRenderOption.setOfficeVersion("office2007");
 			} else {
@@ -355,14 +351,12 @@ public class BirtService {
 			}
 			excelRenderOption.setHideGridlines(false);
 			excelRenderOption.setWrappingText(true);
-			//			excelRenderOption.setOutputFormat(documentFormat);
 			renderOption = (RenderOption) excelRenderOption;
-			//			runAndRenderTask.setRenderOption(excelRenderOption);
 
 			//	} else if (documentFormat.equals(BIRT_FORMAT_HTML)) {
 			//
 			//		HTMLRenderOption htmlRenderOption = new HTMLRenderOption();
-			//		//			htmlRenderOption.setOutputFormat(documentFormat);
+			//		htmlRenderOption.setOption(RenderOption.HTML_PAGINATION, false);
 			//		htmlRenderOption.setImageDirectory("xxxxxxxxxxxxxxxx");
 			//		/*
 			//		 * Setting this to true removes html and body tags:
@@ -370,8 +364,7 @@ public class BirtService {
 			//		htmlRenderOption.setEmbeddable(false);
 			//		htmlRenderOption.setEnableInlineStyle(true); // useful if Embeddable=true
 			//		htmlRenderOption.setEnableCompactMode(true);
-			//
-			//		//	runAndRenderTask.setRenderOption(htmlRenderOption);
+			//		renderOption = (RenderOption) htmlRenderOption;
 
 		} else {
 			String errorMessage = String.format("No support for rendering to document format \"%s\"", documentFormat);
@@ -379,8 +372,12 @@ public class BirtService {
 		}
 
 		renderOption.setOutputFormat(documentFormat);
-		renderOption.setSupportedImageFormats("PNG;GIF;JPG;BMP;SWF;SVG");
-		renderOption.setOption(RenderOption.HTML_PAGINATION, false); // no pagination
+		if (renderOption.getSupportedImageFormats() == null) {
+			renderOption.setSupportedImageFormats("PNG;GIF;JPG;BMP;SWF;SVG");
+		}
+		if (renderOption.getOption(RenderOption.HTML_PAGINATION) == null) {
+			renderOption.setOption(RenderOption.HTML_PAGINATION, true);
+		}
 		if (renderOption.getOption(RenderOption.RENDER_DPI) == null) {
 			renderOption.setOption(RenderOption.RENDER_DPI, 300);
 		}
@@ -395,10 +392,6 @@ public class BirtService {
 		}
 
 		logger.info("renderOption.getOutputFormat() = {}", renderOption.getOutputFormat());
-		logger.info("renderOption.getOption(RenderOption.CLOSE_OUTPUTSTREAM_ON_EXIT) = {}",
-				renderOption.getOption(RenderOption.CLOSE_OUTPUTSTREAM_ON_EXIT));
-		logger.info("renderOption.getOption(RenderOption.RENDER_DPI) = {}",
-				renderOption.getOption(RenderOption.RENDER_DPI));
 
 		runAndRenderTask.setRenderOption(renderOption);
 
