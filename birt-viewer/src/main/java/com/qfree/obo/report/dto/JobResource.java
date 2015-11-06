@@ -146,7 +146,9 @@ public class JobResource extends AbstractBaseResource {
 
 			this.url = job.getUrl();
 			this.fileName = job.getFileName();
-			this.document = job.getDocument();
+			//this.document = job.getDocument();
+			this.document = String.format("<%s bytes>",
+					(job.getDocument() != null) ? job.getDocument().length() : 0);
 			this.encoded = job.getEncoded();
 			this.reportRanAt = job.getReportRanAt();
 			this.email = job.getEmail();
@@ -378,7 +380,7 @@ public class JobResource extends AbstractBaseResource {
 		builder.append(", fileName=");
 		builder.append(fileName);
 		builder.append(", document=");
-		builder.append(document);
+		builder.append(String.format("<%s bytes>", (document != null) ? document.length() : 0));
 		builder.append(", encoded=");
 		builder.append(encoded);
 		builder.append(", jobStatusSetAt=");
