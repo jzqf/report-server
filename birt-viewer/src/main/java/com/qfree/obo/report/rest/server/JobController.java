@@ -177,6 +177,11 @@ public class JobController extends AbstractBaseController {
 	@Path("/{id}/document")
 	@GET
 	@Transactional
+	/*
+	 * MediaType.APPLICATION_JSON seems to be needed here in order to be able
+	 * to return a RestErrorResource from JobDocumentOutputStream if a problem
+	 * is encountered.
+	 */
 	@Produces({ "application/msword",
 			"application/vnd.openxmlformats-officedocument.wordprocessingml.document",
 			"text/html",
@@ -187,7 +192,8 @@ public class JobController extends AbstractBaseController {
 			"application/vnd.ms-powerpoint",
 			"application/vnd.openxmlformats-officedocument.presentationml.presentation",
 			"application/vnd.ms-excel",
-			"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" })
+			"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+			MediaType.APPLICATION_JSON })
 	public Response geJobDocumentByJobId(
 			@PathParam("id") final Long id,
 			@HeaderParam("Accept") final String acceptHeader,
@@ -205,6 +211,7 @@ public class JobController extends AbstractBaseController {
 		return Response.status(Response.Status.OK)
 				.entity(new JobDocumentOutputStream(job))
 				.type(job.getDocumentFormat().getInternetMediaType())
+				.header("content-disposition", String.format("attachment; filename = \"%s\"", job.getFileName()))
 				.build();
 	}
 	//	public StreamingOutput getDocumentByJobId(
