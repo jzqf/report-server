@@ -48,7 +48,8 @@ public class SubscriptionCollectionResource extends AbstractCollectionResource<S
 			Map<String, List<String>> queryParams,
 			RestApiVersion apiVersion) {
 		this(
-				role.getSubscriptions(),
+				//role.getSubscriptions(),
+				role.getSubscriptionsForActiveReportVersions(),
 				Subscription.class,
 				AbstractBaseResource.createHref(uriInfo, Role.class, role.getRoleId(), null),
 				ResourcePath.SUBSCRIPTIONS_PATH,

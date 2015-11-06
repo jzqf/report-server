@@ -1,6 +1,7 @@
 package com.qfree.obo.report.domain;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
@@ -280,8 +281,30 @@ public class Role implements Serializable {
 		this.roleReports = roleReports;
 	}
 
+	/**
+	 * Returns all Subscription entities linked to the Role, whether the
+	 * associated ReportVersion is active or not.
+	 * 
+	 * @return
+	 */
 	public List<Subscription> getSubscriptions() {
 		return subscriptions;
+	}
+
+	/**
+	 * Returns only Subscription entities linked to the Role, where the
+	 * associated ReportVersion is active.
+	 * 
+	 * @return
+	 */
+	public List<Subscription> getSubscriptionsForActiveReportVersions() {
+		List<Subscription> subscriptionsForActiveReportVersions = new ArrayList<>();
+		for (Subscription subscription : subscriptions) {
+			if (subscription.getReportVersion().isActive()) {
+				subscriptionsForActiveReportVersions.add(subscription);
+			}
+		}
+		return subscriptionsForActiveReportVersions;
 	}
 
 	public void setSubscriptions(List<Subscription> roleSubscriptions) {
