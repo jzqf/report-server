@@ -455,7 +455,7 @@ public class Job implements Serializable {
 		builder.append(", fileName=");
 		builder.append(fileName);
 		builder.append(", document=");
-		builder.append(document);
+		builder.append(String.format("<%s bytes>", (document != null) ? document.length() : 0));
 		builder.append(", encoded=");
 		builder.append(encoded);
 		builder.append(", jobStatusSetAt=");
