@@ -470,6 +470,7 @@ public class JobService {
 	 * @param jobId
 	 * @throws ReportingException
 	 */
+	@Transactional
 	public void emailJobDocument(Long jobId) throws ReportingException {
 
 		Job job = jobRepository.findOne(jobId);

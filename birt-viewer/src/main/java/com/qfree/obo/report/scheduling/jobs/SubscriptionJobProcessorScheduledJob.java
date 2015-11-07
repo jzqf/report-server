@@ -96,7 +96,8 @@ public class SubscriptionJobProcessorScheduledJob {
 				 */
 				//				if (job.getDocument() == null) {
 				/*
-				 * This must be a transactional method for several reasons:
+				 * jobService.runAndRenderJob(...) must be a transactional 
+				 * method for several reasons:
 				 * 
 				 *   1. To be able to rollback changes in the event of an
 				 *   	exception being thrown.
@@ -131,6 +132,10 @@ public class SubscriptionJobProcessorScheduledJob {
 
 				/*
 				 * E-mail the rendered report document to the recipient.
+				 * 
+				 * jobService.emailJobDocument(...) must be a transactional 
+				 * method for the same reasons given in the comment for the call
+				 * to jobService.runAndRenderJob(...) above.
 				 */
 				jobService.emailJobDocument(job.getJobId());
 
