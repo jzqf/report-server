@@ -12,7 +12,6 @@ import com.qfree.obo.report.db.JobStatusRepository;
 import com.qfree.obo.report.domain.Job;
 import com.qfree.obo.report.domain.JobStatus;
 import com.qfree.obo.report.exceptions.ReportingException;
-import com.qfree.obo.report.service.BirtService;
 import com.qfree.obo.report.service.JobService;
 
 @Component
@@ -29,8 +28,8 @@ public class SubscriptionJobProcessorScheduledJob {
 	@Autowired
 	private JobService jobService;
 
-	@Autowired
-	private BirtService birtService;
+	//	@Autowired
+	//	private BirtService birtService;
 
 	/**
 	 * Runs periodically to process outstanding Job entities.
@@ -133,7 +132,7 @@ public class SubscriptionJobProcessorScheduledJob {
 				/*
 				 * E-mail the rendered report document to the recipient.
 				 */
-				emailJob(job);
+				jobService.emailJobDocument(job.getJobId());
 
 				if (1 == 1) {
 					throw new ReportingException("#1: Exception thrown to test transaction behviour.");
@@ -334,37 +333,37 @@ public class SubscriptionJobProcessorScheduledJob {
 	//		job.setFileName(outputFileName);
 	//	}
 
-	/**
-	 * E-mails the rendered report associated with the {@link Job} passed to
-	 * this method.
-	 * 
-	 * <p>
-	 * If no exception is thrown, the {@link Job} is updated to hold details
-	 * regarding the delivery of the document.
-	 * 
-	 * @param job
-	 * @throws ReportingException
-	 */
-	private void emailJob(Job job) throws ReportingException {
-
-		//TODO  RUNNING -> ??????????????????????????????????????????????????????????????????????????????
-		//		logger.info("Setting status to \"RUNNING\"");
-		//		JobStatus jobStatus_RUNNING = jobStatusRepository.findOne(JobStatus.RUNNING_ID);
-		//		job.setJobStatus(jobStatus_RUNNING);
-		//		job = jobRepository.save(job); // probably not necessary, but it cannot hurt
-
-		logger.info("E-mailing job = {}", job);
-
-		//			try {
-		//
-		//			} catch (BirtException e) {
-		//				throw new ReportingException("Error running report: " + e.getMessage(), e);
-		//			}
-
-		/*
-		 * Set details associated with the delivery.
-		 */
-		//		job...
-	}
+	//	/**
+	//	 * E-mails the rendered report associated with the {@link Job} passed to
+	//	 * this method.
+	//	 * 
+	//	 * <p>
+	//	 * If no exception is thrown, the {@link Job} is updated to hold details
+	//	 * regarding the delivery of the document.
+	//	 * 
+	//	 * @param job
+	//	 * @throws ReportingException
+	//	 */
+	//	private void emailJob(Job job) throws ReportingException {
+	//
+	//		//TODO  RUNNING -> ??????????????????????????????????????????????????????????????????????????????
+	//		//		logger.info("Setting status to \"RUNNING\"");
+	//		//		JobStatus jobStatus_RUNNING = jobStatusRepository.findOne(JobStatus.RUNNING_ID);
+	//		//		job.setJobStatus(jobStatus_RUNNING);
+	//		//		job = jobRepository.save(job); // probably not necessary, but it cannot hurt
+	//
+	//		logger.info("E-mailing job = {}", job);
+	//
+	//		//			try {
+	//		//
+	//		//			} catch (BirtException e) {
+	//		//				throw new ReportingException("Error running report: " + e.getMessage(), e);
+	//		//			}
+	//
+	//		/*
+	//		 * Set details associated with the delivery.
+	//		 */
+	//		//		job...
+	//	}
 
 }

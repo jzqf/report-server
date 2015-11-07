@@ -459,4 +459,35 @@ public class JobService {
 		job.setFileName(outputFileName);
 	}
 
+	/**
+	 * E-mails the rendered report associated with the {@link Job} that is
+	 * specified by its id.
+	 * 
+	 * <p>
+	 * If no exception is thrown, the {@link Job} is updated to hold details
+	 * regarding the delivery of the document.
+	 * 
+	 * @param jobId
+	 * @throws ReportingException
+	 */
+	public void emailJobDocument(Long jobId) throws ReportingException {
+
+		Job job = jobRepository.findOne(jobId);
+		if (job == null) {
+			throw new ReportingException("No Job found for jobId = " + jobId);
+		}
+		logger.info("E-mailing job = {}", job);
+
+		//			try {
+		//
+		//			} catch (BirtException e) {
+		//				throw new ReportingException("Error running report: " + e.getMessage(), e);
+		//			}
+
+		/*
+		 * Set details associated with the delivery.
+		 */
+		//		job...
+	}
+
 }
