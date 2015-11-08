@@ -203,7 +203,7 @@ public class SubscriptionJobProcessorScheduler {
 		 */
 		if (!scheduler.checkExists(JOB_KEY)) {
 
-			if (env.getProperty("startup.schedule.jobprocessor.requeuerunningjobs").equals("true")) {
+			if (env.getProperty("startup.schedule.jobprocessor.requeue.jobs.running").equals("true")) {
 				/*
 				 * If any Job entities have status "RUNNING", we change that to
 				 * "QUEUED" here. This is to treat the (hopefully unlikely) case
@@ -241,7 +241,7 @@ public class SubscriptionJobProcessorScheduler {
 				}
 			}
 
-			if (env.getProperty("startup.schedule.jobprocessor.requeuedeliveryjobs").equals("true")) {
+			if (env.getProperty("startup.schedule.jobprocessor.requeue.jobs.delivering").equals("true")) {
 				/*
 				 * If any Job entities have status "DELIVERING", we change that
 				 * to "QUEUED" here. The explanation for this action is 
