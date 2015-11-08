@@ -155,13 +155,14 @@ public class Job implements Serializable {
 	private Date reportRanAt;
 
 	/**
-	 * E-mail address to which the rendered report will be sent. This allows a
-	 * subscription to be set up that delivers reports to other than a role's
-	 * primary e-mail address store with the Role entity.
+	 * E-mail address to which the rendered report will be sent.
+	 * 
+	 * This allows a subscription to be set up that delivers reports to other
+	 * than a role's primary e-mail address stored with the Role entity.
 	 */
 	// @NotBlank
-	@Column(name = "email", nullable = true, length = 160)
-	private String email;
+	@Column(name = "email_address", nullable = true, length = 160)
+	private String emailAddress;
 
 	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name = "report_emailed_at", nullable = true)
@@ -288,7 +289,7 @@ public class Job implements Serializable {
 			String document,
 			Boolean encoded,
 			Date reportRanAt,
-			String email,
+			String emailAddress,
 			Date reportEmailedAt,
 			Date createdOn) {
 		this.subscription = subscription;
@@ -303,7 +304,7 @@ public class Job implements Serializable {
 		this.document = document;
 		this.encoded = encoded;
 		this.reportRanAt = null;
-		this.email = email;
+		this.emailAddress = emailAddress;
 		this.reportEmailedAt = null;
 		this.createdOn = (createdOn != null) ? createdOn : DateUtils.nowUtc();
 	}
@@ -369,12 +370,12 @@ public class Job implements Serializable {
 		this.reportRanAt = reportRanAt;
 	}
 
-	public String getEmail() {
-		return email;
+	public String getEmailAddress() {
+		return emailAddress;
 	}
 
-	public void setEmail(String email) {
-		this.email = email;
+	public void setEmailAddress(String emailAddress) {
+		this.emailAddress = emailAddress;
 	}
 
 	public Date getReportEmailedAt() {
@@ -462,8 +463,8 @@ public class Job implements Serializable {
 		builder.append(jobStatusSetAt);
 		builder.append(", reportRanAt=");
 		builder.append(reportRanAt);
-		builder.append(", email=");
-		builder.append(email);
+		builder.append(", emailAddress=");
+		builder.append(emailAddress);
 		builder.append(", reportEmailedAt=");
 		builder.append(reportEmailedAt);
 		builder.append(", createdOn=");

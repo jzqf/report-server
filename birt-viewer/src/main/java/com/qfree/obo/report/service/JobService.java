@@ -85,7 +85,7 @@ public class JobService {
 		// /*
 		// * Enforce NOT NULL constraints.
 		// */
-		// RestUtils.ifAttrNullThen403(jobResource.getEmail(), Job.class, "email");
+		// RestUtils.ifAttrNullThen403(jobResource.getEmailAddress(), Job.class, "emailAddress");
 
 		return saveOrUpdateFromResource(jobResource);
 	}

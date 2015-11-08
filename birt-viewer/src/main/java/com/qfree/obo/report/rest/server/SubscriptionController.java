@@ -433,7 +433,7 @@ public class SubscriptionController extends AbstractBaseController {
 	 *   $ curl -iH "Accept: application/json;v=1" -H "Content-Type: application/json" -X PUT -d \
 	 *   '{"documentFormat":{"documentFormatId":"05a4ad8d-6f30-4d6d-83d5-995345a8dc58"},\
 	 *   "deliveryDatetimeRunAt":"2015-11-04T06:00:00.000","cronScheduleZoneId":"Canada/Pacific",\
-	 *   "email":"bozo@clown.net","description":"New description","enabled":true}' \
+	 *   "email_address":"bozo@clown.net","description":"New description","enabled":true}' \
 	 *   http://localhost:8080/rest/subscriptions/1778cb69-0561-42b9-889f-cfe8c66978db
 	 *   
 	 * This updates the subscription with UUID 1778cb69-0561-42b9-889f-cfe8c66978db
@@ -443,7 +443,7 @@ public class SubscriptionController extends AbstractBaseController {
 	 * deliveryCronSchedule:	-> null
 	 * deliveryTimeZoneId		-> "Canada/Pacific"
 	 * deliveryDatetimeRunAt:	-> "2015-11-04T06:00:00.000"
-	 * email:					-> "bozo@clown.net"
+	 * email_address:			-> "bozo@clown.net"
 	 * description:				-> "New description"
 	 * enabled:					-> true
 	 */
@@ -489,7 +489,7 @@ public class SubscriptionController extends AbstractBaseController {
 		 * but if their value does not need to be changed, they do not need to 
 		 * be included in the PUT data.
 		 */
-		// ALLOW email==null:
+		// ALLOW email_address==null:
 		// if (subscriptionResource.getEmail() == null) {
 		// subscriptionResource.setEmail(subscription.getEmail());
 		// }
@@ -556,7 +556,7 @@ public class SubscriptionController extends AbstractBaseController {
 			 * The subscription must have a valid e-mail address to which the 
 			 * rendered report will eventually be sent.
 			 */
-			if (subscriptionResource.getEmail() == null || subscriptionResource.getEmail().isEmpty()) {
+			if (subscriptionResource.getEmailAddress() == null || subscriptionResource.getEmailAddress().isEmpty()) {
 				throw new RestApiException(RestError.FORBIDDEN_ENABLED_SUBSCRIPTION_NO_EMAIL, Subscription.class);
 			}
 

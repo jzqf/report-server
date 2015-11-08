@@ -75,8 +75,7 @@ public class SubscriptionService {
 		// /*
 		// * Enforce NOT NULL constraints.
 		// */
-		// RestUtils.ifAttrNullThen403(subscriptionResource.getEmail(),
-		// Subscription.class, "email");
+		// RestUtils.ifAttrNullThen403(subscriptionResource.getEmailAddress(), Subscription.class, "emailAddress");
 
 		/*
 		 * If necessary, copy default values to the new Subscription from the 
@@ -96,9 +95,9 @@ public class SubscriptionService {
 			 * Role associated with the subscription (which itself may or may 
 			 * not be null or blank).
 			 */
-			String subscriptionEmail = subscriptionResource.getEmail();
+			String subscriptionEmail = subscriptionResource.getEmailAddress();
 			if (subscriptionEmail == null || subscriptionEmail.isEmpty()) {
-				subscriptionResource.setEmail(role.getEmail());
+				subscriptionResource.setEmailAddress(role.getEmailAddress());
 			}
 
 			/*
