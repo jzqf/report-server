@@ -1,3 +1,5 @@
+-- PostgreSQL:
+
 BEGIN TRANSACTION;
 
 CREATE SCHEMA IF NOT EXISTS reporting;
@@ -87,9 +89,13 @@ CREATE TABLE job (
     job_id bigint NOT NULL,
     created_on timestamp without time zone NOT NULL,
     document text,
+    email character varying(160),
     encoded boolean,
     file_name character varying(128),
     job_status_remarks text,
+    job_status_set_at timestamp without time zone NOT NULL,
+    report_emailed_at timestamp without time zone,
+    report_ran_at timestamp without time zone,
     url character varying(1024),
     document_format_id uuid NOT NULL,
     job_status_id uuid NOT NULL,
@@ -459,6 +465,7 @@ CREATE TABLE subscription_parameter_value (
     day_of_week_in_month_ordinal integer,
     day_of_week_number integer,
     days_ago integer,
+    duration_subtract_one_day_for_dates boolean NOT NULL,
     duration_to_add_days integer,
     duration_to_add_hours integer,
     duration_to_add_minutes integer,
@@ -500,7 +507,6 @@ ALTER TABLE ONLY job_parameter ALTER COLUMN job_parameter_id SET DEFAULT nextval
 --
 
 ALTER TABLE ONLY job_parameter_value ALTER COLUMN job_parameter_value_id SET DEFAULT nextval('job_parameter_value_job_parameter_value_id_seq'::regclass);
-
 
 
 --
@@ -1022,7 +1028,7 @@ INSERT INTO reporting.role (role_id, username, login_role, encoded_password, ful
 -- version. This will get updated at the database is upgraded over time. This
 -- version number will be updated whenever the data model changes *or* Q-Free
 -- supplied content changes (records are created, updated or deleted).
-INSERT INTO reporting.configuration (param_name, role_id, param_type, integer_value, string_value , created_on) VALUES ('DB_VERSION', null, 'INTEGER', 3, '3', current_timestamp AT TIME ZONE 'UTC');
+INSERT INTO reporting.configuration (param_name, role_id, param_type, integer_value, string_value , created_on) VALUES ('DB_VERSION', null, 'INTEGER', 4, '4', current_timestamp AT TIME ZONE 'UTC');
 
 --ROLLBACK;
 COMMIT;
