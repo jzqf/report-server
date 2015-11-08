@@ -218,7 +218,7 @@ public class SubscriptionJobProcessorScheduler {
 				 * the Job processor is started/scheduled, have somehow been 
 				 * left in the state "RUNNING" but were never fully processed,
 				 * we set their status back to "QUEUED" so that they will be
-				 * picked up the next itme that the Job processor rubs.
+				 * picked up the next item that the Job processor rubs.
 				 * 
 				 * It is essential that we do not run the Job processor in 
 				 * multiple threads; otherwise, this block of code might requeue
@@ -232,15 +232,33 @@ public class SubscriptionJobProcessorScheduler {
 
 				List<Job> runningJobs = jobRepository.findByJobStatusJobStatusId(JobStatus.RUNNING_ID);
 				if (runningJobs.size() > 0) {
-					logger.warn("{} running Jobs to re-queue", runningJobs.size());
+					logger.warn("{} Jobs with status RUNNING to re-queue", runningJobs.size());
 					for (Job job : runningJobs) {
-						logger.debug("job = {}", job);
 						logger.info("Setting status to \"QUEUED\" for job = {}", job);
 						job.setJobStatus(jobStatus_QUEUED);
 						job = jobRepository.save(job);
 					}
 				}
+			}
 
+			if (env.getProperty("startup.schedule.jobprocessor.requeuedeliveryjobs").equals("true")) {
+				/*
+				 * If any Job entities have status "DELIVERING", we change that
+				 * to "QUEUED" here. The explanation for this action is 
+				 * identical to the bloc of code above that re-queues jobs with
+				 * status "RUNNING".
+				 */
+				JobStatus jobStatus_QUEUED = jobStatusRepository.findOne(JobStatus.QUEUED_ID);
+
+				List<Job> deliveringJobs = jobRepository.findByJobStatusJobStatusId(JobStatus.DELIVERING_ID);
+				if (deliveringJobs.size() > 0) {
+					logger.warn("{} Jobs with status DELIVERING to re-queue", deliveringJobs.size());
+					for (Job job : deliveringJobs) {
+						logger.info("Setting status to \"QUEUED\" for job = {}", job);
+						job.setJobStatus(jobStatus_QUEUED);
+						job = jobRepository.save(job);
+					}
+				}
 			}
 
 			/*
