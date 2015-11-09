@@ -107,7 +107,7 @@ public class ApplicationConfig {
 	/*
 	 * The injected "env" object here will contain key/value pairs for each 
 	 * property in the properties files specified above in the @PropertySource
-	 * or @PropertySources annotation above.
+	 * or @PropertySources annotation.
 	 */
 	@Autowired
 	private Environment env;

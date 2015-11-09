@@ -58,6 +58,7 @@ public class JobService {
 	private final RoleRepository roleRepository;
 	private final SubscriptionRepository subscriptionRepository;
 	private final BirtService birtService;
+	private final EmailService emailService;
 
 	@Autowired
 	public JobService(
@@ -67,7 +68,8 @@ public class JobService {
 			ReportVersionRepository reportVersionRepository,
 			RoleRepository roleRepository,
 			SubscriptionRepository subscriptionRepository,
-			BirtService birtService) {
+			BirtService birtService,
+			EmailService emailService) {
 		this.jobRepository = jobRepository;
 		this.jobStatusRepository = jobStatusRepository;
 		this.documentFormatRepository = documentFormatRepository;
@@ -75,6 +77,7 @@ public class JobService {
 		this.roleRepository = roleRepository;
 		this.subscriptionRepository = subscriptionRepository;
 		this.birtService = birtService;
+		this.emailService = emailService;
 	}
 
 	@Transactional
@@ -481,6 +484,7 @@ public class JobService {
 		}
 		logger.info("E-mailing job = {}", job);
 
+		emailService.sendEmail();
 		//			try {
 		//
 		//			} catch (BirtException e) {
