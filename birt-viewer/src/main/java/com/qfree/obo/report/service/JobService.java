@@ -272,15 +272,16 @@ public class JobService {
 	 * @throws ReportingException
 	 */
 	@Transactional
-	public Job setJobStatus(Long jobId, UUID jobStatusId) throws ReportingException {
+	public Job setJobStatus(Long jobId, UUID jobStatusId, String jobStatusRemarks) throws ReportingException {
 		Job job = jobRepository.findOne(jobId);
 		if (job == null) {
 			throw new ReportingException("No Job found for jobId = " + jobId);
 		}
 		JobStatus jobStatus = jobStatusRepository.findOne(jobStatusId);
-		logger.info("Setting status to \"{}\"", jobStatus.toString());
+		logger.info("Setting status to \"{}\", remarks to {}", jobStatus.toString(), jobStatusRemarks);
 		job.setJobStatus(jobStatus);
-		job = jobRepository.save(job);
+		job.setJobStatusRemarks(jobStatusRemarks);
+		job = jobRepository.save(job); // probably not necessary, but it cannot hurt
 		return job;
 	}
 
