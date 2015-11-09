@@ -116,10 +116,7 @@ public class JobParameterValueRepositoryTests {
 				report04Version01,
 				role_aabb,
 				pdfFormat,
-				null,
-				null,
-				null,
-				null);
+				"someone@somedomain.com");
 
 		/*
 		 * Get all the parameters for the report. There should be only one with

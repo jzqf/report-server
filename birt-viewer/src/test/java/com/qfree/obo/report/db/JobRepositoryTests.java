@@ -92,10 +92,7 @@ public class JobRepositoryTests {
 				report04Version01,
 				role_aabb,
 				pdfFormat,
-				null,
-				null,
-				null,
-				null);
+				"someone@somedomain.com");
 		Job savedJob = jobRepository.save(unsavedJob);
 
 		assertThat(jobRepository.count(), is(3L));

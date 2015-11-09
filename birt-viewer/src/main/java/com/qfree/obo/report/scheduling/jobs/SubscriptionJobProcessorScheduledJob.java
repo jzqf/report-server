@@ -128,26 +128,45 @@ public class SubscriptionJobProcessorScheduledJob {
 				job = jobService.setJobStatus(job.getJobId(), JobStatus.DELIVERING_ID, null);
 
 				/*
-				 * We bypass the report delivery step if it looks like it was 
-				 * already performed. This bypass will happen only if "job" was
-				 * left in the state "RUNNING" or "DELIVERING" and it was 
-				 * re-QUEUED elsewhere in order so that it will be fully 
-				 * processed. A newly created Job always has emailAddress==null,
-				 * reportEmailedAt==null, ....
-				 */
-				//				if (job.getReportEmailedAt() == null) {
-				/*
-				 * E-mail the rendered report document to the recipient.
+				 * We attempt to e-mail the rendered document only if there is 
+				 * an email address provided. It is conceivable that a Job was 
+				 * created to run a report *without* the rendered report then
+				 * being e-mailed. In such a case, the recipient must display
+				 * the Job record and then download the rendered report document
+				 * from the Job.
 				 * 
-				 * jobService.emailJobDocument(...) must be a transactional 
-				 * method for the same reasons given in the comment for the call
-				 * to jobService.runAndRenderJob(...) above.
+				 * Current programming logi in this application tries to ensure
+				 * that all enabled Subscription entities have  value for their
+				 * "emilAddress" field. Since this value is assigned to a new
+				 * Job entity's "emailAddress" field when a new Job is created
+				 * in SubscriptionScheduledJob.run(), job.getEmailAddress()
+				 * should, ideally, never be null here. But future changes to
+				 * this application's logic/behaviour may change this; if so,
+				 * we handle that case here.
 				 */
-				jobService.emailJobDocument(job.getJobId());
-				//				}
+				if (job.getEmailAddress() != null && !job.getEmailAddress().isEmpty()) {
+					/*
+					 * We bypass the report delivery step if it looks like it
+					 * was already performed. This bypass will happen only if 
+					 * "job" was left in the state "RUNNING" or "DELIVERING" and
+					 * it was re-QUEUED elsewhere in order so that it will be
+					 * fully processed. A newly created Job always has 
+					 * reportEmailedAt==null, ....
+					 */
+					//				if (job.getReportEmailedAt() == null) {
+					/*
+					 * E-mail the rendered report document to the recipient.
+					 * 
+					 * jobService.emailJobDocument(...) must be a transactional 
+					 * method for the same reasons given in the comment for the call
+					 * to jobService.runAndRenderJob(...) above.
+					 */
+					jobService.emailJobDocument(job.getJobId());
+					//				}				
+				}
 
 				if (1 == 1) {
-					throw new ReportingException("#1: Exception thrown to test transaction behviour.");
+					throw new ReportingException("#1: Exception thrown to test transaction behaviour.");
 				}
 				/*
 				 * 

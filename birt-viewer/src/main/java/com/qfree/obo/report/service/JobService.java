@@ -458,6 +458,7 @@ public class JobService {
 			job.setEncoded(false);
 		}
 		job.setFileName(outputFileName);
+		job.setReportRanAt();
 	}
 
 	/**
@@ -490,6 +491,8 @@ public class JobService {
 		 * Set details associated with the delivery.
 		 */
 		//		job...
+		job.setReportEmailedAt();
+
 	}
 
 }

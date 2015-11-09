@@ -172,31 +172,31 @@ public class Subscription implements Serializable {
 	private Subscription() {
 	}
 
-	public Subscription(
-			Role role,
-			ReportVersion reportVersion,
-			DocumentFormat documentFormat,
-			String deliveryCronSchedule,
-			String deliveryTimeZoneId,
-			Date deliveryDatetimeRunAt,
-			String emailAddress,
-			String description,
-			Boolean enabled,
-			Boolean active) {
-		this(
-				null,
-				role,
-				reportVersion,
-				documentFormat,
-				deliveryCronSchedule,
-				deliveryTimeZoneId,
-				deliveryDatetimeRunAt,
-				emailAddress,
-				description,
-				enabled,
-				active,
-				DateUtils.nowUtc());
-	}
+	//	public Subscription(
+	//			Role role,
+	//			ReportVersion reportVersion,
+	//			DocumentFormat documentFormat,
+	//			String deliveryCronSchedule,
+	//			String deliveryTimeZoneId,
+	//			Date deliveryDatetimeRunAt,
+	//			String emailAddress,
+	//			String description,
+	//			Boolean enabled,
+	//			Boolean active) {
+	//		this(
+	//				null,
+	//				role,
+	//				reportVersion,
+	//				documentFormat,
+	//				deliveryCronSchedule,
+	//				deliveryTimeZoneId,
+	//				deliveryDatetimeRunAt,
+	//				emailAddress,
+	//				description,
+	//				enabled,
+	//				active,
+	//				DateUtils.nowUtc());
+	//	}
 
 	public Subscription(
 			SubscriptionResource subscriptionResource,

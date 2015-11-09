@@ -239,13 +239,13 @@ public class Job implements Serializable {
 				reportVersion,
 				role,
 				documentFormat,
+				jobResource.getEmailAddress(),
 				jobResource.getUrl(),
 				jobResource.getFileName(),
 				jobResource.getDocument(),
 				jobResource.getEncoded(),
-				null,
-				null,
-				null,
+				jobResource.getReportRanAt(),
+				jobResource.getReportEmailedAt(),
 				DateUtils.nowUtc());
 	}
 
@@ -256,10 +256,7 @@ public class Job implements Serializable {
 			ReportVersion reportVersion,
 			Role role,
 			DocumentFormat documentFormat,
-			String url,
-			String fileName,
-			String document,
-			Boolean encoded) {
+			String emailAddress) {
 		this(
 				subscription,
 				jobStatus,
@@ -267,10 +264,10 @@ public class Job implements Serializable {
 				reportVersion,
 				role,
 				documentFormat,
-				url,
-				fileName,
-				document,
-				encoded,
+				emailAddress,
+				null,
+				null,
+				null,
 				null,
 				null,
 				null,
@@ -284,12 +281,12 @@ public class Job implements Serializable {
 			ReportVersion report_version,
 			Role role,
 			DocumentFormat documentFormat,
+			String emailAddress,
 			String url,
 			String fileName,
 			String document,
 			Boolean encoded,
 			Date reportRanAt,
-			String emailAddress,
 			Date reportEmailedAt,
 			Date createdOn) {
 		this.subscription = subscription;
@@ -366,6 +363,10 @@ public class Job implements Serializable {
 		return reportRanAt;
 	}
 
+	public void setReportRanAt() {
+		setReportRanAt(DateUtils.nowUtc());
+	}
+
 	public void setReportRanAt(Date reportRanAt) {
 		this.reportRanAt = reportRanAt;
 	}
@@ -380,6 +381,10 @@ public class Job implements Serializable {
 
 	public Date getReportEmailedAt() {
 		return reportEmailedAt;
+	}
+
+	public void setReportEmailedAt() {
+		setReportEmailedAt(DateUtils.nowUtc());
 	}
 
 	public void setReportEmailedAt(Date reportEmailedAt) {
