@@ -59,7 +59,12 @@ ALTER TABLE reporting.job ADD COLUMN report_ran_at timestamp;
 
 -- object: duration_subtract_one_day_for_dates | type: COLUMN --
 -- ALTER TABLE reporting.subscription_parameter_value DROP COLUMN IF EXISTS duration_subtract_one_day_for_dates CASCADE;
-ALTER TABLE reporting.subscription_parameter_value ADD COLUMN duration_subtract_one_day_for_dates boolean NOT NULL;
+-- We set default here because there will probably be existing rows, so this 
+-- would fail without a default since we are specifying NOT NULL.
+ALTER TABLE reporting.subscription_parameter_value ADD COLUMN duration_subtract_one_day_for_dates boolean NOT NULL DEFAULT true;
+-- Remove the default value that was set in the previous line only so that we
+-- would provide a non-null value forthe column for existing rows of the table.
+ALTER TABLE reporting.subscription_parameter_value ALTER COLUMN duration_subtract_one_day_for_dates DROP DEFAULT;
 -- ddl-end --
 
 
