@@ -11,6 +11,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
+import javax.mail.MessagingException;
+
 import org.eclipse.birt.core.exception.BirtException;
 import org.eclipse.birt.report.engine.api.IParameterDefn;
 import org.slf4j.Logger;
@@ -484,17 +486,39 @@ public class JobService {
 		}
 		logger.info("E-mailing job = {}", job);
 
-		emailService.sendEmail();
-		//			try {
-		//
-		//			} catch (BirtException e) {
-		//				throw new ReportingException("Error running report: " + e.getMessage(), e);
-		//			}
+		/*
+		 * Convert the document stored in the field Job.document into a byte
+		 * array. If the document is currently Base64 encoded, it is decoded
+		 * here.
+		 */
+		byte[] documentBytes;
+		if (job.getEncoded()) {
+			try {
+				documentBytes = Base64.getDecoder().decode(job.getDocument());
+			} catch (IllegalArgumentException e) {
+				throw new ReportingException("Document cannot be decoded for jobId = " + jobId, e);
+			}
+		} else {
+			documentBytes = job.getDocument().getBytes(StandardCharsets.UTF_8);
+		}
+
+		try {
+			String subject = "This is the subject - IMPROVE THIS!";
+			String msgBody = "This is the e-mail body - IMPROVE THIS!";
+			emailService.sendEmail(
+					job.getEmailAddress(),
+					subject,
+					msgBody,
+					documentBytes,
+					job.getDocumentFormat().getInternetMediaType(),
+					job.getFileName());
+		} catch (MessagingException e) {
+			throw new ReportingException("Error sending e-mail: " + e.getMessage(), e);
+		}
 
 		/*
 		 * Set details associated with the delivery.
 		 */
-		//		job...
 		job.setReportEmailedAt();
 
 	}
