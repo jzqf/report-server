@@ -1,11 +1,16 @@
 package com.qfree.obo.report.scheduling.jobs;
 
+import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.qfree.obo.report.db.JobRepository;
+import com.qfree.obo.report.db.JobStatusRepository;
+import com.qfree.obo.report.domain.Job;
+import com.qfree.obo.report.domain.JobStatus;
 
 @Component
 public class SubscriptionJobProcessorScheduledJob {
@@ -15,10 +20,15 @@ public class SubscriptionJobProcessorScheduledJob {
 	@Autowired
 	private JobRepository jobRepository;
 
+	@Autowired
+	JobStatusRepository jobStatusRepository;
+
 	/**
 	 * Runs periodically to process outstanding Job entities.
 	 */
 	//TODO Use "synchronized" here??? Just to be sure we do not process the same Job in two different threads?
+	//     This may not be necessary, because I have used setConcurrent(false) in 
+	//     SubscriptionJobProcessorScheduler.scheduleJob(...)
 	public void run() {
 
 		/*
@@ -48,8 +58,22 @@ public class SubscriptionJobProcessorScheduledJob {
 			// Do nothing
 		}
 
-		logger.info("********** Write me!");
-		logger.info("jobRepository.count() = {}", jobRepository.count());
+		logger.info("");
+
+		JobStatus jobStatus_RUNNING = jobStatusRepository.findOne(JobStatus.RUNNING_ID);
+
+		List<Job> queuedJobs = jobRepository.findByJobStatusJobStatusId(JobStatus.QUEUED_ID);
+		logger.info("{} queued Jobs to process", queuedJobs.size());
+
+		//TODO USE A TRY FINALLY TO RESET STATUS TO QUEUED IF A NASTY EXCEPTION IS THROWN???
+
+		for (Job job : queuedJobs) {
+			logger.debug("job = {}", job);
+			logger.info("Setting status to \"RUNNING\"");
+			job.setJobStatus(jobStatus_RUNNING);
+			logger.info("Saving job");
+			job = jobRepository.save(job);
+		}
 
 	}
 

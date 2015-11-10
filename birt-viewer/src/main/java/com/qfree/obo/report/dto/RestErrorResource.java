@@ -213,6 +213,41 @@ public class RestErrorResource {
 		FORBIDDEN_ENABLED_SUBSCRIPTION_NULL_PARAM_VALUE(
 				Response.Status.FORBIDDEN, "403.23",
 				"The value of a report parameter is null, but required=true", null),
+		FORBIDDEN_CANCEL_JOB_WRONG_STATUS(
+				Response.Status.FORBIDDEN, "403.24",
+				"Only a Job with JobStatus=\"QUEUED\" can be canceled", null),
+		FORBIDDEN_JOB_PROCESSOR_ALREADY_SCHEDULED(
+				Response.Status.FORBIDDEN, "403.25",
+				"Attempt made to schedule the subscription job processor, but it is already registered with the scheduler",
+				null),
+		FORBIDDEN_JOB_PROCESSOR_NOT_SCHEDULED_CANNOT_UNSCHEDULE(
+				Response.Status.FORBIDDEN, "403.26",
+				"Attempt made to unschedule the subscription job processor, but it is not registered with the scheduler",
+				null),
+		FORBIDDEN_JOB_PROCESSOR_NOT_SCHEDULED_CANNOT_TRIGGER(
+				Response.Status.FORBIDDEN, "403.27",
+				"Attempt made to trigger the subscription job processor, but it is not registered with the scheduler",
+				null),
+		FORBIDDEN_JOB_PROCESSOR_NOT_RUNNING_CANNOT_TRIGGER(
+				Response.Status.FORBIDDEN, "403.28",
+				"Attempt made to trigger the subscription job processor, but the scheduler is not running",
+				null),
+		FORBIDDEN_JOB_PROCESSOR_NOT_SCHEDULED_CANNOT_PAUSE(
+				Response.Status.FORBIDDEN, "403.27",
+				"Attempt made to pause the subscription job processor, but it is not registered with the scheduler",
+				null),
+		FORBIDDEN_JOB_PROCESSOR_NOT_RUNNING_CANNOT_PAUSE(
+				Response.Status.FORBIDDEN, "403.28",
+				"Attempt made to pause the subscription job processor, but the scheduler is not running",
+				null),
+		FORBIDDEN_JOB_PROCESSOR_NOT_SCHEDULED_CANNOT_RESUME(
+				Response.Status.FORBIDDEN, "403.27",
+				"Attempt made to resume the subscription job processor, but it is not registered with the scheduler",
+				null),
+		FORBIDDEN_JOB_PROCESSOR_NOT_RUNNING_CANNOT_RESUME(
+				Response.Status.FORBIDDEN, "403.28",
+				"Attempt made to resume the subscription job processor, but the scheduler is not running",
+				null),
 
 		/**
 		 * {@code 404 Not Found}.
@@ -222,6 +257,8 @@ public class RestErrorResource {
 		NOT_FOUND_RESOUCE(Response.Status.NOT_FOUND, "404.1", "A resource could not be located", null),
 		NOT_FOUND_ROLE_TO_AUTHENTICATE(Response.Status.NOT_FOUND, "404.2",
 				"Both a username and encoded password must be submitted", null),
+		NOT_FOUND_RENDERED_REPORT_FOR_JOB(Response.Status.NOT_FOUND, "404.3",
+				"There is no rendered report associated with the Job", null),
 		/**
 		 * {@code 405 Method Not Allowed}.
 		 * @see <a href="http://tools.ietf.org/html/rfc2616#section-10.4.6">HTTP/1.1</a>
@@ -346,10 +383,12 @@ public class RestErrorResource {
 				null),
 		INTERNAL_SERVER_ERROR_UNTREATED_CASE(Response.Status.INTERNAL_SERVER_ERROR, "500.5",
 				"Untreated case", null),
-		INTERNAL_SERVER_ERROR_DATA_TYPE_ANY(Response.Status.INTERNAL_SERVER_ERROR, "500.5",
+		INTERNAL_SERVER_ERROR_DATA_TYPE_ANY(Response.Status.INTERNAL_SERVER_ERROR, "500.6",
 				"Report parameter encountered with data type = IParameterDefn.TYPE_ANY", null),
-		INTERNAL_SERVER_ERROR_SCHEDULER(Response.Status.INTERNAL_SERVER_ERROR, "500.6",
-				"The Quartz scheduler threw an exaception", null),
+		INTERNAL_SERVER_ERROR_SCHEDULER(Response.Status.INTERNAL_SERVER_ERROR, "500.7",
+				"The Quartz scheduler threw an exception.", null),
+		INTERNAL_SERVER_ERROR_DOCUMENT_STREAM(Response.Status.INTERNAL_SERVER_ERROR, "500.8",
+				"Error streaming document to client.", null),
 		/**
 		 * {@code 501 Not Implemented}.
 		 * @see <a href="http://tools.ietf.org/html/rfc2616#section-10.5.2">HTTP/1.1</a>

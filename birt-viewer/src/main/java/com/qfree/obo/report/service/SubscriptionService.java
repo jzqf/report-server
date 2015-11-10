@@ -23,8 +23,8 @@ import com.qfree.obo.report.dto.RoleResource;
 import com.qfree.obo.report.dto.SchedulingStatusResource;
 import com.qfree.obo.report.dto.SubscriptionResource;
 import com.qfree.obo.report.exceptions.RestApiException;
-import com.qfree.obo.report.rest.server.RestUtils;
 import com.qfree.obo.report.scheduling.schedulers.SubscriptionScheduler;
+import com.qfree.obo.report.util.RestUtils;
 
 @Component
 @Transactional

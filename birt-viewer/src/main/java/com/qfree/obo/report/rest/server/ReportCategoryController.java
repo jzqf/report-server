@@ -1,6 +1,5 @@
 package com.qfree.obo.report.rest.server;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -31,8 +30,9 @@ import com.qfree.obo.report.domain.ReportCategory;
 import com.qfree.obo.report.dto.ReportCategoryCollectionResource;
 import com.qfree.obo.report.dto.ReportCategoryResource;
 import com.qfree.obo.report.dto.ResourcePath;
-import com.qfree.obo.report.rest.server.RestUtils.RestApiVersion;
 import com.qfree.obo.report.service.ReportCategoryService;
+import com.qfree.obo.report.util.RestUtils;
+import com.qfree.obo.report.util.RestUtils.RestApiVersion;
 
 @Component
 @Path(ResourcePath.REPORTCATEGORIES_PATH)
@@ -77,13 +77,8 @@ public class ReportCategoryController extends AbstractBaseController {
 		} else {
 			reportCategories = reportCategoryRepository.findAll();
 		}
-		List<ReportCategoryResource> reportCategoryResources = new ArrayList<>(reportCategories.size());
-		for (ReportCategory reportCategory : reportCategories) {
-			reportCategoryResources.add(new ReportCategoryResource(reportCategory, uriInfo, queryParams, apiVersion));
-		}
-		//		return reportCategoryResources;
-		return new ReportCategoryCollectionResource(reportCategoryResources, ReportCategory.class, uriInfo,
-				queryParams, apiVersion);
+		return new ReportCategoryCollectionResource(reportCategories, ReportCategory.class,
+				uriInfo, queryParams, apiVersion);
 	}
 
 	/*
@@ -132,7 +127,7 @@ public class ReportCategoryController extends AbstractBaseController {
 	 * 
 	 *   $ mvn clean spring-boot:run
 	 *   $ curl -i -H "Accept: application/json;v=1" -X GET \
-	 *   http://localhost:8081/report-server/rest/reportCategories/7a482694-51d2-42d0-b0e2-19dd13bbbc64
+	 *   http://localhost:8080/rest/reportCategories/7a482694-51d2-42d0-b0e2-19dd13bbbc64
 	 */
 	@Path("/{id}")
 	@GET

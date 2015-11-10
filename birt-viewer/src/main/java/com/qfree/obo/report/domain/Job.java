@@ -19,6 +19,7 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.validation.constraints.NotNull;
 
+import com.qfree.obo.report.dto.JobResource;
 import com.qfree.obo.report.util.DateUtils;
 
 /**
@@ -48,28 +49,6 @@ public class Job implements Serializable {
 	//	@Column(name = "job_id", unique = true, nullable = false,
 	//			columnDefinition = "uuid DEFAULT uuid_generate_v4()")
 	//	private UUID jobId;
-
-	@ManyToOne
-	/*
-	 * If columnDefinition="uuid" is omitted here and the database schema is 
-	 * created by Hibernate (via hibernate.hbm2ddl.auto="create"), then the 
-	 * PostgreSQL column definition includes "DEFAULT uuid_generate_v4()", which
-	 * is not what is wanted.
-	 */
-	@NotNull
-	@JoinColumn(name = "job_status_id", nullable = false,
-			foreignKey = @ForeignKey(name = "fk_job_jobstatus") ,
-			columnDefinition = "uuid")
-	private JobStatus jobStatus;
-
-	/**
-	 * Specified details that give more details related to the current value of
-	 * jobStatus.
-	 * 
-	 * This should be considered read-only in the ReST API.
-	 */
-	@Column(name = "job_status_remarks", nullable = true, columnDefinition = "text")
-	private String jobStatusRemarks;
 
 	/**
 	 * The {@link Subscription} for which this Job was created.
@@ -115,7 +94,7 @@ public class Job implements Serializable {
 	 */
 	@NotNull
 	@JoinColumn(name = "role_id", nullable = false,
-			foreignKey = @ForeignKey(name = "fk_job_role"),
+			foreignKey = @ForeignKey(name = "fk_job_role") ,
 			columnDefinition = "uuid")
 	private Role role;
 
@@ -133,9 +112,36 @@ public class Job implements Serializable {
 	 */
 	@NotNull
 	@JoinColumn(name = "document_format_id", nullable = false,
-			foreignKey = @ForeignKey(name = "fk_job_documentformat"),
+			foreignKey = @ForeignKey(name = "fk_job_documentformat") ,
 			columnDefinition = "uuid")
 	private DocumentFormat documentFormat;
+
+	@ManyToOne
+	/*
+	 * If columnDefinition="uuid" is omitted here and the database schema is 
+	 * created by Hibernate (via hibernate.hbm2ddl.auto="create"), then the 
+	 * PostgreSQL column definition includes "DEFAULT uuid_generate_v4()", which
+	 * is not what is wanted.
+	 */
+	@NotNull
+	@JoinColumn(name = "job_status_id", nullable = false,
+			foreignKey = @ForeignKey(name = "fk_job_jobstatus") ,
+			columnDefinition = "uuid")
+	private JobStatus jobStatus;
+
+	@NotNull
+	@Temporal(TemporalType.TIMESTAMP)
+	@Column(name = "job_status_set_at", nullable = false)
+	private Date jobStatusSetAt;
+
+	/**
+	 * Specified details that give more details related to the current value of
+	 * jobStatus.
+	 * 
+	 * This should be considered read-only in the ReST API.
+	 */
+	@Column(name = "job_status_remarks", nullable = true, columnDefinition = "text")
+	private String jobStatusRemarks;
 
 	/*
 	 * cascade = CascadeType.ALL:
@@ -144,42 +150,61 @@ public class Job implements Serializable {
 	@OneToMany(mappedBy = "job", cascade = CascadeType.ALL)
 	private List<JobParameter> jobParameters;
 
+	@Temporal(TemporalType.TIMESTAMP)
+	@Column(name = "report_ran_at", nullable = true)
+	private Date reportRanAt;
+
 	/**
-	 * The URL used to request the report from the report server.
+	 * E-mail address to which the rendered report will be sent. This allows a
+	 * subscription to be set up that delivers reports to other than a role's
+	 * primary e-mail address store with the Role entity.
+	 */
+	// @NotBlank
+	@Column(name = "email", nullable = true, length = 160)
+	private String email;
+
+	@Temporal(TemporalType.TIMESTAMP)
+	@Column(name = "report_emailed_at", nullable = true)
+	private Date reportEmailedAt;
+
+	/**
+	 * The URL used to request the report from the report server, *excluding*
+	 * the scheme (http:// or https://), server and TCP port. Hence, it really
+	 * isn't a URL so this attribute should probably be renamed to something
+	 * like: "urlPath", or "requestUrlPath or... Or perhaps this attribute
+	 * should simply be eliminated? Time will tell.
 	 * <p>
-	 * This will include the name of the rptdesign document from the report 
+	 * This will include the name of the rptdesign document from the report
 	 * server's file system, the document format (&__format=...) and other
 	 * details.
 	 * <p>
-	 * If this {@link Job} is created for a Subscription, it will include query 
-	 * parameters for all of the report parameters. If this report is run 
-	 * manually, the user will be prompted for the report parameter values when 
+	 * If this {@link Job} is created for a Subscription, it will include query
+	 * parameters for all of the report parameters. If this report is run
+	 * manually, the user will be prompted for the report parameter values when
 	 * the report is run so they will not appear in {@link #url}.
 	 */
 	@Column(name = "url", nullable = true, length = 1024)
 	private String url;
 
 	/**
-	 * The name of the file to generate from the document stored in 
+	 * The name of the file to generate from the document stored in
 	 * {@link #document}.
 	 * <p>
-	 * This includes the file extension, but no path 
-	 * information. This will normally be generated automatically from the 
-	 * report number, name, version and document format (for the extension).
+	 * This includes the file extension, but no path information. This will
+	 * normally be generated automatically from the report number, name, version
+	 * and document format (for the extension).
 	 */
 	@Column(name = "file_name", nullable = true, length = 128)
 	private String fileName;
 
 	/**
-	 * The response from the report server returned for a request for a 
-	 * report.
+	 * The response from the report server returned for a request for a report.
 	 * <p>
 	 * This is Base64-encoded if the response represents a binary document
-	 * format. This can be determined by checking the value of 
-	 * {@link #encoded}.
+	 * format. This can be determined by checking the value of {@link #encoded}.
 	 * <p>
-	 * If this {@link Job} is created for a Subscription, the decoded value of 
-	 * this field is delivered to the recipient's e-mail address as an 
+	 * If this {@link Job} is created for a Subscription, the decoded value of
+	 * this field is delivered to the recipient's e-mail address as an
 	 * attachment.
 	 */
 	@Column(name = "document", nullable = true, columnDefinition = "text")
@@ -199,23 +224,29 @@ public class Job implements Serializable {
 	private Job() {
 	}
 
-	//	public Job(
-	//			JobStatus jobStatus,
-	//			ReportVersion reportVersion,
-	//			Role role,
-	//			DocumentFormat documentFormat) {
-	//		this(
-	//				jobStatus,
-	//				null,
-	//				reportVersion,
-	//				role,
-	//				documentFormat,
-	//				null,
-	//				null,
-	//				null,
-	//				null,
-	//				DateUtils.nowUtc());
-	//	}
+	public Job(
+			JobResource jobResource,
+			JobStatus jobStatus,
+			DocumentFormat documentFormat,
+			ReportVersion reportVersion,
+			Role role,
+			Subscription subscription) {
+		this(
+				subscription,
+				jobStatus,
+				jobResource.getJobStatusRemarks(),
+				reportVersion,
+				role,
+				documentFormat,
+				jobResource.getUrl(),
+				jobResource.getFileName(),
+				jobResource.getDocument(),
+				jobResource.getEncoded(),
+				null,
+				null,
+				null,
+				DateUtils.nowUtc());
+	}
 
 	public Job(
 			Subscription subscription,
@@ -239,6 +270,9 @@ public class Job implements Serializable {
 				fileName,
 				document,
 				encoded,
+				null,
+				null,
+				null,
 				DateUtils.nowUtc());
 	}
 
@@ -253,9 +287,13 @@ public class Job implements Serializable {
 			String fileName,
 			String document,
 			Boolean encoded,
+			Date reportRanAt,
+			String email,
+			Date reportEmailedAt,
 			Date createdOn) {
 		this.subscription = subscription;
-		this.jobStatus = jobStatus;
+		//this.jobStatus = jobStatus;
+		setJobStatus(jobStatus); // so jobStatusSetAt will also be set
 		this.jobStatusRemarks = jobStatusRemarks;
 		this.reportVersion = report_version;
 		this.role = role;
@@ -264,6 +302,9 @@ public class Job implements Serializable {
 		this.fileName = fileName;
 		this.document = document;
 		this.encoded = encoded;
+		this.reportRanAt = null;
+		this.email = email;
+		this.reportEmailedAt = null;
 		this.createdOn = (createdOn != null) ? createdOn : DateUtils.nowUtc();
 	}
 
@@ -271,24 +312,16 @@ public class Job implements Serializable {
 		return this.jobId;
 	}
 
-	public JobStatus getJobStatus() {
-		return this.jobStatus;
+	public Subscription getSubscription() {
+		return subscription;
 	}
 
-	public void setJobStatus(JobStatus jobStatus) {
-		this.jobStatus = jobStatus;
-	}
-
-	public String getJobStatusRemarks() {
-		return jobStatusRemarks;
+	public void setSubscription(Subscription subscription) {
+		this.subscription = subscription;
 	}
 
 	public void setJobStatusRemarks(String jobStatusRemarks) {
 		this.jobStatusRemarks = jobStatusRemarks;
-	}
-
-	public Date getCreatedOn() {
-		return this.createdOn;
 	}
 
 	public ReportVersion getReportVersion() {
@@ -313,6 +346,47 @@ public class Job implements Serializable {
 
 	public void setDocumentFormat(DocumentFormat documentformat) {
 		this.documentFormat = documentformat;
+	}
+
+	public JobStatus getJobStatus() {
+		return this.jobStatus;
+	}
+
+	public void setJobStatus(JobStatus jobStatus) {
+		this.jobStatus = jobStatus;
+		this.jobStatusSetAt = DateUtils.nowUtc();
+	}
+
+	public String getJobStatusRemarks() {
+		return jobStatusRemarks;
+	}
+
+	public Date getReportRanAt() {
+		return reportRanAt;
+	}
+
+	public void setReportRanAt(Date reportRanAt) {
+		this.reportRanAt = reportRanAt;
+	}
+
+	public String getEmail() {
+		return email;
+	}
+
+	public void setEmail(String email) {
+		this.email = email;
+	}
+
+	public Date getReportEmailedAt() {
+		return reportEmailedAt;
+	}
+
+	public void setReportEmailedAt(Date reportEmailedAt) {
+		this.reportEmailedAt = reportEmailedAt;
+	}
+
+	public Date getJobStatusSetAt() {
+		return jobStatusSetAt;
 	}
 
 	public List<JobParameter> getJobParameters() {
@@ -355,6 +429,10 @@ public class Job implements Serializable {
 		this.encoded = encoded;
 	}
 
+	public Date getCreatedOn() {
+		return this.createdOn;
+	}
+
 	@Override
 	public String toString() {
 		StringBuilder builder = new StringBuilder();
@@ -377,9 +455,17 @@ public class Job implements Serializable {
 		builder.append(", fileName=");
 		builder.append(fileName);
 		builder.append(", document=");
-		builder.append(document);
+		builder.append(String.format("<%s bytes>", (document != null) ? document.length() : 0));
 		builder.append(", encoded=");
 		builder.append(encoded);
+		builder.append(", jobStatusSetAt=");
+		builder.append(jobStatusSetAt);
+		builder.append(", reportRanAt=");
+		builder.append(reportRanAt);
+		builder.append(", email=");
+		builder.append(email);
+		builder.append(", reportEmailedAt=");
+		builder.append(reportEmailedAt);
 		builder.append(", createdOn=");
 		builder.append(createdOn);
 		builder.append("]");

@@ -1,6 +1,5 @@
 package com.qfree.obo.report.dto;
 
-import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeParseException;
 import java.util.Date;
@@ -14,9 +13,9 @@ import com.qfree.obo.report.scheduling.schedulers.SubscriptionScheduler;
 import com.qfree.obo.report.util.DateUtils;
 
 /**
- * Adapter class for the SubscriptionResource.deliveryDatetimeRunAt field to serialize Java
- * Date objects as strings as well as deserializes strings into Java Date
- * objects.
+ * Adapter class for the SubscriptionResource.deliveryDatetimeRunAt field to
+ * serialize Java Date objects as strings as well as deserializes strings into
+ * Java Date objects.
  * 
  * Note: According to the Javadoc for the marshal & unmarshal methods, if
  * there's an error during the conversion, the exception will be eaten . The
@@ -31,25 +30,23 @@ public class SubscriptionRunAtDateTimeAdapter extends XmlAdapter<String, Date> {
 
 	private static final Logger logger = LoggerFactory.getLogger(SubscriptionRunAtDateTimeAdapter.class);
 
-	private final SimpleDateFormat format_ISO8601 = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
-	private final SimpleDateFormat format_LocalDateTime = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");
+	//	private final SimpleDateFormat format_ISO8601 = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+	//	private final SimpleDateFormat format_LocalDateTime = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");
 
 	@Override
 	public String marshal(Date date) throws Exception {
 		logger.debug("date = {}", date);
 
-		if (date != null) {
-			try {
-				if (SubscriptionScheduler.RUNAT_ENTITY_DATE_TZ_DYNAMIC) {
-					return format_LocalDateTime.format(date);
-				} else {
-					return format_ISO8601.format(date);
-				}
-			} catch (Exception e) {
-				logger.error("Exception caught formatting date '{}'. Exception: ", date.toString(), e);
-				return (String) null;
+		try {
+			if (SubscriptionScheduler.RUNAT_ENTITY_DATE_TZ_DYNAMIC) {
+				return DateUtils.localDateTimeStringFromServerTZDate(date);
+				//					return format_LocalDateTime.format(date);
+			} else {
+				return DateUtils.Iso8601StringFromUtcDate(date);
+				//					return format_ISO8601.format(date);
 			}
-		} else {
+		} catch (Exception e) {
+			logger.error("Exception caught formatting date '{}'. Exception: ", date.toString(), e);
 			return (String) null;
 		}
 	}
@@ -60,13 +57,13 @@ public class SubscriptionRunAtDateTimeAdapter extends XmlAdapter<String, Date> {
 	 * via HTTP POST or PUT.
 	 * 
 	 * <p>
-	 * The format expected for the sting encoding of the datetimes depends on
+	 * The format expected for the string encoding of the datetimes depends on
 	 * the configuration parameter
 	 * {@link SubscriptionScheduler#RUNAT_ENTITY_DATE_TZ_DYNAMIC}:
 	 * 
 	 * <p>
 	 * <code>true</code>: The string must be expressed in a format that can be
-	 * parse by {@link LocalDateTime#parse(CharSequence)}, e.g.,
+	 * parsed by {@link LocalDateTime#parse(CharSequence)}, e.g.,
 	 * "2015-11-29T10:15:30". If the Date returned from this method is stored in
 	 * a PostgreSQL timestamp (without timezone) column, it will be assumed to
 	 * be in the default time zone of the report server.
@@ -86,11 +83,9 @@ public class SubscriptionRunAtDateTimeAdapter extends XmlAdapter<String, Date> {
 		if (dateAsString != null && !dateAsString.equals("")) {
 			try {
 				if (SubscriptionScheduler.RUNAT_ENTITY_DATE_TZ_DYNAMIC) {
-					String localDateTimeAsString = dateAsString;
-					return DateUtils.dateServerTZFromLocalDatetimeString(localDateTimeAsString);
+					return DateUtils.dateServerTZFromLocalDatetimeString(dateAsString);
 				} else {
-					String utcDateAsString = dateAsString;
-					return DateUtils.dateUtcFromIso8601String(utcDateAsString);
+					return DateUtils.dateUtcFromIso8601String(dateAsString);
 				}
 			} catch (DateTimeParseException e) {
 				logger.error(

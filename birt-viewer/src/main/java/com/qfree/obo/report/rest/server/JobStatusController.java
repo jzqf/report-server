@@ -1,6 +1,5 @@
 package com.qfree.obo.report.rest.server;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -26,8 +25,9 @@ import com.qfree.obo.report.domain.JobStatus;
 import com.qfree.obo.report.dto.JobStatusCollectionResource;
 import com.qfree.obo.report.dto.JobStatusResource;
 import com.qfree.obo.report.dto.ResourcePath;
-import com.qfree.obo.report.rest.server.RestUtils.RestApiVersion;
 import com.qfree.obo.report.service.JobStatusService;
+import com.qfree.obo.report.util.RestUtils;
+import com.qfree.obo.report.util.RestUtils.RestApiVersion;
 
 @Component
 @Path(ResourcePath.JOBSTATUSES_PATH)
@@ -55,7 +55,6 @@ public class JobStatusController extends AbstractBaseController {
 	 */
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
-	//	public List<JobStatusResource> getList(
 	public JobStatusCollectionResource getList(
 			@HeaderParam("Accept") final String acceptHeader,
 			@QueryParam(ResourcePath.EXPAND_QP_NAME) final List<String> expand,
@@ -72,13 +71,7 @@ public class JobStatusController extends AbstractBaseController {
 		} else {
 			jobStatuses = jobStatusRepository.findAll();
 		}
-		List<JobStatusResource> jobStatusResources = new ArrayList<>(jobStatuses.size());
-		for (JobStatus jobStatus : jobStatuses) {
-			jobStatusResources.add(new JobStatusResource(jobStatus, uriInfo, queryParams, apiVersion));
-		}
-		//		return jobStatusResources;
-		return new JobStatusCollectionResource(jobStatusResources, JobStatus.class, uriInfo,
-				queryParams, apiVersion);
+		return new JobStatusCollectionResource(jobStatuses, JobStatus.class, uriInfo, queryParams, apiVersion);
 	}
 
 	//	/*
@@ -127,7 +120,7 @@ public class JobStatusController extends AbstractBaseController {
 	 * 
 	 *   $ mvn clean spring-boot:run
 	 *   $ curl -i -H "Accept: application/json;v=1" -X GET \
-	 *   http://localhost:8081/report-server/rest/jobStatuses/7a482694-51d2-42d0-b0e2-19dd13bbbc64
+	 *   http://localhost:8080/rest/jobStatuses/7a482694-51d2-42d0-b0e2-19dd13bbbc64
 	 */
 	@Path("/{id}")
 	@GET

@@ -12,11 +12,11 @@ import org.slf4j.LoggerFactory;
 
 import com.qfree.obo.report.domain.Subscription;
 import com.qfree.obo.report.domain.SubscriptionParameter;
-import com.qfree.obo.report.rest.server.RestUtils.RestApiVersion;
+import com.qfree.obo.report.util.RestUtils.RestApiVersion;
 
 @XmlRootElement
 public class SubscriptionParameterCollectionResource
-		extends AbstractCollectionResource<SubscriptionParameterResource> {
+		extends AbstractCollectionResource<SubscriptionParameterResource, SubscriptionParameter> {
 
 	private static final Logger logger = LoggerFactory.getLogger(SubscriptionParameterCollectionResource.class);
 
@@ -26,36 +26,48 @@ public class SubscriptionParameterCollectionResource
 	public SubscriptionParameterCollectionResource() {
 	}
 
-	public SubscriptionParameterCollectionResource(Subscription subscription, UriInfo uriInfo,
-			Map<String, List<String>> queryParams, RestApiVersion apiVersion) {
+	public SubscriptionParameterCollectionResource(
+			Subscription subscription,
+			UriInfo uriInfo,
+			Map<String, List<String>> queryParams,
+			RestApiVersion apiVersion) {
 		this(
-				SubscriptionParameterResource.listFromSubscription(subscription, uriInfo,
-						queryParams, apiVersion),
+				subscription.getSubscriptionParameters(),
 				SubscriptionParameter.class,
-				AbstractBaseResource.createHref(uriInfo, SubscriptionParameter.class,
-						subscription.getSubscriptionId(), null),
+				AbstractBaseResource.createHref(uriInfo, Subscription.class, subscription.getSubscriptionId(), null),
 				ResourcePath.SUBSCRIPTIONPARAMETERS_PATH,
-				uriInfo, queryParams, apiVersion);
+				uriInfo,
+				queryParams,
+				apiVersion);
 	}
 
 	public SubscriptionParameterCollectionResource(
-			List<SubscriptionParameterResource> items,
-			Class<?> entityClass,
-			UriInfo uriInfo, Map<String, List<String>> queryParams, RestApiVersion apiVersion) {
-		this(items, entityClass, null, null, uriInfo, queryParams, apiVersion);
-	}
+			List<SubscriptionParameter> subscriptionParameters,
+			Class<SubscriptionParameter> entityClass,
+			String baseResourceUri,
+			String collectionPath,
+			UriInfo uriInfo,
+			Map<String, List<String>> queryParams,
+			RestApiVersion apiVersion) {
 
-	public SubscriptionParameterCollectionResource(
-			List<SubscriptionParameterResource> items,
-			Class<?> entityClass,
-			String baseResourceUri, String collectionPath,
-			UriInfo uriInfo, Map<String, List<String>> queryParams, RestApiVersion apiVersion) {
-
-		super(items, entityClass, baseResourceUri, collectionPath, uriInfo, queryParams, apiVersion);
+		super(
+				subscriptionParameters,
+				entityClass,
+				baseResourceUri,
+				collectionPath,
+				uriInfo,
+				queryParams,
+				apiVersion);
 
 		List<String> expand = queryParams.get(ResourcePath.EXPAND_QP_KEY);
 		if (ResourcePath.expand(entityClass, expand)) {
-			this.items = items;
+			/*
+			 * We pass null for apiVersion since the version used in the 
+			 * original request does not necessarily apply here.
+			 */
+			apiVersion = null;
+			this.items = SubscriptionParameterResource.subscriptionParameterResourceListPageFromSubscriptionParameters(
+					subscriptionParameters, uriInfo, queryParams, apiVersion);
 		}
 	}
 

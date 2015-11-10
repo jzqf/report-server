@@ -1,6 +1,5 @@
 package com.qfree.obo.report.rest.server;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -30,8 +29,9 @@ import com.qfree.obo.report.domain.DocumentFormat;
 import com.qfree.obo.report.dto.DocumentFormatCollectionResource;
 import com.qfree.obo.report.dto.DocumentFormatResource;
 import com.qfree.obo.report.dto.ResourcePath;
-import com.qfree.obo.report.rest.server.RestUtils.RestApiVersion;
 import com.qfree.obo.report.service.DocumentFormatService;
+import com.qfree.obo.report.util.RestUtils;
+import com.qfree.obo.report.util.RestUtils.RestApiVersion;
 
 @Component
 @Path(ResourcePath.DOCUMENTFORMATS_PATH)
@@ -80,12 +80,8 @@ public class DocumentFormatController extends AbstractBaseController {
 		} else {
 			documentFormats = documentFormatRepository.findAll();
 		}
-		List<DocumentFormatResource> documentFormatResources = new ArrayList<>(documentFormats.size());
-		for (DocumentFormat documentFormat : documentFormats) {
-			documentFormatResources.add(new DocumentFormatResource(documentFormat, uriInfo, queryParams, apiVersion));
-		}
-		return new DocumentFormatCollectionResource(documentFormatResources, DocumentFormat.class, uriInfo,
-				queryParams, apiVersion);
+		return new DocumentFormatCollectionResource(documentFormats, DocumentFormat.class,
+				uriInfo, queryParams, apiVersion);
 	}
 
 	// /*
@@ -129,7 +125,7 @@ public class DocumentFormatController extends AbstractBaseController {
 	 * 
 	 *   $ mvn clean spring-boot:run
 	 *   $ curl -i -H "Accept: application/json;v=1" -X GET \
-	 *   http://localhost:8081/report-server/rest/documentFormats/30800d77-5fdd-44bc-94a3-1502bd307c1d?expand=documentFormats
+	 *   http://localhost:8080/rest/documentFormats/30800d77-5fdd-44bc-94a3-1502bd307c1d?expand=documentFormats
 	 *   
 	 * @Transactional is used to avoid org.hibernate.LazyInitializationException
 	 * being thrown when evaluating documentFormat.getSubscriptions() in
@@ -156,8 +152,8 @@ public class DocumentFormatController extends AbstractBaseController {
 		// }
 		DocumentFormat documentFormat = documentFormatRepository.findOne(id);
 		RestUtils.ifNullThen404(documentFormat, DocumentFormat.class, "documentFormatId", id.toString());
-		DocumentFormatResource documentFormatResource = new DocumentFormatResource(documentFormat, uriInfo, queryParams,
-				apiVersion);
+		DocumentFormatResource documentFormatResource = new DocumentFormatResource(documentFormat,
+				uriInfo, queryParams, apiVersion);
 		return documentFormatResource;
 	}
 
@@ -214,7 +210,7 @@ public class DocumentFormatController extends AbstractBaseController {
 		documentFormatResource.setBinaryData(documentFormat.getBinaryData());
 		documentFormatResource.setBirtFormat(documentFormat.getBirtFormat());
 		documentFormatResource.setFileExtension(documentFormat.getFileExtension());
-		documentFormatResource.setMediaType(documentFormat.getMediaType());
+		documentFormatResource.setInternetMediaType(documentFormat.getInternetMediaType());
 		documentFormatResource.setName(documentFormat.getName());
 		documentFormatResource.setCreatedOn(documentFormat.getCreatedOn());
 

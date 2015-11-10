@@ -10,10 +10,12 @@ import javax.xml.bind.annotation.XmlRootElement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.qfree.obo.report.rest.server.RestUtils.RestApiVersion;
+import com.qfree.obo.report.domain.ParameterGroup;
+import com.qfree.obo.report.util.RestUtils.RestApiVersion;
 
 @XmlRootElement
-public class ParameterGroupCollectionResource extends AbstractCollectionResource<ParameterGroupResource> {
+public class ParameterGroupCollectionResource
+		extends AbstractCollectionResource<ParameterGroupResource, ParameterGroup> {
 
 	private static final Logger logger = LoggerFactory.getLogger(ParameterGroupCollectionResource.class);
 
@@ -23,15 +25,35 @@ public class ParameterGroupCollectionResource extends AbstractCollectionResource
 	public ParameterGroupCollectionResource() {
 	}
 
-	public ParameterGroupCollectionResource(List<ParameterGroupResource> items, Class<?> entityClass,
-			UriInfo uriInfo, Map<String, List<String>> queryParams, RestApiVersion apiVersion) {
+	public ParameterGroupCollectionResource(
+			List<ParameterGroup> parameterGroups,
+			Class<ParameterGroup> entityClass,
+			String baseResourceUri,
+			String collectionPath,
+			UriInfo uriInfo,
+			Map<String, List<String>> queryParams,
+			RestApiVersion apiVersion) {
 
-		super(items, entityClass, uriInfo, queryParams, apiVersion);
+		super(
+				parameterGroups,
+				entityClass,
+				baseResourceUri,
+				collectionPath,
+				uriInfo,
+				queryParams,
+				apiVersion);
 
 		List<String> expand = queryParams.get(ResourcePath.EXPAND_QP_KEY);
 		if (ResourcePath.expand(entityClass, expand)) {
-			this.items = items;
+			/*
+			 * We pass null for apiVersion since the version used in the 
+			 * original request does not necessarily apply here.
+			 */
+			apiVersion = null;
+			this.items = ParameterGroupResource.parameterGroupResourceListPageFromParameterGroups(
+					parameterGroups, uriInfo, queryParams, apiVersion);
 		}
+
 	}
 
 	public List<ParameterGroupResource> getItems() {

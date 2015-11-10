@@ -1,6 +1,7 @@
 package com.qfree.obo.report.domain;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
@@ -11,6 +12,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
+import javax.persistence.OrderBy;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -103,8 +105,9 @@ public class Role implements Serializable {
 	 * cascade = CascadeType.ALL:
 	 *     Deleting a Role will delete all of its Subscription's.
 	 */
+	@OrderBy("createdOn ASC")
 	@OneToMany(mappedBy = "role", cascade = CascadeType.ALL)
-	private List<Subscription> roleSubscriptions;
+	private List<Subscription> subscriptions;
 
 	/*
 	 * cascade = CascadeType.ALL:
@@ -117,6 +120,7 @@ public class Role implements Serializable {
 	 * cascade = CascadeType.ALL:
 	 *     Deleting a Role will delete all of its Job's.
 	 */
+	@OrderBy("jobId ASC")
 	@OneToMany(mappedBy = "role", cascade = CascadeType.ALL)
 	private List<Job> jobs;
 
@@ -277,12 +281,34 @@ public class Role implements Serializable {
 		this.roleReports = roleReports;
 	}
 
-	public List<Subscription> getRoleSubscriptions() {
-		return roleSubscriptions;
+	/**
+	 * Returns all Subscription entities linked to the Role, whether the
+	 * associated ReportVersion is active or not.
+	 * 
+	 * @return
+	 */
+	public List<Subscription> getSubscriptions() {
+		return subscriptions;
 	}
 
-	public void setRoleSubscriptions(List<Subscription> roleSubscriptions) {
-		this.roleSubscriptions = roleSubscriptions;
+	/**
+	 * Returns only Subscription entities linked to the Role, where the
+	 * associated ReportVersion is active.
+	 * 
+	 * @return
+	 */
+	public List<Subscription> getSubscriptionsForActiveReportVersions() {
+		List<Subscription> subscriptionsForActiveReportVersions = new ArrayList<>();
+		for (Subscription subscription : subscriptions) {
+			if (subscription.getReportVersion().isActive()) {
+				subscriptionsForActiveReportVersions.add(subscription);
+			}
+		}
+		return subscriptionsForActiveReportVersions;
+	}
+
+	public void setSubscriptions(List<Subscription> roleSubscriptions) {
+		this.subscriptions = roleSubscriptions;
 	}
 
 	public List<RoleParameter> getRoleParameters() {

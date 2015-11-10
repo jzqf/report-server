@@ -17,9 +17,9 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.qfree.obo.report.domain.ReportParameter;
 import com.qfree.obo.report.domain.SelectionListValue;
-import com.qfree.obo.report.rest.server.RestUtils.RestApiVersion;
+import com.qfree.obo.report.util.RestUtils;
+import com.qfree.obo.report.util.RestUtils.RestApiVersion;
 
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
@@ -93,15 +93,80 @@ public class SelectionListValueResource extends AbstractBaseResource {
 		}
 	}
 
-	public static List<SelectionListValueResource> listFromReportParameter(ReportParameter reportParameter,
+	public static List<SelectionListValueResource> selectionListValueResourceListPageFromSelectionListValues(
+			List<SelectionListValue> selectionListValues,
 			UriInfo uriInfo,
-			Map<String, List<String>> queryParams, RestApiVersion apiVersion) {
-		if (reportParameter.getSelectionListValues() != null) {
-			List<SelectionListValue> selectionListValues = reportParameter.getSelectionListValues();
-			List<SelectionListValueResource> selectionListValueResources = new ArrayList<>(selectionListValues.size());
-			for (SelectionListValue selectionListValue : selectionListValues) {
-				selectionListValueResources.add(
-						new SelectionListValueResource(selectionListValue, uriInfo, queryParams, apiVersion));
+			Map<String, List<String>> queryParams,
+			RestApiVersion apiVersion) {
+
+		if (selectionListValues != null) {
+
+			/*
+			 * The SelectionListValue entity class does not have an "active"
+			 * field, but if it did and if we wanted to return REST resources
+			 * that correspond to only active entities, it would be necessary to
+			 * do one of two things *before* we extract a page of
+			 * SelectionListValue entities below. Either:
+			 * 
+			 *   1. Filter the list "selectionListValues" here to eliminate
+			 *      inactive entities, or:
+			 *   
+			 *   2. Ensure that the list "selectionListValues" was passed to 
+			 *      this method was *already* filtered to remove inactive
+			 *      entities.
+			 */
+
+			/*
+			 * Create a List of SelectionListValue entities to return as REST
+			 * resources. If the "offset" & "limit" query parameters are
+			 * specified, we extract a sublist of the List 
+			 * "selectionListValues"; otherwise, we use the whole list.
+			 */
+			List<SelectionListValue> pageOfSelectionListValues = RestUtils.getPageOfList(selectionListValues,
+					queryParams);
+
+			/*
+			 * Create a copy of the query parameters map and remove the
+			 * pagination query parameters from it because they do not apply 
+			 * to resources created from this point onwards from this method.
+			 * If "queryParams" does not contain these pagination query 
+			 * parameters, this will still work OK.
+			 */
+			Map<String, List<String>> queryParamsWOPagination = new HashMap<>(queryParams);
+			queryParamsWOPagination.remove(ResourcePath.PAGE_OFFSET_QP_KEY);
+			queryParamsWOPagination.remove(ResourcePath.PAGE_LIMIT_QP_KEY);
+
+			List<SelectionListValueResource> selectionListValueResources = new ArrayList<>(
+					pageOfSelectionListValues.size());
+			for (SelectionListValue selectionListValue : pageOfSelectionListValues) {
+				/*
+				 * We cannot filter out entities here because then the page size
+				 * will be variable. Instead, it is necessary to filter out
+				 * entities *before* the page of entities is created above.
+				 */
+
+				SelectionListValueResource selectionListValueResource = new SelectionListValueResource(
+						selectionListValue, uriInfo, queryParamsWOPagination, apiVersion);
+				if (selectionListValue.getSelectionListValueId() == null) {
+					/*
+					 * It is possible for the Id of selectionListValue to be null.
+					 * 
+					 * This will be the case if the value is associated with a
+					 * *dynamic* selection list, in which case the list of
+					 * SelectionListValue entities, "selectionListValues" was 
+					 * created by the service method 
+					 * ReportParameterService.getDynamicSelectionListValues(...).
+					 * If this case, selectionListValue was not retrieved from the 
+					 * report server database and, therefore it will not have an 
+					 * "Id". For this case, the value of the "href" attribute for
+					 * the selectionListValueResource object constructed above will
+					 * not be meaningful and, therefore, we set the "href" attribute
+					 * to null here.
+					 */
+					selectionListValueResource.setHref(null);
+				}
+
+				selectionListValueResources.add(selectionListValueResource);
 			}
 			return selectionListValueResources;
 		} else {
@@ -175,5 +240,4 @@ public class SelectionListValueResource extends AbstractBaseResource {
 		builder.append("]");
 		return builder.toString();
 	}
-
 }

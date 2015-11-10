@@ -63,16 +63,28 @@ public class SchedulingStatusResource {
 	@XmlElement
 	private String schedulingNotice;
 
+	/**
+	 * The state of the Quartz trigger for the Subscription Job Processor.
+	 * 
+	 * <p>
+	 * This is a dynamic, "read-only" field that is computed when an instance is
+	 * constructed.
+	 */
+	@XmlElement
+	private String triggerState;
+
 	public SchedulingStatusResource() {
 	}
 
 	public SchedulingStatusResource(
 			Boolean scheduled,
 			Date nextFireTime,
-			String schedulingNotice) {
+			String schedulingNotice,
+			String triggerState) {
 		this.scheduled = scheduled;
 		this.nextFireTime = nextFireTime;
 		this.schedulingNotice = schedulingNotice;
+		this.triggerState = triggerState;
 	}
 
 	public Boolean getScheduled() {
@@ -99,6 +111,14 @@ public class SchedulingStatusResource {
 		this.schedulingNotice = schedulingNotice;
 	}
 
+	public String getTriggerState() {
+		return triggerState;
+	}
+
+	public void setTriggerState(String triggerState) {
+		this.triggerState = triggerState;
+	}
+
 	@Override
 	public String toString() {
 		StringBuilder builder = new StringBuilder();
@@ -108,6 +128,8 @@ public class SchedulingStatusResource {
 		builder.append(nextFireTime);
 		builder.append(", schedulingNotice=");
 		builder.append(schedulingNotice);
+		builder.append(", triggerState=");
+		builder.append(triggerState);
 		builder.append("]");
 		return builder.toString();
 	}

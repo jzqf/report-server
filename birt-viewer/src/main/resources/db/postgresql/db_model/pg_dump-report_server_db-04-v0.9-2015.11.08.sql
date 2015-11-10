@@ -89,7 +89,7 @@ CREATE TABLE document_format (
     birt_format character varying(12) NOT NULL,
     created_on timestamp without time zone NOT NULL,
     file_extension character varying(12) NOT NULL,
-    media_type character varying(100) NOT NULL,
+    internet_media_type character varying(100) NOT NULL,
     name character varying(32) NOT NULL
 );
 
@@ -104,9 +104,13 @@ CREATE TABLE job (
     job_id bigint NOT NULL,
     created_on timestamp without time zone NOT NULL,
     document text,
+    email character varying(160),
     encoded boolean,
     file_name character varying(128),
     job_status_remarks text,
+    job_status_set_at timestamp without time zone NOT NULL,
+    report_emailed_at timestamp without time zone,
+    report_ran_at timestamp without time zone,
     url character varying(1024),
     document_format_id uuid NOT NULL,
     job_status_id uuid NOT NULL,
@@ -476,6 +480,7 @@ CREATE TABLE subscription_parameter_value (
     day_of_week_in_month_ordinal integer,
     day_of_week_number integer,
     days_ago integer,
+    duration_subtract_one_day_for_dates boolean NOT NULL,
     duration_to_add_days integer,
     duration_to_add_hours integer,
     duration_to_add_minutes integer,
@@ -524,7 +529,7 @@ ALTER TABLE ONLY job_parameter_value ALTER COLUMN job_parameter_value_id SET DEF
 --
 
 COPY configuration (configuration_id, boolean_value, bytea_value, created_on, date_value, datetime_value, double_value, float_value, integer_value, long_value, param_name, param_type, string_value, text_value, time_value, role_id) FROM stdin;
-5ac6204f-48cd-4acc-910c-8daae4edaa2b	\N	\N	2015-10-14 06:50:58.213984	\N	\N	\N	\N	3	\N	DB_VERSION	INTEGER	3	\N	\N	\N
+753540dd-6a95-4c87-b216-c192093e9a47	\N	\N	2015-11-07 18:48:44.068063	\N	\N	\N	\N	4	\N	DB_VERSION	INTEGER	4	\N	\N	\N
 \.
 
 
@@ -532,18 +537,18 @@ COPY configuration (configuration_id, boolean_value, bytea_value, created_on, da
 -- Data for Name: document_format; Type: TABLE DATA; Schema: reporting; Owner: report_server_app
 --
 
-COPY document_format (document_format_id, active, binary_data, birt_format, created_on, file_extension, media_type, name) FROM stdin;
-bc5169e0-3d36-483c-a7b5-a76766587991	t	t	doc	2015-10-14 06:50:58.213984	doc	application/msword	Microsoft Word
-d0225349-1642-46e3-a949-4ce39795907f	t	t	docx	2015-10-14 06:50:58.213984	docx	application/vnd.openxmlformats-officedocument.wordprocessingml.document	Office Open XML Document
-e1d0b3f2-f639-4521-a055-d5465dce29a2	f	f	html	2015-10-14 06:50:58.213984	html	text/html	HTML
-38b73b21-cb66-42cf-932b-1cdf7937525c	t	t	odp	2015-10-14 06:50:58.213984	odp	application/vnd.oasis.opendocument.presentation	OpenDocument Presentation
-05a4ad8d-6f30-4d6d-83d5-995345a8dc58	t	t	ods	2015-10-14 06:50:58.213984	ods	application/vnd.oasis.opendocument.spreadsheet	OpenDocument Spreadsheet
-b4f2249d-f52e-47e2-871c-daf35f4ba78e	t	t	odt	2015-10-14 06:50:58.213984	odt	application/vnd.oasis.opendocument.text	OpenDocument Text
-30800d77-5fdd-44bc-94a3-1502bd307c1d	t	t	pdf	2015-10-14 06:50:58.213984	pdf	application/pdf	PDF
-597f34fb-10d8-4408-971a-1b67472ac588	t	t	ppt	2015-10-14 06:50:58.213984	ppt	application/vnd.ms-powerpoint	PowerPoint
-d7ccb194-91c6-4dce-bbfe-6424f079dc07	t	t	pptx	2015-10-14 06:50:58.213984	pptx	application/vnd.openxmlformats-officedocument.presentationml.presentation	Office Open XML Presentation
-25762ba8-1688-4100-b323-b9e74eba396c	t	t	xls	2015-10-14 06:50:58.213984	xls	application/vnd.ms-excel	Microsoft Excel
-c78ac922-2f37-4855-83ae-b708d453b005	t	t	xlsx	2015-10-14 06:50:58.213984	xlsx	application/vnd.openxmlformats-officedocument.spreadsheetml.sheet	Office Open XML Workbook
+COPY document_format (document_format_id, active, binary_data, birt_format, created_on, file_extension, internet_media_type, name) FROM stdin;
+bc5169e0-3d36-483c-a7b5-a76766587991	t	t	doc	2015-11-07 18:48:44.068063	doc	application/msword	Microsoft Word
+d0225349-1642-46e3-a949-4ce39795907f	t	t	docx	2015-11-07 18:48:44.068063	docx	application/vnd.openxmlformats-officedocument.wordprocessingml.document	Office Open XML Document
+e1d0b3f2-f639-4521-a055-d5465dce29a2	f	f	html	2015-11-07 18:48:44.068063	html	text/html	HTML
+38b73b21-cb66-42cf-932b-1cdf7937525c	t	t	odp	2015-11-07 18:48:44.068063	odp	application/vnd.oasis.opendocument.presentation	OpenDocument Presentation
+05a4ad8d-6f30-4d6d-83d5-995345a8dc58	t	t	ods	2015-11-07 18:48:44.068063	ods	application/vnd.oasis.opendocument.spreadsheet	OpenDocument Spreadsheet
+b4f2249d-f52e-47e2-871c-daf35f4ba78e	t	t	odt	2015-11-07 18:48:44.068063	odt	application/vnd.oasis.opendocument.text	OpenDocument Text
+30800d77-5fdd-44bc-94a3-1502bd307c1d	t	t	pdf	2015-11-07 18:48:44.068063	pdf	application/pdf	PDF
+597f34fb-10d8-4408-971a-1b67472ac588	t	t	ppt	2015-11-07 18:48:44.068063	ppt	application/vnd.ms-powerpoint	PowerPoint
+d7ccb194-91c6-4dce-bbfe-6424f079dc07	t	t	pptx	2015-11-07 18:48:44.068063	pptx	application/vnd.openxmlformats-officedocument.presentationml.presentation	Office Open XML Presentation
+25762ba8-1688-4100-b323-b9e74eba396c	t	t	xls	2015-11-07 18:48:44.068063	xls	application/vnd.ms-excel	Microsoft Excel
+c78ac922-2f37-4855-83ae-b708d453b005	t	t	xlsx	2015-11-07 18:48:44.068063	xlsx	application/vnd.openxmlformats-officedocument.spreadsheetml.sheet	Office Open XML Workbook
 \.
 
 
@@ -551,7 +556,7 @@ c78ac922-2f37-4855-83ae-b708d453b005	t	t	xlsx	2015-10-14 06:50:58.213984	xlsx	ap
 -- Data for Name: job; Type: TABLE DATA; Schema: reporting; Owner: report_server_app
 --
 
-COPY job (job_id, created_on, document, encoded, file_name, job_status_remarks, url, document_format_id, job_status_id, report_version_id, role_id, subscription_id) FROM stdin;
+COPY job (job_id, created_on, document, email, encoded, file_name, job_status_remarks, job_status_set_at, report_emailed_at, report_ran_at, url, document_format_id, job_status_id, report_version_id, role_id, subscription_id) FROM stdin;
 \.
 
 
@@ -597,10 +602,11 @@ SELECT pg_catalog.setval('job_parameter_value_job_parameter_value_id_seq', 1, fa
 --
 
 COPY job_status (job_status_id, abbreviation, active, created_on, description) FROM stdin;
-08de9764-735f-4c82-bbe9-3981b29cc133	QUEUED	t	2015-10-14 06:50:58.213984	Queued
-a613aae2-836a-4b03-a75d-cfb8303eaad5	RUNNING	t	2015-10-14 06:50:58.213984	Running
-f378fc09-35e4-4096-b1d1-2db14756b098	COMPLETED	t	2015-10-14 06:50:58.213984	Completed
-2a9cd697-af00-45bc-aa6a-053284b9d9e4	FAILED	t	2015-10-14 06:50:58.213984	Failed
+08de9764-735f-4c82-bbe9-3981b29cc133	QUEUED	t	2015-11-07 18:48:44.068063	Queued
+a613aae2-836a-4b03-a75d-cfb8303eaad5	RUNNING	t	2015-11-07 18:48:44.068063	Running
+f378fc09-35e4-4096-b1d1-2db14756b098	COMPLETED	t	2015-11-07 18:48:44.068063	Completed
+2a9cd697-af00-45bc-aa6a-053284b9d9e4	FAILED	t	2015-11-07 18:48:44.068063	Failed
+5125c537-e178-42de-b4dd-e538fa3da802	CANCELED	t	2015-11-07 18:48:44.068063	Canceled
 \.
 
 
@@ -625,10 +631,10 @@ COPY report (report_id, active, created_on, name, number, sort_order, report_cat
 --
 
 COPY report_category (report_category_id, abbreviation, active, created_on, description) FROM stdin;
-7a482694-51d2-42d0-b0e2-19dd13bbbc64	ACCT	t	2015-10-14 06:50:58.213984	Accounting
-bb2bc482-c19a-4c19-a087-e68ffc62b5a0	QFREE	t	2015-10-14 06:50:58.213984	Q-Free internal
-5c3cc664-b685-4f6e-8d9a-2927c6bcffdc	MIR	t	2015-10-14 06:50:58.213984	Manual validation
-72d7cb27-1770-4cc7-b301-44d39ccf1e76	TRA	t	2015-10-14 06:50:58.213984	Traffic
+7a482694-51d2-42d0-b0e2-19dd13bbbc64	ACCT	t	2015-11-07 18:48:44.068063	Accounting
+bb2bc482-c19a-4c19-a087-e68ffc62b5a0	QFREE	t	2015-11-07 18:48:44.068063	Q-Free internal
+5c3cc664-b685-4f6e-8d9a-2927c6bcffdc	MIR	t	2015-11-07 18:48:44.068063	Manual validation
+72d7cb27-1770-4cc7-b301-44d39ccf1e76	TRA	t	2015-11-07 18:48:44.068063	Traffic
 \.
 
 
@@ -720,7 +726,7 @@ COPY subscription_parameter (subscription_parameter_id, created_on, report_param
 -- Data for Name: subscription_parameter_value; Type: TABLE DATA; Schema: reporting; Owner: report_server_app
 --
 
-COPY subscription_parameter_value (subscription_parameter_value_id, boolean_value, created_on, date_value, datetime_value, day_of_month_number, day_of_week_in_month_number, day_of_week_in_month_ordinal, day_of_week_number, days_ago, duration_to_add_days, duration_to_add_hours, duration_to_add_minutes, duration_to_add_months, duration_to_add_seconds, duration_to_add_weeks, duration_to_add_years, float_value, integer_value, month_number, months_ago, string_value, time_value, weeks_ago, year_number, years_ago, subscription_parameter_id) FROM stdin;
+COPY subscription_parameter_value (subscription_parameter_value_id, boolean_value, created_on, date_value, datetime_value, day_of_month_number, day_of_week_in_month_number, day_of_week_in_month_ordinal, day_of_week_number, days_ago, duration_subtract_one_day_for_dates, duration_to_add_days, duration_to_add_hours, duration_to_add_minutes, duration_to_add_months, duration_to_add_seconds, duration_to_add_weeks, duration_to_add_years, float_value, integer_value, month_number, months_ago, string_value, time_value, weeks_ago, year_number, years_ago, subscription_parameter_id) FROM stdin;
 \.
 
 

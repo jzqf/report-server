@@ -14,6 +14,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.OrderBy;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -164,6 +165,7 @@ public class Subscription implements Serializable {
 	 *     Deleting a Subscription will delete all of its 
 	 *     Job's.
 	 */
+	@OrderBy("jobId ASC")
 	@OneToMany(mappedBy = "subscription", cascade = CascadeType.ALL)
 	private List<Job> jobs;
 

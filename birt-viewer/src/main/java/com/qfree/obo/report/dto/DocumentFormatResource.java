@@ -16,7 +16,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.qfree.obo.report.domain.DocumentFormat;
-import com.qfree.obo.report.rest.server.RestUtils.RestApiVersion;
+import com.qfree.obo.report.util.RestUtils;
+import com.qfree.obo.report.util.RestUtils.RestApiVersion;
 
 @XmlRootElement
 //@XmlJavaTypeAdapter(value = UuidAdapter.class, type = UUID.class) <- doesn't work
@@ -35,7 +36,7 @@ public class DocumentFormatResource extends AbstractBaseResource {
 	private String fileExtension;
 
 	@XmlElement
-	private String mediaType;
+	private String internetMediaType;
 
 	@XmlElement
 	private String birtFormat;
@@ -88,10 +89,20 @@ public class DocumentFormatResource extends AbstractBaseResource {
 			 */
 			apiVersion = null;
 
+			/*
+			 * This is how to support pagination in collection resources that
+			 * are attributes of an instance resource. This inserts default
+			 * pagination attributes into the query parameter map 
+			 * "newQueryParams".
+			 */
+			List<String> pageOffset = new ArrayList<>();
+			List<String> pageLimit = new ArrayList<>();
+			RestUtils.checkPaginationQueryParams(pageOffset, pageLimit, newQueryParams);
+
 			this.documentFormatId = documentFormat.getDocumentFormatId();
 			this.name = documentFormat.getName();
 			this.fileExtension = documentFormat.getFileExtension();
-			this.mediaType = documentFormat.getMediaType();
+			this.internetMediaType = documentFormat.getInternetMediaType();
 			this.birtFormat = documentFormat.getBirtFormat();
 			this.binaryData = documentFormat.getBinaryData();
 			this.active = documentFormat.getActive();
@@ -100,6 +111,62 @@ public class DocumentFormatResource extends AbstractBaseResource {
 					uriInfo, newQueryParams, apiVersion);
 		}
 		logger.debug("this = {}", this);
+	}
+
+	public static List<DocumentFormatResource> documentFormatResourceListPageFromDocumentFormats(
+			List<DocumentFormat> documentFormats,
+			UriInfo uriInfo,
+			Map<String, List<String>> queryParams,
+			RestApiVersion apiVersion) {
+
+		if (documentFormats != null) {
+
+			/*
+			 * The DocumentFormat has an "active" field. In order to return REST 
+			 * resources that correspond to only active entities, it is 
+			 * necessary to do one of two things *before* we extract a page of 
+			 * DocumentFormat entities below. Either:
+			 * 
+			 *   1. Filter the list "documentFormats" here to eliminate inactive 
+			 *      entities, or:
+			 *   
+			 *   2. Ensure that the list "documentFormats" was passed to this 
+			 *      method was *already* filtered to remove inactive entities.
+			 */
+
+			/*
+			 * Create a List of DocumentFormat entities to return as REST 
+			 * resources. If the "offset" & "limit" query parameters are 
+			 * specified, we extract a sublist of the List "documentFormats"; 
+			 * otherwise, we use the whole list.
+			 */
+			List<DocumentFormat> pageOfDocumentFormats = RestUtils.getPageOfList(documentFormats, queryParams);
+
+			/*
+			 * Create a copy of the query parameters map and remove the
+			 * pagination query parameters from it because they do not apply 
+			 * to resources created from this point onwards from this method.
+			 * If "queryParams" does not contain these pagination query 
+			 * parameters, this will still work OK.
+			 */
+			Map<String, List<String>> queryParamsWOPagination = new HashMap<>(queryParams);
+			queryParamsWOPagination.remove(ResourcePath.PAGE_OFFSET_QP_KEY);
+			queryParamsWOPagination.remove(ResourcePath.PAGE_LIMIT_QP_KEY);
+
+			List<DocumentFormatResource> documentFormatResources = new ArrayList<>(pageOfDocumentFormats.size());
+			for (DocumentFormat documentFormat : pageOfDocumentFormats) {
+				/*
+				 * We cannot filter out entities here because then the page size
+				 * will be variable. Instead, it is necessary to filter out
+				 * entities *before* the page of entities is created above.
+				 */
+				documentFormatResources.add(
+						new DocumentFormatResource(documentFormat, uriInfo, queryParamsWOPagination, apiVersion));
+			}
+			return documentFormatResources;
+		} else {
+			return null;
+		}
 	}
 
 	public UUID getDocumentFormatId() {
@@ -126,12 +193,12 @@ public class DocumentFormatResource extends AbstractBaseResource {
 		this.fileExtension = fileExtension;
 	}
 
-	public String getMediaType() {
-		return mediaType;
+	public String getInternetMediaType() {
+		return internetMediaType;
 	}
 
-	public void setMediaType(String mediaType) {
-		this.mediaType = mediaType;
+	public void setInternetMediaType(String internetMediaType) {
+		this.internetMediaType = internetMediaType;
 	}
 
 	public String getBirtFormat() {
@@ -183,8 +250,8 @@ public class DocumentFormatResource extends AbstractBaseResource {
 		builder.append(name);
 		builder.append(", fileExtension=");
 		builder.append(fileExtension);
-		builder.append(", mediaType=");
-		builder.append(mediaType);
+		builder.append(", internetMediaType=");
+		builder.append(internetMediaType);
 		builder.append(", birtFormat=");
 		builder.append(birtFormat);
 		builder.append(", binaryData=");
@@ -196,5 +263,4 @@ public class DocumentFormatResource extends AbstractBaseResource {
 		builder.append("]");
 		return builder.toString();
 	}
-
 }

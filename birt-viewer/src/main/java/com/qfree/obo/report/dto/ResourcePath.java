@@ -5,6 +5,8 @@ import java.util.List;
 import com.qfree.obo.report.domain.Configuration;
 import com.qfree.obo.report.domain.DocumentFormat;
 import com.qfree.obo.report.domain.Job;
+import com.qfree.obo.report.domain.JobParameter;
+import com.qfree.obo.report.domain.JobParameterValue;
 import com.qfree.obo.report.domain.JobStatus;
 import com.qfree.obo.report.domain.ParameterGroup;
 import com.qfree.obo.report.domain.Report;
@@ -17,6 +19,13 @@ import com.qfree.obo.report.domain.Subscription;
 import com.qfree.obo.report.domain.SubscriptionParameter;
 import com.qfree.obo.report.domain.SubscriptionParameterValue;
 
+/**
+ * Enum to hold settings related to resource paths so that they are not
+ * hardwired into the code.
+ * 
+ * @author jeffreyz
+ *
+ */
 public enum ResourcePath {
 
 	CONFIGURATIONS(
@@ -29,11 +38,33 @@ public enum ResourcePath {
 			ResourcePath.DOCUMENTFORMAT_EXPAND_PARAM,
 			ResourcePath.DOCUMENTFORMAT_SHOWALL_PARAM,
 			DocumentFormat.class),
+	/*
+	 * Passing null here for entityClass causes problems. Do not uncoment this
+	 * code here unless you are prepared to track down the issue. For example,
+	 * it will cause a NullPointerException in forEntity(...) below, among
+	 * other problems (some unit tests will fail). No big deal - we do not need
+	 * to uncomment these lines here for any good reason.
+	 */
+	//	JOBPROCESSOR(
+	//			ResourcePath.JOBPROCESSOR_PATH,
+	//			ResourcePath.JOBPROCESSOR_EXPAND_PARAM,
+	//			ResourcePath.JOBPROCESSOR_SHOWALL_PARAM,
+	//			null),
 	JOBS(
 			ResourcePath.JOBS_PATH,
 			ResourcePath.JOB_EXPAND_PARAM,
 			ResourcePath.JOB_SHOWALL_PARAM,
 			Job.class),
+	JOBPARAMETERS(
+			ResourcePath.JOBPARAMETERS_PATH,
+			ResourcePath.JOBPARAMETER_EXPAND_PARAM,
+			ResourcePath.JOBPARAMETER_SHOWALL_PARAM,
+			JobParameter.class),
+	JOBPARAMETERVALUES(
+			ResourcePath.JOBPARAMETERVALUES_PATH,
+			ResourcePath.JOBPARAMETERVALUE_EXPAND_PARAM,
+			ResourcePath.JOBPARAMETERVALUE_SHOWALL_PARAM,
+			JobParameterValue.class),
 	JOBSTATUSES(
 			ResourcePath.JOBSTATUSES_PATH,
 			ResourcePath.JOBSTATUS_EXPAND_PARAM,
@@ -101,7 +132,10 @@ public enum ResourcePath {
 	 */
 	public static final String CONFIGURATIONS_PATH = ResourcePath.PATH_SEPARATOR + "configurations";
 	public static final String DOCUMENTFORMATS_PATH = ResourcePath.PATH_SEPARATOR + "documentFormats";
+	public static final String JOBPROCESSOR_PATH = ResourcePath.PATH_SEPARATOR + "jobProcessor";
 	public static final String JOBS_PATH = ResourcePath.PATH_SEPARATOR + "jobs";
+	public static final String JOBPARAMETERS_PATH = ResourcePath.PATH_SEPARATOR + "jobParameters";
+	public static final String JOBPARAMETERVALUES_PATH = ResourcePath.PATH_SEPARATOR + "jobParameterValues";
 	public static final String JOBSTATUSES_PATH = ResourcePath.PATH_SEPARATOR + "jobStatuses";
 	public static final String PARAMETERGROUPS_PATH = ResourcePath.PATH_SEPARATOR + "parameterGroups";
 	public static final String REPORTCATEGORIES_PATH = ResourcePath.PATH_SEPARATOR + "reportCategories";
@@ -132,7 +166,10 @@ public enum ResourcePath {
 	 */
 	public static final String CONFIGURATION_EXPAND_PARAM = "configurations";
 	public static final String DOCUMENTFORMAT_EXPAND_PARAM = "documentFormats";
+	public static final String JOBPROCESSOR_EXPAND_PARAM = "jobProcessor";
 	public static final String JOB_EXPAND_PARAM = "jobs";
+	public static final String JOBPARAMETER_EXPAND_PARAM = "jobParameters";
+	public static final String JOBPARAMETERVALUE_EXPAND_PARAM = "jobParameterValues";
 	public static final String JOBSTATUS_EXPAND_PARAM = "jobStatuses";
 	public static final String PARAMETERGROUP_EXPAND_PARAM = "parameterGroups";
 	public static final String REPORT_EXPAND_PARAM = "reports";
@@ -164,7 +201,10 @@ public enum ResourcePath {
 	 */
 	public static final String CONFIGURATION_SHOWALL_PARAM = CONFIGURATION_EXPAND_PARAM;
 	public static final String DOCUMENTFORMAT_SHOWALL_PARAM = DOCUMENTFORMAT_EXPAND_PARAM;
+	public static final String JOBPROCESSOR_SHOWALL_PARAM = JOBPROCESSOR_EXPAND_PARAM;
 	public static final String JOB_SHOWALL_PARAM = JOB_EXPAND_PARAM;
+	public static final String JOBPARAMETER_SHOWALL_PARAM = JOBPARAMETER_EXPAND_PARAM;
+	public static final String JOBPARAMETERVALUE_SHOWALL_PARAM = JOBPARAMETERVALUE_EXPAND_PARAM;
 	public static final String JOBSTATUS_SHOWALL_PARAM = JOBSTATUS_EXPAND_PARAM;
 	public static final String PARAMETERGROUP_SHOWALL_PARAM = PARAMETERGROUP_EXPAND_PARAM;
 	public static final String REPORT_SHOWALL_PARAM = REPORT_EXPAND_PARAM;
@@ -176,6 +216,19 @@ public enum ResourcePath {
 	public static final String SUBSCRIPTION_SHOWALL_PARAM = SUBSCRIPTION_EXPAND_PARAM;
 	public static final String SUBSCRIPTIONPARAMETER_SHOWALL_PARAM = SUBSCRIPTIONPARAMETER_EXPAND_PARAM;
 	public static final String SUBSCRIPTIONPARAMETERVALUE_SHOWALL_PARAM = SUBSCRIPTIONPARAMETERVALUE_EXPAND_PARAM;
+
+	/*
+	 * This are the names of the collection resource pagination query parameter
+	 * names for HTTP requests. 
+	 */
+	public static final String PAGE_OFFSET_QP_NAME = "offset";
+	public static final String PAGE_LIMIT_QP_NAME = "limit";
+	/*
+	 * These are the map keys associated with the collection resource pagination
+	 * query parameter names for HTTP requests. 
+	 */
+	public static final String PAGE_OFFSET_QP_KEY = PAGE_OFFSET_QP_NAME;
+	public static final String PAGE_LIMIT_QP_KEY = PAGE_LIMIT_QP_NAME;
 
 	/*
 	 * This is the name of query parameter used to specify the value(s) of

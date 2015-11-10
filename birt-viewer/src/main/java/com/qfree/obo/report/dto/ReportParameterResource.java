@@ -16,8 +16,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.qfree.obo.report.domain.ReportParameter;
-import com.qfree.obo.report.domain.ReportVersion;
-import com.qfree.obo.report.rest.server.RestUtils.RestApiVersion;
+import com.qfree.obo.report.util.RestUtils;
+import com.qfree.obo.report.util.RestUtils.RestApiVersion;
 
 @XmlRootElement
 public class ReportParameterResource extends AbstractBaseResource {
@@ -187,9 +187,23 @@ public class ReportParameterResource extends AbstractBaseResource {
 			 * alternative would be to always include the field, but its value
 			 * will be an empty collection resource for the case when there is
 			 * no selection list for the parameter.
+			 * 
+			 * Note: If the ReportParameter "reportParameter" passed to this
+			 *       constructor was fetched using any sort of database query,
+			 *       it will have a non-null "selectionListValues" field only if
+			 *       there exists a STATIC selection list for the report
+			 *       parameter, i.e., there must exist SelectionListValue 
+			 *       entities linked to the ReportParameter, and 
+			 *       SelectionListValue entities are only created for static
+			 *       selection lists.
+			 *       
+			 *       If the ReportParameter has a dynamic selection list, it can
+			 *       be fetched using the endpoint:
+			 *       
+			 *       ReportParameterController.getSelectionListValuesByReportParameterId...).
 			 */
-			logger.info("Parameter = {}: reportParameter.getSelectionListValues() = {}", this.name,
-					reportParameter.getSelectionListValues());
+			logger.debug("Parameter = {}: reportParameter.getSelectionListValues() = {}",
+					this.name, reportParameter.getSelectionListValues());
 			if (reportParameter.getSelectionListValues() != null
 					&& reportParameter.getSelectionListValues().size() > 0) {
 				this.selectionListValues = new SelectionListValueCollectionResource(reportParameter,
@@ -207,14 +221,56 @@ public class ReportParameterResource extends AbstractBaseResource {
 		}
 	}
 
-	public static List<ReportParameterResource> listFromReportVersion(ReportVersion reportVersion, UriInfo uriInfo,
-			Map<String, List<String>> queryParams, RestApiVersion apiVersion) {
-		if (reportVersion.getReportParameters() != null) {
-			List<ReportParameter> reportParameters = reportVersion.getReportParameters();
-			List<ReportParameterResource> reportParameterResources = new ArrayList<>(reportParameters.size());
-			for (ReportParameter reportParameter : reportParameters) {
+	public static List<ReportParameterResource> reportParameterResourceListPageFromReportParameters(
+			List<ReportParameter> reportParameters,
+			UriInfo uriInfo,
+			Map<String, List<String>> queryParams,
+			RestApiVersion apiVersion) {
+
+		if (reportParameters != null) {
+
+			/*
+			 * The ReportParameter entity does not have an "active" field, but
+			 * if it did and if we wanted to return REST resources that
+			 * correspond to only active entities, it would be necessary to do
+			 * one of two things *before* we extract a page of ReportParameter 
+			 * entities below. Either:
+			 * 
+			 *   1. Filter the list "reportParameters" here to eliminate
+			 *      inactive entities, or:
+			 *   
+			 *   2. Ensure that the list "reportParameters" was passed to this
+			 *      method was *already* filtered to remove inactive entities.
+			 */
+
+			/*
+			 * Create a List of ReportParameter entities to return as REST
+			 * resources. If the "offset" & "limit" query parameters are
+			 * specified, we extract a sublist of the List "reportParameters";
+			 * otherwise, we use the whole list.
+			 */
+			List<ReportParameter> pageOfReportParameters = RestUtils.getPageOfList(reportParameters, queryParams);
+
+			/*
+			 * Create a copy of the query parameters map and remove the
+			 * pagination query parameters from it because they do not apply 
+			 * to resources created from this point onwards from this method.
+			 * If "queryParams" does not contain these pagination query 
+			 * parameters, this will still work OK.
+			 */
+			Map<String, List<String>> queryParamsWOPagination = new HashMap<>(queryParams);
+			queryParamsWOPagination.remove(ResourcePath.PAGE_OFFSET_QP_KEY);
+			queryParamsWOPagination.remove(ResourcePath.PAGE_LIMIT_QP_KEY);
+
+			List<ReportParameterResource> reportParameterResources = new ArrayList<>(pageOfReportParameters.size());
+			for (ReportParameter reportParameter : pageOfReportParameters) {
+				/*
+				 * We cannot filter out entities here because then the page size
+				 * will be variable. Instead, it is necessary to filter out
+				 * entities *before* the page of entities is created above.
+				 */
 				reportParameterResources.add(
-						new ReportParameterResource(reportParameter, uriInfo, queryParams, apiVersion));
+						new ReportParameterResource(reportParameter, uriInfo, queryParamsWOPagination, apiVersion));
 			}
 			return reportParameterResources;
 		} else {

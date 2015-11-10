@@ -31,11 +31,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.qfree.obo.report.db.DocumentFormatRepository;
-import com.qfree.obo.report.db.ReportVersionRepository;
 import com.qfree.obo.report.db.RoleParameterRepository;
 import com.qfree.obo.report.db.RoleParameterValueRepository;
-import com.qfree.obo.report.db.RoleRepository;
 import com.qfree.obo.report.db.SubscriptionRepository;
 import com.qfree.obo.report.domain.ReportParameter;
 import com.qfree.obo.report.domain.RoleParameter;
@@ -44,6 +41,7 @@ import com.qfree.obo.report.domain.Subscription;
 import com.qfree.obo.report.domain.SubscriptionParameter;
 import com.qfree.obo.report.domain.SubscriptionParameterValue;
 import com.qfree.obo.report.dto.DocumentFormatResource;
+import com.qfree.obo.report.dto.JobCollectionResource;
 import com.qfree.obo.report.dto.ReportVersionResource;
 import com.qfree.obo.report.dto.ResourcePath;
 import com.qfree.obo.report.dto.RestErrorResource.RestError;
@@ -53,11 +51,12 @@ import com.qfree.obo.report.dto.SubscriptionParameterCollectionResource;
 import com.qfree.obo.report.dto.SubscriptionResource;
 import com.qfree.obo.report.exceptions.NoScheduleForSubscriptionException;
 import com.qfree.obo.report.exceptions.RestApiException;
-import com.qfree.obo.report.rest.server.RestUtils.RestApiVersion;
 import com.qfree.obo.report.scheduling.schedulers.SubscriptionScheduler;
 import com.qfree.obo.report.service.SubscriptionService;
 import com.qfree.obo.report.util.CompareUtils;
 import com.qfree.obo.report.util.DateUtils;
+import com.qfree.obo.report.util.RestUtils;
+import com.qfree.obo.report.util.RestUtils.RestApiVersion;
 
 @Component
 @Path(ResourcePath.SUBSCRIPTIONS_PATH)
@@ -67,9 +66,9 @@ public class SubscriptionController extends AbstractBaseController {
 
 	private final SubscriptionRepository subscriptionRepository;
 	private final SubscriptionService subscriptionService;
-	private final DocumentFormatRepository documentFormatRepository;
-	private final ReportVersionRepository reportVersionRepository;
-	private final RoleRepository roleRepository;
+	//	private final DocumentFormatRepository documentFormatRepository;
+	//	private final ReportVersionRepository reportVersionRepository;
+	//	private final RoleRepository roleRepository;
 	private final RoleParameterRepository roleParameterRepository;
 	private final RoleParameterValueRepository roleParameterValueRepository;
 	private final SubscriptionScheduler subscriptionScheduler;
@@ -78,17 +77,17 @@ public class SubscriptionController extends AbstractBaseController {
 	public SubscriptionController(
 			SubscriptionRepository subscriptionRepository,
 			SubscriptionService subscriptionService,
-			DocumentFormatRepository documentFormatRepository,
-			ReportVersionRepository reportVersionRepository,
-			RoleRepository roleRepository,
+			//	DocumentFormatRepository documentFormatRepository,
+			//	ReportVersionRepository reportVersionRepository,
+			//	RoleRepository roleRepository,
 			RoleParameterRepository roleParameterRepository,
 			RoleParameterValueRepository roleParameterValueRepository,
 			SubscriptionScheduler subscriptionScheduler) {
 		this.subscriptionRepository = subscriptionRepository;
 		this.subscriptionService = subscriptionService;
-		this.documentFormatRepository = documentFormatRepository;
-		this.reportVersionRepository = reportVersionRepository;
-		this.roleRepository = roleRepository;
+		//	this.documentFormatRepository = documentFormatRepository;
+		//	this.reportVersionRepository = reportVersionRepository;
+		//	this.roleRepository = roleRepository;
 		this.roleParameterRepository = roleParameterRepository;
 		this.roleParameterValueRepository = roleParameterValueRepository;
 		this.subscriptionScheduler = subscriptionScheduler;
@@ -111,10 +110,13 @@ public class SubscriptionController extends AbstractBaseController {
 			@HeaderParam("Accept") final String acceptHeader,
 			@QueryParam(ResourcePath.EXPAND_QP_NAME) final List<String> expand,
 			@QueryParam(ResourcePath.SHOWALL_QP_NAME) final List<String> showAll,
+			@QueryParam(ResourcePath.PAGE_OFFSET_QP_NAME) final List<String> pageOffset,
+			@QueryParam(ResourcePath.PAGE_LIMIT_QP_NAME) final List<String> pageLimit,
 			@Context final UriInfo uriInfo) {
 		Map<String, List<String>> queryParams = new HashMap<>();
 		queryParams.put(ResourcePath.EXPAND_QP_KEY, expand);
 		queryParams.put(ResourcePath.SHOWALL_QP_KEY, showAll);
+		RestUtils.checkPaginationQueryParams(pageOffset, pageLimit, queryParams);
 		RestApiVersion apiVersion = RestUtils.extractAPIVersion(acceptHeader, RestApiVersion.v1);
 
 		List<Subscription> subscriptions = null;
@@ -123,12 +125,7 @@ public class SubscriptionController extends AbstractBaseController {
 		} else {
 			subscriptions = subscriptionRepository.findAll();
 		}
-		List<SubscriptionResource> subscriptionResources = new ArrayList<>(subscriptions.size());
-		for (Subscription subscription : subscriptions) {
-			subscriptionResources.add(new SubscriptionResource(subscription, subscriptionService,
-					uriInfo, queryParams, apiVersion));
-		}
-		return new SubscriptionCollectionResource(subscriptionResources, Subscription.class,
+		return new SubscriptionCollectionResource(subscriptions, Subscription.class,
 				uriInfo, queryParams, apiVersion);
 	}
 
@@ -747,7 +744,7 @@ public class SubscriptionController extends AbstractBaseController {
 									subscriptionParameterValue.getYearNumber() == null &&
 									subscriptionParameterValue.getYearsAgo() == null) {
 								errorMessage = String.format(
-										"The Datetime value for report parameter '%s' of report '%s' is null or cannot be determined",
+										"The Date value for report parameter '%s' of report '%s' is null or cannot be determined",
 										subscriptionParameter.getReportParameter().getName(),
 										subscriptionParameter.getSubscription().getReportVersion()
 												.getFileName());
@@ -783,10 +780,12 @@ public class SubscriptionController extends AbstractBaseController {
 		 * scheduling have been modified. If so, we reschedule the job below.
 		 */
 		boolean rescheduleJob = CompareUtils.different(subscriptionResource.getEnabled(), subscription.getEnabled())
-				|| CompareUtils.different(subscriptionResource.getDeliveryCronSchedule(), subscription.getDeliveryCronSchedule())
+				|| CompareUtils.different(subscriptionResource.getDeliveryCronSchedule(),
+						subscription.getDeliveryCronSchedule())
 				|| CompareUtils.different(subscriptionResource.getDeliveryTimeZoneId(),
 						subscription.getDeliveryTimeZoneId())
-				|| CompareUtils.different(subscriptionResource.getDeliveryDatetimeRunAt(), subscription.getDeliveryDatetimeRunAt());
+				|| CompareUtils.different(subscriptionResource.getDeliveryDatetimeRunAt(),
+						subscription.getDeliveryDatetimeRunAt());
 
 		/*
 		 * Save updated entity. This must come *after* we check if fields of the
@@ -950,5 +949,41 @@ public class SubscriptionController extends AbstractBaseController {
 		Subscription subscription = subscriptionRepository.findOne(id);
 		RestUtils.ifNullThen404(subscription, Subscription.class, "subscriptionId", id.toString());
 		return new SubscriptionParameterCollectionResource(subscription, uriInfo, queryParams, apiVersion);
+	}
+
+	/*
+	 * Return the Job entities associated with a single Subscription that is 
+	 * specified by its id. This endpoint can be tested with:
+	 * 
+	 *   $ mvn clean spring-boot:run
+	 *   $ curl -X GET -iH "Accept: application/json;v=1" \
+	 *   http://localhost:8080/rest/subscriptions/c7f1d394-9814-4ede-bb01-2700187d79ca/jobs
+	 * 
+	 * Note:  This endpoint supports pagination.
+	 * 
+	 * @Transactional is used to avoid org.hibernate.LazyInitializationException
+	 * being thrown.
+	 */
+	@Path("/{id}" + ResourcePath.JOBS_PATH)
+	@GET
+	@Transactional
+	@Produces(MediaType.APPLICATION_JSON)
+	public JobCollectionResource getJobsBySubscriptionId(
+			@PathParam("id") final UUID id,
+			@HeaderParam("Accept") final String acceptHeader,
+			@QueryParam(ResourcePath.EXPAND_QP_NAME) final List<String> expand,
+			@QueryParam(ResourcePath.SHOWALL_QP_NAME) final List<String> showAll,
+			@QueryParam(ResourcePath.PAGE_OFFSET_QP_NAME) final List<String> pageOffset,
+			@QueryParam(ResourcePath.PAGE_LIMIT_QP_NAME) final List<String> pageLimit,
+			@Context final UriInfo uriInfo) {
+		Map<String, List<String>> queryParams = new HashMap<>();
+		queryParams.put(ResourcePath.EXPAND_QP_KEY, expand);
+		queryParams.put(ResourcePath.SHOWALL_QP_KEY, showAll);
+		RestUtils.checkPaginationQueryParams(pageOffset, pageLimit, queryParams);
+		RestApiVersion apiVersion = RestUtils.extractAPIVersion(acceptHeader, RestApiVersion.v1);
+
+		Subscription subscription = subscriptionRepository.findOne(id);
+		RestUtils.ifNullThen404(subscription, Subscription.class, "subscriptionId", id.toString());
+		return new JobCollectionResource(subscription, uriInfo, queryParams, apiVersion);
 	}
 }

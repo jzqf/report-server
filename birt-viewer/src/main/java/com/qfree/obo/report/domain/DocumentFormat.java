@@ -98,8 +98,8 @@ public class DocumentFormat implements Serializable {
 	 * <pre>
 	 */
 	@NotBlank
-	@Column(name = "media_type", nullable = false, length = 100)
-	private String mediaType;
+	@Column(name = "internet_media_type", nullable = false, length = 100)
+	private String internetMediaType;
 
 	/**
 	 * The value assigned to the BIRT "__format" URL query parameter in order
@@ -133,13 +133,15 @@ public class DocumentFormat implements Serializable {
 	private DocumentFormat() {
 	}
 
-	public DocumentFormat(String name, String fileExtension, String mediaType, String birtFormat, Boolean binary) {
-		this(null, name, fileExtension, mediaType, birtFormat, binary, true, DateUtils.nowUtc());
+	public DocumentFormat(String name, String fileExtension, String internetMediaType, String birtFormat,
+			Boolean binary) {
+		this(null, name, fileExtension, internetMediaType, birtFormat, binary, true, DateUtils.nowUtc());
 	}
 
-	public DocumentFormat(String name, String fileExtension, String mediaType, String birtFormat, Boolean binary,
+	public DocumentFormat(String name, String fileExtension, String internetMediaType, String birtFormat,
+			Boolean binary,
 			Boolean active) {
-		this(null, name, fileExtension, mediaType, birtFormat, binary, active, DateUtils.nowUtc());
+		this(null, name, fileExtension, internetMediaType, birtFormat, binary, active, DateUtils.nowUtc());
 	}
 
 	public DocumentFormat(DocumentFormatResource documentFormatResource) {
@@ -147,20 +149,21 @@ public class DocumentFormat implements Serializable {
 				documentFormatResource.getDocumentFormatId(),
 				documentFormatResource.getName(),
 				documentFormatResource.getFileExtension(),
-				documentFormatResource.getMediaType(),
+				documentFormatResource.getInternetMediaType(),
 				documentFormatResource.getBirtFormat(),
 				documentFormatResource.getBinaryData(),
 				documentFormatResource.getActive(),
 				documentFormatResource.getCreatedOn());
 	}
 
-	public DocumentFormat(UUID documentFormatId, String name, String fileExtension, String mediaType, String birtFormat,
+	public DocumentFormat(UUID documentFormatId, String name, String fileExtension, String internetMediaType,
+			String birtFormat,
 			Boolean binary,
 			Boolean active, Date createdOn) {
 		this.documentFormatId = documentFormatId;
 		this.name = name;
 		this.fileExtension = fileExtension;
-		this.mediaType = mediaType;
+		this.internetMediaType = internetMediaType;
 		this.birtFormat = birtFormat;
 		this.binaryData = binary;
 		this.active = (active != null) ? active : true;
@@ -199,12 +202,12 @@ public class DocumentFormat implements Serializable {
 		this.fileExtension = fileExtension;
 	}
 
-	public String getMediaType() {
-		return mediaType;
+	public String getInternetMediaType() {
+		return internetMediaType;
 	}
 
-	public void setMediaType(String mediaType) {
-		this.mediaType = mediaType;
+	public void setInternetMediaType(String internetMediaType) {
+		this.internetMediaType = internetMediaType;
 	}
 
 	public String getBirtFormat() {

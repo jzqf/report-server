@@ -10,11 +10,12 @@ import javax.xml.bind.annotation.XmlRootElement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.qfree.obo.report.rest.server.RestUtils.RestApiVersion;
+import com.qfree.obo.report.domain.Configuration;
+import com.qfree.obo.report.util.RestUtils.RestApiVersion;
 
 @XmlRootElement
-public class ConfigurationCollectionResource extends AbstractCollectionResource<ConfigurationResource> {
-	//public class ConfigurationCollectionResource extends AbstractBaseResource {
+public class ConfigurationCollectionResource
+		extends AbstractCollectionResource<ConfigurationResource, Configuration> {
 
 	private static final Logger logger = LoggerFactory.getLogger(ConfigurationCollectionResource.class);
 
@@ -24,15 +25,49 @@ public class ConfigurationCollectionResource extends AbstractCollectionResource<
 	public ConfigurationCollectionResource() {
 	}
 
-	public ConfigurationCollectionResource(List<ConfigurationResource> items, Class<?> entityClass,
-			UriInfo uriInfo, Map<String, List<String>> queryParams, RestApiVersion apiVersion) {
+	public ConfigurationCollectionResource(
+			List<Configuration> configurations,
+			Class<Configuration> entityClass,
+			UriInfo uriInfo,
+			Map<String, List<String>> queryParams,
+			RestApiVersion apiVersion) {
+		this(
+				configurations,
+				entityClass,
+				null,
+				null,
+				uriInfo,
+				queryParams,
+				apiVersion);
+	}
 
-		super(items, entityClass, uriInfo, queryParams, apiVersion);  // if class extends AbstractCollectionResource<ReportResource>
-		//super(entityClass, null, uriInfo, queryParams, apiVersion);  // if class extends AbstractBaseResource
+	public ConfigurationCollectionResource(
+			List<Configuration> configurations,
+			Class<Configuration> entityClass,
+			String baseResourceUri,
+			String collectionPath,
+			UriInfo uriInfo,
+			Map<String, List<String>> queryParams,
+			RestApiVersion apiVersion) {
+
+		super(
+				configurations,
+				entityClass,
+				baseResourceUri,
+				collectionPath,
+				uriInfo,
+				queryParams,
+				apiVersion);
 
 		List<String> expand = queryParams.get(ResourcePath.EXPAND_QP_KEY);
 		if (ResourcePath.expand(entityClass, expand)) {
-			this.items = items;
+			/*
+			 * We pass null for apiVersion since the version used in the 
+			 * original request does not necessarily apply here.
+			 */
+			apiVersion = null;
+			this.items = ConfigurationResource.configurationResourceListPageFromConfigurations(
+					configurations, uriInfo, queryParams, apiVersion);
 		}
 	}
 
