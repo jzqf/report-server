@@ -80,7 +80,7 @@ CREATE TABLE reporting.document_format (
     birt_format character varying(12) NOT NULL,
     created_on timestamp NOT NULL,
     file_extension character varying(12) NOT NULL,
-    media_type character varying(100) NOT NULL,
+    internet_media_type character varying(100) NOT NULL,
     name character varying(32) NOT NULL
 );
 
@@ -95,9 +95,13 @@ CREATE TABLE reporting.job (
     job_id identity NOT NULL,
     created_on timestamp NOT NULL,
     document text,
+    email character varying(160),
     encoded boolean,
     file_name character varying(128),
     job_status_remarks text,
+    job_status_set_at timestamp NOT NULL,
+    report_emailed_at timestamp,
+    report_ran_at timestamp,
     url character varying(1024),
     document_format_id uuid NOT NULL,
     job_status_id uuid NOT NULL,
@@ -398,6 +402,7 @@ CREATE TABLE reporting.subscription_parameter_value (
     day_of_week_in_month_ordinal integer,
     day_of_week_number integer,
     days_ago integer,
+    duration_subtract_one_day_for_dates boolean NOT NULL,
     duration_to_add_days integer,
     duration_to_add_hours integer,
     duration_to_add_minutes integer,
@@ -416,8 +421,6 @@ CREATE TABLE reporting.subscription_parameter_value (
     years_ago integer,
     subscription_parameter_id uuid NOT NULL
 );
-
-
 
 
 --
