@@ -165,10 +165,6 @@ public class SubscriptionJobProcessorScheduledJob {
 					//				}				
 				}
 
-				//	if (1 == 1) {
-				//		throw new ReportingException("#1: Exception thrown to test transaction behaviour.");
-				//	}
-
 				/*
 				 * 
 				 */

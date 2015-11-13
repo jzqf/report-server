@@ -309,166 +309,179 @@ public class JobService {
 	@Transactional //(propagation = Propagation.REQUIRES_NEW)
 	public void runAndRenderJob(Long jobId) throws ReportingException {
 
-		//	logger.info("Setting status to \"RUNNING\"");
-		//	JobStatus jobStatus_RUNNING = jobStatusRepository.findOne(JobStatus.RUNNING_ID);
-		//	job.setJobStatus(jobStatus_RUNNING);
-		//	job = jobRepository.save(job); // probably not necessary, but it cannot hurt
+		try {
 
-		Job job = jobRepository.findOne(jobId);
-		if (job == null) {
-			throw new ReportingException("No Job found for jobId = " + jobId);
-		}
+			Job job = jobRepository.findOne(jobId);
+			if (job == null) {
+				throw new ReportingException("No Job found for jobId = " + jobId);
+			}
 
-		logger.info("Processing job = {}", job);
-		logger.info("format = {}", job.getSubscription().getDocumentFormat().getBirtFormat());
+			logger.info("Processing job = {}", job);
+			logger.info("format = {}", job.getSubscription().getDocumentFormat().getBirtFormat());
 
-		/*
-		 * Create a map of Object arrays to pass the report parameter 
-		 * values to BirtService.runAndRender(...). The map keys will
-		 * be the report parameter names and the Object arrays will 
-		 * contain the report parameter values. These arrays should
-		 * contain only a single value for single-valued report
-		 * parameters, but can contain any number of values for multi-
-		 * valued parameters.
-		 */
-		Map<String, Object[]> parameterValueArrays = new HashMap<>();
-		for (JobParameter jobParameter : job.getJobParameters()) {
-			int numValues = jobParameter.getJobParameterValues().size();
-			Object[] parameterValues = new Object[numValues];
-			parameterValueArrays.put(jobParameter.getReportParameter().getName(), parameterValues);
-			int i = -1;
-			for (JobParameterValue jobParameterValue : jobParameter.getJobParameterValues()) {
-				i++;
-				switch (jobParameter.getReportParameter().getDataType()) {
-				case IParameterDefn.TYPE_STRING:
-					parameterValues[i] = jobParameterValue.getStringValue();
-					break;
-				case IParameterDefn.TYPE_FLOAT:
-					parameterValues[i] = jobParameterValue.getFloatValue();
-					break;
-				case IParameterDefn.TYPE_DECIMAL:
+			/*
+			 * Create a map of Object arrays to pass the report parameter 
+			 * values to BirtService.runAndRender(...). The map keys will
+			 * be the report parameter names and the Object arrays will 
+			 * contain the report parameter values. These arrays should
+			 * contain only a single value for single-valued report
+			 * parameters, but can contain any number of values for multi-
+			 * valued parameters.
+			 */
+			Map<String, Object[]> parameterValueArrays = new HashMap<>();
+			for (JobParameter jobParameter : job.getJobParameters()) {
+				int numValues = jobParameter.getJobParameterValues().size();
+				Object[] parameterValues = new Object[numValues];
+				parameterValueArrays.put(jobParameter.getReportParameter().getName(), parameterValues);
+				int i = -1;
+				for (JobParameterValue jobParameterValue : jobParameter.getJobParameterValues()) {
+					i++;
+					switch (jobParameter.getReportParameter().getDataType()) {
+					case IParameterDefn.TYPE_STRING:
+						parameterValues[i] = jobParameterValue.getStringValue();
+						break;
+					case IParameterDefn.TYPE_FLOAT:
+						parameterValues[i] = jobParameterValue.getFloatValue();
+						break;
+					case IParameterDefn.TYPE_DECIMAL:
+						/*
+						 * Assume that we can treat parameters of data type
+						 * "decimal" as floats. This may not be so, but we 
+						 * will give this a try.
+						 */
+						parameterValues[i] = jobParameterValue.getFloatValue();
+						break;
+					case IParameterDefn.TYPE_DATE_TIME:
+						parameterValues[i] = jobParameterValue.getDatetimeValue();
+						break;
+					case IParameterDefn.TYPE_BOOLEAN:
+						parameterValues[i] = jobParameterValue.getBooleanValue();
+						break;
+					case IParameterDefn.TYPE_INTEGER:
+						parameterValues[i] = jobParameterValue.getIntegerValue();
+						break;
+					case IParameterDefn.TYPE_DATE:
+						parameterValues[i] = jobParameterValue.getDateValue();
+						break;
+					case IParameterDefn.TYPE_TIME:
+						parameterValues[i] = jobParameterValue.getTimeValue();
+						break;
+					default:
+						String errorMessage = String.format("No support for report parameter data type \"%s\"",
+								jobParameter.getReportParameter().getDataType());
+						throw new UntreatedCaseException(errorMessage);
+					}
+				}
+				logger.info("Parameter \"{}\" values: {}", jobParameter.getReportParameter().getName(),
+						parameterValues);
+			}
+
+			logger.info("parameterValueArrays = {}", parameterValueArrays);
+
+			/*
+			 * The filename job.getReportVersion().getFileName() should end
+			 * with ".rptdesign". Ifso, we strip off that extension and then
+			 * add the appropriate extension for the document format that
+			 * was chosen.
+			 */
+			String outputFileNameBase = job.getReportVersion().getFileName();
+			int lastIndexOfDot = outputFileNameBase.lastIndexOf(".");
+			if (lastIndexOfDot >= 0) {
+				outputFileNameBase = outputFileNameBase.substring(0, lastIndexOfDot);
+			}
+			logger.debug("outputFileNameBase = {}", outputFileNameBase);
+			String outputFileName = outputFileNameBase + "." + job.getDocumentFormat().getFileExtension();
+			logger.debug("outputFileName = {}", outputFileName);
+
+			String tempDir = System.getProperty("java.io.tmpdir");
+			Path outputFileNamePath = Paths.get(tempDir, outputFileName);
+			logger.debug("outputFileNamePath.toString() = {}", outputFileNamePath.toString());
+
+			byte[] renderedReportBytes = null;
+			if (USE_BYTE_STREAM) {
+				ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+
+				try {
+					birtService.runAndRender(
+							job.getReportVersion().getRptdesign(),
+							parameterValueArrays,
+							job.getSubscription().getDocumentFormat().getBirtFormat(),
+							null,
+							outputStream);
+
+					renderedReportBytes = outputStream.toByteArray();
+					logger.debug("outputBytes.length = {}", renderedReportBytes.length);
+					//	/*
+					//	 * This is only for testing purposes. There is no reason to
+					//	 * write a document to disk 
+					//	 */
+					//		Files.write(outputFileNamePath, renderedReportBytes);
+					//	} catch (IOException e) {
+					//		logger.error("An exception was thrown writing file: ", e);
+				} catch (BirtException e) {
+					throw new ReportingException("Error running report: " + e.getMessage(), e);
+				}
+
+			} else {
+				try {
+					birtService.runAndRender(
+							job.getReportVersion().getRptdesign(),
+							parameterValueArrays,
+							job.getSubscription().getDocumentFormat().getBirtFormat(),
+							outputFileNamePath.toString(),
+							null);
+
 					/*
-					 * Assume that we can treat parameters of data type
-					 * "decimal" as floats. This may not be so, but we 
-					 * will give this a try.
+					 * Load the document that was created into a byte array.
 					 */
-					parameterValues[i] = jobParameterValue.getFloatValue();
-					break;
-				case IParameterDefn.TYPE_DATE_TIME:
-					parameterValues[i] = jobParameterValue.getDatetimeValue();
-					break;
-				case IParameterDefn.TYPE_BOOLEAN:
-					parameterValues[i] = jobParameterValue.getBooleanValue();
-					break;
-				case IParameterDefn.TYPE_INTEGER:
-					parameterValues[i] = jobParameterValue.getIntegerValue();
-					break;
-				case IParameterDefn.TYPE_DATE:
-					parameterValues[i] = jobParameterValue.getDateValue();
-					break;
-				case IParameterDefn.TYPE_TIME:
-					parameterValues[i] = jobParameterValue.getTimeValue();
-					break;
-				default:
-					String errorMessage = String.format("No support for report parameter data type \"%s\"",
-							jobParameter.getReportParameter().getDataType());
-					throw new UntreatedCaseException(errorMessage);
+					renderedReportBytes = Files.readAllBytes(outputFileNamePath);
+				} catch (IOException e) {
+					String errorMessage = String.format("Error loading document \"%s\": %s",
+							outputFileNamePath.toString(), e.getMessage());
+					throw new ReportingException(errorMessage, e);
+				} catch (BirtException e) {
+					throw new ReportingException("Error running report: " + e.getMessage(), e);
 				}
 			}
-			logger.info("Parameter \"{}\" values: {}", jobParameter.getReportParameter().getName(),
-					parameterValues);
-		}
 
-		logger.info("parameterValueArrays = {}", parameterValueArrays);
-
-		/*
-		 * The filename job.getReportVersion().getFileName() should end
-		 * with ".rptdesign". Ifso, we strip off that extension and then
-		 * add the appropriate extension for the document format that
-		 * was chosen.
-		 */
-		String outputFileNameBase = job.getReportVersion().getFileName();
-		int lastIndexOfDot = outputFileNameBase.lastIndexOf(".");
-		if (lastIndexOfDot >= 0) {
-			outputFileNameBase = outputFileNameBase.substring(0, lastIndexOfDot);
-		}
-		logger.info("outputFileNameBase = {}", outputFileNameBase);
-		String outputFileName = outputFileNameBase + "." + job.getDocumentFormat().getFileExtension();
-		logger.info("outputFileName = {}", outputFileName);
-
-		String tempDir = System.getProperty("java.io.tmpdir");
-		Path outputFileNamePath = Paths.get(tempDir, outputFileName);
-		logger.info("outputFileNamePath.toString() = {}", outputFileNamePath.toString());
-
-		byte[] renderedReportBytes = null;
-		if (USE_BYTE_STREAM) {
-			ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-
-			try {
-				birtService.runAndRender(
-						job.getReportVersion().getRptdesign(),
-						parameterValueArrays,
-						job.getSubscription().getDocumentFormat().getBirtFormat(),
-						null,
-						outputStream);
-
-				renderedReportBytes = outputStream.toByteArray();
-				logger.info("outputBytes.length = {}", renderedReportBytes.length);
-				//	/*
-				//	 * This is only for testing purposes. There is no reason to
-				//	 * write a document to disk 
-				//	 */
-				//		Files.write(outputFileNamePath, renderedReportBytes);
-				//	} catch (IOException e) {
-				//		logger.error("An exception was thrown writing file: ", e);
-			} catch (BirtException e) {
-				throw new ReportingException("Error running report: " + e.getMessage(), e);
-			}
-
-		} else {
-			try {
-				birtService.runAndRender(
-						job.getReportVersion().getRptdesign(),
-						parameterValueArrays,
-						job.getSubscription().getDocumentFormat().getBirtFormat(),
-						outputFileNamePath.toString(),
-						null);
-
+			/*
+			 * Store rendered document in Job entity.
+			 */
+			if (job.getDocumentFormat().getBinaryData()) {
 				/*
-				 * Load the document that was created into a byte array.
+				 * The bytes need encoded using Base64 using  the ISO-8859-1
+				 * charset.
 				 */
-				renderedReportBytes = Files.readAllBytes(outputFileNamePath);
-			} catch (IOException e) {
-				String errorMessage = String.format("Error loading document \"%s\": %s",
-						outputFileNamePath.toString(), e.getMessage());
-				throw new ReportingException(errorMessage, e);
-			} catch (BirtException e) {
-				throw new ReportingException("Error running report: " + e.getMessage(), e);
+				String renderedReportBase64 = Base64.getEncoder().encodeToString(renderedReportBytes);
+				job.setDocument(renderedReportBase64);
+				job.setEncoded(true);
+			} else {
+				/*
+				 * The bytes can be encoded as a String. We assume here that
+				 * UTF-8 will work.
+				 */
+				String renderedReportString = new String(renderedReportBytes, StandardCharsets.UTF_8);
+				job.setDocument(renderedReportString);
+				job.setEncoded(false);
 			}
-		}
+			job.setFileName(outputFileName);
+			job.setReportRanAt();
 
-		/*
-		 * Store rendered document in Job entity.
-		 */
-		if (job.getDocumentFormat().getBinaryData()) {
+		} catch (ReportingException e1) {
 			/*
-			 * The bytes need encoded using Base64 using  the ISO-8859-1
-			 * charset.
+			 * Re-throw exceptions that we explicitly catch in the inner "try".
 			 */
-			String renderedReportBase64 = Base64.getEncoder().encodeToString(renderedReportBytes);
-			job.setDocument(renderedReportBase64);
-			job.setEncoded(true);
-		} else {
+			throw e1;
+		} catch (Exception e2) {
 			/*
-			 * The bytes can be encoded as a String. We assume here that
-			 * UTF-8 will work.
+			 * Treat unexpected exceptions thrown in the inner "try". This is
+			 * done so that the JobStatus and jobStatusRemarks are set correctly
+			 * in SubscriptionJobProcessorScheduledJob.run() to also reflect
+			 * unexpected exceptions.
 			 */
-			String renderedReportString = new String(renderedReportBytes, StandardCharsets.UTF_8);
-			job.setDocument(renderedReportString);
-			job.setEncoded(false);
+			throw new ReportingException(
+					"An unexpected error occurred while running the report: " + e2.getMessage(), e2);
 		}
-		job.setFileName(outputFileName);
-		job.setReportRanAt();
 	}
 
 	/**
@@ -485,115 +498,132 @@ public class JobService {
 	@Transactional
 	public void emailJobDocument(Long jobId) throws ReportingException {
 
-		Job job = jobRepository.findOne(jobId);
-		if (job == null) {
-			throw new ReportingException("No Job found for jobId = " + jobId);
-		}
-		logger.info("E-mailing job = {}", job);
-
-		/*
-		 * This Classloader is used for loading the e-mail subject and body
-		 * templates below.
-		 */
-		ClassLoader classLoader = getClass().getClassLoader();
-
-		/*
-		 * Load e-mail subject template from classpath. The resource name 
-		 * provided is relative to this Eclipse project's src/main/resources/
-		 * directory.
-		 */
-		File emailSubjectTemplateFile = new File(
-				classLoader.getResource("templates/job_delivery_email_subject.txt").getFile());
-		Path emailSubjectTemplatePath = emailSubjectTemplateFile.toPath();
-		logger.debug("emailSubjectTemplatePath = {}", emailSubjectTemplatePath);
-		String emailSubjectTemplateText = null;
 		try {
-			emailSubjectTemplateText = new String(Files.readAllBytes(emailSubjectTemplatePath),
-					Charset.forName("UTF-8"));
-		} catch (IOException e) {
-			throw new ReportingException("Error loading e-mail subject template from classpath", e);
-		}
-		logger.info("emailSubjectTemplateText = {}", emailSubjectTemplateText);
 
-		/*
-		 * Load e-mail body template from classpath. The resource name 
-		 * provided is relative to this Eclipse project's src/main/resources/
-		 * directory.
-		 */
-		File emailMsgBodyTemplateFile = new File(
-				classLoader.getResource("templates/job_delivery_email_body.txt").getFile());
-		Path emailMsgBodyTemplatePath = emailMsgBodyTemplateFile.toPath();
-		logger.debug("emailMsgBodyTemplatePath = {}", emailMsgBodyTemplatePath);
-		String emailMsgBodyTemplateText = null;
-		try {
-			emailMsgBodyTemplateText = new String(Files.readAllBytes(emailMsgBodyTemplatePath),
-					Charset.forName("UTF-8"));
-		} catch (IOException e) {
-			throw new ReportingException("Error loading e-mail body template from classpath", e);
-		}
-		logger.info("emailMsgBodyTemplateText = {}", emailMsgBodyTemplateText);
-
-		/*
-		 * Convert the document stored in the field Job.document into a byte
-		 * array. If the document is currently Base64 encoded, it is decoded
-		 * here.
-		 */
-		byte[] documentBytes;
-		if (job.getEncoded()) {
-			try {
-				documentBytes = Base64.getDecoder().decode(job.getDocument());
-			} catch (IllegalArgumentException e) {
-				throw new ReportingException("Document cannot be decoded for jobId = " + jobId, e);
+			Job job = jobRepository.findOne(jobId);
+			if (job == null) {
+				throw new ReportingException("No Job found for jobId = " + jobId);
 			}
-		} else {
-			documentBytes = job.getDocument().getBytes(StandardCharsets.UTF_8);
+			logger.info("E-mailing job = {}", job);
+
+			/*
+			 * This Classloader is used for loading the e-mail subject and body
+			 * templates below.
+			 */
+			ClassLoader classLoader = getClass().getClassLoader();
+
+			/*
+			 * Load e-mail subject template from classpath. The resource name 
+			 * provided is relative to this Eclipse project's src/main/resources/
+			 * directory.
+			 */
+			File emailSubjectTemplateFile = new File(
+					classLoader.getResource("templates/job_delivery_email_subject.txt").getFile());
+			Path emailSubjectTemplatePath = emailSubjectTemplateFile.toPath();
+			logger.debug("emailSubjectTemplatePath = {}", emailSubjectTemplatePath);
+			String emailSubjectTemplateText = null;
+			try {
+				emailSubjectTemplateText = new String(Files.readAllBytes(emailSubjectTemplatePath),
+						Charset.forName("UTF-8"));
+			} catch (IOException e) {
+				throw new ReportingException("Error loading e-mail subject template from classpath", e);
+			}
+			logger.debug("emailSubjectTemplateText = {}", emailSubjectTemplateText);
+
+			/*
+			 * Load e-mail body template from classpath. The resource name 
+			 * provided is relative to this Eclipse project's src/main/resources/
+			 * directory.
+			 */
+			File emailMsgBodyTemplateFile = new File(
+					classLoader.getResource("templates/job_delivery_email_body.txt").getFile());
+			Path emailMsgBodyTemplatePath = emailMsgBodyTemplateFile.toPath();
+			logger.debug("emailMsgBodyTemplatePath = {}", emailMsgBodyTemplatePath);
+			String emailMsgBodyTemplateText = null;
+			try {
+				emailMsgBodyTemplateText = new String(Files.readAllBytes(emailMsgBodyTemplatePath),
+						Charset.forName("UTF-8"));
+			} catch (IOException e) {
+				throw new ReportingException("Error loading e-mail body template from classpath", e);
+			}
+			logger.debug("emailMsgBodyTemplateText = {}", emailMsgBodyTemplateText);
+
+			/*
+			 * Convert the document stored in the field Job.document into a byte
+			 * array. If the document is currently Base64 encoded, it is decoded
+			 * here.
+			 */
+			byte[] documentBytes;
+			if (job.getEncoded()) {
+				try {
+					documentBytes = Base64.getDecoder().decode(job.getDocument());
+				} catch (IllegalArgumentException e) {
+					throw new ReportingException("Document cannot be decoded for jobId = " + jobId, e);
+				}
+			} else {
+				documentBytes = job.getDocument().getBytes(StandardCharsets.UTF_8);
+			}
+
+			/*
+			 * These are the arguments that can be interpolated into the email
+			 * subject and message body templates.
+			 */
+			Object[] messageArguments = new Object[7];
+			messageArguments[0] = job.getReportVersion().getReport().getName();
+			messageArguments[1] = job.getReportVersion().getReport().getNumber();
+			messageArguments[2] = job.getReportVersion().getFileName(); // rptdesign filename
+			messageArguments[3] = job.getReportVersion().getVersionName();
+			messageArguments[4] = job.getFileName(); // rendered report filename
+			/*
+			 * Adjust job.getReportRanAt() to be relative to the time zone where the
+			 * report server is located. Currently, we make no attempt to express
+			 * the datetime in the time zone of the report user or e-mail recipient
+			 * because we do not know what that time zone is (we would need to add
+			 * support for that). 
+			 * 
+			 * job.getReportRanAt() holds the datetime relative to UTC. If we do not
+			 * adjust it here, it will be wrong unless the
+			 */
+			messageArguments[5] = DateUtils.entityTimestampToServerTimezoneDate(job.getReportRanAt());
+			messageArguments[6] = documentBytes.length;
+
+			String subject = new MessageFormat(emailSubjectTemplateText, Locale.getDefault()).format(messageArguments);
+			String msgBody = new MessageFormat(emailMsgBodyTemplateText, Locale.getDefault()).format(messageArguments);
+			logger.debug("subject = {}", subject);
+			logger.debug("msgBody = {}", msgBody);
+
+			try {
+				emailService.sendEmail(
+						job.getEmailAddress(),
+						subject,
+						msgBody,
+						documentBytes,
+						job.getDocumentFormat().getInternetMediaType(),
+						job.getFileName());
+			} catch (MessagingException e) {
+				throw new ReportingException("Error sending e-mail: " + e.getMessage(), e);
+			}
+
+			/*
+			 * Set details associated with the delivery.
+			 */
+			job.setReportEmailedAt();
+
+		} catch (ReportingException e1) {
+			/*
+			 * Re-throw exceptions that we explicitly catch in the inner "try".
+			 */
+			throw e1;
+		} catch (Exception e2) {
+			/*
+			 * Treat unexpected exceptions thrown in the inner "try". This is
+			 * done so that the JobStatus and jobStatusRemarks are set correctly
+			 * in SubscriptionJobProcessorScheduledJob.run() to also reflect
+			 * unexpected exceptions.
+			 */
+			throw new ReportingException(
+					"An unexpected error occurred while delivering the report: " + e2.getMessage(), e2);
 		}
-
-		/*
-		 * These are the arguments that can be interpolated into the email
-		 * subject and message body templates.
-		 */
-		Object[] messageArguments = new Object[7];
-		messageArguments[0] = job.getReportVersion().getReport().getName();
-		messageArguments[1] = job.getReportVersion().getReport().getNumber();
-		messageArguments[2] = job.getReportVersion().getFileName(); // rptdesign filename
-		messageArguments[3] = job.getReportVersion().getVersionName();
-		messageArguments[4] = job.getFileName(); // rendered report filename
-		/*
-		 * Adjust job.getReportRanAt() to be relative to the time zone where the
-		 * report server is located. Currnently, we make no attempt to express
-		 * the datetime in the time zone of the report user or e-mail recipient
-		 * because we do not know what that time zone is (we would need to add
-		 * support for that). 
-		 * 
-		 * job.getReportRanAt() holds the datetime relative to UTC. If we do not
-		 * adjust it here, it will be wrong unless the
-		 */
-		messageArguments[5] = DateUtils.entityTimestampToServerTimezoneDate(job.getReportRanAt());
-		messageArguments[6] = documentBytes.length;
-
-		String subject = new MessageFormat(emailSubjectTemplateText, Locale.getDefault()).format(messageArguments);
-		String msgBody = new MessageFormat(emailMsgBodyTemplateText, Locale.getDefault()).format(messageArguments);
-		logger.info("subject = {}", subject);
-		logger.info("msgBody = {}", msgBody);
-
-		try {
-			emailService.sendEmail(
-					job.getEmailAddress(),
-					subject,
-					msgBody,
-					documentBytes,
-					job.getDocumentFormat().getInternetMediaType(),
-					job.getFileName());
-		} catch (MessagingException e) {
-			throw new ReportingException("Error sending e-mail: " + e.getMessage(), e);
-		}
-
-		/*
-		 * Set details associated with the delivery.
-		 */
-		job.setReportEmailedAt();
-
 	}
 
 }
