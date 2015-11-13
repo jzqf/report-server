@@ -87,43 +87,43 @@ public class SubscriptionJobProcessorScheduledJob {
 				/*
 				 * We bypass the report rendering step if it looks like it was 
 				 * already performed. This bypass will happen only if "job" was
-				 * left in the state "RUNNING" and it was re-QUEUED elsewhere in
-				 * order so that it will be fully processed. A newly created Job
-				 * always has document==null, reportRanAt==null, ....
+				 * re-QUEUED elsewhere (probably because it was discovered that
+				 * the Job was not fully processed). A newly created Job always
+				 * has document==null, reportRanAt==null, ...
 				 */
-				//				if (job.getDocument() == null) {
-				/*
-				 * jobService.runAndRenderJob(...) must be a transactional 
-				 * method for several reasons:
-				 * 
-				 *   1. To be able to rollback changes in the event of an
-				 *   	exception being thrown.
-				 *   
-				 *   2.	To work with *attached* JPA objects so that 
-				 *   	org.hibernate.LazyInitializationException exceptions
-				 *   	are avoided.
-				 *   
-				 * In order for this method call to "runAndRenderJob" to be 
-				 * transactional, there are two requirements:
-				 * 
-				 *   1. The "runAndRenderJob method must be annotated with
-				 *      @Transactional.
-				 *      
-				 *   2. The "runAndRenderJob method must be a method of an 
-				 *      object managed by Spring, but not a method of the 
-				 *      current SubscriptionJobProcessorScheduledJob object. 
-				 *      This is because Spring sets up proxy methods for 
-				 *      @Transactional methods and calling a method directly 
-				 *      on the current object ("self invocation") will bypass 
-				 *      that proxy.
-				 *      
-				 * These requirements are satisfied by runAndRenderJob(...)
-				 * since it is a method of the "jobService" object injected 
-				 * above by Spring, and it is also annotated with 
-				 * @Transactional.
-				 */
-				jobService.runAndRenderJob(job.getJobId());
-				//				}
+				if (job.getDocument() == null) {
+					/*
+					 * jobService.runAndRenderJob(...) must be a transactional 
+					 * method for several reasons:
+					 * 
+					 *   1. To be able to rollback changes in the event of an
+					 *   	exception being thrown.
+					 *   
+					 *   2.	To work with *attached* JPA objects so that 
+					 *   	org.hibernate.LazyInitializationException exceptions
+					 *   	are avoided.
+					 *   
+					 * In order for this method call to "runAndRenderJob" to be 
+					 * transactional, there are two requirements:
+					 * 
+					 *   1. The "runAndRenderJob method must be annotated with
+					 *      @Transactional.
+					 *      
+					 *   2. The "runAndRenderJob method must be a method of an 
+					 *      object managed by Spring, but not a method of the 
+					 *      current SubscriptionJobProcessorScheduledJob object. 
+					 *      This is because Spring sets up proxy methods for 
+					 *      @Transactional methods and calling a method directly 
+					 *      on the current object ("self invocation") will 
+					 *      bypass that proxy.
+					 *      
+					 * These requirements are satisfied by runAndRenderJob(...)
+					 * since it is a method of the "jobService" object injected 
+					 * above by Spring, and it is also annotated with 
+					 * @Transactional.
+					 */
+					jobService.runAndRenderJob(job.getJobId());
+				}
 
 				job = jobService.setJobStatus(job.getJobId(), JobStatus.DELIVERING_ID, null);
 
@@ -148,21 +148,21 @@ public class SubscriptionJobProcessorScheduledJob {
 					/*
 					 * We bypass the report delivery step if it looks like it
 					 * was already performed. This bypass will happen only if 
-					 * "job" was left in the state "RUNNING" or "DELIVERING" and
-					 * it was re-QUEUED elsewhere in order so that it will be
-					 * fully processed. A newly created Job always has 
-					 * reportEmailedAt==null, ....
+					 * it was re-QUEUED elsewhere (probably because it was 
+					 * discovered that the Job was not fully processed). A newly
+					 * created Job always has reportEmailedAt==null, ...
 					 */
-					//				if (job.getReportEmailedAt() == null) {
-					/*
-					 * E-mail the rendered report document to the recipient.
-					 * 
-					 * jobService.emailJobDocument(...) must be a transactional 
-					 * method for the same reasons given in the comment for the call
-					 * to jobService.runAndRenderJob(...) above.
-					 */
-					jobService.emailJobDocument(job.getJobId());
-					//				}				
+					if (job.getReportEmailedAt() == null) {
+						/*
+						 * E-mail the rendered report document to the recipient.
+						 * 
+						 * jobService.emailJobDocument(...) must be a 
+						 * transactional method for the same reasons given in
+						 * the comment for the call to 
+						 * jobService.runAndRenderJob(...) above.
+						 */
+						jobService.emailJobDocument(job.getJobId());
+					}
 				}
 
 				/*
