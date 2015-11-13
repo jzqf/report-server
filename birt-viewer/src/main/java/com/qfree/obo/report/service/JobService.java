@@ -1,13 +1,17 @@
 package com.qfree.obo.report.service;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.text.MessageFormat;
 import java.util.Base64;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.UUID;
 
@@ -43,6 +47,7 @@ import com.qfree.obo.report.dto.RoleResource;
 import com.qfree.obo.report.dto.SubscriptionResource;
 import com.qfree.obo.report.exceptions.ReportingException;
 import com.qfree.obo.report.exceptions.UntreatedCaseException;
+import com.qfree.obo.report.util.DateUtils;
 import com.qfree.obo.report.util.RestUtils;
 
 @Component
@@ -487,6 +492,48 @@ public class JobService {
 		logger.info("E-mailing job = {}", job);
 
 		/*
+		 * This Classloader is used for loading the e-mail subject and body
+		 * templates below.
+		 */
+		ClassLoader classLoader = getClass().getClassLoader();
+
+		/*
+		 * Load e-mail subject template from classpath. The resource name 
+		 * provided is relative to this Eclipse project's src/main/resources/
+		 * directory.
+		 */
+		File emailSubjectTemplateFile = new File(
+				classLoader.getResource("templates/job_delivery_email_subject.txt").getFile());
+		Path emailSubjectTemplatePath = emailSubjectTemplateFile.toPath();
+		logger.debug("emailSubjectTemplatePath = {}", emailSubjectTemplatePath);
+		String emailSubjectTemplateText = null;
+		try {
+			emailSubjectTemplateText = new String(Files.readAllBytes(emailSubjectTemplatePath),
+					Charset.forName("UTF-8"));
+		} catch (IOException e) {
+			throw new ReportingException("Error loading e-mail subject template from classpath", e);
+		}
+		logger.info("emailSubjectTemplateText = {}", emailSubjectTemplateText);
+
+		/*
+		 * Load e-mail body template from classpath. The resource name 
+		 * provided is relative to this Eclipse project's src/main/resources/
+		 * directory.
+		 */
+		File emailMsgBodyTemplateFile = new File(
+				classLoader.getResource("templates/job_delivery_email_body.txt").getFile());
+		Path emailMsgBodyTemplatePath = emailMsgBodyTemplateFile.toPath();
+		logger.debug("emailMsgBodyTemplatePath = {}", emailMsgBodyTemplatePath);
+		String emailMsgBodyTemplateText = null;
+		try {
+			emailMsgBodyTemplateText = new String(Files.readAllBytes(emailMsgBodyTemplatePath),
+					Charset.forName("UTF-8"));
+		} catch (IOException e) {
+			throw new ReportingException("Error loading e-mail body template from classpath", e);
+		}
+		logger.info("emailMsgBodyTemplateText = {}", emailMsgBodyTemplateText);
+
+		/*
 		 * Convert the document stored in the field Job.document into a byte
 		 * array. If the document is currently Base64 encoded, it is decoded
 		 * here.
@@ -502,9 +549,35 @@ public class JobService {
 			documentBytes = job.getDocument().getBytes(StandardCharsets.UTF_8);
 		}
 
+		/*
+		 * These are the arguments that can be interpolated into the email
+		 * subject and message body templates.
+		 */
+		Object[] messageArguments = new Object[7];
+		messageArguments[0] = job.getReportVersion().getReport().getName();
+		messageArguments[1] = job.getReportVersion().getReport().getNumber();
+		messageArguments[2] = job.getReportVersion().getFileName(); // rptdesign filename
+		messageArguments[3] = job.getReportVersion().getVersionName();
+		messageArguments[4] = job.getFileName(); // rendered report filename
+		/*
+		 * Adjust job.getReportRanAt() to be relative to the time zone where the
+		 * report server is located. Currnently, we make no attempt to express
+		 * the datetime in the time zone of the report user or e-mail recipient
+		 * because we do not know what that time zone is (we would need to add
+		 * support for that). 
+		 * 
+		 * job.getReportRanAt() holds the datetime relative to UTC. If we do not
+		 * adjust it here, it will be wrong unless the
+		 */
+		messageArguments[5] = DateUtils.entityTimestampToServerTimezoneDate(job.getReportRanAt());
+		messageArguments[6] = documentBytes.length;
+
+		String subject = new MessageFormat(emailSubjectTemplateText, Locale.getDefault()).format(messageArguments);
+		String msgBody = new MessageFormat(emailMsgBodyTemplateText, Locale.getDefault()).format(messageArguments);
+		logger.info("subject = {}", subject);
+		logger.info("msgBody = {}", msgBody);
+
 		try {
-			String subject = "This is the subject - IMPROVE THIS!";
-			String msgBody = "This is the e-mail body - IMPROVE THIS!";
 			emailService.sendEmail(
 					job.getEmailAddress(),
 					subject,
