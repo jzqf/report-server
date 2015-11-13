@@ -504,7 +504,7 @@ public class JobService {
 			if (job == null) {
 				throw new ReportingException("No Job found for jobId = " + jobId);
 			}
-			logger.info("E-mailing job = {}", job);
+			logger.info("Processing job = {}", job);
 
 			/*
 			 * This Classloader is used for loading the e-mail subject and body

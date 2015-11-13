@@ -4,8 +4,10 @@ import java.util.Properties;
 
 import javax.activation.DataHandler;
 import javax.activation.DataSource;
+import javax.mail.Authenticator;
 import javax.mail.Message;
 import javax.mail.MessagingException;
+import javax.mail.PasswordAuthentication;
 import javax.mail.Session;
 import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
@@ -34,18 +36,35 @@ public class EmailService {
 	 */
 	private final Environment env;
 
-	private final String defaultSmtpHost;
-	private final String defaultSmtpPort;
 	private final String defaultSender;
 	private final String defaultFrom;
+	private final String defaultSmtpHost;
+	private final String defaultSmtpPort;
+	private final String defaultSmtpAuth;
+	private final String defaultSmtpAuthUsername;
+	private final String defaultSmtpAuthPassword;
+	private final String defaultSmtpStarttlsEnable;
+	private final String defaultSmtpStarttlsRequired;
+
+	/*
+	 * These instance fields are used to pass the SMTP user name and password to
+	 * the SMTP Authenticator inner class, SmtpAuthenticator.
+	 */
+	private String smtpAuthUsername = null;
+	private String smtpAuthPassword = null;
 
 	@Autowired
 	public EmailService(Environment env) {
 		this.env = env;
-		this.defaultSmtpHost = env.getProperty("mail.smtp.host");
-		this.defaultSmtpPort = env.getProperty("mail.smtp.port");
 		this.defaultSender = env.getProperty("mail.sender");
 		this.defaultFrom = env.getProperty("mail.from");
+		this.defaultSmtpHost = env.getProperty("mail.smtp.host");
+		this.defaultSmtpPort = env.getProperty("mail.smtp.port");
+		this.defaultSmtpAuth = env.getProperty("mail.smtp.auth");
+		this.defaultSmtpAuthUsername = env.getProperty("mail.smtp.auth.username");
+		this.defaultSmtpAuthPassword = env.getProperty("mail.smtp.auth.password");
+		this.defaultSmtpStarttlsEnable = env.getProperty("mail.smtp.starttls.enable");
+		this.defaultSmtpStarttlsRequired = env.getProperty("mail.smtp.starttls.required");
 	}
 
 	public void sendEmail(
@@ -56,7 +75,7 @@ public class EmailService {
 			String attachmentInternetMediaType,
 			String attachmentFilename) throws MessagingException {
 		sendEmail(recipient, subject, msgBody, attachmentBytes, attachmentInternetMediaType, attachmentFilename,
-				null, null, null, null);
+				null, null, null, null, null, null, null, null, null);
 	}
 
 	public void sendEmail(
@@ -66,24 +85,56 @@ public class EmailService {
 			byte[] attachmentBytes,
 			String attachmentInternetMediaType,
 			String attachmentFilename,
+			String sender,
+			String from,
 			String smtpHost,
 			String smtpPort,
-			String sender,
-			String from) throws MessagingException {
+			String smtpAuth,
+			String smtpAuthUsername,
+			String smtpAuthPassword,
+			String smtpStarttlsEnable,
+			String smtpStarttlsRequired) throws MessagingException {
+
 		logger.info("recipient = {}, attachmentBytes.length = {}", recipient, attachmentBytes.length);
-		smtpHost = (smtpHost != null) ? smtpHost : defaultSmtpHost;
-		smtpPort = (smtpPort != null) ? smtpPort : defaultSmtpPort;
+		
 		sender = (sender != null) ? sender : defaultSender;
 		from = (from != null) ? from : defaultFrom;
-		logger.info("smtpHost = {}, smtpPort = {}, sender = {}, from = {}", smtpHost, smtpPort, sender, from);
+		
+		smtpHost = (smtpHost != null) ? smtpHost : defaultSmtpHost;
+		smtpPort = (smtpPort != null) ? smtpPort : defaultSmtpPort;
+
+		smtpAuth = (smtpAuth != null) ? smtpAuth : defaultSmtpAuth;
+		this.smtpAuthUsername = (smtpAuthUsername != null) ? smtpAuthUsername : defaultSmtpAuthUsername;
+		this.smtpAuthPassword = (smtpAuthPassword != null) ? smtpAuthPassword : defaultSmtpAuthPassword;
+		smtpStarttlsEnable = (smtpStarttlsEnable != null) ? smtpStarttlsEnable : defaultSmtpStarttlsEnable;
+		smtpStarttlsRequired = (smtpStarttlsRequired != null) ? smtpStarttlsRequired : defaultSmtpStarttlsRequired;
+
+		/*
+		 * Check that String parameters that should represent Boolean values do,
+		 * in fact, represent Boolean values; if not, we replace their values
+		 * with default values.
+		 */
+		if (!smtpAuth.equals("true") && !smtpAuth.equals("false")) {
+			smtpAuth = "false";
+		}
+		if (!smtpStarttlsEnable.equals("true") && !smtpStarttlsEnable.equals("false")) {
+			smtpStarttlsEnable = "false";
+		}
+		if (!smtpStarttlsRequired.equals("true") && !smtpStarttlsRequired.equals("false")) {
+			smtpStarttlsRequired = "false";
+		}
+
+		boolean smtpAuthBoolean = Boolean.parseBoolean(smtpAuth);
+
+		logger.info("sender = {}, from = {}, smtpHost = {}, smtpPort = {}", sender, from,smtpHost, smtpPort);
 
 		Properties properties = new Properties();
 		properties.put("mail.smtp.host", smtpHost);
 		properties.put("mail.smtp.port", smtpPort);
-		properties.put("mail.smtp.auth", "false");
-		properties.put("mail.smtp.starttls.enable", "false");
+		properties.put("mail.smtp.auth", smtpAuth);
+		properties.put("mail.smtp.starttls.enable", smtpStarttlsEnable);
+		properties.put("mail.smtp.starttls.required", smtpStarttlsRequired);
 		Session session = Session.getDefaultInstance(properties, null);
-
 
 		/*
 		 * Create the text body part of the multi-part message.
@@ -121,6 +172,22 @@ public class EmailService {
 		 */
 		Transport.send(mimeMessage);
 
+	}
+
+	/**
+	 * {@link Authenticator} for SMTP servers that require username/password
+	 * authentication.
+	 * 
+	 * @author jeffreyz
+	 *
+	 */
+	private class SmtpAuthenticator extends Authenticator {
+		@Override
+		public PasswordAuthentication getPasswordAuthentication() {
+			String username = EmailService.this.smtpAuthUsername;
+			String password = EmailService.this.smtpAuthPassword;
+			return new PasswordAuthentication(username, password);
+		}
 	}
 
 }
