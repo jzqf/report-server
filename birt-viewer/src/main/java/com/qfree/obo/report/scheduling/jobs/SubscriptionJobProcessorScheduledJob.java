@@ -135,7 +135,7 @@ public class SubscriptionJobProcessorScheduledJob {
 				 * the Job record and then download the rendered report document
 				 * from the Job.
 				 * 
-				 * Current programming logi in this application tries to ensure
+				 * Current programming logic in this application tries to ensure
 				 * that all enabled Subscription entities have  value for their
 				 * "emilAddress" field. Since this value is assigned to a new
 				 * Job entity's "emailAddress" field when a new Job is created
