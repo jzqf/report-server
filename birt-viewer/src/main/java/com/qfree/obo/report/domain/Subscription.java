@@ -128,8 +128,8 @@ public class Subscription implements Serializable {
 	 * primary e-mail address store with the Role entity.
 	 */
 	// @NotBlank
-	@Column(name = "email", nullable = true, length = 160)
-	private String email;
+	@Column(name = "email_address", nullable = true, length = 160)
+	private String emailAddress;
 
 	/**
 	 * Optional short description of the subscription. This can be useful if the
@@ -172,31 +172,31 @@ public class Subscription implements Serializable {
 	private Subscription() {
 	}
 
-	public Subscription(
-			Role role,
-			ReportVersion reportVersion,
-			DocumentFormat documentFormat,
-			String deliveryCronSchedule,
-			String deliveryTimeZoneId,
-			Date deliveryDatetimeRunAt,
-			String email,
-			String description,
-			Boolean enabled,
-			Boolean active) {
-		this(
-				null,
-				role,
-				reportVersion,
-				documentFormat,
-				deliveryCronSchedule,
-				deliveryTimeZoneId,
-				deliveryDatetimeRunAt,
-				email,
-				description,
-				enabled,
-				active,
-				DateUtils.nowUtc());
-	}
+	//	public Subscription(
+	//			Role role,
+	//			ReportVersion reportVersion,
+	//			DocumentFormat documentFormat,
+	//			String deliveryCronSchedule,
+	//			String deliveryTimeZoneId,
+	//			Date deliveryDatetimeRunAt,
+	//			String emailAddress,
+	//			String description,
+	//			Boolean enabled,
+	//			Boolean active) {
+	//		this(
+	//				null,
+	//				role,
+	//				reportVersion,
+	//				documentFormat,
+	//				deliveryCronSchedule,
+	//				deliveryTimeZoneId,
+	//				deliveryDatetimeRunAt,
+	//				emailAddress,
+	//				description,
+	//				enabled,
+	//				active,
+	//				DateUtils.nowUtc());
+	//	}
 
 	public Subscription(
 			SubscriptionResource subscriptionResource,
@@ -211,7 +211,7 @@ public class Subscription implements Serializable {
 				subscriptionResource.getDeliveryCronSchedule(),
 				subscriptionResource.getDeliveryTimeZoneId(),
 				subscriptionResource.getDeliveryDatetimeRunAt(),
-				subscriptionResource.getEmail(),
+				subscriptionResource.getEmailAddress(),
 				subscriptionResource.getDescription(),
 				subscriptionResource.getEnabled(),
 				subscriptionResource.getActive(),
@@ -226,7 +226,7 @@ public class Subscription implements Serializable {
 			String deliveryCronSchedule,
 			String deliveryTimeZoneId,
 			Date deliveryDatetimeRunAt,
-			String email,
+			String emailAddress,
 			String description,
 			Boolean enabled,
 			Boolean active,
@@ -239,7 +239,7 @@ public class Subscription implements Serializable {
 		this.deliveryCronSchedule = deliveryCronSchedule;
 		this.deliveryTimeZoneId = deliveryTimeZoneId;
 		this.deliveryDatetimeRunAt = deliveryDatetimeRunAt;
-		this.email = email;
+		this.emailAddress = emailAddress;
 		this.description = description;
 		this.enabled = (enabled != null) ? enabled : false;
 		this.active = (active != null) ? active : true;
@@ -294,12 +294,12 @@ public class Subscription implements Serializable {
 		this.deliveryDatetimeRunAt = deliveryDatetimeRunAt;
 	}
 
-	public String getEmail() {
-		return email;
+	public String getEmailAddress() {
+		return emailAddress;
 	}
 
-	public void setEmail(String email) {
-		this.email = email;
+	public void setEmailAddress(String emailAddress) {
+		this.emailAddress = emailAddress;
 	}
 
 	public String getDescription() {
@@ -371,8 +371,8 @@ public class Subscription implements Serializable {
 		builder.append(deliveryTimeZoneId);
 		builder.append(", deliveryDatetimeRunAt=");
 		builder.append(deliveryDatetimeRunAt);
-		builder.append(", email=");
-		builder.append(email);
+		builder.append(", emailAddress=");
+		builder.append(emailAddress);
 		builder.append(", description=");
 		builder.append(description);
 		builder.append(", enabled=");

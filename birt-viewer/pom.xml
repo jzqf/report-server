@@ -12,7 +12,7 @@
 
 	<!-- <groupId>com.qfree.obo</groupId> -->
 	<artifactId>birt-viewer</artifactId>
-	<version>0.9-RELEASE</version>
+	<version>0.10-SNAPSHOT</version>
 	<packaging>war</packaging>
 	<name>OBO Report Viewer</name>
 	<description>Web project for displaying OBO reports that integrates the BIRT Viewer and that can be deployed in a servlet container such as Tomcat</description>
@@ -50,6 +50,7 @@
 		<!-- <servlet-api.version>3.1.0</servlet-api.version> -->
 		<!-- <hibernate.version>4.3.8.Final</hibernate.version> -->
 		<quartz.version>2.2.1</quartz.version>
+		<!-- <javax.mail.version>1.5.4</javax.mail.version> -->
 		<tomcat7.maven.plugin.version>2.2</tomcat7.maven.plugin.version>
 		<!--
 		  The following versions must agree with the properties defined with the
@@ -85,7 +86,7 @@
 			   comments that explain they were copied from that POM file.
 		-->
 		<jersey.version>2.14</jersey.version>
-		
+
 		<!-- The main class to start by executing java -jar -->
 		<start-class>com.qfree.obo.report.ApplicationConfig</start-class>
 	</properties>
@@ -215,6 +216,20 @@
 					<artifactId>spring-beans</artifactId>
 				</exclusion>
 			</exclusions>
+		</dependency>
+
+		<!-- This is just the JavaMail API, with no implementation:
+		<dependency>
+			<groupId>javax.mail</groupId>
+			<artifactId>javax.mail-api</artifactId>
+			<scope>compile</scope>
+			<version>${javax.mail.version}</version>
+		</dependency> -->
+		<!-- This is the JavaMail API, with implementation: -->
+		<dependency>
+			<groupId>com.sun.mail</groupId>
+			<artifactId>javax.mail</artifactId>
+			<!-- <version>${javax.mail.version}</version> -->
 		</dependency>
 
 		<!-- <dependency>

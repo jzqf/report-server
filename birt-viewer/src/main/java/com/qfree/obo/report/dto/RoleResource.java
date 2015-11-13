@@ -41,7 +41,7 @@ public class RoleResource extends AbstractBaseResource {
 	private Boolean loginRole;
 
 	@XmlElement
-	private String email;
+	private String emailAddress;
 
 	@XmlElement
 	private String timeZoneId;
@@ -101,7 +101,7 @@ public class RoleResource extends AbstractBaseResource {
 			this.fullName = role.getFullName();
 			this.encodedPassword = role.getEncodedPassword();
 			this.loginRole = role.isLoginRole();
-			this.email = role.getEmail();
+			this.emailAddress = role.getEmailAddress();
 			this.timeZoneId = role.getTimeZoneId();
 			this.createdOn = role.getCreatedOn();
 		}
@@ -203,12 +203,12 @@ public class RoleResource extends AbstractBaseResource {
 		this.loginRole = loginRole;
 	}
 
-	public String getEmail() {
-		return email;
+	public String getEmailAddress() {
+		return emailAddress;
 	}
 
-	public void setEmail(String email) {
-		this.email = email;
+	public void setEmailAddress(String emailAddress) {
+		this.emailAddress = emailAddress;
 	}
 
 	public String getTimeZoneId() {
@@ -240,8 +240,8 @@ public class RoleResource extends AbstractBaseResource {
 		builder.append(encodedPassword);
 		builder.append(", loginRole=");
 		builder.append(loginRole);
-		builder.append(", email=");
-		builder.append(email);
+		builder.append(", emailAddress=");
+		builder.append(emailAddress);
 		builder.append(", timeZoneId=");
 		builder.append(timeZoneId);
 		builder.append(", createdOn=");

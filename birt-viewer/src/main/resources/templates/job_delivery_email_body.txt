@@ -1,0 +1,7 @@
+This is a report delivery from the Q-Free Report Server.
+
+Report name:    {0}
+Report number:  {1}
+Attached file:  {4}
+File size:      {6,number,integer} bytes
+Report run at:  {5,date,medium} {5,time,long}

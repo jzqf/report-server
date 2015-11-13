@@ -216,10 +216,7 @@ public class SubscriptionScheduledJob {
 						subscription.getReportVersion(),
 						subscription.getRole(),
 						subscription.getDocumentFormat(),
-						null,
-						null,
-						null,
-						null);
+						subscription.getEmailAddress());
 
 				List<JobParameter> jobParameters = new ArrayList<>(0);
 				job.setJobParameters(jobParameters);

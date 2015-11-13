@@ -71,12 +71,12 @@ public class Role implements Serializable {
 
 	/**
 	 * E-mail address to associate with the role. This can be used to
-	 * automatically set the email address for a newly created report
+	 * automatically set the emailAddress address for a newly created report
 	 * subscription.
 	 */
 	// @NotBlank
-	@Column(name = "email", nullable = true, length = 160)
-	private String email;
+	@Column(name = "email_address", nullable = true, length = 160)
+	private String emailAddress;
 
 	/**
 	 * Used to associate a default time zone with the Role, e.g., for use with a
@@ -156,7 +156,7 @@ public class Role implements Serializable {
 	//			String username,
 	//			String fullName,
 	//			Boolean loginRole,
-	//			String email,
+	//			String emailAddress,
 	//			String timeZoneId,
 	//			Date createdOn) {
 	//		this(
@@ -165,7 +165,7 @@ public class Role implements Serializable {
 	//				username,
 	//				fullName,
 	//				loginRole,
-	//				email,
+	//				emailAddress,
 	//				timeZoneId,
 	//				createdOn);
 	//	}
@@ -177,7 +177,7 @@ public class Role implements Serializable {
 				roleResource.getUsername(),
 				roleResource.getFullName(),
 				roleResource.isLoginRole(),
-				roleResource.getEmail(),
+				roleResource.getEmailAddress(),
 				roleResource.getTimeZoneId(),
 				roleResource.getCreatedOn());
 	}
@@ -188,7 +188,7 @@ public class Role implements Serializable {
 			String username,
 			String fullName,
 			Boolean loginRole,
-			String email,
+			String emailAddress,
 			String timeZoneId,
 			Date createdOn) {
 		this.roleId = roleId;
@@ -196,7 +196,7 @@ public class Role implements Serializable {
 		this.username = username;
 		this.fullName = fullName;
 		this.encodedPassword = encodedPassword;
-		this.email = email;
+		this.emailAddress = emailAddress;
 		this.timeZoneId = timeZoneId;
 		this.createdOn = (createdOn != null) ? createdOn : DateUtils.nowUtc();
 	}
@@ -237,12 +237,12 @@ public class Role implements Serializable {
 		this.loginRole = loginRole;
 	}
 
-	public String getEmail() {
-		return email;
+	public String getEmailAddress() {
+		return emailAddress;
 	}
 
-	public void setEmail(String email) {
-		this.email = email;
+	public void setEmailAddress(String emailAddress) {
+		this.emailAddress = emailAddress;
 	}
 
 	public String getTimeZoneId() {
@@ -348,8 +348,8 @@ public class Role implements Serializable {
 		builder.append(fullName);
 		builder.append(", encodedPassword=");
 		builder.append(encodedPassword);
-		builder.append(", email=");
-		builder.append(email);
+		builder.append(", emailAddress=");
+		builder.append(emailAddress);
 		builder.append(", timeZoneId=");
 		builder.append(timeZoneId);
 		builder.append(", createdOn=");

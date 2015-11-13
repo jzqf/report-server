@@ -49,9 +49,9 @@ I.	===== Upgrading the report server database =====
 II.	===== Upgrading the report server application =====
 
 1.	Deploy report-server.war for the new version of the report server 
-	application using the Tomcat administrative HTML interface. . This step 
-	should also start the application. If the application does not start, check 
-	the container log file, which for Tomcat can be found here:
+	application using the Tomcat administrative HTML interface. This step should
+	also start the application. If the application does not start, check the
+	container log file, which for Tomcat can be found here:
 
 		<CATALINA_HOME>/logs/obo-report-server/obo-report-server.log
 	

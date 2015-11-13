@@ -53,7 +53,7 @@ public class JobResource extends AbstractBaseResource {
 	private Date reportRanAt;
 
 	@XmlElement
-	private String email;
+	private String emailAddress;
 
 	@XmlElement
 	@XmlJavaTypeAdapter(DatetimeAdapter.class)
@@ -151,7 +151,7 @@ public class JobResource extends AbstractBaseResource {
 					(job.getDocument() != null) ? job.getDocument().length() : 0);
 			this.encoded = job.getEncoded();
 			this.reportRanAt = job.getReportRanAt();
-			this.email = job.getEmail();
+			this.emailAddress = job.getEmailAddress();
 			this.reportEmailedAt = job.getReportEmailedAt();
 			this.createdOn = job.getCreatedOn();
 
@@ -285,12 +285,12 @@ public class JobResource extends AbstractBaseResource {
 		this.reportRanAt = reportRanAt;
 	}
 
-	public String getEmail() {
-		return email;
+	public String getEmailAddress() {
+		return emailAddress;
 	}
 
-	public void setEmail(String email) {
-		this.email = email;
+	public void setEmailAddress(String emailAddress) {
+		this.emailAddress = emailAddress;
 	}
 
 	public Date getReportEmailedAt() {
@@ -387,8 +387,8 @@ public class JobResource extends AbstractBaseResource {
 		builder.append(jobStatusSetAt);
 		builder.append(", reportRanAt=");
 		builder.append(reportRanAt);
-		builder.append(", email=");
-		builder.append(email);
+		builder.append(", emailAddress=");
+		builder.append(emailAddress);
 		builder.append(", reportEmailedAt=");
 		builder.append(reportEmailedAt);
 		builder.append(", createdOn=");
