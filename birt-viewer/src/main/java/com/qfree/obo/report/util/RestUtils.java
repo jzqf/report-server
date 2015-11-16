@@ -1,8 +1,13 @@
 package com.qfree.obo.report.util;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -10,6 +15,7 @@ import org.xml.sax.SAXException;
 
 import com.qfree.obo.report.dto.ResourcePath;
 import com.qfree.obo.report.dto.RestErrorResource.RestError;
+import com.qfree.obo.report.exceptions.ReportingException;
 import com.qfree.obo.report.exceptions.RestApiException;
 
 public class RestUtils {
@@ -18,6 +24,10 @@ public class RestUtils {
 
 	public static final boolean AUTO_EXPAND_PRIMARY_RESOURCES = false;
 	public static final boolean FILTER_INACTIVE_RECORDS = true;
+
+	public static final String CONDITION_ATTR_NAME = "attributeName";
+	public static final String CONDITION_OPERATOR = "comparisonOperator";
+	public static final String CONDITION_VALUE = "comparisonValue";
 
 	/**
 	 * Default value for the number of instance resources to make up one "page"
@@ -399,5 +409,240 @@ public class RestUtils {
 		}
 
 		return limit;
+	}
+
+	public static List<List<Map<String, String>>> parseFilterQueryParam(String filterQueryParamText)
+			throws ReportingException {
+
+		logger.info("filterQueryParamText = {}", filterQueryParamText);
+
+		String filterQueryParamRegex = "" +
+				"(                              # Group 1 to capture the condition string that appears \n" +
+				"                               # between each '.and.' operator.                       \n" +
+				"                                                                                      \n" +
+				"  (                            # Group 2 to capture a single logical condition, i.e., \n" +
+				"                               #   attrname.(eq|ne|lt|le|ge|gt).\"some value\"[.or.]  \n" +
+				"                               # The final '.or.' is optional so it might not appear. \n" +
+				"                                                                                      \n" +
+				"    \\w+                       # Attribute name, attrname.                            \n" +
+				"    \\.(eq|ne|lt|le|ge|gt)\\.  # The logical comparison operator:                     \n" +
+				"                               #   .eq. | .ne. | .lt. | .le. | .ge | .gt.             \n" +
+				"                               # The 2-letter operator name is captured in group 3.   \n" +
+				"    \".*?\"                    # Comparison value, enclosed in double quotes.         \n" +
+				"                               # '*' is used because the comparison term may be a     \n" +
+				"                               # zero-length string.                                  \n" +
+				"                               # '?' is used to make the match lazy (ungreedy or      \n" +
+				"                               # reluctant) so that we match on the first closing     \n" +
+				"                               # double quote. The comparison value may contain       \n" +
+				"                               # double quotes itself and this should still work.     \n" +
+				"    (\\.or\\.)*                # Group 4 to capture an  optional '.or.' operator.     \n" +
+				"                                                                                      \n" +
+				"  )+                           # Group 2 close. There must be at least one condition; \n" +
+				"                               # hence, the '+' here is necessary.                    \n" +
+				"                                                                                      \n" +
+				")                              # Group 1 close                                        \n" +
+				"((\\.and\\.)|$)                # Group 5 to capture *either* an intervening '.and.'   \n" +
+				"                               # operator *or* an end of line.                        \n";
+
+		/*
+		 * Regex for parsing each of the string that represents a filter
+		 * condition to be ADD'ed together. These are the strings from
+		 * filterQueryParamText that are delimited by ".and.".
+		 */
+		String andConditionRegex = "" +
+				"    (                          # Group 1 to capture a single logical condition        \n" +
+				"                               # *without* the trailing '.or.', i.e.,                 \n" +
+				"                               #   attrname.(eq|ne|lt|le|ge|gt).\"some value\"        \n" +
+				"                                                                                      \n" +
+				"    \\w+                       # Attribute name, attrname.                            \n" +
+				"    \\.(eq|ne|lt|le|ge|gt)\\.  # The logical comparison operator:                     \n" +
+				"                               #   .eq. | .ne. | .lt. | .le. | .ge | .gt.             \n" +
+				"                               # The 2-letter operator name is captured in group 2.   \n" +
+				"    \".*?\"                    # Comparison value, enclosed in double quotes.         \n" +
+				"                               # '*' is used because the comparison term may be a     \n" +
+				"                               # zero-length string.                                  \n" +
+				"                               # '?' is used to make the match lazy (ungreedy or      \n" +
+				"                               # reluctant) so that we match on the first closing     \n" +
+				"                               # double quote. This means that the comparison value   \n" +
+				"                               # should NOT contain a double quote itself. If it      \n" +
+				"                               # does, we will need to treat it specially somehow one \n" +
+				"                               # day (currently, this is NOT supported).              \n" +
+				"                                                                                      \n" +
+				"    )                          # Group 1 close for capturing a single logical         \n" +
+				"                               # condition *without* the trailing '.or.'.             \n" +
+				"                                                                                      \n" +
+				"    ((\\.or\\.)|$)             # Group 3 to capture *either* an intervening '.or.'    \n" +
+				"                               # operator *or* an end of line.                        \n";
+
+		/*
+		 * Regex for parsing each of the strings that represent a single logical
+		 * condition of the form:
+		 * 
+		 *    attrname.(eq|ne|lt|le|ge|gt)."some value"
+		 */
+		String orConditionRegex = "" +
+				"    (\\w+)                     # Group 1: Attribute name, attrname.                   \n" +
+				"    \\.(eq|ne|lt|le|ge|gt)\\.  # The logical comparison operator:                     \n" +
+				"                               #   .eq. | .ne. | .lt. | .le. | .ge | .gt.             \n" +
+				"                               # The 2-letter operator name is captured in group 2.   \n" +
+				"    \"(.*)\"$                  # Comparison value, enclosed in double quotes. The     \n" +
+				"                               # value itselft is captured in group 3.                \n" +
+				"                               # '*' is used because the comparison term may be a     \n" +
+				"                               # zero-length string.                                  \n" +
+				"                               # $ ensures that we match on the last closing double   \n" +
+				"                               # quote. This means that the comparison value can      \n" +
+				"                               # contain double quotes itself.                        \n";
+
+		List<List<Map<String, String>>> filterConditions = new ArrayList<>();
+
+		try {
+
+			Pattern pattern = Pattern.compile(filterQueryParamRegex, Pattern.COMMENTS);
+			Matcher matcher = pattern.matcher(filterQueryParamText);
+
+			/*
+			 * Extract substrings of filterQueryParamText, each of which 
+			 * corresponds to a conditional expression that is logically and'ed
+			 * with each other. These are substrings of filterQueryParamText
+			 * that are delimited with ".and.", although they are extracted 
+			 * using the regex filterQueryParamRegex to provide a more robust
+			 * parsing (the string ".and." must occur within filter values, even
+			 * though that is highly unlikely).
+			 */
+			List<String> andConditionStrings = new ArrayList<>();
+			while (matcher.find()) {
+				for (int i = 0; i <= matcher.groupCount(); i++) {
+					/*
+					 * Some of the capture groups are matched multiple times.
+					 * Here, matcher.group(i) seems to return the LAST value
+					 * captured for the most recent match.
+					 */
+					logger.info("group {}: {}", i, matcher.group(i));
+				}
+				andConditionStrings.add(matcher.group(1));
+			}
+			logger.info("");
+			logger.info("andConditionStrings = ");
+			for (String s : andConditionStrings) {
+				logger.info("{}", s);
+			}
+
+			/*
+			 * Now parse each conditional expression that was extracted from 
+			 * filterQueryParamText that are to be AND'ed together. The first
+			 * parsing level above parsed filterQueryParamText into strings:
+			 * 
+			 * andConditiona1, andConditional2, ...
+			 * 
+			 * where the conditions associated each of these strings must be 
+			 * AND'ed together.
+			 * 
+			 * Each string andConditiona1, andConditional2, ..., consists of 
+			 * multiple logical conditions that are OR'ed together, although
+			 * each may just consist of a single condition that is not OR'ed at
+			 * all.
+			 * 
+			 * Each logical condition to be OR'ed is made up of 3 strings:
+			 * 
+			 *   1. Attribute name.
+			 *   2. Logical operator. One of:
+			 *       "eq", "ne", "lt", "le", "ge", "gt"
+			 *   3. Comparison string.
+			 * 
+			 * For example, to filter on roleId, these three strings might be:
+			 * 
+			 *   "roleId", "eq", "b85fd129-17d9-40e7-ac11-7541040f8627".
+			 * 
+			 * Each such logical condition is represented as a Map with keys:
+			 * 
+			 *   "attributeName", "comparisonOperator" & "comparisonValue"
+			 * 
+			 * Each such Map is stored in a List, with one Map (list entry) for
+			 * each logical condition that is OR'ed together to make up one of
+			 * conditional expressions, andConditiona1, andConditional2, ...
+			 * 
+			 * We will end up with one List of Map's for each conditional 
+			 * expression, andConditiona1, andConditional2, ...
+			 * 
+			 * Each of these List of Map's will be stored in the list 
+			 * "filterConditions" 
+			 */
+			Pattern andConditionPattern = Pattern.compile(andConditionRegex, Pattern.COMMENTS);
+			Pattern orConditionPattern = Pattern.compile(orConditionRegex, Pattern.COMMENTS);
+
+			for (String andConditionString : andConditionStrings) {
+
+				logger.info("");
+				logger.info("String to parse: {}", andConditionString);
+
+				List<Map<String, String>> orConditions = new ArrayList<>();
+				filterConditions.add(orConditions);
+
+				Matcher andConditionMatcher = andConditionPattern.matcher(andConditionString);
+
+				/*
+				 * Parse andConditionString into a List of Map's where each Map
+				 * corresponds to a single atomic logical condition that it to
+				 * be OR'ed with each other.
+				 */
+
+				/*
+				 * Extract substrings of andConditionString, each of which 
+				 * corresponds to a conditional expression that is logically 
+				 * or'ed with each other.
+				 */
+				List<String> orConditionStrings = new ArrayList<>();
+				while (andConditionMatcher.find()) {
+					logger.info("andConditionMatcher.groupCount() = {}", andConditionMatcher.groupCount());
+					for (int i = 0; i <= andConditionMatcher.groupCount(); i++) {
+						logger.info("group {}: {}", i, andConditionMatcher.group(i));
+					}
+					String orConditionString = andConditionMatcher.group(1);
+					logger.info("orConditionString = {}", orConditionString);
+					orConditionStrings.add(orConditionString);
+
+					/*
+					 * Parse the logical condition into 3 strings:
+					 * 
+					 *   1. Attribute name.
+					 *   2. Logical operator. One of:
+					 *       "eq", "ne", "lt", "le", "ge", "gt"
+					 *   3. Comparison string.
+					 * 
+					 * These are placed into a Map, which is inserted into the
+					 * list of conditions that are to be OR'ed together.
+					 */
+					Matcher orConditionMatcher = orConditionPattern.matcher(orConditionString);
+					if (orConditionMatcher.find()) {
+						if (orConditionMatcher.groupCount() >= 3) {
+							logger.info("(attrName, op, value) = ({}, {}, {})",
+									orConditionMatcher.group(1),
+									orConditionMatcher.group(2),
+									orConditionMatcher.group(3));
+							Map<String, String> orCondition = new HashMap<>(3);
+							orCondition.put(CONDITION_ATTR_NAME, orConditionMatcher.group(1));
+							orCondition.put(CONDITION_OPERATOR, orConditionMatcher.group(2));
+							orCondition.put(CONDITION_VALUE, orConditionMatcher.group(3));
+							/*
+							 * Insert the Map into the List of conditions to be
+							 * OR'ed with each other.
+							 */
+							orConditions.add(orCondition);
+						}
+					}
+				}
+
+			}
+
+			logger.info("filterConditions = {}", filterConditions);
+			//for (List<Map<String, String>> filterCondition : filterConditions) {
+			//	logger.info("filterCondition = {}", filterCondition);
+			//}
+
+		} catch (PatternSyntaxException e) {
+			throw new ReportingException("Could not parse query parameter: " + filterQueryParamText, e);
+		}
+
+		return filterConditions;
 	}
 }

@@ -27,7 +27,8 @@ public class ParseFilterQueryParameter {
 		//		while (true) {
 		try {
 			//			String filterQueryParamText = "jobStatus.eq.\"FAILED\"";
-			String filterQueryParamText = "jobStatus.eq.\"FAILED\".or.jobStatus.eq.\"COMPLETED\".and.someField.ne.\"some value\".and.annotherField.gt.\"10\"";
+			//	String filterQueryParamText = "jobStatus.eq.\"FAILED\".or.jobStatus.eq.\"COMPLETED\".and.someField.ne.\"some value\".and.annotherField.gt.\"10\"";
+			String filterQueryParamText = "jobStatus.eq.\"FAI\"L\"ED\".or.jobStatus.eq.\"COMPLETED\".and.someField.ne.\"some\" value\".and.annotherField.gt.\"10\"";
 			System.out.println("filterQueryParamText = " + filterQueryParamText);
 
 			//	String filterQueryParamRegex = "((\\w+\\.(eq|ne|lt|le|ge|gt)\\.\".*?\"(\\.or\\.)*)+)(\\.and\\.)*";
@@ -50,20 +51,17 @@ public class ParseFilterQueryParameter {
 					"                               # zero-length string.                                  \n" +
 					"                               # '?' is used to make the match lazy (ungreedy or      \n" +
 					"                               # reluctant) so that we match on the first closing     \n" +
-					"                               # double quote. This means that the comparison value   \n" +
-					"                               # should NOT contain a double quote itself. If it      \n" +
-					"                               # does, we will need to treat it specially somehow one \n" +
-					"                               # day (currently, this is NOT supported).              \n" +
-					"    (\\.or\\.)*                # Group 4 to capture and optional '.or.' operator.     \n" +
+					"                               # double quote. The comparison value may contain       \n" +
+					"                               # double quotes itself and this should still work.     \n" +
+					"    (\\.or\\.)*                # Group 4 to capture an  optional '.or.' operator.     \n" +
 					"                                                                                      \n" +
 					"  )+                           # Group 2 close. There must be at least one condition; \n" +
 					"                               # hence, the '+' here is necessary.                    \n" +
 					"                                                                                      \n" +
 					")                              # Group 1 close                                        \n" +
-					"(\\.and\\.)*                   # Group 5 to capture the '.and.' operator. This string \n" +
-					"                               # might not appear and never at the end, so '*' is     \n" +
-					"                               # necessary.\n";
-			System.out.println("filterQueryParamRegex = \n" + filterQueryParamRegex);
+					"((\\.and\\.)|$)                # Group 5 to capture *either* an intervening '.and.'   \n" +
+					"                               # operator *or* an end of line.                        \n";
+			//System.out.println("filterQueryParamRegex = \n" + filterQueryParamRegex);
 			Pattern pattern = Pattern.compile(filterQueryParamRegex, Pattern.COMMENTS);
 
 			Matcher matcher = pattern.matcher(filterQueryParamText);
@@ -81,7 +79,8 @@ public class ParseFilterQueryParameter {
 				//			matcher.group(),
 				//			matcher.start(),
 				//			matcher.end()));
-				System.out.println("matcher.groupCount() = " + matcher.groupCount());
+				//System.out.println("matcher.groupCount() = " + matcher.groupCount());
+				System.out.println("");
 				for (int i = 0; i <= matcher.groupCount(); i++) {
 					/*
 					 * Some of the capture groups are matched multiple times.
@@ -165,8 +164,9 @@ public class ParseFilterQueryParameter {
 					"    )                          # Group 1 close for capturing a single logical         \n" +
 					"                               # condition *without* the trailing '.or.'.             \n" +
 					"                                                                                      \n" +
-					"    (\\.or\\.)*                # Group 3 to capture and optional '.or.' operator.     \n";
-			System.out.println("andConditionRegex = \n" + andConditionRegex);
+					"    ((\\.or\\.)|$)             # Group 3 to capture *either* an intervening '.or.'    \n" +
+					"                               # operator *or* an end of line.                        \n";
+			//System.out.println("andConditionRegex = \n" + andConditionRegex);
 			Pattern andConditionPattern = Pattern.compile(andConditionRegex, Pattern.COMMENTS);
 
 			/*
@@ -180,17 +180,14 @@ public class ParseFilterQueryParameter {
 					"    \\.(eq|ne|lt|le|ge|gt)\\.  # The logical comparison operator:                     \n" +
 					"                               #   .eq. | .ne. | .lt. | .le. | .ge | .gt.             \n" +
 					"                               # The 2-letter operator name is captured in group 2.   \n" +
-					"    \"(.*?)\"                  # Comparison value, enclosed in double quotes. The     \n" +
+					"    \"(.*)\"$                  # Comparison value, enclosed in double quotes. The     \n" +
 					"                               # value itselft is captured in group 3.                \n" +
 					"                               # '*' is used because the comparison term may be a     \n" +
 					"                               # zero-length string.                                  \n" +
-					"                               # '?' is used to make the match lazy (ungreedy or      \n" +
-					"                               # reluctant) so that we match on the first closing     \n" +
-					"                               # double quote. This means that the comparison value   \n" +
-					"                               # should NOT contain a double quote itself. If it      \n" +
-					"                               # does, we will need to treat it specially somehow one \n" +
-					"                               # day (currently, this is NOT supported).              \n";
-			System.out.println("orConditionRegex = \n" + orConditionRegex);
+					"                               # $ ensures that we match on the last closing double   \n" +
+					"                               # quote. This means that the comparison value can      \n" +
+					"                               # contain double quotes itself.                        \n";
+			//System.out.println("orConditionRegex = \n" + orConditionRegex);
 			Pattern orConditionPattern = Pattern.compile(orConditionRegex, Pattern.COMMENTS);
 
 			List<List<Map<String, String>>> filterConditions = new ArrayList<>();
@@ -257,6 +254,7 @@ public class ParseFilterQueryParameter {
 
 			}
 
+			System.out.println("filterConditions = " + filterConditions);
 			for (List<Map<String, String>> filterCondition : filterConditions) {
 				System.out.println("filterCondition = " + filterCondition);
 			}
