@@ -184,7 +184,9 @@ public class ReportVersion implements Serializable {
 	 * Returns {@link List} of {@link Subscription} entities associated with the
 	 * {@link ReportVersion}.
 	 * 
-	 * XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+	 * Filtering can be performed on the set of all {@link Subscription}
+	 * entities associated with the {@link ReportVersion}. An important use case
+	 * is to filter on roleId.
 	 * 
 	 * @param filterConditions
 	 * @return
@@ -194,6 +196,10 @@ public class ReportVersion implements Serializable {
 			throws ParseResourceFilterException {
 
 		logger.info("filterConditions = {}", filterConditions);
+
+		if (filterConditions == null) {
+			return getReportSubscriptions(); // no filtering
+		}
 
 		List<Subscription> unfilteredSubscriptions = getReportSubscriptions();
 		/*
