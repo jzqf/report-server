@@ -88,7 +88,7 @@ public class ReportVersion implements Serializable {
 	 *     Deleting a ReportVersion will delete all of its Subscription's.
 	 */
 	@OneToMany(mappedBy = "reportVersion", cascade = CascadeType.ALL)
-	private List<Subscription> reportSubscriptions;
+	private List<Subscription> subscriptions;
 
 	/*
 	 * cascade = CascadeType.ALL:
@@ -198,15 +198,15 @@ public class ReportVersion implements Serializable {
 		logger.info("filterConditions = {}", filterConditions);
 
 		if (filterConditions == null) {
-			return getReportSubscriptions(); // no filtering
+			return getSubscriptions(); // no filtering
 		}
 
-		List<Subscription> unfilteredSubscriptions = getReportSubscriptions();
+		List<Subscription> unfilteredSubscriptions = getSubscriptions();
 		/*
 		 * Perform filtering on the list of all Subscription entities associated
 		 * with the current ReportVersion.
 		 * 
-		 * If any problem is encountered, an excpetion is thrown. This is to
+		 * If any problem is encountered, an exception is thrown. This is to
 		 * avoid returning entities that were intended to be filtered out.
 		 */
 		for (List<Map<String, String>> andFilterCondition : filterConditions) {
@@ -296,12 +296,12 @@ public class ReportVersion implements Serializable {
 		this.reportParameters = reportParameters;
 	}
 
-	public List<Subscription> getReportSubscriptions() {
-		return reportSubscriptions;
+	public List<Subscription> getSubscriptions() {
+		return subscriptions;
 	}
 
-	public void setReportSubscriptions(List<Subscription> reportSubscriptions) {
-		this.reportSubscriptions = reportSubscriptions;
+	public void setSubscriptions(List<Subscription> subscriptions) {
+		this.subscriptions = subscriptions;
 	}
 
 	public List<Job> getJobs() {
