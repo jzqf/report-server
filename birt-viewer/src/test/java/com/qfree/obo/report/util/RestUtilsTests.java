@@ -83,6 +83,52 @@ public class RestUtilsTests {
 
 	@Test
 	@Transactional
+	public void parseFilterQueryParamSingleCondition() throws ReportingException {
+
+		/*
+		 * This query parameter value has an embedded double quote in the 
+		 * comparison value:
+		 * 
+		 *   someField.ne."some\" value"
+		 */
+		String filterQueryParamText = "someField.ne.\"some\" value\"";
+
+		List<List<Map<String, String>>> filterConditions = RestUtils.parseFilterQueryParam(filterQueryParamText);
+
+		assertThat(filterConditions, hasSize(1));
+		assertThat(filterConditions.get(0), hasSize(1));
+		/*
+		 * This Map represents the single condition.
+		 */
+		Map<String, String> filterConditionMap = filterConditions.get(0).get(0);
+		//assertThat(filterConditionMap, isMapHasSize(3)); // <- Hamcrest v1.4?
+		assertThat(filterConditionMap.size(), is(3));
+		assertThat(filterConditionMap, hasEntry(RestUtils.CONDITION_ATTR_NAME, "someField"));
+		assertThat(filterConditionMap, hasEntry(RestUtils.CONDITION_OPERATOR, "ne"));
+		assertThat(filterConditionMap, hasEntry(RestUtils.CONDITION_VALUE, "some\" value"));
+
+	}
+
+	@Test
+	@Transactional
+	public void parseFilterQueryParamNoClosingQuote() throws ReportingException {
+
+		/*
+		 * This query parameter value has an embedded double quote in the 
+		 * comparison value, but no closing quote on the comparison value:
+		 * 
+		 *   someField.ne."some\" value
+		 */
+		String filterQueryParamText = "someField.ne.\"some\" value";
+
+		List<List<Map<String, String>>> filterConditions = RestUtils.parseFilterQueryParam(filterQueryParamText);
+
+		assertThat(filterConditions, hasSize(0));
+
+	}
+
+	@Test
+	@Transactional
 	public void parseFilterQueryParam() throws ReportingException {
 
 		String filterQueryParamText = "jobStatus.eq.\"FAI\"L\"ED\".or.jobStatus.eq.\"COMPLETED\".and.someField.ne.\"some\" value\".and.annotherField.gt.\"10\"";

@@ -15,7 +15,7 @@ import org.xml.sax.SAXException;
 
 import com.qfree.obo.report.dto.ResourcePath;
 import com.qfree.obo.report.dto.RestErrorResource.RestError;
-import com.qfree.obo.report.exceptions.ReportingException;
+import com.qfree.obo.report.exceptions.ParseResourceFilterException;
 import com.qfree.obo.report.exceptions.RestApiException;
 
 public class RestUtils {
@@ -412,7 +412,7 @@ public class RestUtils {
 	}
 
 	public static List<List<Map<String, String>>> parseFilterQueryParam(String filterQueryParamText)
-			throws ReportingException {
+			throws ParseResourceFilterException {
 
 		logger.info("filterQueryParamText = {}", filterQueryParamText);
 
@@ -640,7 +640,42 @@ public class RestUtils {
 			//}
 
 		} catch (PatternSyntaxException e) {
-			throw new ReportingException("Could not parse query parameter: " + filterQueryParamText, e);
+			throw new ParseResourceFilterException("Could not parse filter query parameter: " + filterQueryParamText,
+					e);
+		}
+
+		return filterConditions;
+	}
+
+	public static List<List<Map<String, String>>> parseFilterQueryParams(Map<String, List<String>> queryParams)
+			throws ParseResourceFilterException {
+
+		List<List<Map<String, String>>> filterConditions = new ArrayList<>();
+
+		List<String> filterQueryParams = queryParams.get(ResourcePath.FILTER_QP_KEY);
+		if (filterQueryParams != null) {
+			for (String filterQueryParam : filterQueryParams) {
+					List<List<Map<String, String>>> filterConditionsForQueryParam = RestUtils
+							.parseFilterQueryParam(filterQueryParam);
+				/*
+				 * Insert the parsed conditions in filterConditionsForQueryParam
+				 * into the list that will be returned. Each inserted list:
+				 * 
+				 *   1. Represents a condition to be AND'ed.
+				 *   
+				 *   2. Can consist of any number of conditions to be OR'ed with
+				 *      each other. Each condition to be OR'ed is represented by
+				 *      a Map that contains 3 values:
+				 *      
+				 *        a. attributeName
+				 *        b. comparisoPperator
+				 *        c. comparisonValue
+				 */
+				for (List<Map<String, String>> filterConditionForQueryParam : filterConditionsForQueryParam) {
+					logger.info("filterConditionForQueryParam = {}", filterConditionForQueryParam);
+					filterConditions.add(filterConditionForQueryParam);
+				}
+			}
 		}
 
 		return filterConditions;

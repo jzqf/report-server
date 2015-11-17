@@ -1,8 +1,10 @@
 package com.qfree.obo.report.domain;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import javax.persistence.CascadeType;
@@ -24,9 +26,13 @@ import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;
 import org.hibernate.validator.constraints.NotBlank;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.qfree.obo.report.dto.ReportVersionResource;
+import com.qfree.obo.report.exceptions.ParseResourceFilterException;
 import com.qfree.obo.report.util.DateUtils;
+import com.qfree.obo.report.util.RestUtils;
 
 /**
  * The persistent class for the "report_version" database table.
@@ -45,6 +51,8 @@ import com.qfree.obo.report.util.DateUtils;
 public class ReportVersion implements Serializable {
 
 	private static final long serialVersionUID = 1L;
+
+	private static final Logger logger = LoggerFactory.getLogger(ReportVersion.class);
 
 	@Id
 	@NotNull
@@ -65,7 +73,7 @@ public class ReportVersion implements Serializable {
 	 */
 	@NotNull
 	@JoinColumn(name = "report_id", nullable = false,
-			foreignKey = @ForeignKey(name = "fk_reportversion_report"),
+			foreignKey = @ForeignKey(name = "fk_reportversion_report") ,
 			columnDefinition = "uuid")
 	private Report report;
 
@@ -102,7 +110,7 @@ public class ReportVersion implements Serializable {
 	private String rptdesign;
 
 	/**
-	 * A string value that represents the release version of the report as it 
+	 * A string value that represents the release version of the report as it
 	 * should be shown to users. The value is a string so that you can describe
 	 * the report version as a <major>.<minor>.<point> string, or in any other
 	 * chosen format.
@@ -112,8 +120,8 @@ public class ReportVersion implements Serializable {
 	private String versionName;
 
 	/**
-	 * An integer value that represents the version of the ReportVersion, 
-	 * relative to other versions for the same Report. The value is an integer 
+	 * An integer value that represents the version of the ReportVersion,
+	 * relative to other versions for the same Report. The value is an integer
 	 * so that it can be used for ordering in a UI or for other numerical uses.
 	 */
 	@NotNull
@@ -170,6 +178,96 @@ public class ReportVersion implements Serializable {
 		this.versionCode = versionCode;
 		this.active = (active != null) ? active : true;
 		this.createdOn = (createdOn != null) ? createdOn : DateUtils.nowUtc();
+	}
+
+	/**
+	 * Returns {@link List} of {@link Subscription} entities associated with the
+	 * {@link ReportVersion}.
+	 * 
+	 * XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+	 * 
+	 * @param filterConditions
+	 * @return
+	 * @throws ParseResourceFilterException
+	 */
+	public List<Subscription> getSubscriptions(List<List<Map<String, String>>> filterConditions)
+			throws ParseResourceFilterException {
+
+		logger.info("filterConditions = {}", filterConditions);
+
+		List<Subscription> unfilteredSubscriptions = getReportSubscriptions();
+		/*
+		 * Perform filtering on the list of all Subscription entities associated
+		 * with the current ReportVersion.
+		 * 
+		 * If any problem is encountered, an excpetion is thrown. This is to
+		 * avoid returning entities that were intended to be filtered out.
+		 */
+		for (List<Map<String, String>> andFilterCondition : filterConditions) {
+			List<Subscription> filteredSubscriptions = new ArrayList<>();
+			/*
+			 * andFilterCondition will contain one Map for each filter condition
+			 * to be OR'ed together.
+			 */
+			if (andFilterCondition.size() != 1) {
+				/*
+				 * We do not support OR'ing conditions together here. If more 
+				 * than one condition is present, we throw an exception..
+				 */
+				throw new ParseResourceFilterException("Unsupported filter syntax. Logical OR is not supported.");
+			}
+			Map<String, String> orCondition = andFilterCondition.get(0);
+
+			/*
+			 * So far, we only support filtering on Subscription.role.roleId.
+			 * TODO Implement more a general filtering algorithm
+			 */
+			switch (orCondition.get(RestUtils.CONDITION_ATTR_NAME)) {
+			case "roleId":
+
+				UUID roleId = null;
+				try {
+					roleId = UUID.fromString(orCondition.get(RestUtils.CONDITION_VALUE));
+				} catch (IllegalArgumentException e) {
+					throw new ParseResourceFilterException("Filter condition value is not a legal UUID");
+				}
+				for (Subscription subscription : unfilteredSubscriptions) {
+					switch (orCondition.get(RestUtils.CONDITION_OPERATOR)) {
+					case "eq":
+
+						if (subscription.getRole().getRoleId().equals(roleId)) {
+							filteredSubscriptions.add(subscription);
+						}
+						break;
+
+					case "ne":
+
+						if (!subscription.getRole().getRoleId().equals(roleId)) {
+							filteredSubscriptions.add(subscription);
+						}
+						break;
+
+					default:
+						throw new ParseResourceFilterException("Filter comparison operator \""
+								+ orCondition.get(RestUtils.CONDITION_OPERATOR) + "\" is not supported for attribute \""
+								+ orCondition.get(RestUtils.CONDITION_ATTR_NAME) + "\"");
+					}
+				}
+				break;
+
+			default:
+				throw new ParseResourceFilterException("Filtering on attribute \""
+						+ orCondition.get(RestUtils.CONDITION_ATTR_NAME) + "\" is not supported");
+			}
+			/*
+			 * Re-use unfilteredSubscriptions for the next trip through the 
+			 * loop, in case filterConditions.size()>1. Each trip through the
+			 * loop performs a logical AND with the results from the previous 
+			 * trip through the loop.
+			 */
+			unfilteredSubscriptions = filteredSubscriptions;
+		}
+		return unfilteredSubscriptions;
 	}
 
 	public UUID getReportVersionId() {
@@ -274,6 +372,4 @@ public class ReportVersion implements Serializable {
 		builder.append("]");
 		return builder.toString();
 	}
-
-
 }
