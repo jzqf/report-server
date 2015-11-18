@@ -48,7 +48,8 @@ import com.qfree.obo.report.dto.ReportVersionResource;
 import com.qfree.obo.report.dto.ResourcePath;
 import com.qfree.obo.report.dto.RestErrorResource.RestError;
 import com.qfree.obo.report.dto.SubscriptionCollectionResource;
-import com.qfree.obo.report.exceptions.ParseResourceFilterException;
+import com.qfree.obo.report.exceptions.ResourceFilterParseException;
+import com.qfree.obo.report.exceptions.ResourceFilterExecutionException;
 import com.qfree.obo.report.exceptions.RestApiException;
 import com.qfree.obo.report.exceptions.RptdesignOpenFromStreamException;
 import com.qfree.obo.report.service.ReportParameterService;
@@ -597,8 +598,8 @@ public class ReportVersionController extends AbstractBaseController {
 		RestUtils.ifNullThen404(reportVersion, ReportVersion.class, "reportVersionId", id.toString());
 		try {
 			return new SubscriptionCollectionResource(reportVersion, uriInfo, queryParams, apiVersion);
-		} catch (ParseResourceFilterException e) {
-			throw new RestApiException(RestError.FORBIDDEN_RESOURCE_FILTER_QUERY_PARAMETER_PROBLEM, e.getMessage(), e);
+		} catch (ResourceFilterExecutionException | ResourceFilterParseException e) {
+			throw new RestApiException(RestError.FORBIDDEN_RESOURCE_FILTER_PROBLEM, e.getMessage(), e);
 		}
 	}
 

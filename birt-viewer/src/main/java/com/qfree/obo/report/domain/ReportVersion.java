@@ -31,7 +31,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.qfree.obo.report.dto.ReportVersionResource;
-import com.qfree.obo.report.exceptions.ParseResourceFilterException;
+import com.qfree.obo.report.exceptions.ResourceFilterParseException;
+import com.qfree.obo.report.exceptions.ResourceFilterExecutionException;
 import com.qfree.obo.report.util.DateUtils;
 import com.qfree.obo.report.util.RestUtils;
 
@@ -181,6 +182,26 @@ public class ReportVersion implements Serializable {
 		this.createdOn = (createdOn != null) ? createdOn : DateUtils.nowUtc();
 	}
 
+	public UUID getReportVersionId() {
+		return this.reportVersionId;
+	}
+
+	public Report getReport() {
+		return report;
+	}
+
+	public void setReport(Report report) {
+		this.report = report;
+	}
+
+	public List<ReportParameter> getReportParameters() {
+		return reportParameters;
+	}
+
+	public void setReportParameters(List<ReportParameter> reportParameters) {
+		this.reportParameters = reportParameters;
+	}
+
 	/**
 	 * Returns {@link List} of {@link Subscription} entities associated with the
 	 * {@link ReportVersion}.
@@ -192,10 +213,11 @@ public class ReportVersion implements Serializable {
 	 * 
 	 * @param filterConditions
 	 * @return
-	 * @throws ParseResourceFilterException
+	 * @throws ResourceFilterExecutionException
+	 * @throws ResourceFilterParseException
 	 */
 	public List<Subscription> getSubscriptions(List<List<Map<String, String>>> filterConditions)
-			throws ParseResourceFilterException {
+			throws ResourceFilterExecutionException {
 		if (filterConditions == null || filterConditions.size() == 0) {
 			return getSubscriptions(); // no filtering
 		}
@@ -234,7 +256,7 @@ public class ReportVersion implements Serializable {
 		//			 * We do not support OR'ing conditions together here. If more 
 		//			 * than one condition is present, we throw an exception..
 		//			 */
-		//			throw new ParseResourceFilterException("Unsupported filter syntax. Logical OR is not supported.");
+		//			throw new ResourceFilterParseException("Unsupported filter syntax. Logical OR is not supported.");
 		//		}
 		//		Map<String, String> orCondition = andFilterCondition.get(0);
 		//
@@ -249,7 +271,7 @@ public class ReportVersion implements Serializable {
 		//			try {
 		//				roleId = UUID.fromString(orCondition.get(RestUtils.CONDITION_VALUE));
 		//			} catch (IllegalArgumentException e) {
-		//				throw new ParseResourceFilterException("Filter condition value is not a legal UUID");
+		//				throw new ResourceFilterParseException("Filter condition value is not a legal UUID");
 		//			}
 		//			for (Subscription subscription : unfilteredSubscriptions) {
 		//				switch (orCondition.get(RestUtils.CONDITION_OPERATOR)) {
@@ -268,7 +290,7 @@ public class ReportVersion implements Serializable {
 		//					break;
 		//
 		//				default:
-		//					throw new ParseResourceFilterException("Filter comparison operator \""
+		//					throw new ResourceFilterParseException("Filter comparison operator \""
 		//							+ orCondition.get(RestUtils.CONDITION_OPERATOR) + "\" is not supported for attribute \""
 		//							+ orCondition.get(RestUtils.CONDITION_ATTR_NAME) + "\"");
 		//				}
@@ -276,7 +298,7 @@ public class ReportVersion implements Serializable {
 		//			break;
 		//
 		//		default:
-		//			throw new ParseResourceFilterException("Filtering on attribute \""
+		//			throw new ResourceFilterParseException("Filtering on attribute \""
 		//					+ orCondition.get(RestUtils.CONDITION_ATTR_NAME) + "\" is not supported");
 		//		}
 		//		/*
@@ -288,26 +310,6 @@ public class ReportVersion implements Serializable {
 		//		unfilteredSubscriptions = filteredSubscriptions;
 		//	}
 		//	return unfilteredSubscriptions;
-	}
-
-	public UUID getReportVersionId() {
-		return this.reportVersionId;
-	}
-
-	public Report getReport() {
-		return report;
-	}
-
-	public void setReport(Report report) {
-		this.report = report;
-	}
-
-	public List<ReportParameter> getReportParameters() {
-		return reportParameters;
-	}
-
-	public void setReportParameters(List<ReportParameter> reportParameters) {
-		this.reportParameters = reportParameters;
 	}
 
 	public List<Subscription> getSubscriptions() {

@@ -38,7 +38,8 @@ import com.qfree.obo.report.dto.RestErrorResource.RestError;
 import com.qfree.obo.report.dto.RoleCollectionResource;
 import com.qfree.obo.report.dto.RoleResource;
 import com.qfree.obo.report.dto.SubscriptionCollectionResource;
-import com.qfree.obo.report.exceptions.ParseResourceFilterException;
+import com.qfree.obo.report.exceptions.ResourceFilterParseException;
+import com.qfree.obo.report.exceptions.ResourceFilterExecutionException;
 import com.qfree.obo.report.exceptions.RestApiException;
 import com.qfree.obo.report.service.RoleService;
 import com.qfree.obo.report.util.RestUtils;
@@ -354,8 +355,8 @@ public class RoleController extends AbstractBaseController {
 		RestUtils.ifNullThen404(role, Role.class, "roleId", id.toString());
 		try {
 			return new JobCollectionResource(role, uriInfo, queryParams, apiVersion);
-		} catch (ParseResourceFilterException e) {
-			throw new RestApiException(RestError.FORBIDDEN_RESOURCE_FILTER_QUERY_PARAMETER_PROBLEM, e.getMessage(), e);
+		} catch (ResourceFilterExecutionException | ResourceFilterParseException e) {
+			throw new RestApiException(RestError.FORBIDDEN_RESOURCE_FILTER_PROBLEM, e.getMessage(), e);
 		}
 	}
 

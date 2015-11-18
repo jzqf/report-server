@@ -14,7 +14,8 @@ import com.qfree.obo.report.domain.DocumentFormat;
 import com.qfree.obo.report.domain.Job;
 import com.qfree.obo.report.domain.Role;
 import com.qfree.obo.report.domain.Subscription;
-import com.qfree.obo.report.exceptions.ParseResourceFilterException;
+import com.qfree.obo.report.exceptions.ResourceFilterParseException;
+import com.qfree.obo.report.exceptions.ResourceFilterExecutionException;
 import com.qfree.obo.report.util.RestUtils;
 import com.qfree.obo.report.util.RestUtils.RestApiVersion;
 
@@ -64,7 +65,7 @@ public class JobCollectionResource extends AbstractCollectionResource<JobResourc
 			Role role,
 			UriInfo uriInfo,
 			Map<String, List<String>> queryParams,
-			RestApiVersion apiVersion) throws ParseResourceFilterException {
+			RestApiVersion apiVersion) throws ResourceFilterExecutionException, ResourceFilterParseException {
 		this(
 				//role.getJobs(),
 				role.getJobs(RestUtils.parseFilterQueryParams(queryParams)),

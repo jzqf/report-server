@@ -27,7 +27,7 @@ import org.hibernate.annotations.TypeDef;
 import org.hibernate.validator.constraints.NotBlank;
 
 import com.qfree.obo.report.dto.RoleResource;
-import com.qfree.obo.report.exceptions.ParseResourceFilterException;
+import com.qfree.obo.report.exceptions.ResourceFilterExecutionException;
 import com.qfree.obo.report.util.DateUtils;
 import com.qfree.obo.report.util.RestUtils;
 
@@ -323,7 +323,7 @@ public class Role implements Serializable {
 		this.roleParameters = roleParameters;
 	}
 
-	public List<Job> getJobs(List<List<Map<String, String>>> filterConditions) throws ParseResourceFilterException {
+	public List<Job> getJobs(List<List<Map<String, String>>> filterConditions) throws ResourceFilterExecutionException {
 		if (filterConditions == null || filterConditions.size() == 0) {
 			return getJobs(); // no filtering
 		}

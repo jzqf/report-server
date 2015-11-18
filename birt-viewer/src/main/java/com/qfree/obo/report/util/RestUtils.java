@@ -18,7 +18,8 @@ import org.xml.sax.SAXException;
 
 import com.qfree.obo.report.dto.ResourcePath;
 import com.qfree.obo.report.dto.RestErrorResource.RestError;
-import com.qfree.obo.report.exceptions.ParseResourceFilterException;
+import com.qfree.obo.report.exceptions.ResourceFilterParseException;
+import com.qfree.obo.report.exceptions.ResourceFilterExecutionException;
 import com.qfree.obo.report.exceptions.RestApiException;
 
 public class RestUtils {
@@ -415,7 +416,7 @@ public class RestUtils {
 	}
 
 	public static List<List<Map<String, String>>> parseFilterQueryParam(String filterQueryParamText)
-			throws ParseResourceFilterException {
+			throws ResourceFilterParseException {
 
 		logger.info("filterQueryParamText = {}", filterQueryParamText);
 
@@ -643,7 +644,7 @@ public class RestUtils {
 			//}
 
 		} catch (PatternSyntaxException e) {
-			throw new ParseResourceFilterException("Could not parse filter query parameter: " + filterQueryParamText,
+			throw new ResourceFilterParseException("Could not parse filter query parameter: " + filterQueryParamText,
 					e);
 		}
 
@@ -651,7 +652,7 @@ public class RestUtils {
 	}
 
 	public static List<List<Map<String, String>>> parseFilterQueryParams(Map<String, List<String>> queryParams)
-			throws ParseResourceFilterException {
+			throws ResourceFilterParseException {
 
 		List<List<Map<String, String>>> filterConditions = new ArrayList<>();
 
@@ -695,13 +696,13 @@ public class RestUtils {
 	 * @param filterableEntityAttributes
 	 * @param entityClass
 	 * @return
-	 * @throws ParseResourceFilterException
+	 * @throws ResourceFilterExecutionException
 	 */
 	public static <E> List<E> filterEntities(
 			List<E> unfilteredEntities,
 			List<List<Map<String, String>>> filterConditions,
 			Map<String, List<Object>> filterableEntityAttributes,
-			Class<E> entityClass) throws ParseResourceFilterException {
+			Class<E> entityClass) throws ResourceFilterExecutionException {
 
 		logger.info("filterConditions = {}", filterConditions);
 
@@ -744,7 +745,7 @@ public class RestUtils {
 						try {
 							roleId = UUID.fromString(orCondition.get(RestUtils.CONDITION_VALUE));
 						} catch (IllegalArgumentException e) {
-							throw new ParseResourceFilterException("Filter condition value is not a legal UUID");
+							throw new ResourceFilterExecutionException("Filter condition value is not a legal UUID");
 						}
 
 						List<Object> roleIds = filterableEntityAttributes
@@ -775,7 +776,7 @@ public class RestUtils {
 								break;
 
 							default:
-								throw new ParseResourceFilterException("Filter comparison operator \""
+								throw new ResourceFilterExecutionException("Filter comparison operator \""
 										+ orCondition.get(RestUtils.CONDITION_OPERATOR)
 										+ "\" is not supported for attribute \""
 										+ orCondition.get(RestUtils.CONDITION_ATTR_NAME) + "\"");
@@ -784,13 +785,13 @@ public class RestUtils {
 						break;
 
 					default:
-						throw new ParseResourceFilterException("Filtering on attribute \""
+						throw new ResourceFilterExecutionException("Filtering on attribute \""
 								+ orCondition.get(RestUtils.CONDITION_ATTR_NAME) + "\" is not supported");
 					}
 					break;
 
 				default:
-					throw new ParseResourceFilterException(
+					throw new ResourceFilterExecutionException(
 							"Filtering of " + entityClass.getSimpleName() + " resources is not supported");
 				}
 			}
