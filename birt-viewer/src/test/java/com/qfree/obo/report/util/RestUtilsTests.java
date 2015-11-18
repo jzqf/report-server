@@ -22,6 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.qfree.obo.report.ApplicationConfig;
 import com.qfree.obo.report.dto.ResourcePath;
 import com.qfree.obo.report.exceptions.ReportingException;
+import com.qfree.obo.report.exceptions.ResourceFilterParseException;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = ApplicationConfig.class)
@@ -109,7 +110,7 @@ public class RestUtilsTests {
 
 	}
 
-	@Test
+	@Test(expected = ResourceFilterParseException.class)
 	@Transactional
 	public void parseFilterQueryParamNoClosingQuote() throws ReportingException {
 
@@ -118,12 +119,15 @@ public class RestUtilsTests {
 		 * comparison value, but no closing quote on the comparison value:
 		 * 
 		 *   someField.ne."some\" value
+		 * 
+		 * Since there is no closing quote, parseFilterQueryParam should throw
+		 * a ResourceFilterParseException.
 		 */
 		String filterQueryParamText = "someField.ne.\"some\" value";
 
 		List<List<Map<String, String>>> filterConditions = RestUtils.parseFilterQueryParam(filterQueryParamText);
 
-		assertThat(filterConditions, hasSize(0));
+		//	assertThat(filterConditions, hasSize(0));
 
 	}
 

@@ -18,8 +18,8 @@ import org.xml.sax.SAXException;
 
 import com.qfree.obo.report.dto.ResourcePath;
 import com.qfree.obo.report.dto.RestErrorResource.RestError;
-import com.qfree.obo.report.exceptions.ResourceFilterParseException;
 import com.qfree.obo.report.exceptions.ResourceFilterExecutionException;
+import com.qfree.obo.report.exceptions.ResourceFilterParseException;
 import com.qfree.obo.report.exceptions.RestApiException;
 
 public class RestUtils {
@@ -498,6 +498,9 @@ public class RestUtils {
 				"                               # contain double quotes itself.                        \n";
 
 		List<List<Map<String, String>>> filterConditions = new ArrayList<>();
+		if (filterQueryParamText.isEmpty()) {
+			return filterConditions;
+		}
 
 		try {
 
@@ -643,6 +646,22 @@ public class RestUtils {
 			//	logger.info("filterCondition = {}", filterCondition);
 			//}
 
+			if (!filterQueryParamText.isEmpty() && filterConditions.size() == 0) {
+				/*
+				 * The "filter" query parameter has a value assigned to it, but
+				 * we did not parse it into any conditions. This means that the
+				 * regular expressions we used did not match any pattern that 
+				 * was expected, which in turns means that the "filter" query
+				 * parameter value must be malformed in some way. If we do not
+				 * throw an exception here, then no filtering will be performed.
+				 * Since the filter operation might be important, it is safer
+				 * to return no resources than to return resources that should
+				 * have been filtered out.
+				 */
+				throw new ResourceFilterParseException(
+						"Could not parse filter query parameter: " + filterQueryParamText);
+			}
+
 		} catch (PatternSyntaxException e) {
 			throw new ResourceFilterParseException("Could not parse filter query parameter: " + filterQueryParamText,
 					e);
@@ -736,6 +755,49 @@ public class RestUtils {
 			 */
 			for (Map<String, String> orCondition : andFilterCondition) {
 				switch (entityClass.getSimpleName()) {
+				case "Job":
+
+					switch (orCondition.get(RestUtils.CONDITION_ATTR_NAME)) {
+					case "jobStatusId":
+
+						UUID jobStatusId = null;
+						try {
+							jobStatusId = UUID.fromString(orCondition.get(RestUtils.CONDITION_VALUE));
+						} catch (IllegalArgumentException e) {
+							throw new ResourceFilterExecutionException(
+									"Filter condition value \"" + RestUtils.CONDITION_VALUE + "\" is not a legal UUID");
+						}
+
+						List<Object> jobStatusIds = filterableEntityAttributes
+								.get(orCondition.get(RestUtils.CONDITION_ATTR_NAME));
+						for (int i = 0; i < unfilteredEntities.size(); i++) {
+
+							switch (orCondition.get(RestUtils.CONDITION_OPERATOR)) {
+							case "eq":
+								if (jobStatusIds.get(i).equals(jobStatusId)) {
+									andFilterConditionEntities.add(unfilteredEntities.get(i));
+								}
+								break;
+							case "ne":
+								if (!jobStatusIds.get(i).equals(jobStatusId)) {
+									andFilterConditionEntities.add(unfilteredEntities.get(i));
+								}
+								break;
+							default:
+								throw new ResourceFilterExecutionException("Filter comparison operator \""
+										+ orCondition.get(RestUtils.CONDITION_OPERATOR)
+										+ "\" is not supported for attribute \""
+										+ orCondition.get(RestUtils.CONDITION_ATTR_NAME) + "\"");
+							}
+						}
+						break;
+
+					default:
+						throw new ResourceFilterExecutionException("Filtering on attribute \""
+								+ orCondition.get(RestUtils.CONDITION_ATTR_NAME) + "\" is not supported");
+					}
+					break;
+
 				case "Subscription":
 
 					switch (orCondition.get(RestUtils.CONDITION_ATTR_NAME)) {
@@ -745,7 +807,8 @@ public class RestUtils {
 						try {
 							roleId = UUID.fromString(orCondition.get(RestUtils.CONDITION_VALUE));
 						} catch (IllegalArgumentException e) {
-							throw new ResourceFilterExecutionException("Filter condition value is not a legal UUID");
+							throw new ResourceFilterExecutionException(
+									"Filter condition value \"" + RestUtils.CONDITION_VALUE + "\" is not a legal UUID");
 						}
 
 						List<Object> roleIds = filterableEntityAttributes
