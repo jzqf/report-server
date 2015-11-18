@@ -767,58 +767,41 @@ public class RestUtils {
 							throw new ResourceFilterExecutionException(
 									"Filter condition value \"" + RestUtils.CONDITION_VALUE + "\" is not a legal UUID");
 						}
+						filterAccumulateNonnumeric(
+								unfilteredEntities, filterableEntityAttributes,
+								andFilterConditionEntities, orCondition,
+								jobStatusId);
 
-						List<Object> jobStatusIds = filterableEntityAttributes
-								.get(orCondition.get(RestUtils.CONDITION_ATTR_NAME));
-						for (int i = 0; i < unfilteredEntities.size(); i++) {
-
-							switch (orCondition.get(RestUtils.CONDITION_OPERATOR)) {
-							case "eq":
-								if (jobStatusIds.get(i).equals(jobStatusId)) {
-									andFilterConditionEntities.add(unfilteredEntities.get(i));
-								}
-								break;
-							case "ne":
-								if (!jobStatusIds.get(i).equals(jobStatusId)) {
-									andFilterConditionEntities.add(unfilteredEntities.get(i));
-								}
-								break;
-							default:
-								throw new ResourceFilterExecutionException("Filter comparison operator \""
-										+ orCondition.get(RestUtils.CONDITION_OPERATOR)
-										+ "\" is not supported for attribute \""
-										+ orCondition.get(RestUtils.CONDITION_ATTR_NAME) + "\"");
-							}
-						}
+						//	List<Object> jobStatusIds = filterableEntityAttributes
+						//			.get(orCondition.get(RestUtils.CONDITION_ATTR_NAME));
+						//	for (int i = 0; i < unfilteredEntities.size(); i++) {
+						//
+						//		switch (orCondition.get(RestUtils.CONDITION_OPERATOR)) {
+						//		case "eq":
+						//			if (jobStatusIds.get(i).equals(jobStatusId)) {
+						//				andFilterConditionEntities.add(unfilteredEntities.get(i));
+						//			}
+						//			break;
+						//		case "ne":
+						//			if (!jobStatusIds.get(i).equals(jobStatusId)) {
+						//				andFilterConditionEntities.add(unfilteredEntities.get(i));
+						//			}
+						//			break;
+						//		default:
+						//			throw new ResourceFilterExecutionException("Filter comparison operator \""
+						//					+ orCondition.get(RestUtils.CONDITION_OPERATOR)
+						//					+ "\" is not supported for attribute \""
+						//					+ orCondition.get(RestUtils.CONDITION_ATTR_NAME) + "\"");
+						//		}
+						//	}
 						break;
 
 					case "jobStatusAbbreviation":
 
-						String jobStatusAbbreviation = orCondition.get(RestUtils.CONDITION_VALUE);
-
-						List<Object> jobStatusAbbreviations = filterableEntityAttributes
-								.get(orCondition.get(RestUtils.CONDITION_ATTR_NAME));
-						for (int i = 0; i < unfilteredEntities.size(); i++) {
-
-							switch (orCondition.get(RestUtils.CONDITION_OPERATOR)) {
-							case "eq":
-								if (jobStatusAbbreviations.get(i).equals(jobStatusAbbreviation)) {
-									andFilterConditionEntities.add(unfilteredEntities.get(i));
-								}
-								break;
-							case "ne":
-								if (!jobStatusAbbreviations.get(i).equals(jobStatusAbbreviation)) {
-									andFilterConditionEntities.add(unfilteredEntities.get(i));
-								}
-								break;
-							default:
-								throw new ResourceFilterExecutionException(
-										String.format(
-												"Filter comparison operator \"{}\" is not supported for attribute \"{}\"",
-												orCondition.get(RestUtils.CONDITION_OPERATOR),
-												orCondition.get(RestUtils.CONDITION_ATTR_NAME)));
-							}
-						}
+						filterAccumulateNonnumeric(
+								unfilteredEntities, filterableEntityAttributes,
+								andFilterConditionEntities, orCondition,
+								orCondition.get(RestUtils.CONDITION_VALUE));
 						break;
 
 					default:
@@ -897,5 +880,54 @@ public class RestUtils {
 		}
 
 		return new ArrayList<>(filteredEntities);
+	}
+
+	/**
+	 * Accumulates filtered entities into a set for the case where comparison
+	 * value for the filter condition is non-numeric.
+	 * 
+	 * <p>
+	 * The non-numeric nature of the comparison value means that this method
+	 * only supports the comparison operators ".eq." and ".ne.".
+	 * 
+	 * {@author Jeffrey Zelt}
+	 * 
+	 * @param unfilteredEntities
+	 * @param filterableEntityAttributes
+	 * @param andFilterConditionEntities
+	 * @param orCondition
+	 * @param comparisonValue
+	 * @throws ResourceFilterExecutionException
+	 */
+	private static <E> void filterAccumulateNonnumeric(
+			List<E> unfilteredEntities,
+			Map<String, List<Object>> filterableEntityAttributes,
+			Set<E> andFilterConditionEntities,
+			Map<String, String> orCondition,
+			Object comparisonValue) throws ResourceFilterExecutionException {
+
+		List<Object> filterableEntityValues = filterableEntityAttributes
+				.get(orCondition.get(RestUtils.CONDITION_ATTR_NAME));
+		for (int i = 0; i < unfilteredEntities.size(); i++) {
+
+			switch (orCondition.get(RestUtils.CONDITION_OPERATOR)) {
+			case "eq":
+				if (filterableEntityValues.get(i).equals(comparisonValue)) {
+					andFilterConditionEntities.add(unfilteredEntities.get(i));
+				}
+				break;
+			case "ne":
+				if (!filterableEntityValues.get(i).equals(comparisonValue)) {
+					andFilterConditionEntities.add(unfilteredEntities.get(i));
+				}
+				break;
+			default:
+				throw new ResourceFilterExecutionException(
+						String.format(
+								"Filter comparison operator \"{}\" is not supported for attribute \"{}\"",
+								orCondition.get(RestUtils.CONDITION_OPERATOR),
+								orCondition.get(RestUtils.CONDITION_ATTR_NAME)));
+			}
+		}
 	}
 }
