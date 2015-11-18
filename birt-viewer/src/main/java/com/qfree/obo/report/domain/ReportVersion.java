@@ -3,6 +3,7 @@ package com.qfree.obo.report.domain;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -186,7 +187,8 @@ public class ReportVersion implements Serializable {
 	 * 
 	 * Filtering can be performed on the set of all {@link Subscription}
 	 * entities associated with the {@link ReportVersion}. An important use case
-	 * is to filter on roleId.
+	 * is to filter on roleId to return only those Subscriptions related to that
+	 * Role.
 	 * 
 	 * @param filterConditions
 	 * @return
@@ -194,86 +196,98 @@ public class ReportVersion implements Serializable {
 	 */
 	public List<Subscription> getSubscriptions(List<List<Map<String, String>>> filterConditions)
 			throws ParseResourceFilterException {
-
-		logger.info("filterConditions = {}", filterConditions);
-
-		if (filterConditions == null) {
+		if (filterConditions == null || filterConditions.size() == 0) {
 			return getSubscriptions(); // no filtering
 		}
-
 		List<Subscription> unfilteredSubscriptions = getSubscriptions();
-		/*
-		 * Perform filtering on the list of all Subscription entities associated
-		 * with the current ReportVersion.
-		 * 
-		 * If any problem is encountered, an exception is thrown. This is to
-		 * avoid returning entities that were intended to be filtered out.
-		 */
-		for (List<Map<String, String>> andFilterCondition : filterConditions) {
-			List<Subscription> filteredSubscriptions = new ArrayList<>();
-			/*
-			 * andFilterCondition will contain one Map for each filter condition
-			 * to be OR'ed together.
-			 */
-			if (andFilterCondition.size() != 1) {
-				/*
-				 * We do not support OR'ing conditions together here. If more 
-				 * than one condition is present, we throw an exception..
-				 */
-				throw new ParseResourceFilterException("Unsupported filter syntax. Logical OR is not supported.");
-			}
-			Map<String, String> orCondition = andFilterCondition.get(0);
-
-			/*
-			 * So far, we only support filtering on Subscription.role.roleId.
-			 * TODO Implement more a general filtering algorithm
-			 */
-			switch (orCondition.get(RestUtils.CONDITION_ATTR_NAME)) {
-			case "roleId":
-
-				UUID roleId = null;
-				try {
-					roleId = UUID.fromString(orCondition.get(RestUtils.CONDITION_VALUE));
-				} catch (IllegalArgumentException e) {
-					throw new ParseResourceFilterException("Filter condition value is not a legal UUID");
-				}
-				for (Subscription subscription : unfilteredSubscriptions) {
-					switch (orCondition.get(RestUtils.CONDITION_OPERATOR)) {
-					case "eq":
-
-						if (subscription.getRole().getRoleId().equals(roleId)) {
-							filteredSubscriptions.add(subscription);
-						}
-						break;
-
-					case "ne":
-
-						if (!subscription.getRole().getRoleId().equals(roleId)) {
-							filteredSubscriptions.add(subscription);
-						}
-						break;
-
-					default:
-						throw new ParseResourceFilterException("Filter comparison operator \""
-								+ orCondition.get(RestUtils.CONDITION_OPERATOR) + "\" is not supported for attribute \""
-								+ orCondition.get(RestUtils.CONDITION_ATTR_NAME) + "\"");
-					}
-				}
-				break;
-
-			default:
-				throw new ParseResourceFilterException("Filtering on attribute \""
-						+ orCondition.get(RestUtils.CONDITION_ATTR_NAME) + "\" is not supported");
-			}
-			/*
-			 * Re-use unfilteredSubscriptions for the next trip through the 
-			 * loop, in case filterConditions.size()>1. Each trip through the
-			 * loop performs a logical AND with the results from the previous 
-			 * trip through the loop.
-			 */
-			unfilteredSubscriptions = filteredSubscriptions;
+		List<Object> roleIds = new ArrayList<>(unfilteredSubscriptions.size());
+		for (Subscription subscription : unfilteredSubscriptions) {
+			roleIds.add(subscription.getRole().getRoleId());
 		}
-		return unfilteredSubscriptions;
+		Map<String, List<Object>> filterableAttributes = new HashMap<>(1);
+		filterableAttributes.put("roleId", roleIds);
+		return RestUtils.filterEntities(unfilteredSubscriptions, filterConditions, filterableAttributes,
+				Subscription.class);
+
+		//	logger.info("filterConditions = {}", filterConditions);
+		//
+		//	if (filterConditions == null) {
+		//		return getSubscriptions(); // no filtering
+		//	}
+		//
+		//	List<Subscription> unfilteredSubscriptions = getSubscriptions();
+		//	/*
+		//	 * Perform filtering on the list of all Subscription entities associated
+		//	 * with the current ReportVersion.
+		//	 * 
+		//	 * If *any* problem is encountered, an exception is thrown. This is to
+		//	 * avoid returning entities that were intended to be filtered out.
+		//	 */
+		//	for (List<Map<String, String>> andFilterCondition : filterConditions) {
+		//		List<Subscription> filteredSubscriptions = new ArrayList<>();
+		//		/*
+		//		 * andFilterCondition will contain one Map for each filter condition
+		//		 * to be OR'ed together.
+		//		 */
+		//		if (andFilterCondition.size() != 1) {
+		//			/*
+		//			 * We do not support OR'ing conditions together here. If more 
+		//			 * than one condition is present, we throw an exception..
+		//			 */
+		//			throw new ParseResourceFilterException("Unsupported filter syntax. Logical OR is not supported.");
+		//		}
+		//		Map<String, String> orCondition = andFilterCondition.get(0);
+		//
+		//		/*
+		//		 * So far, we only support filtering on Subscription.role.roleId.
+		//		 * TODO Implement more a general filtering algorithm
+		//		 */
+		//		switch (orCondition.get(RestUtils.CONDITION_ATTR_NAME)) {
+		//		case "roleId":
+		//
+		//			UUID roleId = null;
+		//			try {
+		//				roleId = UUID.fromString(orCondition.get(RestUtils.CONDITION_VALUE));
+		//			} catch (IllegalArgumentException e) {
+		//				throw new ParseResourceFilterException("Filter condition value is not a legal UUID");
+		//			}
+		//			for (Subscription subscription : unfilteredSubscriptions) {
+		//				switch (orCondition.get(RestUtils.CONDITION_OPERATOR)) {
+		//				case "eq":
+		//
+		//					if (subscription.getRole().getRoleId().equals(roleId)) {
+		//						filteredSubscriptions.add(subscription);
+		//					}
+		//					break;
+		//
+		//				case "ne":
+		//
+		//					if (!subscription.getRole().getRoleId().equals(roleId)) {
+		//						filteredSubscriptions.add(subscription);
+		//					}
+		//					break;
+		//
+		//				default:
+		//					throw new ParseResourceFilterException("Filter comparison operator \""
+		//							+ orCondition.get(RestUtils.CONDITION_OPERATOR) + "\" is not supported for attribute \""
+		//							+ orCondition.get(RestUtils.CONDITION_ATTR_NAME) + "\"");
+		//				}
+		//			}
+		//			break;
+		//
+		//		default:
+		//			throw new ParseResourceFilterException("Filtering on attribute \""
+		//					+ orCondition.get(RestUtils.CONDITION_ATTR_NAME) + "\" is not supported");
+		//		}
+		//		/*
+		//		 * Re-use unfilteredSubscriptions for the next trip through the 
+		//		 * loop, in case filterConditions.size()>1. Each trip through the
+		//		 * loop performs a logical AND with the results from the previous 
+		//		 * trip through the loop.
+		//		 */
+		//		unfilteredSubscriptions = filteredSubscriptions;
+		//	}
+		//	return unfilteredSubscriptions;
 	}
 
 	public UUID getReportVersionId() {

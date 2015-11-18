@@ -3,8 +3,11 @@ package com.qfree.obo.report.util;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
@@ -655,8 +658,8 @@ public class RestUtils {
 		List<String> filterQueryParams = queryParams.get(ResourcePath.FILTER_QP_KEY);
 		if (filterQueryParams != null) {
 			for (String filterQueryParam : filterQueryParams) {
-					List<List<Map<String, String>>> filterConditionsForQueryParam = RestUtils
-							.parseFilterQueryParam(filterQueryParam);
+				List<List<Map<String, String>>> filterConditionsForQueryParam = RestUtils
+						.parseFilterQueryParam(filterQueryParam);
 				/*
 				 * Insert the parsed conditions in filterConditionsForQueryParam
 				 * into the list that will be returned. Each inserted list:
@@ -679,5 +682,126 @@ public class RestUtils {
 		}
 
 		return filterConditions;
+	}
+
+	/**
+	 * Filters a {@link List} of JPA entities using a series of conditions
+	 * parsed from the "filter" query parameter of a REST resource URI.
+	 * 
+	 * {@author Jeffrey Zelt}
+	 * 
+	 * @param unfilteredEntities
+	 * @param filterConditions
+	 * @param filterableEntityAttributes
+	 * @param entityClass
+	 * @return
+	 * @throws ParseResourceFilterException
+	 */
+	public static <E> List<E> filterEntities(
+			List<E> unfilteredEntities,
+			List<List<Map<String, String>>> filterConditions,
+			Map<String, List<Object>> filterableEntityAttributes,
+			Class<E> entityClass) throws ParseResourceFilterException {
+
+		logger.info("filterConditions = {}", filterConditions);
+
+		if (filterConditions == null) {
+			return unfilteredEntities; // no filtering
+		}
+
+		Set<E> filteredEntities = new HashSet<>(unfilteredEntities);
+
+		/*
+		 * Perform filtering on the list of all entities.
+		 * 
+		 * If *any* problem is encountered, an exception is thrown. This is to
+		 * avoid returning entities that were intended to be filtered out.
+		 */
+		for (List<Map<String, String>> andFilterCondition : filterConditions) {
+
+			/*
+			 * This set is built up by OR'ing together the results of a series
+			 * of filters from andFilterCondition that are each applied to 
+			 * unfilteredEntities.
+			 * 
+			 * At the bottom of this loop, the entities in this set are AND'ed
+			 * with the entities in set filteredEntities.
+			 */
+			Set<E> andFilterConditionEntities = new HashSet<>();
+
+			/*
+			 * andFilterCondition contains one Map for each filter condition
+			 * to be OR'ed together.
+			 */
+			for (Map<String, String> orCondition : andFilterCondition) {
+				switch (entityClass.getSimpleName()) {
+				case "Subscription":
+
+					switch (orCondition.get(RestUtils.CONDITION_ATTR_NAME)) {
+					case "roleId":
+
+						UUID roleId = null;
+						try {
+							roleId = UUID.fromString(orCondition.get(RestUtils.CONDITION_VALUE));
+						} catch (IllegalArgumentException e) {
+							throw new ParseResourceFilterException("Filter condition value is not a legal UUID");
+						}
+
+						List<Object> roleIds = filterableEntityAttributes
+								.get(orCondition.get(RestUtils.CONDITION_ATTR_NAME));
+						for (int i = 0; i < unfilteredEntities.size(); i++) {
+
+							switch (orCondition.get(RestUtils.CONDITION_OPERATOR)) {
+							case "eq":
+
+								if (roleIds.get(i).equals(roleId)) {
+									/*
+									 * Since andFilterConditionEntities is a set, an
+									 * entity will be added at most once.
+									 */
+									andFilterConditionEntities.add(unfilteredEntities.get(i));
+								}
+								break;
+
+							case "ne":
+
+								if (!roleIds.get(i).equals(roleId)) {
+									/*
+									 * Since andFilterConditionEntities is a set, an
+									 * entity will be added at most once.
+									 */
+									andFilterConditionEntities.add(unfilteredEntities.get(i));
+								}
+								break;
+
+							default:
+								throw new ParseResourceFilterException("Filter comparison operator \""
+										+ orCondition.get(RestUtils.CONDITION_OPERATOR)
+										+ "\" is not supported for attribute \""
+										+ orCondition.get(RestUtils.CONDITION_ATTR_NAME) + "\"");
+							}
+						}
+						break;
+
+					default:
+						throw new ParseResourceFilterException("Filtering on attribute \""
+								+ orCondition.get(RestUtils.CONDITION_ATTR_NAME) + "\" is not supported");
+					}
+					break;
+
+				default:
+					throw new ParseResourceFilterException(
+							"Filtering of " + entityClass.getSimpleName() + " resources is not supported");
+				}
+			}
+			/*
+			 * Perform and intersection of the entities in the Set 
+			 * filteredEntities with the entities in the Set 
+			 * andFilterConditionEntities
+			 */
+			filteredEntities.retainAll(andFilterConditionEntities);
+		}
+
+		return new ArrayList<>(filteredEntities);
 	}
 }

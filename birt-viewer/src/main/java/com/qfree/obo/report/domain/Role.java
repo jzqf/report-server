@@ -3,7 +3,9 @@ package com.qfree.obo.report.domain;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import javax.persistence.CascadeType;
@@ -25,7 +27,9 @@ import org.hibernate.annotations.TypeDef;
 import org.hibernate.validator.constraints.NotBlank;
 
 import com.qfree.obo.report.dto.RoleResource;
+import com.qfree.obo.report.exceptions.ParseResourceFilterException;
 import com.qfree.obo.report.util.DateUtils;
+import com.qfree.obo.report.util.RestUtils;
 
 /**
  * The persistent class for the "role" database table.
@@ -317,6 +321,23 @@ public class Role implements Serializable {
 
 	public void setRoleParameters(List<RoleParameter> roleParameters) {
 		this.roleParameters = roleParameters;
+	}
+
+	public List<Job> getJobs(List<List<Map<String, String>>> filterConditions) throws ParseResourceFilterException {
+		if (filterConditions == null || filterConditions.size() == 0) {
+			return getJobs(); // no filtering
+		}
+		List<Job> unfilteredJobs = getJobs();
+		List<Object> jobStatusIds = new ArrayList<>(unfilteredJobs.size());
+		List<Object> jobStatusAbbreviations = new ArrayList<>(unfilteredJobs.size());
+		for (Job job : unfilteredJobs) {
+			jobStatusIds.add(job.getJobStatus().getJobStatusId());
+			jobStatusAbbreviations.add(job.getJobStatus().getAbbreviation());
+		}
+		Map<String, List<Object>> filterableAttributes = new HashMap<>(2);
+		filterableAttributes.put("jobStatusId", jobStatusIds);
+		filterableAttributes.put("jobStatusAbbreviation", jobStatusAbbreviations);
+		return RestUtils.filterEntities(unfilteredJobs, filterConditions, filterableAttributes, Job.class);
 	}
 
 	public List<Job> getJobs() {
