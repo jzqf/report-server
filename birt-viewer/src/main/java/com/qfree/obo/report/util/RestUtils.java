@@ -764,36 +764,14 @@ public class RestUtils {
 						try {
 							jobStatusId = UUID.fromString(orCondition.get(RestUtils.CONDITION_VALUE));
 						} catch (IllegalArgumentException e) {
-							throw new ResourceFilterExecutionException(
-									"Filter condition value \"" + RestUtils.CONDITION_VALUE + "\" is not a legal UUID");
+							throw new ResourceFilterExecutionException(String.format(
+									"Filter condition value \"%s\" is not a legal UUID",
+									orCondition.get(RestUtils.CONDITION_VALUE)));
 						}
 						filterAccumulateNonnumeric(
 								unfilteredEntities, filterableEntityAttributes,
 								andFilterConditionEntities, orCondition,
 								jobStatusId);
-
-						//	List<Object> jobStatusIds = filterableEntityAttributes
-						//			.get(orCondition.get(RestUtils.CONDITION_ATTR_NAME));
-						//	for (int i = 0; i < unfilteredEntities.size(); i++) {
-						//
-						//		switch (orCondition.get(RestUtils.CONDITION_OPERATOR)) {
-						//		case "eq":
-						//			if (jobStatusIds.get(i).equals(jobStatusId)) {
-						//				andFilterConditionEntities.add(unfilteredEntities.get(i));
-						//			}
-						//			break;
-						//		case "ne":
-						//			if (!jobStatusIds.get(i).equals(jobStatusId)) {
-						//				andFilterConditionEntities.add(unfilteredEntities.get(i));
-						//			}
-						//			break;
-						//		default:
-						//			throw new ResourceFilterExecutionException("Filter comparison operator \""
-						//					+ orCondition.get(RestUtils.CONDITION_OPERATOR)
-						//					+ "\" is not supported for attribute \""
-						//					+ orCondition.get(RestUtils.CONDITION_ATTR_NAME) + "\"");
-						//		}
-						//	}
 						break;
 
 					case "jobStatusAbbreviation":
@@ -806,7 +784,7 @@ public class RestUtils {
 
 					default:
 						throw new ResourceFilterExecutionException(
-								String.format("Filtering on attribute \"{}\" is not supported",
+								String.format("Filtering on attribute \"%s\" is not supported",
 										orCondition.get(RestUtils.CONDITION_ATTR_NAME)));
 					}
 					break;
@@ -820,55 +798,61 @@ public class RestUtils {
 						try {
 							roleId = UUID.fromString(orCondition.get(RestUtils.CONDITION_VALUE));
 						} catch (IllegalArgumentException e) {
-							throw new ResourceFilterExecutionException(
-									"Filter condition value \"" + RestUtils.CONDITION_VALUE + "\" is not a legal UUID");
+							throw new ResourceFilterExecutionException(String.format(
+									"Filter condition value \"%s\" is not a legal UUID",
+									orCondition.get(RestUtils.CONDITION_VALUE)));
 						}
+						filterAccumulateNonnumeric(
+								unfilteredEntities, filterableEntityAttributes,
+								andFilterConditionEntities, orCondition,
+								roleId);
 
-						List<Object> roleIds = filterableEntityAttributes
-								.get(orCondition.get(RestUtils.CONDITION_ATTR_NAME));
-						for (int i = 0; i < unfilteredEntities.size(); i++) {
-
-							switch (orCondition.get(RestUtils.CONDITION_OPERATOR)) {
-							case "eq":
-
-								if (roleIds.get(i).equals(roleId)) {
-									/*
-									 * Since andFilterConditionEntities is a set, an
-									 * entity will be added at most once.
-									 */
-									andFilterConditionEntities.add(unfilteredEntities.get(i));
-								}
-								break;
-
-							case "ne":
-
-								if (!roleIds.get(i).equals(roleId)) {
-									/*
-									 * Since andFilterConditionEntities is a set, an
-									 * entity will be added at most once.
-									 */
-									andFilterConditionEntities.add(unfilteredEntities.get(i));
-								}
-								break;
-
-							default:
-								throw new ResourceFilterExecutionException("Filter comparison operator \""
-										+ orCondition.get(RestUtils.CONDITION_OPERATOR)
-										+ "\" is not supported for attribute \""
-										+ orCondition.get(RestUtils.CONDITION_ATTR_NAME) + "\"");
-							}
-						}
+						//	List<Object> roleIds = filterableEntityAttributes
+						//			.get(orCondition.get(RestUtils.CONDITION_ATTR_NAME));
+						//	for (int i = 0; i < unfilteredEntities.size(); i++) {
+						//
+						//		switch (orCondition.get(RestUtils.CONDITION_OPERATOR)) {
+						//		case "eq":
+						//
+						//			if (roleIds.get(i).equals(roleId)) {
+						//				/*
+						//				 * Since andFilterConditionEntities is a set, an
+						//				 * entity will be added at most once.
+						//				 */
+						//				andFilterConditionEntities.add(unfilteredEntities.get(i));
+						//			}
+						//		break;
+						//
+						//	case "ne":
+						//
+						//		if (!roleIds.get(i).equals(roleId)) {
+						//			/*
+						//			 * Since andFilterConditionEntities is a set, an
+						//			 * entity will be added at most once.
+						//			 */
+						//			andFilterConditionEntities.add(unfilteredEntities.get(i));
+						//		}
+						//		break;
+						//
+						//	default:
+						//		throw new ResourceFilterExecutionException("Filter comparison operator \""
+						//				+ orCondition.get(RestUtils.CONDITION_OPERATOR)
+						//				+ "\" is not supported for attribute \""
+						//				+ orCondition.get(RestUtils.CONDITION_ATTR_NAME) + "\"");
+						//	}
+						//}
 						break;
 
 					default:
-						throw new ResourceFilterExecutionException("Filtering on attribute \""
-								+ orCondition.get(RestUtils.CONDITION_ATTR_NAME) + "\" is not supported");
+						throw new ResourceFilterExecutionException(String.format(
+								"Filtering on attribute \"%s\" is not supported", 
+								orCondition.get(RestUtils.CONDITION_ATTR_NAME)));
 					}
 					break;
 
 				default:
-					throw new ResourceFilterExecutionException(
-							"Filtering of " + entityClass.getSimpleName() + " resources is not supported");
+					throw new ResourceFilterExecutionException(String.format(
+							"Filtering of %s resources is not supported", entityClass.getSimpleName()));
 				}
 			}
 			/*
@@ -924,7 +908,7 @@ public class RestUtils {
 			default:
 				throw new ResourceFilterExecutionException(
 						String.format(
-								"Filter comparison operator \"{}\" is not supported for attribute \"{}\"",
+								"Filter comparison operator \"%s\" is not supported for attribute \"%s\"",
 								orCondition.get(RestUtils.CONDITION_OPERATOR),
 								orCondition.get(RestUtils.CONDITION_ATTR_NAME)));
 			}
