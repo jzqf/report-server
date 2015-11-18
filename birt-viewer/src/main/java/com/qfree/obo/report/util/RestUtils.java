@@ -725,7 +725,7 @@ public class RestUtils {
 
 		logger.info("filterConditions = {}", filterConditions);
 
-		if (filterConditions == null) {
+		if (filterConditions == null || unfilteredEntities.size() == 0) {
 			return unfilteredEntities; // no filtering
 		}
 
@@ -760,26 +760,14 @@ public class RestUtils {
 					switch (orCondition.get(RestUtils.CONDITION_ATTR_NAME)) {
 					case "jobStatusId":
 
-						UUID jobStatusId = null;
-						try {
-							jobStatusId = UUID.fromString(orCondition.get(RestUtils.CONDITION_VALUE));
-						} catch (IllegalArgumentException e) {
-							throw new ResourceFilterExecutionException(String.format(
-									"Filter condition value \"%s\" is not a legal UUID",
-									orCondition.get(RestUtils.CONDITION_VALUE)));
-						}
-						filterAccumulateNonnumeric(
-								unfilteredEntities, filterableEntityAttributes,
-								andFilterConditionEntities, orCondition,
-								jobStatusId);
+						filterAccumulateNonnumeric(unfilteredEntities, filterableEntityAttributes,
+								andFilterConditionEntities, orCondition);
 						break;
 
 					case "jobStatusAbbreviation":
 
-						filterAccumulateNonnumeric(
-								unfilteredEntities, filterableEntityAttributes,
-								andFilterConditionEntities, orCondition,
-								orCondition.get(RestUtils.CONDITION_VALUE));
+						filterAccumulateNonnumeric(unfilteredEntities, filterableEntityAttributes,
+								andFilterConditionEntities, orCondition);
 						break;
 
 					default:
@@ -794,58 +782,13 @@ public class RestUtils {
 					switch (orCondition.get(RestUtils.CONDITION_ATTR_NAME)) {
 					case "roleId":
 
-						UUID roleId = null;
-						try {
-							roleId = UUID.fromString(orCondition.get(RestUtils.CONDITION_VALUE));
-						} catch (IllegalArgumentException e) {
-							throw new ResourceFilterExecutionException(String.format(
-									"Filter condition value \"%s\" is not a legal UUID",
-									orCondition.get(RestUtils.CONDITION_VALUE)));
-						}
-						filterAccumulateNonnumeric(
-								unfilteredEntities, filterableEntityAttributes,
-								andFilterConditionEntities, orCondition,
-								roleId);
-
-						//	List<Object> roleIds = filterableEntityAttributes
-						//			.get(orCondition.get(RestUtils.CONDITION_ATTR_NAME));
-						//	for (int i = 0; i < unfilteredEntities.size(); i++) {
-						//
-						//		switch (orCondition.get(RestUtils.CONDITION_OPERATOR)) {
-						//		case "eq":
-						//
-						//			if (roleIds.get(i).equals(roleId)) {
-						//				/*
-						//				 * Since andFilterConditionEntities is a set, an
-						//				 * entity will be added at most once.
-						//				 */
-						//				andFilterConditionEntities.add(unfilteredEntities.get(i));
-						//			}
-						//		break;
-						//
-						//	case "ne":
-						//
-						//		if (!roleIds.get(i).equals(roleId)) {
-						//			/*
-						//			 * Since andFilterConditionEntities is a set, an
-						//			 * entity will be added at most once.
-						//			 */
-						//			andFilterConditionEntities.add(unfilteredEntities.get(i));
-						//		}
-						//		break;
-						//
-						//	default:
-						//		throw new ResourceFilterExecutionException("Filter comparison operator \""
-						//				+ orCondition.get(RestUtils.CONDITION_OPERATOR)
-						//				+ "\" is not supported for attribute \""
-						//				+ orCondition.get(RestUtils.CONDITION_ATTR_NAME) + "\"");
-						//	}
-						//}
+						filterAccumulateNonnumeric(unfilteredEntities, filterableEntityAttributes,
+								andFilterConditionEntities, orCondition);
 						break;
 
 					default:
 						throw new ResourceFilterExecutionException(String.format(
-								"Filtering on attribute \"%s\" is not supported", 
+								"Filtering on attribute \"%s\" is not supported",
 								orCondition.get(RestUtils.CONDITION_ATTR_NAME)));
 					}
 					break;
@@ -880,18 +823,52 @@ public class RestUtils {
 	 * @param filterableEntityAttributes
 	 * @param andFilterConditionEntities
 	 * @param orCondition
-	 * @param comparisonValue
 	 * @throws ResourceFilterExecutionException
 	 */
 	private static <E> void filterAccumulateNonnumeric(
 			List<E> unfilteredEntities,
 			Map<String, List<Object>> filterableEntityAttributes,
 			Set<E> andFilterConditionEntities,
-			Map<String, String> orCondition,
-			Object comparisonValue) throws ResourceFilterExecutionException {
+			Map<String, String> orCondition) throws ResourceFilterExecutionException {
+
+		if (unfilteredEntities.size() == 0) {
+			return;
+		}
 
 		List<Object> filterableEntityValues = filterableEntityAttributes
 				.get(orCondition.get(RestUtils.CONDITION_ATTR_NAME));
+
+		/*
+		 * Assign a value to comparisonValue, the value to which all attribute
+		 * values will be compared. orCondition.get(RestUtils.CONDITION_VALUE) 
+		 * is always of type String. We must convert this String into the
+		 * correct type so that the comparison will make sense. 
+		 * 
+		 * Here, we must treat all possible types of the attribute being 
+		 * filtered on.
+		 */
+		Object comparisonValue;
+		switch (filterableEntityValues.get(0).getClass().getName()) {
+		case "java.lang.String":
+			comparisonValue = orCondition.get(RestUtils.CONDITION_VALUE); // No conversion necessary.
+			break;
+		case "java.util.UUID":
+			comparisonValue = null;
+			try {
+				comparisonValue = UUID.fromString(orCondition.get(RestUtils.CONDITION_VALUE));
+			} catch (IllegalArgumentException e) {
+				throw new ResourceFilterExecutionException(String.format(
+						"Filter condition value \"%s\" is not a legal UUID",
+						orCondition.get(RestUtils.CONDITION_VALUE)));
+			}
+			break;
+		default:
+			throw new ResourceFilterExecutionException(String.format(
+					"In order to treat filter attribute \"%s\", support for type %s must be added.",
+					orCondition.get(RestUtils.CONDITION_ATTR_NAME),
+					filterableEntityValues.get(0).getClass().getName()));
+		}
+
 		for (int i = 0; i < unfilteredEntities.size(); i++) {
 
 			switch (orCondition.get(RestUtils.CONDITION_OPERATOR)) {
