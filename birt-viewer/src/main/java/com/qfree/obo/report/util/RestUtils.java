@@ -792,9 +792,39 @@ public class RestUtils {
 						}
 						break;
 
+					case "jobStatusAbbreviation":
+
+						String jobStatusAbbreviation = orCondition.get(RestUtils.CONDITION_VALUE);
+
+						List<Object> jobStatusAbbreviations = filterableEntityAttributes
+								.get(orCondition.get(RestUtils.CONDITION_ATTR_NAME));
+						for (int i = 0; i < unfilteredEntities.size(); i++) {
+
+							switch (orCondition.get(RestUtils.CONDITION_OPERATOR)) {
+							case "eq":
+								if (jobStatusAbbreviations.get(i).equals(jobStatusAbbreviation)) {
+									andFilterConditionEntities.add(unfilteredEntities.get(i));
+								}
+								break;
+							case "ne":
+								if (!jobStatusAbbreviations.get(i).equals(jobStatusAbbreviation)) {
+									andFilterConditionEntities.add(unfilteredEntities.get(i));
+								}
+								break;
+							default:
+								throw new ResourceFilterExecutionException(
+										String.format(
+												"Filter comparison operator \"{}\" is not supported for attribute \"{}\"",
+												orCondition.get(RestUtils.CONDITION_OPERATOR),
+												orCondition.get(RestUtils.CONDITION_ATTR_NAME)));
+							}
+						}
+						break;
+
 					default:
-						throw new ResourceFilterExecutionException("Filtering on attribute \""
-								+ orCondition.get(RestUtils.CONDITION_ATTR_NAME) + "\" is not supported");
+						throw new ResourceFilterExecutionException(
+								String.format("Filtering on attribute \"{}\" is not supported",
+										orCondition.get(RestUtils.CONDITION_ATTR_NAME)));
 					}
 					break;
 
