@@ -770,6 +770,12 @@ public class RestUtils {
 								andFilterConditionEntities, orCondition);
 						break;
 
+					case "jobId":
+
+						filterAccumulateNonnumeric(unfilteredEntities, filterableEntityAttributes,
+								andFilterConditionEntities, orCondition);
+						break;
+
 					default:
 						throw new ResourceFilterExecutionException(
 								String.format("Filtering on attribute \"%s\" is not supported",
@@ -839,6 +845,13 @@ public class RestUtils {
 				.get(orCondition.get(RestUtils.CONDITION_ATTR_NAME));
 
 		/*
+		 * In order to perform numerical comparisons <, <=, >, >=  on Objects,
+		 * it is necessary to cast the objects to a type where these operators
+		 * are allowed.
+		 */
+		Class<?> castToClass = String.class;
+
+		/*
 		 * Assign a value to comparisonValue, the value to which all attribute
 		 * values will be compared. orCondition.get(RestUtils.CONDITION_VALUE) 
 		 * is always of type String. We must convert this String into the
@@ -848,46 +861,120 @@ public class RestUtils {
 		 * filtered on.
 		 */
 		Object comparisonValue;
-		switch (filterableEntityValues.get(0).getClass().getName()) {
-		case "java.lang.String":
-			comparisonValue = orCondition.get(RestUtils.CONDITION_VALUE); // No conversion necessary.
-			break;
-		case "java.util.UUID":
+		String comparisonValueString = orCondition.get(RestUtils.CONDITION_VALUE);
+		if (filterableEntityValues.get(0) instanceof String) {
+
+			comparisonValue = comparisonValueString; // No conversion necessary.
+
+		} else if (filterableEntityValues.get(0) instanceof UUID) {
+
 			comparisonValue = null;
 			try {
-				comparisonValue = UUID.fromString(orCondition.get(RestUtils.CONDITION_VALUE));
+				comparisonValue = UUID.fromString(comparisonValueString);
 			} catch (IllegalArgumentException e) {
 				throw new ResourceFilterExecutionException(String.format(
 						"Filter condition value \"%s\" is not a legal UUID",
-						orCondition.get(RestUtils.CONDITION_VALUE)));
+						comparisonValueString));
 			}
-			break;
-		default:
+
+		} else if (filterableEntityValues.get(0) instanceof Long
+				|| filterableEntityValues.get(0) instanceof Integer
+				|| filterableEntityValues.get(0) instanceof Short
+				|| filterableEntityValues.get(0) instanceof Byte) {
+
+			try {
+				comparisonValue = Long.parseLong(comparisonValueString);
+			} catch (NumberFormatException e) {
+				throw new ResourceFilterExecutionException(
+						String.format("Cannot parse %s as a Long", comparisonValueString));
+			}
+			castToClass = Long.class;
+
+		} else if (filterableEntityValues.get(0) instanceof Double
+				|| filterableEntityValues.get(0) instanceof Float) {
+
+			try {
+				comparisonValue = Double.parseDouble(comparisonValueString);
+			} catch (NumberFormatException e) {
+				throw new ResourceFilterExecutionException(
+						String.format("Cannot parse %s as a Double", comparisonValueString));
+			}
+			castToClass = Double.class;
+
+		} else {
 			throw new ResourceFilterExecutionException(String.format(
 					"In order to treat filter attribute \"%s\", support for type %s must be added.",
 					orCondition.get(RestUtils.CONDITION_ATTR_NAME),
 					filterableEntityValues.get(0).getClass().getName()));
 		}
 
+		String operator = orCondition.get(RestUtils.CONDITION_OPERATOR);
 		for (int i = 0; i < unfilteredEntities.size(); i++) {
+			boolean addEntity = false;
 
-			switch (orCondition.get(RestUtils.CONDITION_OPERATOR)) {
-			case "eq":
-				if (filterableEntityValues.get(i).equals(comparisonValue)) {
-					andFilterConditionEntities.add(unfilteredEntities.get(i));
+			/*
+			 * In order to be able to use <, <=, >=, > operators, the objects
+			 * must be cast to a type that support these operators.
+			 */
+			if (castToClass.equals(Long.class)) {
+				
+				if (operator.equals("eq")) {
+					addEntity = filterableEntityValues.get(i).equals((Long)comparisonValue);
+				} else if (operator.equals("ne")) {
+					addEntity = !filterableEntityValues.get(i).equals((Long)comparisonValue);
+				} else if (operator.equals("lt")) {
+					addEntity = (Long) filterableEntityValues.get(i) < (Long) comparisonValue;
+				} else if (operator.equals("le")) {
+					addEntity = (Long) filterableEntityValues.get(i) <= (Long) comparisonValue;
+				} else if (operator.equals("ge")) {
+					addEntity = (Long) filterableEntityValues.get(i) >= (Long) comparisonValue;
+				} else if (operator.equals("gt")) {
+					addEntity = (Long) filterableEntityValues.get(i) > (Long) comparisonValue;
+				} else {
+					throw new ResourceFilterExecutionException(String.format(
+							"Filter comparison operator \"%s\" is not supported for attribute \"%s\"",
+							operator, orCondition.get(RestUtils.CONDITION_ATTR_NAME)));
 				}
-				break;
-			case "ne":
-				if (!filterableEntityValues.get(i).equals(comparisonValue)) {
-					andFilterConditionEntities.add(unfilteredEntities.get(i));
+
+			} else if (castToClass.equals(Double.class)) {
+
+				if (operator.equals("eq")) {
+					addEntity = filterableEntityValues.get(i).equals((Double) comparisonValue);
+				} else if (operator.equals("ne")) {
+					addEntity = !filterableEntityValues.get(i).equals((Double) comparisonValue);
+				} else if (operator.equals("lt")) {
+					addEntity = (Double) filterableEntityValues.get(i) < (Double) comparisonValue;
+				} else if (operator.equals("le")) {
+					addEntity = (Double) filterableEntityValues.get(i) <= (Double) comparisonValue;
+				} else if (operator.equals("ge")) {
+					addEntity = (Double) filterableEntityValues.get(i) >= (Double) comparisonValue;
+				} else if (operator.equals("gt")) {
+					addEntity = (Double) filterableEntityValues.get(i) > (Double) comparisonValue;
+				} else {
+					throw new ResourceFilterExecutionException(String.format(
+							"Filter comparison operator \"%s\" is not supported for attribute \"%s\"",
+							operator, orCondition.get(RestUtils.CONDITION_ATTR_NAME)));
 				}
-				break;
-			default:
-				throw new ResourceFilterExecutionException(
-						String.format(
-								"Filter comparison operator \"%s\" is not supported for attribute \"%s\"",
-								orCondition.get(RestUtils.CONDITION_OPERATOR),
-								orCondition.get(RestUtils.CONDITION_ATTR_NAME)));
+
+			} else {
+				
+				/*
+				 * Objects of *any* class can be tested for equality.
+				 */
+				if (operator.equals("eq")) {
+					addEntity = filterableEntityValues.get(i).equals(comparisonValue);
+				} else if (operator.equals("ne")) {
+					addEntity = !filterableEntityValues.get(i).equals(comparisonValue);
+				} else {
+					throw new ResourceFilterExecutionException(String.format(
+							"Filter comparison operator \"%s\" is not supported for attribute \"%s\"",
+							operator, orCondition.get(RestUtils.CONDITION_ATTR_NAME)));
+				}
+				
+			}
+
+			if (addEntity) {
+				andFilterConditionEntities.add(unfilteredEntities.get(i));
 			}
 		}
 	}

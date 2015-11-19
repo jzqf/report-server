@@ -330,13 +330,21 @@ public class Role implements Serializable {
 		List<Job> unfilteredJobs = getJobs();
 		List<Object> jobStatusIds = new ArrayList<>(unfilteredJobs.size());
 		List<Object> jobStatusAbbreviations = new ArrayList<>(unfilteredJobs.size());
+		List<Object> jobIds = new ArrayList<>(unfilteredJobs.size());
 		for (Job job : unfilteredJobs) {
 			jobStatusIds.add(job.getJobStatus().getJobStatusId());
 			jobStatusAbbreviations.add(job.getJobStatus().getAbbreviation());
+			jobIds.add(job.getJobId());
 		}
 		Map<String, List<Object>> filterableAttributes = new HashMap<>(2);
+		/*
+		 * Here, the Map keys used *must* agree with the filter attributes used
+		 * in the value assigned to the "filter" query parameter in the resource
+		 * URI.
+		 */
 		filterableAttributes.put("jobStatusId", jobStatusIds);
 		filterableAttributes.put("jobStatusAbbreviation", jobStatusAbbreviations);
+		filterableAttributes.put("jobId", jobIds);
 		return RestUtils.filterEntities(unfilteredJobs, filterConditions, filterableAttributes, Job.class);
 	}
 

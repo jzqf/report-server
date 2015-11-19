@@ -31,8 +31,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.qfree.obo.report.dto.ReportVersionResource;
-import com.qfree.obo.report.exceptions.ResourceFilterParseException;
 import com.qfree.obo.report.exceptions.ResourceFilterExecutionException;
+import com.qfree.obo.report.exceptions.ResourceFilterParseException;
 import com.qfree.obo.report.util.DateUtils;
 import com.qfree.obo.report.util.RestUtils;
 
@@ -227,6 +227,11 @@ public class ReportVersion implements Serializable {
 			roleIds.add(subscription.getRole().getRoleId());
 		}
 		Map<String, List<Object>> filterableAttributes = new HashMap<>(1);
+		/*
+		 * Here, the Map keys used *must* agree with the filter attributes used
+		 * in the value assigned to the "filter" query parameter in the resource
+		 * URI.
+		 */
 		filterableAttributes.put("roleId", roleIds);
 		return RestUtils.filterEntities(unfilteredSubscriptions, filterConditions, filterableAttributes,
 				Subscription.class);
