@@ -395,7 +395,7 @@ public class SubscriptionController extends AbstractBaseController {
 	 * This endpoint can be tested with:
 	 * 
 	 *   $ mvn clean spring-boot:run
-	 *   $ curl -i -H "Accept: application/json;v=1" -X GET \
+	 *   $ curl -X GET -iH "Accept: application/json;v=1" \
 	 *   http://localhost:8080/rest/subscriptions/c7f1d394-9814-4ede-bb01-2700187d79ca
 	 * 
 	 * @Transactional is used to avoid org.hibernate.LazyInitializationException
@@ -443,7 +443,7 @@ public class SubscriptionController extends AbstractBaseController {
 	 * deliveryCronSchedule:	-> null
 	 * deliveryTimeZoneId		-> "Canada/Pacific"
 	 * deliveryDatetimeRunAt:	-> "2015-11-04T06:00:00.000"
-	 * email_address:			-> "bozo@clown.net"
+	 * emailAddress:			-> "bozo@clown.net"
 	 * description:				-> "New description"
 	 * enabled:					-> true
 	 */

@@ -420,6 +420,11 @@ public class RestUtils {
 
 		logger.info("filterQueryParamText = {}", filterQueryParamText);
 
+		/*
+		 * This regex is used to break the entire "filter" query parameter value
+		 * into substrings, each of which is a logical condition to be AND'ed
+		 * with each other.
+		 */
 		String filterQueryParamRegex = "" +
 				"(                              # Group 1 to capture the condition string that appears \n" +
 				"                               # between each '.and.' operator.                       \n" +
@@ -437,8 +442,10 @@ public class RestUtils {
 				"                               # zero-length string.                                  \n" +
 				"                               # '?' is used to make the match lazy (ungreedy or      \n" +
 				"                               # reluctant) so that we match on the first closing     \n" +
-				"                               # double quote. The comparison value may contain       \n" +
-				"                               # double quotes itself and this should still work.     \n" +
+				"                               # double quote. Even so, the comparison value may      \n" +
+				"                               # contain double quotes itself and this should still   \n" +
+				"                               # work because there are patterns following that must  \n" +
+				"                               # also be matched.                                     \n" +
 				"    (\\.or\\.)*                # Group 4 to capture an  optional '.or.' operator.     \n" +
 				"                                                                                      \n" +
 				"  )+                           # Group 2 close. There must be at least one condition; \n" +
@@ -449,9 +456,16 @@ public class RestUtils {
 				"                               # operator *or* an end of line.                        \n";
 
 		/*
-		 * Regex for parsing each of the string that represents a filter
-		 * condition to be ADD'ed together. These are the strings from
-		 * filterQueryParamText that are delimited by ".and.".
+		 * Regex for parsing each substring that represents a filter condition
+		 * to be ADD'ed together, i.e., the substrings from filterQueryParamText
+		 * that are delimited by ".and." that are extracted by the previous 
+		 * regex. These substrings are parsed by this regex into substrings that
+		 * represent logical conditions to be OR'ed together. Each of these
+		 * substrings are of the form:
+		 * 
+		 *    attrname.(eq|ne|lt|le|ge|gt)."some value"
+		 * 
+		 * and are processed into their components by the next regex.
 		 */
 		String andConditionRegex = "" +
 				"    (                          # Group 1 to capture a single logical condition        \n" +
@@ -475,14 +489,27 @@ public class RestUtils {
 				"    )                          # Group 1 close for capturing a single logical         \n" +
 				"                               # condition *without* the trailing '.or.'.             \n" +
 				"                                                                                      \n" +
-				"    ((\\.or\\.)|$)             # Group 3 to capture *either* an intervening '.or.'    \n" +
-				"                               # operator *or* an end of line.                        \n";
+				//"    ((\\.or\\.)|$)             # Group 4 to capture *either* an intervening '.or.'    \n" +
+				"    ((\\..+?\\.)|$)            # Group 4 to capture *either* an intervening '.or.'    \n" +
+				"                               # operator *or* an end of line. We use '.+' here       \n" +
+				"                               # instead of the literal string 'or' so that we can    \n" +
+				"                               # test if the operatore matched was, in fact, 'or'.    \n" +
+				"                               # The match is reluctant (+?) so that we match on the  \n" +
+				"                               # first matching period.                               \n";
 
 		/*
 		 * Regex for parsing each of the strings that represent a single logical
 		 * condition of the form:
 		 * 
 		 *    attrname.(eq|ne|lt|le|ge|gt)."some value"
+		 * or
+		 *    attrname.op."attrvalue"
+		 * 
+		 * This regex parses strings of this form into the 3 substrings:
+		 * 
+		 *    1. attrname
+		 *    2. op           (2-character operator without surrounding periods)
+		 *    3. attrvalue    (without the double quotes)
 		 */
 		String orConditionRegex = "" +
 				"    (\\w+)                     # Group 1: Attribute name, attrname.                   \n" +
@@ -508,6 +535,14 @@ public class RestUtils {
 			Matcher matcher = pattern.matcher(filterQueryParamText);
 
 			/*
+			 * These variables are used to check if we were able to match the
+			 * *entire* string. If not an exception is thrown that includes the
+			 * substring that could not be matched.
+			 */
+			int end = 0;
+			boolean hitEnd = false;
+
+			/*
 			 * Extract substrings of filterQueryParamText, each of which 
 			 * corresponds to a conditional expression that is logically and'ed
 			 * with each other. These are substrings of filterQueryParamText
@@ -527,11 +562,27 @@ public class RestUtils {
 					logger.info("group {}: {}", i, matcher.group(i));
 				}
 				andConditionStrings.add(matcher.group(1));
+				end = matcher.end();
+				hitEnd = matcher.hitEnd();
 			}
 			logger.info("");
-			logger.info("andConditionStrings = ");
+			//logger.info(
+			//		"After finished matching: end = {}, filterQueryParamText.length() = {}, hitEnd = {}, " +
+			//				"filterQueryParamText.substring(end, filterQueryParamText.length() = {}",
+			//		end, filterQueryParamText.length(), hitEnd,
+			//		filterQueryParamText.substring(end, filterQueryParamText.length()));
+			logger.info("{} andConditionStrings:", andConditionStrings.size());
 			for (String s : andConditionStrings) {
 				logger.info("{}", s);
+			}
+			if (!hitEnd) {
+				/*
+				 * The entire string was not matched. This exception reports the
+				 * final part of the string that was not matched.
+				 */
+				throw new ResourceFilterParseException(String.format(
+						"Could not fully parse the filter query parameter. Not parsed: %s",
+						filterQueryParamText.substring(end, filterQueryParamText.length())));
 			}
 
 			/*
@@ -579,6 +630,15 @@ public class RestUtils {
 
 			for (String andConditionString : andConditionStrings) {
 
+				/*
+				 * These variables are used to check if we were able to match the
+				 * *entire* substring, andConditionString. If not, an exception 
+				 * is thrown that includes the substring that could not be 
+				 * matched.
+				 */
+				int andConditionStringMatchEnd = 0;
+				boolean andConditionStringMatchHitEnd = false;
+
 				logger.info("");
 				logger.info("String to parse: {}", andConditionString);
 
@@ -607,6 +667,31 @@ public class RestUtils {
 					String orConditionString = andConditionMatcher.group(1);
 					logger.info("orConditionString = {}", orConditionString);
 					orConditionStrings.add(orConditionString);
+
+					if (andConditionMatcher.groupCount() >= 4) {
+						/*
+						 * The 4th group should either be empty or equal to the
+						 * string ".or.". If this is not the case, it means that
+						 * the filter query parameter is malformed.
+						 */
+						if (andConditionMatcher.group(4) != null
+								&& !andConditionMatcher.group(4).isEmpty()
+								&& !andConditionMatcher.group(4).equals(".or.")) {
+							logger.info("!!!!! andConditionMatcher.group(4) = {}", andConditionMatcher.group(4));
+							throw new ResourceFilterParseException(String.format(
+									"Could not fully parse the filter query parameter. Not parsed: %s",
+									andConditionString));
+						}
+					}
+
+					/*
+					 * These variables are used to check if we were able to 
+					 * match the *entire* substring, orConditionString. If not,
+					 * an exception is thrown that includes the substring that
+					 * could not be matched.
+					 */
+					int orConditionStringMatchEnd = 0;
+					boolean orConditionStringMatchHitEnd = false;
 
 					/*
 					 * Parse the logical condition into 3 strings:
@@ -637,6 +722,44 @@ public class RestUtils {
 							orConditions.add(orCondition);
 						}
 					}
+					orConditionStringMatchEnd = orConditionMatcher.end();
+					orConditionStringMatchHitEnd = orConditionMatcher.hitEnd();
+					//logger.info(
+					//		"After finished matching orConditionString: orConditionStringMatchEnd = {}, " +
+					//				"orConditionString.length() = {}, orConditionStringMatchHitEnd = {}, " +
+					//				"orConditionString.substring(orConditionStringMatchEnd, orConditionString.length() = {}",
+					//		orConditionStringMatchEnd, orConditionString.length(), orConditionStringMatchHitEnd,
+					//		orConditionString.substring(orConditionStringMatchEnd, orConditionString.length()));
+					if (!orConditionStringMatchHitEnd) {
+						/*
+						 * The entire string was not matched. This exception
+						 * reports the final part of the string that was not
+						 * matched.
+						 */
+						throw new ResourceFilterParseException(String.format(
+								"Could not fully parse the filter query parameter. Not parsed: %s",
+								orConditionString.substring(orConditionStringMatchEnd, orConditionString.length())));
+					}
+					/*
+					 * Update before next trip through the loop.
+					 */
+					andConditionStringMatchEnd = andConditionMatcher.end();
+					andConditionStringMatchHitEnd = andConditionMatcher.hitEnd();
+				}
+				//logger.info(
+				//		"After finished matching andConditionString: andConditionStringMatchEnd = {}, " +
+				//				"andConditionString.length() = {}, andConditionStringMatchHitEnd = {}, " +
+				//				"andConditionString.substring(andConditionStringMatchEnd, andConditionString.length() = {}",
+				//		andConditionStringMatchEnd, andConditionString.length(), andConditionStringMatchHitEnd,
+				//		andConditionString.substring(andConditionStringMatchEnd, andConditionString.length()));
+				if (!andConditionStringMatchHitEnd) {
+					/*
+					 * The entire string was not matched. This exception reports
+					 * the final part of the string that was not matched.
+					 */
+					throw new ResourceFilterParseException(String.format(
+							"Could not fully parse the filter query parameter. Not parsed: %s",
+							andConditionString.substring(andConditionStringMatchEnd, andConditionString.length())));
 				}
 
 			}
@@ -917,11 +1040,11 @@ public class RestUtils {
 			 * must be cast to a type that support these operators.
 			 */
 			if (castToClass.equals(Long.class)) {
-				
+
 				if (operator.equals("eq")) {
-					addEntity = filterableEntityValues.get(i).equals((Long)comparisonValue);
+					addEntity = filterableEntityValues.get(i).equals((Long) comparisonValue);
 				} else if (operator.equals("ne")) {
-					addEntity = !filterableEntityValues.get(i).equals((Long)comparisonValue);
+					addEntity = !filterableEntityValues.get(i).equals((Long) comparisonValue);
 				} else if (operator.equals("lt")) {
 					addEntity = (Long) filterableEntityValues.get(i) < (Long) comparisonValue;
 				} else if (operator.equals("le")) {
@@ -957,7 +1080,7 @@ public class RestUtils {
 				}
 
 			} else {
-				
+
 				/*
 				 * Objects of *any* class can be tested for equality.
 				 */
@@ -970,7 +1093,7 @@ public class RestUtils {
 							"Filter comparison operator \"%s\" is not supported for attribute \"%s\"",
 							operator, orCondition.get(RestUtils.CONDITION_ATTR_NAME)));
 				}
-				
+
 			}
 
 			if (addEntity) {
