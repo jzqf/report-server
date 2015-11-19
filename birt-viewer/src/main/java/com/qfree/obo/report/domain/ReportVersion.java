@@ -2,6 +2,7 @@ package com.qfree.obo.report.domain;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -233,7 +234,15 @@ public class ReportVersion implements Serializable {
 		 * URI.
 		 */
 		filterableAttributes.put("roleId", roleIds);
-		return RestUtils.filterEntities(unfilteredSubscriptions, filterConditions, filterableAttributes,
+		/*
+		 * The list must be ordered in case pagination is used for the 
+		 * collection resource created from list of filtered entities. The only
+		 * sensible order is chronological order.
+		 */
+		Comparator<Subscription> chronological = (Subscription subscription1,
+				Subscription subscription2) -> subscription1.getCreatedOn().compareTo(subscription2.getCreatedOn());
+
+		return RestUtils.filterEntities(unfilteredSubscriptions, filterConditions, filterableAttributes, chronological,
 				Subscription.class);
 
 		//	logger.info("filterConditions = {}", filterConditions);

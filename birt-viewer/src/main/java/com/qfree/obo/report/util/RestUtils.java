@@ -2,6 +2,7 @@ package com.qfree.obo.report.util;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -844,6 +845,7 @@ public class RestUtils {
 			List<E> unfilteredEntities,
 			List<List<Map<String, String>>> filterConditions,
 			Map<String, List<Object>> filterableEntityAttributes,
+			Comparator<E> comparatorForSortingEntities,
 			Class<E> entityClass) throws ResourceFilterExecutionException {
 
 		logger.info("filterConditions = {}", filterConditions);
@@ -1028,6 +1030,21 @@ public class RestUtils {
 			filteredEntities.retainAll(andFilterConditionEntities);
 		}
 
-		return new ArrayList<>(filteredEntities);
+		/*
+		 * Convert Set to List.
+		 */
+		List<E> filteredEntititesList = new ArrayList<>(filteredEntities);
+
+		/*
+		 * The list must be ordered in case pagination is used for the 
+		 * collection resource created from list of filtered entities. If 
+		 * sorting is not to be performed, the calling code should pass null for
+		 * comparatorForSortingEntities.
+		 */
+		if (comparatorForSortingEntities != null) {
+			filteredEntititesList.sort(comparatorForSortingEntities);
+		}
+
+		return filteredEntititesList;
 	}
 }

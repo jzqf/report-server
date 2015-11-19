@@ -2,6 +2,7 @@ package com.qfree.obo.report.domain;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -345,7 +346,16 @@ public class Role implements Serializable {
 		filterableAttributes.put("jobStatusId", jobStatusIds);
 		filterableAttributes.put("jobStatusAbbreviation", jobStatusAbbreviations);
 		filterableAttributes.put("jobId", jobIds);
-		return RestUtils.filterEntities(unfilteredJobs, filterConditions, filterableAttributes, Job.class);
+		/*
+		 * The list must be ordered in case pagination is used for the 
+		 * collection resource created from list of filtered entities. The only
+		 * sensible order is chronological order. Since the Job entities has a 
+		 * Long primary key, we could also sort by id.
+		 */
+		Comparator<Job> chronological = (Job job1, Job job2) -> job1.getCreatedOn().compareTo(job2.getCreatedOn());
+
+		return RestUtils.filterEntities(unfilteredJobs, filterConditions, filterableAttributes, chronological,
+				Job.class);
 	}
 
 	public List<Job> getJobs() {
