@@ -34,9 +34,13 @@ import com.qfree.obo.report.domain.UuidCustomType;
 import com.qfree.obo.report.dto.JobCollectionResource;
 import com.qfree.obo.report.dto.ReportCollectionResource;
 import com.qfree.obo.report.dto.ResourcePath;
+import com.qfree.obo.report.dto.RestErrorResource.RestError;
 import com.qfree.obo.report.dto.RoleCollectionResource;
 import com.qfree.obo.report.dto.RoleResource;
 import com.qfree.obo.report.dto.SubscriptionCollectionResource;
+import com.qfree.obo.report.exceptions.ResourceFilterParseException;
+import com.qfree.obo.report.exceptions.ResourceFilterExecutionException;
+import com.qfree.obo.report.exceptions.RestApiException;
 import com.qfree.obo.report.service.RoleService;
 import com.qfree.obo.report.util.RestUtils;
 import com.qfree.obo.report.util.RestUtils.RestApiVersion;
@@ -336,18 +340,24 @@ public class RoleController extends AbstractBaseController {
 			@HeaderParam("Accept") final String acceptHeader,
 			@QueryParam(ResourcePath.EXPAND_QP_NAME) final List<String> expand,
 			@QueryParam(ResourcePath.SHOWALL_QP_NAME) final List<String> showAll,
+			@QueryParam(ResourcePath.FILTER_QP_NAME) final List<String> filter,
 			@QueryParam(ResourcePath.PAGE_OFFSET_QP_NAME) final List<String> pageOffset,
 			@QueryParam(ResourcePath.PAGE_LIMIT_QP_NAME) final List<String> pageLimit,
 			@Context final UriInfo uriInfo) {
 		Map<String, List<String>> queryParams = new HashMap<>();
 		queryParams.put(ResourcePath.EXPAND_QP_KEY, expand);
 		queryParams.put(ResourcePath.SHOWALL_QP_KEY, showAll);
+		queryParams.put(ResourcePath.FILTER_QP_KEY, filter);
 		RestUtils.checkPaginationQueryParams(pageOffset, pageLimit, queryParams);
 		RestApiVersion apiVersion = RestUtils.extractAPIVersion(acceptHeader, RestApiVersion.v1);
 
 		Role role = roleRepository.findOne(id);
 		RestUtils.ifNullThen404(role, Role.class, "roleId", id.toString());
-		return new JobCollectionResource(role, uriInfo, queryParams, apiVersion);
+		try {
+			return new JobCollectionResource(role, uriInfo, queryParams, apiVersion);
+		} catch (ResourceFilterExecutionException | ResourceFilterParseException e) {
+			throw new RestApiException(RestError.FORBIDDEN_RESOURCE_FILTER_PROBLEM, e.getMessage(), e);
+		}
 	}
 
 	/*

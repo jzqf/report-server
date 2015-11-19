@@ -180,6 +180,15 @@ public abstract class AbstractCollectionResource<T extends AbstractBaseResource,
 			queryParams.put(ResourcePath.PAGE_OFFSET_QP_KEY, currentPageOffset);
 		}
 
+		/*
+		 * If filter query parameter(s) were specified, they are no longer 
+		 * needed nor appropriate beyond this point. We do not want them to
+		 * propagate to sub-resources (resources that are attributes of a
+		 * primary resource). This ensures that these filter query parameter(s)
+		 * do not appear in URIs for these sub-resources.
+		 */
+		queryParams.remove(ResourcePath.FILTER_QP_KEY);
+
 	}
 
 	//	public List<T> getItems() {

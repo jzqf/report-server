@@ -248,6 +248,8 @@ public class RestErrorResource {
 				Response.Status.FORBIDDEN, "403.28",
 				"Attempt made to resume the subscription job processor, but the scheduler is not running",
 				null),
+		FORBIDDEN_RESOURCE_FILTER_PROBLEM(
+				Response.Status.FORBIDDEN, "403.29", "Problem encountered during resource filtering", null),
 
 		/**
 		 * {@code 404 Not Found}.

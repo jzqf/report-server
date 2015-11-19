@@ -58,8 +58,7 @@ public class DocumentFormatController extends AbstractBaseController {
 	 *   http://localhost:8080/rest/documentFormats?expand=documentFormats
 	 *   
 	 * @Transactional is used to avoid org.hibernate.LazyInitializationException
-	 * being thrown when evaluating documentFormat.getSubscriptions() in
-	 * SubscriptionResource.listFromDocumentFormat(...).
+	 * being thrown.
 	 */
 	@Transactional
 	@GET
