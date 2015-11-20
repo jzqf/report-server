@@ -79,7 +79,12 @@ import com.qfree.obo.report.service.StartupService;
  *      because this may cease to solve the problem in the future. Therefore, 
  *      this solution was also rejected.
  */
-@EnableAutoConfiguration(exclude = { MongoAutoConfiguration.class, AopAutoConfiguration.class,
+@EnableAutoConfiguration(
+		exclude = { MongoAutoConfiguration.class, AopAutoConfiguration.class,
+		//				SecurityAutoConfiguration.class,
+		//				ManagementSecurityAutoConfiguration.class,
+		//				SpringBootWebSecurityConfiguration.class,
+		//				WebMvcAutoConfiguration.class,
 		// Do not exclude:
 		//	//EmbeddedServletContainerAutoConfiguration.class, REQUIRED
 		//	//JerseyAutoConfiguration.class,                   REQUIRED
@@ -91,7 +96,8 @@ import com.qfree.obo.report.service.StartupService;
 })
 @Import({
 		PersistenceConfig.class,
-		SchedulingConfig.class })
+		SchedulingConfig.class,
+		SecurityConfig.class })
 @ImportResource("classpath:spring/root-context.xml")
 //@ImportResource("/WEB-INF/spring/root-context.xml")
 @PropertySource("classpath:config.properties")
