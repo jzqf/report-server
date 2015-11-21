@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
@@ -31,13 +32,33 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	private Environment env;
 
 	@Override
+	protected void configure(AuthenticationManagerBuilder auth)
+			throws Exception {
+
+		/*
+		 * Check whether we are running unit/integration tests. If so, we 
+		 * disable security.
+		 */
+		if (env.getProperty("app.version").equals("*test*")) {
+
+		} else {
+
+			auth
+					.inMemoryAuthentication()
+					.withUser("ui").password("ui").roles("UI").and()
+					.withUser("admin").password("admin").roles("UI", "ADMIN");
+
+		}
+	}
+
+	@Override
 	protected void configure(HttpSecurity http) throws Exception {
 
 		/*
 		 * Check whether we are running unit/integration tests. If so, we 
 		 * disable security.
 		 */
-		if (env.getProperty("app.version").equals("*test*") || true) {
+		if (env.getProperty("app.version").equals("*test*")) {
 
 			/*
 			 * Turn off security. 
@@ -58,10 +79,22 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
 			http
 					.authorizeRequests()
-					//	.antMatchers("/spitters/me").authenticated()
-					//	.antMatchers(HttpMethod.POST, "/spittles").authenticated()
-					.anyRequest().authenticated();
 
+					.antMatchers("/upload_report.html")
+					.access("isAuthenticated() or hasIpAddress('127.0.0.1') or hasIpAddress('0:0:0:0:0:0:0:1')")
+					//.access("isAuthenticated() or permitAll")
+					//.antMatchers("/upload_report.html").authenticated()
+
+					.antMatchers("/rest/**").authenticated() // report server ReST API
+
+					//	.antMatchers(HttpMethod.POST, "/xxxxxx").authenticated()
+
+					.anyRequest().permitAll()
+					//.anyRequest().authenticated()
+
+					.and()
+					.formLogin().and()
+					.httpBasic();
 		}
 	}
 

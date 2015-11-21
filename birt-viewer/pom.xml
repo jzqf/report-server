@@ -357,8 +357,16 @@
 		  
 		    http://localhost:8080/autoconfig
 		  
-		  To avoid possible other subtle problems, I have decided that the 
-		  safest treatment is to just add the dependency for "spring-webmvc"
+		  Or course, this URL is only supposed to work if we run the application
+		  via:
+		  
+		    mvn clean spring-boot:run
+		    
+		  (I don't believe it is supposed to work when we deploy the application
+		  to Tomcat.)
+		  
+		  To avoid the possibility of other subtle problems, I have decided that
+		  the safest treatment is to just add the dependency for "spring-webmvc"
 		  here.
 		  
 		  Currently, I am using Spring Boot 1.2.3.RELEASE. After I upgrade to a 
