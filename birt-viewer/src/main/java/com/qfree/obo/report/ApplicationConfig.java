@@ -11,6 +11,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.aop.AopAutoConfiguration;
 import org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration;
+import org.springframework.boot.context.embedded.ServletRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -20,6 +21,7 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
 
 import com.qfree.obo.report.service.StartupService;
+import com.qfree.obo.report.servlet.RequestHeadersServlet;
 
 /**
  * The main/root class for Java-based configuration for the root Spring
@@ -210,6 +212,23 @@ public class ApplicationConfig {
 	@Bean
 	public StartupService startupService() {
 		return new StartupService();
+	}
+
+	/**
+	 * This bean is needed to register the servlet RequestHeadersServlet with
+	 * Spring Boot for when this application is run in Spring Boot's embedded
+	 * Tomcat server via:
+	 * 
+	 * mvn clean spring-boot:run
+	 * 
+	 * This bean is *not* needed if this application is run by installing it as
+	 * a WAR file in Tomcat.
+	 * 
+	 * @return
+	 */
+	@Bean
+	public ServletRegistrationBean RegisterRequestHeadersServlet() {
+		return new ServletRegistrationBean(new RequestHeadersServlet(), "/RequestHeaders");
 	}
 
 	public static void main(String[] args) {

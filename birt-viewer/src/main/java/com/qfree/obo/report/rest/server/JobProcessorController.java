@@ -146,6 +146,8 @@ public class JobProcessorController extends AbstractBaseController {
 		queryParams.put(ResourcePath.SHOWALL_QP_KEY, showAll);
 		RestApiVersion apiVersion = RestUtils.extractAPIVersion(acceptHeader, RestApiVersion.v1);
 
+		logger.info("Display all headers here");
+
 		try {
 			subscriptionJobProcessorScheduler.triggerJob();
 		} catch (JobProcessorNotScheduledCannotTrigger e) {

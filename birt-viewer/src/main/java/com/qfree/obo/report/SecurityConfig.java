@@ -45,8 +45,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
 			auth
 					.inMemoryAuthentication()
-					.withUser("ui").password("ui").roles("UI").and()
-					.withUser("admin").password("admin").roles("UI", "ADMIN");
+					.withUser("ui").password("ui").authorities("ROLE_RESTAPI").and()
+					.withUser("admin").password("admin").authorities("ROLE_ADMIN", "ROLE_RESTAPI");
+			//.withUser("ui").password("ui").roles("RESTAPI").and()
+			//.withUser("admin").password("admin").roles("ADMIN", "RESTAPI");
 
 		}
 	}
@@ -60,20 +62,26 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		 */
 		if (env.getProperty("app.version").equals("*test*")) {
 
-			/*
-			 * Turn off security. 
-			 */
-			http.authorizeRequests().anyRequest().permitAll();
+			http
+					/*
+					 * Turn off security. 
+					 */
+					.authorizeRequests().anyRequest().permitAll()
 
-			/*
-			 * I am not sure why CSRF must be disabled, but if it is not 
-			 * disabled here, HTTP status 403 is returned for JAX-RS client 
-			 * requests to the ReST controllers via Spring Boot's embedded 
-			 * Tomcat server. See:
-			 * 
-			 * http://docs.spring.io/spring-security/site/docs/current/reference/html/csrf.html
-			 */
-			http.csrf().disable();
+					/*
+					 * CSRF must be disabled since integration tests do not include a
+					 * CSRF synchronizer token. Spring Security enables CSRF by default,
+					 * and it expects a CSRF token for any state-changing request (this
+					 * includes most requests that do *not* use the HTTP methods GET, 
+					 * HEAD, OPTIONS or TRACE). If such requests do not carry a CSRF 
+					 * token, the request will fail with a CsrfException. I think that
+					 * this results in an HTTP status 403 for state-changing JAX-RS 
+					 * client requests to the ReST controllers via Spring Boot's
+					 * embedded Tomcat server. See:
+					 * 
+					 * http://docs.spring.io/spring-security/site/docs/current/reference/html/csrf.html
+					 */
+					.and().csrf().disable();
 
 		} else {
 
@@ -81,20 +89,47 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 					.authorizeRequests()
 
 					.antMatchers("/upload_report.html")
-					.access("isAuthenticated() or hasIpAddress('127.0.0.1') or hasIpAddress('0:0:0:0:0:0:0:1')")
+					//					.access("hasRole('ROLE_ADMIN') or hasIpAddress('127.0.0.1') or hasIpAddress('0:0:0:0:0:0:0:1')")
+					//.access("isAuthenticated() or hasIpAddress('127.0.0.1') or hasIpAddress('0:0:0:0:0:0:0:1')")
 					//.access("isAuthenticated() or permitAll")
-					//.antMatchers("/upload_report.html").authenticated()
+					.authenticated()
 
-					.antMatchers("/rest/**").authenticated() // report server ReST API
+					//.antMatchers("/RequestHeaders")
+					//.access("hasRole('ROLE_ADMIN') or hasIpAddress('127.0.0.1') or hasIpAddress('0:0:0:0:0:0:0:1')")
+
+					/*
+					 * Report server ReST API:
+					 */
+					.antMatchers("/rest/**").access("hasRole('ROLE_RESTAPI')")
+					//.antMatchers("/rest/**").authenticated()
+					//.antMatchers("/rest/**").permitAll()
 
 					//	.antMatchers(HttpMethod.POST, "/xxxxxx").authenticated()
 
+					/*
+					 * All other URLs:
+					 */
 					.anyRequest().permitAll()
 					//.anyRequest().authenticated()
 
-					.and()
-					.formLogin().and()
-					.httpBasic();
+					/*
+					 * Enforce channel security.
+					 */
+					.and().requiresChannel()
+					.antMatchers("/upload_report.html").requiresInsecure()
+					.antMatchers("/rest/**").requiresInsecure()
+					.anyRequest().requiresInsecure()
+
+					/*
+					 * If the user is not authenticated, this tells Spring 
+					 * Security to display a very simple log-in form where the
+					 * user can specify a user name and password.
+					 */
+					.and().formLogin()
+
+					.and().httpBasic().realmName("Q-Free Report Server")
+
+					.and().csrf().disable();
 		}
 	}
 

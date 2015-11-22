@@ -14,7 +14,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Servlet implementation class RequestHeadersServlet
+ * Servlet implementation class RequestHeadersServlet.
+ * 
+ * This servlet seems to be registered when this application is installed in
+ * Tomcat as a WAR file, but not when this application is run via Spring Boot
+ * with:
+ * 
+ * mvn clean spring-boot:run
+ * 
+ * Perhaps the servlet needs to be registered specially to be accessible via
+ * "spring-boot:run"?
  */
 @WebServlet(description = "Displays all request headers", urlPatterns = { "/RequestHeaders" })
 public class RequestHeadersServlet extends HttpServlet {
