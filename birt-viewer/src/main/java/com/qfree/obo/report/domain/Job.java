@@ -1,8 +1,12 @@
 package com.qfree.obo.report.domain;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -20,7 +24,9 @@ import javax.persistence.TemporalType;
 import javax.validation.constraints.NotNull;
 
 import com.qfree.obo.report.dto.JobResource;
+import com.qfree.obo.report.exceptions.ResourceFilterExecutionException;
 import com.qfree.obo.report.util.DateUtils;
+import com.qfree.obo.report.util.RestUtils;
 
 /**
  * The persistent class for the "job" database table.
@@ -476,6 +482,56 @@ public class Job implements Serializable {
 		builder.append(createdOn);
 		builder.append("]");
 		return builder.toString();
+	}
+
+	/**
+	 * Returns a {@link List} of filtered {@link Job} entities given an
+	 * unfiltered list and a set of filter conditions.
+	 * 
+	 * This method first sets up one list for each attribute on which the list
+	 * of {@link Job} entities can be filtered on. Then the filtering is
+	 * performed by a call to a generic static method.
+	 * 
+	 * @param unfilteredJobs
+	 * @param filterConditions
+	 * @return
+	 * @throws ResourceFilterExecutionException
+	 */
+	public static List<Job> getFilteredJobs(List<Job> unfilteredJobs, List<List<Map<String, String>>> filterConditions)
+			throws ResourceFilterExecutionException {
+		if (filterConditions == null || filterConditions.size() == 0) {
+			return unfilteredJobs; // no filtering
+		}
+		List<Object> jobStatusIds = new ArrayList<>(unfilteredJobs.size());
+		List<Object> jobStatusAbbreviations = new ArrayList<>(unfilteredJobs.size());
+		List<Object> jobCreatedOns = new ArrayList<>(unfilteredJobs.size());
+		List<Object> jobIds = new ArrayList<>(unfilteredJobs.size());
+		for (Job job : unfilteredJobs) {
+			jobStatusIds.add(job.getJobStatus().getJobStatusId());
+			jobStatusAbbreviations.add(job.getJobStatus().getAbbreviation());
+			jobCreatedOns.add(job.getCreatedOn());
+			jobIds.add(job.getJobId());
+		}
+		Map<String, List<Object>> filterableAttributes = new HashMap<>(4);
+		/*
+		 * Here, the Map keys used *must* agree with the filter attributes used
+		 * in the value assigned to the "filter" query parameter in the resource
+		 * URI.
+		 */
+		filterableAttributes.put("jobStatusId", jobStatusIds);
+		filterableAttributes.put("jobStatusAbbreviation", jobStatusAbbreviations);
+		filterableAttributes.put("createdOn", jobCreatedOns);
+		filterableAttributes.put("jobId", jobIds);
+		/*
+		 * The list must be ordered in case pagination is used for the 
+		 * collection resource created from list of filtered entities. The only
+		 * sensible order is chronological order. Since the Job entities has a 
+		 * Long primary key, we could also sort by id.
+		 */
+		Comparator<Job> chronological = (Job job1, Job job2) -> job1.getCreatedOn().compareTo(job2.getCreatedOn());
+
+		return RestUtils.filterEntities(unfilteredJobs, filterConditions, filterableAttributes, chronological,
+				Job.class);
 	}
 
 }

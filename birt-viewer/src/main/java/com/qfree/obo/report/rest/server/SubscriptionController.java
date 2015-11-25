@@ -50,6 +50,8 @@ import com.qfree.obo.report.dto.SubscriptionCollectionResource;
 import com.qfree.obo.report.dto.SubscriptionParameterCollectionResource;
 import com.qfree.obo.report.dto.SubscriptionResource;
 import com.qfree.obo.report.exceptions.NoScheduleForSubscriptionException;
+import com.qfree.obo.report.exceptions.ResourceFilterExecutionException;
+import com.qfree.obo.report.exceptions.ResourceFilterParseException;
 import com.qfree.obo.report.exceptions.RestApiException;
 import com.qfree.obo.report.scheduling.schedulers.SubscriptionScheduler;
 import com.qfree.obo.report.service.SubscriptionService;
@@ -973,17 +975,23 @@ public class SubscriptionController extends AbstractBaseController {
 			@HeaderParam("Accept") final String acceptHeader,
 			@QueryParam(ResourcePath.EXPAND_QP_NAME) final List<String> expand,
 			@QueryParam(ResourcePath.SHOWALL_QP_NAME) final List<String> showAll,
+			@QueryParam(ResourcePath.FILTER_QP_NAME) final List<String> filter,
 			@QueryParam(ResourcePath.PAGE_OFFSET_QP_NAME) final List<String> pageOffset,
 			@QueryParam(ResourcePath.PAGE_LIMIT_QP_NAME) final List<String> pageLimit,
 			@Context final UriInfo uriInfo) {
 		Map<String, List<String>> queryParams = new HashMap<>();
 		queryParams.put(ResourcePath.EXPAND_QP_KEY, expand);
 		queryParams.put(ResourcePath.SHOWALL_QP_KEY, showAll);
+		queryParams.put(ResourcePath.FILTER_QP_KEY, filter);
 		RestUtils.checkPaginationQueryParams(pageOffset, pageLimit, queryParams);
 		RestApiVersion apiVersion = RestUtils.extractAPIVersion(acceptHeader, RestApiVersion.v1);
 
 		Subscription subscription = subscriptionRepository.findOne(id);
 		RestUtils.ifNullThen404(subscription, Subscription.class, "subscriptionId", id.toString());
-		return new JobCollectionResource(subscription, uriInfo, queryParams, apiVersion);
+		try {
+			return new JobCollectionResource(subscription, uriInfo, queryParams, apiVersion);
+		} catch (ResourceFilterExecutionException | ResourceFilterParseException e) {
+			throw new RestApiException(RestError.FORBIDDEN_RESOURCE_FILTER_PROBLEM, e.getMessage(), e);
+		}
 	}
 }

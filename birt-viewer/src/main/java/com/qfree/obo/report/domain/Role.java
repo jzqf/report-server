@@ -2,9 +2,7 @@ package com.qfree.obo.report.domain;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -30,7 +28,6 @@ import org.hibernate.validator.constraints.NotBlank;
 import com.qfree.obo.report.dto.RoleResource;
 import com.qfree.obo.report.exceptions.ResourceFilterExecutionException;
 import com.qfree.obo.report.util.DateUtils;
-import com.qfree.obo.report.util.RestUtils;
 
 /**
  * The persistent class for the "role" database table.
@@ -328,40 +325,7 @@ public class Role implements Serializable {
 	}
 
 	public List<Job> getJobs(List<List<Map<String, String>>> filterConditions) throws ResourceFilterExecutionException {
-		if (filterConditions == null || filterConditions.size() == 0) {
-			return getJobs(); // no filtering
-		}
-		List<Job> unfilteredJobs = getJobs();
-		List<Object> jobStatusIds = new ArrayList<>(unfilteredJobs.size());
-		List<Object> jobStatusAbbreviations = new ArrayList<>(unfilteredJobs.size());
-		List<Object> jobCreatedOns = new ArrayList<>(unfilteredJobs.size());
-		List<Object> jobIds = new ArrayList<>(unfilteredJobs.size());
-		for (Job job : unfilteredJobs) {
-			jobStatusIds.add(job.getJobStatus().getJobStatusId());
-			jobStatusAbbreviations.add(job.getJobStatus().getAbbreviation());
-			jobCreatedOns.add(job.getCreatedOn());
-			jobIds.add(job.getJobId());
-		}
-		Map<String, List<Object>> filterableAttributes = new HashMap<>(2);
-		/*
-		 * Here, the Map keys used *must* agree with the filter attributes used
-		 * in the value assigned to the "filter" query parameter in the resource
-		 * URI.
-		 */
-		filterableAttributes.put("jobStatusId", jobStatusIds);
-		filterableAttributes.put("jobStatusAbbreviation", jobStatusAbbreviations);
-		filterableAttributes.put("createdOn", jobCreatedOns);
-		filterableAttributes.put("jobId", jobIds);
-		/*
-		 * The list must be ordered in case pagination is used for the 
-		 * collection resource created from list of filtered entities. The only
-		 * sensible order is chronological order. Since the Job entities has a 
-		 * Long primary key, we could also sort by id.
-		 */
-		Comparator<Job> chronological = (Job job1, Job job2) -> job1.getCreatedOn().compareTo(job2.getCreatedOn());
-
-		return RestUtils.filterEntities(unfilteredJobs, filterConditions, filterableAttributes, chronological,
-				Job.class);
+		return Job.getFilteredJobs(getJobs(), filterConditions);
 	}
 
 	public List<Job> getJobs() {

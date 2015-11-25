@@ -3,6 +3,7 @@ package com.qfree.obo.report.domain;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import javax.persistence.CascadeType;
@@ -25,6 +26,7 @@ import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;
 
 import com.qfree.obo.report.dto.SubscriptionResource;
+import com.qfree.obo.report.exceptions.ResourceFilterExecutionException;
 import com.qfree.obo.report.util.DateUtils;
 
 /**
@@ -342,6 +344,10 @@ public class Subscription implements Serializable {
 		this.subscriptionParameters = subscriptionParameters;
 	}
 
+	public List<Job> getJobs(List<List<Map<String, String>>> filterConditions) throws ResourceFilterExecutionException {
+		return Job.getFilteredJobs(getJobs(), filterConditions);
+	}
+
 	public List<Job> getJobs() {
 		return jobs;
 	}
@@ -384,5 +390,4 @@ public class Subscription implements Serializable {
 		builder.append("]");
 		return builder.toString();
 	}
-
 }
