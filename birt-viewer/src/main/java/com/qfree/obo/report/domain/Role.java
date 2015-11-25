@@ -300,6 +300,9 @@ public class Role implements Serializable {
 	 * Returns only Subscription entities linked to the Role, where the
 	 * associated ReportVersion is active.
 	 * 
+	 * TODO Add argument: List<List<Map<String, String>>> filterConditions so
+	 * that we can filter on enabled/disabled and active/inactive.
+	 * 
 	 * @return
 	 */
 	public List<Subscription> getSubscriptionsForActiveReportVersions() {
@@ -331,10 +334,12 @@ public class Role implements Serializable {
 		List<Job> unfilteredJobs = getJobs();
 		List<Object> jobStatusIds = new ArrayList<>(unfilteredJobs.size());
 		List<Object> jobStatusAbbreviations = new ArrayList<>(unfilteredJobs.size());
+		List<Object> jobCreatedOns = new ArrayList<>(unfilteredJobs.size());
 		List<Object> jobIds = new ArrayList<>(unfilteredJobs.size());
 		for (Job job : unfilteredJobs) {
 			jobStatusIds.add(job.getJobStatus().getJobStatusId());
 			jobStatusAbbreviations.add(job.getJobStatus().getAbbreviation());
+			jobCreatedOns.add(job.getCreatedOn());
 			jobIds.add(job.getJobId());
 		}
 		Map<String, List<Object>> filterableAttributes = new HashMap<>(2);
@@ -345,6 +350,7 @@ public class Role implements Serializable {
 		 */
 		filterableAttributes.put("jobStatusId", jobStatusIds);
 		filterableAttributes.put("jobStatusAbbreviation", jobStatusAbbreviations);
+		filterableAttributes.put("createdOn", jobCreatedOns);
 		filterableAttributes.put("jobId", jobIds);
 		/*
 		 * The list must be ordered in case pagination is used for the 
