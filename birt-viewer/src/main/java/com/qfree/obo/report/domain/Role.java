@@ -324,6 +324,17 @@ public class Role implements Serializable {
 		this.roleParameters = roleParameters;
 	}
 
+	/**
+	 * Returns {@link List} of {@link Job} entities associated with the
+	 * {@link Role}.
+	 * 
+	 * Filtering can be performed on the set of all {@link Job} entities
+	 * associated with the {@link Role}.
+	 * 
+	 * @param filterConditions
+	 * @return
+	 * @throws ResourceFilterExecutionException
+	 */
 	public List<Job> getJobs(List<List<Map<String, String>>> filterConditions) throws ResourceFilterExecutionException {
 		return Job.getFilteredJobs(getJobs(), filterConditions);
 	}

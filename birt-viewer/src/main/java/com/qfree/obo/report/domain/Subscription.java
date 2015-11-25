@@ -1,7 +1,10 @@
 package com.qfree.obo.report.domain;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -28,6 +31,7 @@ import org.hibernate.annotations.TypeDef;
 import com.qfree.obo.report.dto.SubscriptionResource;
 import com.qfree.obo.report.exceptions.ResourceFilterExecutionException;
 import com.qfree.obo.report.util.DateUtils;
+import com.qfree.obo.report.util.RestUtils;
 
 /**
  * The persistent class for the "subscription" database table.
@@ -344,6 +348,17 @@ public class Subscription implements Serializable {
 		this.subscriptionParameters = subscriptionParameters;
 	}
 
+	/**
+	 * Returns {@link List} of {@link Job} entities associated with the
+	 * {@link Subscription}.
+	 * 
+	 * Filtering can be performed on the set of all {@link Job} entities
+	 * associated with the {@link Subscription}.
+	 * 
+	 * @param filterConditions
+	 * @return
+	 * @throws ResourceFilterExecutionException
+	 */
 	public List<Job> getJobs(List<List<Map<String, String>>> filterConditions) throws ResourceFilterExecutionException {
 		return Job.getFilteredJobs(getJobs(), filterConditions);
 	}
@@ -389,5 +404,47 @@ public class Subscription implements Serializable {
 		builder.append(createdOn);
 		builder.append("]");
 		return builder.toString();
+	}
+
+	/**
+	 * Returns a {@link List} of filtered {@link Subscription} entities given an
+	 * unfiltered list and a set of filter conditions.
+	 * 
+	 * This method first sets up one list for each attribute on which the list
+	 * of {@link Job} entities can be filtered on. Then the filtering is
+	 * performed by a call to a generic static method.
+	 * 
+	 * @param filterConditions
+	 * @return
+	 * @throws ResourceFilterExecutionException
+	 */
+	public static List<Subscription> getFilteredSubscriptions(
+			List<Subscription> unfilteredSubscriptions,
+			List<List<Map<String, String>>> filterConditions)
+					throws ResourceFilterExecutionException {
+		if (filterConditions == null || filterConditions.size() == 0) {
+			return unfilteredSubscriptions; // no filtering
+		}
+		List<Object> roleIds = new ArrayList<>(unfilteredSubscriptions.size());
+		for (Subscription subscription : unfilteredSubscriptions) {
+			roleIds.add(subscription.getRole().getRoleId());
+		}
+		Map<String, List<Object>> filterableAttributes = new HashMap<>(1);
+		/*
+		 * Here, the Map keys used *must* agree with the filter attributes used
+		 * in the value assigned to the "filter" query parameter in the resource
+		 * URI.
+		 */
+		filterableAttributes.put("roleId", roleIds);
+		/*
+		 * The list must be ordered in case pagination is used for the 
+		 * collection resource created from list of filtered entities. The only
+		 * sensible order is chronological order.
+		 */
+		Comparator<Subscription> chronological = (Subscription subscription1,
+				Subscription subscription2) -> subscription1.getCreatedOn().compareTo(subscription2.getCreatedOn());
+
+		return RestUtils.filterEntities(unfilteredSubscriptions, filterConditions, filterableAttributes, chronological,
+				Subscription.class);
 	}
 }
