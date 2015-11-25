@@ -73,6 +73,7 @@ public class ReportController extends AbstractBaseController {
 	@Produces(MediaType.APPLICATION_JSON)
 	public ReportCollectionResource getList(
 			@HeaderParam("Accept") final String acceptHeader,
+			//	@Context SecurityContext sc,
 			@QueryParam(ResourcePath.EXPAND_QP_NAME) final List<String> expand,
 			@QueryParam(ResourcePath.SHOWALL_QP_NAME) final List<String> showAll,
 			@Context final UriInfo uriInfo) {
@@ -80,6 +81,14 @@ public class ReportController extends AbstractBaseController {
 		queryParams.put(ResourcePath.EXPAND_QP_KEY, expand);
 		queryParams.put(ResourcePath.SHOWALL_QP_KEY, showAll);
 		RestApiVersion apiVersion = RestUtils.extractAPIVersion(acceptHeader, RestApiVersion.v1);
+
+		//	logger.info("sc = {}", sc);
+		//	if (sc != null) {
+		//		logger.info("sc.getUserPrincipal() = {}", sc.getUserPrincipal());
+		//		if (sc.getUserPrincipal() != null) {
+		//			logger.info("sc.getUserPrincipal().getName() = {}", sc.getUserPrincipal().getName());
+		//		}
+		//	}
 
 		List<Report> reports = null;
 		if (RestUtils.FILTER_INACTIVE_RECORDS && !ResourcePath.showAll(Report.class, showAll)) {
@@ -117,7 +126,7 @@ public class ReportController extends AbstractBaseController {
 		// if (RestUtils.AUTO_EXPAND_PRIMARY_RESOURCES) {
 		addToExpandList(expand, Report.class);// Force primary resource to be
 												// "expanded"
-		// }
+												// }
 		ReportResource resource = new ReportResource(report, uriInfo, queryParams, apiVersion);
 		return created(resource);
 	}
@@ -222,8 +231,8 @@ public class ReportController extends AbstractBaseController {
 		 * This may create or delete files if the report's "active" attribute 
 		 * has been modified.
 		 */
-		ReportSyncResource reportSyncResource =
-				reportSyncService.syncReportsWithFileSystem(servletContext, uriInfo, queryParams, apiVersion);
+		ReportSyncResource reportSyncResource = reportSyncService.syncReportsWithFileSystem(servletContext, uriInfo,
+				queryParams, apiVersion);
 
 		return Response.status(Response.Status.OK).build();
 	}

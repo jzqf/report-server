@@ -347,11 +347,11 @@
 		  by Spring Boot. This is very annoying.
 		  
 		  It *was* possible to remove this "spring-webmvc" dependency and still
-		  avoid these exceptiuons *provided* that I added:
+		  avoid these exceptions *provided* that I added:
 		  
 		  	ManagementSecurityAutoConfiguration.class
 		 
-		  to the list of auto-configuration modules in the 
+		  to the "exclude" list of auto-configuration modules in the 
 		  @EnableAutoConfiguration annotation in ApplicationConfig.java, but
 		  this had the side effect that the following URL then no longer worked:
 		  
@@ -379,8 +379,8 @@
 			<artifactId>spring-webmvc</artifactId>
 			<!-- <version>${spring.version}</version> -->
 		</dependency>
-		
-		
+
+
 		<!-- Needed for:
 		     org.springframework.scheduling.quartz.SchedulerFactoryBean -->
 		<dependency>

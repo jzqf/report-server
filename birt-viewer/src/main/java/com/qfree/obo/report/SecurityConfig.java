@@ -11,15 +11,19 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 
+/**
+ * Configure security details for this application.
+ * 
+ * <p>
+ * Security is implemented using Spring Security tools.
+ * 
+ * @author Jeffrey Zelt
+ *
+ */
 @Configuration
 @EnableWebSecurity
-////@ComponentScan(basePackageClasses = {
-////		com.qfree.obo.report.scheduling.jobs.ComponentScanPackageMarker.class,
-////		com.qfree.obo.report.scheduling.schedulers.ComponentScanPackageMarker.class,
-////})
 @PropertySource("classpath:config.properties")
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
-	//public class SecurityConfig {
 
 	private static final Logger logger = LoggerFactory.getLogger(SecurityConfig.class);
 
@@ -39,7 +43,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		 * Check whether we are running unit/integration tests. If so, we 
 		 * disable security.
 		 */
-		if (env.getProperty("app.version").equals("*test*")) {
+		//		if (env.getProperty("app.version").equals("*test*")) {
+		if (env.getProperty("app.version").equals("*test*") || true) {
 
 		} else {
 
@@ -60,7 +65,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		 * Check whether we are running unit/integration tests. If so, we 
 		 * disable security.
 		 */
-		if (env.getProperty("app.version").equals("*test*")) {
+		//		if (env.getProperty("app.version").equals("*test*")) {
+		if (env.getProperty("app.version").equals("*test*") || true) {
 
 			http
 					/*
@@ -89,13 +95,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 					.authorizeRequests()
 
 					.antMatchers("/upload_report.html")
-					//					.access("hasRole('ROLE_ADMIN') or hasIpAddress('127.0.0.1') or hasIpAddress('0:0:0:0:0:0:0:1')")
+					.access("hasRole('ROLE_ADMIN') or hasIpAddress('127.0.0.1') or hasIpAddress('0:0:0:0:0:0:0:1')")
 					//.access("isAuthenticated() or hasIpAddress('127.0.0.1') or hasIpAddress('0:0:0:0:0:0:0:1')")
 					//.access("isAuthenticated() or permitAll")
-					.authenticated()
+					//.authenticated()
 
-					//.antMatchers("/RequestHeaders")
-					//.access("hasRole('ROLE_ADMIN') or hasIpAddress('127.0.0.1') or hasIpAddress('0:0:0:0:0:0:0:1')")
+					.antMatchers("/RequestHeaders")
+					.access("hasRole('ROLE_ADMIN') or hasIpAddress('127.0.0.1') or hasIpAddress('0:0:0:0:0:0:0:1')")
 
 					/*
 					 * Report server ReST API:
@@ -109,8 +115,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 					/*
 					 * All other URLs:
 					 */
-					.anyRequest().permitAll()
-					//.anyRequest().authenticated()
+					.anyRequest().authenticated()
+					//.anyRequest().permitAll()
 
 					/*
 					 * Enforce channel security.

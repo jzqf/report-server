@@ -12,18 +12,27 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.annotation.Bean;
+
+import com.qfree.obo.report.ApplicationConfig;
 
 /**
  * Servlet implementation class RequestHeadersServlet.
  * 
- * This servlet seems to be registered when this application is installed in
- * Tomcat as a WAR file, but not when this application is run via Spring Boot
- * with:
+ * <p>
+ * Tomcat scans classes for the {@literal @}{@link WebServlet} annotation and
+ * registers these servlets automatically. This assumes that this application is
+ * installed in Tomcat as a WAR file. However, this is not done when this
+ * application is run in Spring Boot's embedded Tomcat server via:
  * 
- * mvn clean spring-boot:run
+ * <pre>
+ * <code>mvn clean spring-boot:run</code>
+ * </pre>
  * 
- * Perhaps the servlet needs to be registered specially to be accessible via
- * "spring-boot:run"?
+ * <p>
+ * In order to register this servlet with Spring Boot so that it also will work
+ * via "spring-boot:run", a {@literal @}{@link Bean} has been created for it in
+ * {@link ApplicationConfig}.
  */
 @WebServlet(description = "Displays all request headers", urlPatterns = { "/RequestHeaders" })
 public class RequestHeadersServlet extends HttpServlet {
