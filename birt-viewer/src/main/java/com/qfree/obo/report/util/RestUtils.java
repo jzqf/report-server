@@ -1,8 +1,10 @@
 package com.qfree.obo.report.util;
 
 import java.io.IOException;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -887,6 +889,27 @@ public class RestUtils {
 
 				List<Object> filterableEntityValues = filterableEntityAttributes
 						.get(orCondition.get(RestUtils.CONDITION_ATTR_NAME));
+				if (filterableEntityValues == null) {
+					/*
+					 * This means that there is no support for the filter
+					 * attribute with the name:
+					 * orCondition.get(RestUtils.CONDITION_ATTR_NAME). In 
+					 * practice, this probably means that the attribute name in
+					 * the resource URI has been typed incorrectly. Regardless
+					 * _why_ this has occurred, we throw an exception: To fix 
+					 * this, either:
+					 * 
+					 *   1. The spelling of the attribute name in the URI must 
+					 *      be corrected, or
+					 *   
+					 *   2. Support must be added for the attribute. Until that
+					 *      support has been added, the attribute cannot be 
+					 *      filtered on.
+					 */
+					throw new ResourceFilterExecutionException(String.format(
+							"No support for filtering %s resources on attribute '%s'",
+							entityClass.getSimpleName(), orCondition.get(RestUtils.CONDITION_ATTR_NAME)));
+				}
 
 				/*
 				 * In order to perform numerical comparisons <, <=, >, >=  on Objects,
@@ -917,7 +940,7 @@ public class RestUtils {
 						comparisonValue = UUID.fromString(comparisonValueString);
 					} catch (IllegalArgumentException e) {
 						throw new ResourceFilterExecutionException(String.format(
-								"Filter condition value \"%s\" is not a legal UUID",
+								"Filter condition value '%s' is not a legal UUID",
 								comparisonValueString));
 					}
 
@@ -945,9 +968,24 @@ public class RestUtils {
 					}
 					castToClass = Double.class;
 
+				} else if (filterableEntityValues.get(0) instanceof Timestamp) {
+
+					logger.debug("comparisonValueString = {}", comparisonValueString);
+					try {
+						Date comparisonValueDate = DateUtils.dateUtcFromIso8601String(comparisonValueString);
+						logger.debug("comparisonValueDate = {}", comparisonValueDate);
+						comparisonValue = new Timestamp(comparisonValueDate.getTime());
+					} catch (NumberFormatException e) {
+						throw new ResourceFilterExecutionException(
+								String.format("Cannot parse %s as a %s", comparisonValueString,
+										Timestamp.class.getName()));
+					}
+					logger.debug("comparisonValue (java.sql.Timestamp) = {}", comparisonValue);
+					castToClass = Timestamp.class;
+
 				} else {
 					throw new ResourceFilterExecutionException(String.format(
-							"In order to treat filter attribute \"%s\", support for type %s must be added.",
+							"In order to treat filter attribute '%s', support for type %s must be added.",
 							orCondition.get(RestUtils.CONDITION_ATTR_NAME),
 							filterableEntityValues.get(0).getClass().getName()));
 				}
@@ -976,7 +1014,7 @@ public class RestUtils {
 							addEntity = (Long) filterableEntityValues.get(i) > (Long) comparisonValue;
 						} else {
 							throw new ResourceFilterExecutionException(String.format(
-									"Filter comparison operator \"%s\" is not supported for attribute \"%s\"",
+									"Filter comparison operator '%s' is not supported for attribute '%s'",
 									operator, orCondition.get(RestUtils.CONDITION_ATTR_NAME)));
 						}
 
@@ -996,7 +1034,28 @@ public class RestUtils {
 							addEntity = (Double) filterableEntityValues.get(i) > (Double) comparisonValue;
 						} else {
 							throw new ResourceFilterExecutionException(String.format(
-									"Filter comparison operator \"%s\" is not supported for attribute \"%s\"",
+									"Filter comparison operator '%s' is not supported for attribute '%s'",
+									operator, orCondition.get(RestUtils.CONDITION_ATTR_NAME)));
+						}
+
+					} else if (castToClass.equals(Timestamp.class)) {
+
+						long millisecondsSinceEpoch = ((Timestamp) comparisonValue).getTime();
+						if (operator.equals("eq")) {
+							addEntity = ((Timestamp) filterableEntityValues.get(i)).getTime() == millisecondsSinceEpoch;
+						} else if (operator.equals("ne")) {
+							addEntity = ((Timestamp) filterableEntityValues.get(i)).getTime() != millisecondsSinceEpoch;
+						} else if (operator.equals("lt")) {
+							addEntity = ((Timestamp) filterableEntityValues.get(i)).getTime() < millisecondsSinceEpoch;
+						} else if (operator.equals("le")) {
+							addEntity = ((Timestamp) filterableEntityValues.get(i)).getTime() <= millisecondsSinceEpoch;
+						} else if (operator.equals("ge")) {
+							addEntity = ((Timestamp) filterableEntityValues.get(i)).getTime() >= millisecondsSinceEpoch;
+						} else if (operator.equals("gt")) {
+							addEntity = ((Timestamp) filterableEntityValues.get(i)).getTime() > millisecondsSinceEpoch;
+						} else {
+							throw new ResourceFilterExecutionException(String.format(
+									"Filter comparison operator '%s' is not supported for attribute '%s'",
 									operator, orCondition.get(RestUtils.CONDITION_ATTR_NAME)));
 						}
 
@@ -1011,7 +1070,7 @@ public class RestUtils {
 							addEntity = !filterableEntityValues.get(i).equals(comparisonValue);
 						} else {
 							throw new ResourceFilterExecutionException(String.format(
-									"Filter comparison operator \"%s\" is not supported for attribute \"%s\"",
+									"Filter comparison operator '%s' is not supported for attribute '%s'",
 									operator, orCondition.get(RestUtils.CONDITION_ATTR_NAME)));
 						}
 
