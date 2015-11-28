@@ -10,13 +10,10 @@ import javax.ws.rs.core.Response;
 import org.glassfish.jersey.client.authentication.HttpAuthenticationFeature;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
-import com.qfree.obo.report.ApplicationConfig;
+public class RestAPITimingTests {
 
-public class CreateCloseApplicationContext {
-
-	private static final Logger logger = LoggerFactory.getLogger(CreateCloseApplicationContext.class);
+	private static final Logger logger = LoggerFactory.getLogger(RestAPITimingTests.class);
 
 	/**
 	 * Creates an AnnotationConfigApplicationContext and then closes it. This
@@ -26,7 +23,6 @@ public class CreateCloseApplicationContext {
 	 * "hibernate.hbm2ddl.auto" property.
 	 */
 	public static void main(String[] args) throws Exception {
-		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(ApplicationConfig.class);
 
 		HttpAuthenticationFeature basicAuthenticationFeature = HttpAuthenticationFeature.basic("ui", "ui");
 
@@ -69,7 +65,7 @@ public class CreateCloseApplicationContext {
 		Response response = null;
 		String resource = null;
 
-		int loops = 500;
+		int loops = 1000;
 		final long startTime = System.currentTimeMillis();
 		for (int i = 0; i < loops; i++) {
 			response = invocationBuilder.get();
@@ -83,6 +79,5 @@ public class CreateCloseApplicationContext {
 				String.format("\nRequest time averaged over %s requests: %.2f ms", loops,
 						(double) (endTime - startTime) / (double) loops));
 
-		context.close();
 	}
 }

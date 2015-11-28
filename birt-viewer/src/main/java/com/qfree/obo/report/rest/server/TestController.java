@@ -480,4 +480,23 @@ public class TestController extends AbstractBaseController {
 		return "Executed subscriptionScheduler.scheduleAllJobs()";
 	}
 
+	/**
+	 * This endpoints does absolutely nothing (No OPeration).
+	 * 
+	 * <p>
+	 * It can be used for timing tests to determine the overhead of
+	 * authentication, etc.
+	 * 
+	 * @return
+	 */
+	@GET
+	@Path("/nop")
+	@Produces(MediaType.TEXT_PLAIN)
+	//	public String requestTimerTest() {
+	public String requestTimerTest(@HeaderParam("Accept") String acceptHeader) {
+		//	RestApiVersion apiVersion = RestUtils.extractAPIVersion(acceptHeader, RestApiVersion.v1);
+		//	return apiVersion.getVersion();
+		return "nop";
+	}
+
 }
