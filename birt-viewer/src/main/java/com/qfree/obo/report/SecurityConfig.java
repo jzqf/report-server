@@ -10,6 +10,7 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.http.SessionCreationPolicy;
 
 /**
  * Configure security details for this application.
@@ -43,8 +44,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		 * Check whether we are running unit/integration tests. If so, we 
 		 * disable security.
 		 */
-		//		if (env.getProperty("app.version").equals("*test*")) {
-		if (env.getProperty("app.version").equals("*test*") || true) {
+		if (env.getProperty("app.version").equals("*test*") && false) {
+			//		if (env.getProperty("app.version").equals("*test*") || true) {
 
 		} else {
 
@@ -65,8 +66,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		 * Check whether we are running unit/integration tests. If so, we 
 		 * disable security.
 		 */
-		//		if (env.getProperty("app.version").equals("*test*")) {
-		if (env.getProperty("app.version").equals("*test*") || true) {
+		if (env.getProperty("app.version").equals("*test*") && false) {
+			//		if (env.getProperty("app.version").equals("*test*") || true) {
 
 			http
 					/*
@@ -88,6 +89,16 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 					 * http://docs.spring.io/spring-security/site/docs/current/reference/html/csrf.html
 					 */
 					.and().csrf().disable();
+
+			//} else if (false) {
+			//
+			//	http
+			//			.csrf().disable()
+			//			.sessionManagement()
+			//			.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+			//			.and().authorizeRequests()
+			//			.anyRequest().authenticated()
+			//			.and().httpBasic();
 
 		} else {
 
@@ -116,7 +127,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 					 * All other URLs:
 					 */
 					.anyRequest().authenticated()
-					//.anyRequest().permitAll()
+					//					.anyRequest().permitAll()
 
 					/*
 					 * Enforce channel security.
@@ -129,12 +140,36 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 					/*
 					 * If the user is not authenticated, this tells Spring 
 					 * Security to display a very simple log-in form where the
-					 * user can specify a user name and password.
+					 * user can specify a user name and password. This is 
+					 * pointless for ReST requests made by an application, but
+					 * it is useful when we are testing GET requests with a web
+					 * browser.
+					 * 
+					 * DO NOT USE formLogin() FOR STATELESS CREATION POLICY. IT
+					 * MAKE IT IMPOSSIBLE TO SPECIFY A USER NAME AND PASSWORD
+					 * FROM A WEB BROWSER.
 					 */
-					.and().formLogin()
+					//.and().formLogin()
 
 					.and().httpBasic().realmName("Q-Free Report Server")
 
+					/*
+					 * This tells Spring Security to *NOT* create a session, 
+					 * i.e., it will never set a cookie named JSESSIONID with a
+					 * UUID value such as A7E9BDD3E80D5FC534B9B6F49F3B7125. 
+					 * Since no session is ever created, Spring Security will 
+					 * expect authentication credentials in each request and it
+					 * will check these credentials against its user store for
+					 * each request.
+					 */
+					.and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+
+					/*
+					 * This application is not meant to be accessed via a web 
+					 * browser, so CSRF should not be an issue. If we do not
+					 * enable CSRF, each request will be forced to include a
+					 * CSRF token.
+					 */
 					.and().csrf().disable();
 		}
 	}

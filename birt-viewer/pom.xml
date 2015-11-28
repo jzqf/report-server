@@ -41,7 +41,7 @@
 	</developers>
 	<issueManagement>
 		<system>JIRA</system>
-		<url>https://issues.q-free.com:8443/browse/QF15203</url>
+		<url>https://issues.q-free.com/browse/QF15203</url>
 	</issueManagement>
 
 	<properties>
@@ -323,6 +323,12 @@
 			<artifactId>spring-security-web</artifactId>
 			<!-- <version>${spring.security.version}</version> -->
 		</dependency>
+		<!-- <dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-test</artifactId>
+			<version>${spring.security.version}</version>
+			<scope>test</scope>
+		</dependency> -->
 		<!--
 		  Without this dependency on Spring MVC, it is not possible to run or
 		  test this application. Various exceptions are thrown, depending on 

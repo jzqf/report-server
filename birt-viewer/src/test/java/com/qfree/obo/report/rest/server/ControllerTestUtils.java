@@ -4,6 +4,7 @@ import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.WebTarget;
 
+import org.glassfish.jersey.client.authentication.HttpAuthenticationFeature;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -17,10 +18,14 @@ abstract class ControllerTestUtils {
 	private static final Logger logger = LoggerFactory.getLogger(ControllerTestUtils.class);
 
 	public static Client setUpJaxRsClient() {
-		logger.info("Setting up JAX-RS Client...");
+		logger.info("Setting up JAX-RS Client with basic authentication...");
+
+		HttpAuthenticationFeature basicAuthenticationFeature = HttpAuthenticationFeature.basic("ui", "ui");
+
 		return ClientBuilder.newBuilder()
 				//	.register(JsonProcessingFeature.class)
 				//	.property(JsonGenerator.PRETTY_PRINTING, true)
+				.register(basicAuthenticationFeature)
 				.build();
 	}
 
