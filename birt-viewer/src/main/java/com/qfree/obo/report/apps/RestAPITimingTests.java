@@ -10,6 +10,7 @@ import javax.ws.rs.core.Response;
 import org.glassfish.jersey.client.authentication.HttpAuthenticationFeature;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 public class RestAPITimingTests {
 
@@ -23,6 +24,23 @@ public class RestAPITimingTests {
 	 * "hibernate.hbm2ddl.auto" property.
 	 */
 	public static void main(String[] args) throws Exception {
+
+		BCryptPasswordEncoder bCryptPasswordEncoder_10 = new BCryptPasswordEncoder(10);
+		BCryptPasswordEncoder bCryptPasswordEncoder_12 = new BCryptPasswordEncoder(12);
+		String encodedPassword_10 = bCryptPasswordEncoder_10.encode("ui");
+		System.out.println("encodedPassword_10 = " + encodedPassword_10);
+		System.out.println("bCryptPasswordEncoder_10.matches(\"ui\", encodedPassword_10) = "
+				+ bCryptPasswordEncoder_10.matches("ui", encodedPassword_10));
+		/*
+		 * This shows that in order to match an unencoded password with an
+		 * encoded one, it is *NOT* necessary to perform the match using a
+		 * BCryptPasswordEncoder that is initialized with the same "strength"
+		 * value that was used for encoding the password. 
+		 */
+		System.out.println("bCryptPasswordEncoder_12.matches(\"ui\", encodedPassword_10) = "
+				+ bCryptPasswordEncoder_12.matches("ui", encodedPassword_10));
+		System.out.println("bCryptPasswordEncoder_12.matches(\"uiXXX\", encodedPassword_10) = "
+				+ bCryptPasswordEncoder_12.matches("uiXXX", encodedPassword_10));
 
 		HttpAuthenticationFeature basicAuthenticationFeature = HttpAuthenticationFeature.basic("ui", "ui");
 
@@ -65,7 +83,7 @@ public class RestAPITimingTests {
 		Response response = null;
 		String resource = null;
 
-		int loops = 1000;
+		int loops = 100;
 		final long startTime = System.currentTimeMillis();
 		for (int i = 0; i < loops; i++) {
 			response = invocationBuilder.get();

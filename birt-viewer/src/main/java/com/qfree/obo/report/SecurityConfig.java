@@ -3,6 +3,7 @@ package com.qfree.obo.report;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
@@ -11,6 +12,8 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 /**
  * Configure security details for this application.
@@ -29,12 +32,22 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	private static final Logger logger = LoggerFactory.getLogger(SecurityConfig.class);
 
 	/*
+	 * log(rounds) for initializing the BCryptPasswordEncoder.
+	 */
+	private static final int BCRYPT_STRENGTH = 8;
+
+	/*
 	 * The injected "env" object here will contain key/value pairs for each 
 	 * property in the properties files specified above in the @PropertySource
 	 * or @PropertySources annotation above.
 	 */
 	@Autowired
 	private Environment env;
+
+	@Bean
+	public PasswordEncoder passwordEncoder() {
+		return new BCryptPasswordEncoder(BCRYPT_STRENGTH);
+	}
 
 	@Override
 	protected void configure(AuthenticationManagerBuilder auth)
@@ -51,10 +64,14 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
 			auth
 					.inMemoryAuthentication()
-					.withUser("ui").password("ui").authorities("ROLE_RESTAPI").and()
-					.withUser("admin").password("admin").authorities("ROLE_ADMIN", "ROLE_RESTAPI");
-			//.withUser("ui").password("ui").roles("RESTAPI").and()
-			//.withUser("admin").password("admin").roles("ADMIN", "RESTAPI");
+					.withUser("ui").password(passwordEncoder().encode("ui")).authorities("ROLE_RESTAPI").and()
+					.withUser("admin").password(passwordEncoder().encode("admin"))
+					.authorities("ROLE_ADMIN", "ROLE_RESTAPI")
+					//	.withUser("ui").password("ui").authorities("ROLE_RESTAPI").and()
+					//	.withUser("admin").password("admin").authorities("ROLE_ADMIN", "ROLE_RESTAPI")
+					//.withUser("ui").password("ui").roles("RESTAPI").and()
+					//.withUser("admin").password("admin").roles("ADMIN", "RESTAPI")
+					.and().passwordEncoder(passwordEncoder());
 
 		}
 	}
