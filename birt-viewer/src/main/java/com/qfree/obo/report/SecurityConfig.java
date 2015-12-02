@@ -1,12 +1,16 @@
 package com.qfree.obo.report;
 
+import javax.servlet.Filter;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.context.embedded.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
+import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -14,6 +18,9 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+
+import com.qfree.obo.report.security.ReportServerAuthenticationProvider;
+import com.qfree.obo.report.security.filter.RoleReportFilter;
 
 /**
  * Configure security details for this application.
@@ -49,6 +56,31 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		return new BCryptPasswordEncoder(BCRYPT_STRENGTH);
 	}
 
+	@Bean
+	public Filter roleReportFilter() {
+		return new RoleReportFilter();
+	}
+
+	@Bean
+	public AuthenticationProvider reportServerAuthenticationProvider() {
+		return new ReportServerAuthenticationProvider();
+	}
+
+	/*
+	 * Without this FilterRegistrationBean bean, the customFilter() filter runs
+	 * 3 times for each request. This may be do to Spring Boot automatically 
+	 * registering Filter classes as filters. However, I want this filter to run
+	 * ony once per filter, and this is configuring below in the overridden
+	 * Spring Security configure(HttpSecurity http) method.
+	 */
+	@Bean
+	public FilterRegistrationBean customFilterRegistration() {
+		FilterRegistrationBean filterRegistrationBean = new FilterRegistrationBean();
+		filterRegistrationBean.setFilter(roleReportFilter());
+		filterRegistrationBean.setEnabled(false);
+		return filterRegistrationBean;
+	}
+
 	@Override
 	protected void configure(AuthenticationManagerBuilder auth)
 			throws Exception {
@@ -59,6 +91,22 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		 */
 		if (env.getProperty("app.version").equals("*test*") && false) {
 			//		if (env.getProperty("app.version").equals("*test*") || true) {
+
+		} else if (true) {
+
+			auth
+					.authenticationProvider(reportServerAuthenticationProvider());
+					//	.inMemoryAuthentication()
+					//	.withUser("ui").password(passwordEncoder().encode("ui")).authorities("ROLE_RESTAPI").and()
+					//	.withUser("admin").password(passwordEncoder().encode("admin"))
+					//	.authorities("ROLE_ADMIN", "ROLE_RESTAPI")
+
+					//	.withUser("ui").password("ui").authorities("ROLE_RESTAPI").and()
+					//	.withUser("admin").password("admin").authorities("ROLE_ADMIN", "ROLE_RESTAPI")
+					//.withUser("ui").password("ui").roles("RESTAPI").and()
+					//.withUser("admin").password("admin").roles("ADMIN", "RESTAPI")
+
+			//			.and().passwordEncoder(passwordEncoder());
 
 		} else {
 
@@ -120,6 +168,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		} else {
 
 			http
+					//.addFilterAfter(roleReportFilter(), FilterSecurityInterceptor.class)
+
 					.authorizeRequests()
 
 					.antMatchers("/upload_report.html")
