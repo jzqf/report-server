@@ -23,6 +23,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
 
 import com.qfree.obo.report.db.RoleRepository;
+import com.qfree.obo.report.domain.Role;
 
 public class RoleReportFilter implements Filter {
 
@@ -135,7 +136,13 @@ public class RoleReportFilter implements Filter {
 			 * "username" must match an existing Role that is active and 
 			 * enabled.
 			 */
-			// ...
+			username = "user2";
+			Role role = roleRepository.findByUsername(username);
+			logger.info("role = {}", role);
+			//TODO Test that role is active and enabled:
+			//if (role != null && role.isActive() && role.isEnabled()) {
+			if (role != null) {
+
 
 			/*
 			 * "reportFileName" must match an existing Report Version that is 
@@ -143,14 +150,16 @@ public class RoleReportFilter implements Filter {
 			 */
 			// ...
 
-			/*
-			 * Finally, there must exist a RoleReport entity for the Role and
-			 * Report located above. This specifies that the user has access to
-			 * the report.
-			 */
+				/*
+				 * Finally, there must exist a RoleReport entity for the Role and
+				 * Report located above. This indicates that the user has access to
+				 * the report.
+				 */
 			// ...
 
-			return true;
+				return true;
+
+			}
 
 		}
 		return false;
