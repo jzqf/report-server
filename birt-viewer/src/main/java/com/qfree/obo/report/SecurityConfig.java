@@ -18,8 +18,14 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.access.intercept.FilterSecurityInterceptor;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.security.web.util.matcher.OrRequestMatcher;
+import org.springframework.security.web.util.matcher.RequestMatcher;
 
+import com.qfree.obo.report.db.RoleRepository;
 import com.qfree.obo.report.security.ReportServerAuthenticationProvider;
+import com.qfree.obo.report.security.filter.DelegateRequestMatchingFilter;
 import com.qfree.obo.report.security.filter.RoleReportFilter;
 
 /**
@@ -56,9 +62,40 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		return new BCryptPasswordEncoder(BCRYPT_STRENGTH);
 	}
 
+	@Autowired
+	private RoleRepository roleRepository;
+
+	/*
+	 * I registered this filter as a Spring bean here only so that it supports
+	 * @Autowired DI.
+	 */
 	@Bean
-	public Filter roleReportFilter() {
+	public RoleReportFilter roleReportFilter() {
 		return new RoleReportFilter();
+	}
+
+	@Bean
+	public Filter requestMatchingRoleReportFilter() {
+		RoleReportFilter roleReportFilter = roleReportFilter();
+
+		/*
+		 * These patterns should *not* include the servlet context, which is:
+		 * 
+		 *   "/report-server"    when the application is deployed as a WAR file
+		 *   
+		 *   ""                  when the application is run via 
+		 *                       $ mvn clean spring-boot:run
+		 * 
+		 * The 3 patterns here match the URL mappings for BIRT servlets that 
+		 * display reports.
+		 */
+		RequestMatcher birtServlet1 = new AntPathRequestMatcher("/frameset/**");
+		RequestMatcher birtServlet2 = new AntPathRequestMatcher("/run/**");
+		RequestMatcher birtServlet3 = new AntPathRequestMatcher("/preview/**");
+		RequestMatcher matcher = new OrRequestMatcher(birtServlet1, birtServlet2, birtServlet3);
+
+		return new DelegateRequestMatchingFilter(matcher, roleReportFilter);
+		//return new RoleReportFilter();
 	}
 
 	@Bean
@@ -67,14 +104,32 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	}
 
 	/*
-	 * Without this FilterRegistrationBean bean, the customFilter() filter runs
-	 * 3 times for each request. This may be do to Spring Boot automatically 
-	 * registering Filter classes as filters. However, I want this filter to run
-	 * ony once per filter, and this is configuring below in the overridden
-	 * Spring Security configure(HttpSecurity http) method.
+	 * Without this FilterRegistrationBean beans, the filter registered here 
+	 * run 3 times for each request. This may be do to Spring Boot automatically 
+	 * registering Filter classes as filters for Filter classes that are 
+	 * registered as Spring beans. However, I want this filters to run only
+	 * once per request, and this is configured below in the overridden Spring
+	 * Security configure(HttpSecurity http) method.
 	 */
 	@Bean
-	public FilterRegistrationBean customFilterRegistration() {
+	public FilterRegistrationBean requestMatchingRoleReportFilterRegistration() {
+		FilterRegistrationBean filterRegistrationBean = new FilterRegistrationBean();
+		filterRegistrationBean.setFilter(requestMatchingRoleReportFilter());
+		filterRegistrationBean.setEnabled(false);
+		return filterRegistrationBean;
+	}
+
+	/*
+	 * Without this FilterRegistrationBean beans, the filters registered here 
+	 * runs automatically for each request. This may be do to Spring Boot 
+	 * automatically registering Filter classes as filters for Filter classes 
+	 * that are registered as Spring beans. I registered this filter as a 
+	 * Spring bean above only so that it would support @Autowired DI. This 
+	 * filter is used by requestMatchingRoleReportFilter(); I do not want this
+	 * filter to be inserted in any filter chain.
+	 */
+	@Bean
+	public FilterRegistrationBean roleReportFilterRegistration() {
 		FilterRegistrationBean filterRegistrationBean = new FilterRegistrationBean();
 		filterRegistrationBean.setFilter(roleReportFilter());
 		filterRegistrationBean.setEnabled(false);
@@ -101,10 +156,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 					//	.withUser("admin").password(passwordEncoder().encode("admin"))
 					//	.authorities("ROLE_ADMIN", "ROLE_RESTAPI")
 
-					//	.withUser("ui").password("ui").authorities("ROLE_RESTAPI").and()
-					//	.withUser("admin").password("admin").authorities("ROLE_ADMIN", "ROLE_RESTAPI")
-					//.withUser("ui").password("ui").roles("RESTAPI").and()
-					//.withUser("admin").password("admin").roles("ADMIN", "RESTAPI")
+			//	.withUser("ui").password("ui").authorities("ROLE_RESTAPI").and()
+			//	.withUser("admin").password("admin").authorities("ROLE_ADMIN", "ROLE_RESTAPI")
+			//.withUser("ui").password("ui").roles("RESTAPI").and()
+			//.withUser("admin").password("admin").roles("ADMIN", "RESTAPI")
 
 			//			.and().passwordEncoder(passwordEncoder());
 
@@ -168,7 +223,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		} else {
 
 			http
-					//.addFilterAfter(roleReportFilter(), FilterSecurityInterceptor.class)
+					.addFilterAfter(requestMatchingRoleReportFilter(), FilterSecurityInterceptor.class)
 
 					.authorizeRequests()
 
@@ -194,7 +249,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 					 * All other URLs:
 					 */
 					.anyRequest().authenticated()
-					//					.anyRequest().permitAll()
+					//.anyRequest().permitAll()
 
 					/*
 					 * Enforce channel security.

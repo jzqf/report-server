@@ -28,7 +28,7 @@ public class ReportServerAuthenticationProvider implements AuthenticationProvide
 	//	private ServletRequest servletRequest;
 
 	@Autowired
-	RoleRepository roleRepository;
+	private RoleRepository roleRepository;
 
 	public ReportServerAuthenticationProvider() {
 		super();
@@ -52,7 +52,7 @@ public class ReportServerAuthenticationProvider implements AuthenticationProvide
 		/*
 		 * I may want to check for local Role entities first? But
 		 */
-		logger.info("roleRepository = {}", roleRepository);
+		//logger.info("roleRepository = {}", roleRepository);
 
 		if (name.equals("ui") && password.equals("ui")) {
 			//if (name.equals("admin") && password.equals("system")) {
