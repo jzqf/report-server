@@ -85,8 +85,6 @@ CREATE TABLE reporting.document_format (
 );
 
 
-
-
 --
 -- Name: job; Type: TABLE; Schema: reporting; Owner: report_server_app; Tablespace: 
 --
@@ -95,7 +93,7 @@ CREATE TABLE reporting.job (
     job_id identity NOT NULL,
     created_on timestamp NOT NULL,
     document text,
-    email character varying(160),
+    email_address character varying(160),
     encoded boolean,
     file_name character varying(128),
     job_status_remarks text,
@@ -153,9 +151,6 @@ CREATE TABLE reporting.job_status (
     description character varying(32) NOT NULL
 );
 
-
-
-
 --
 -- Name: parameter_group; Type: TABLE; Schema: reporting; Owner: report_server_app; Tablespace: 
 --
@@ -167,9 +162,6 @@ CREATE TABLE reporting.parameter_group (
     name character varying(80) NOT NULL,
     prompt_text character varying(132) NOT NULL
 );
-
-
-
 
 --
 -- Name: report; Type: TABLE; Schema: reporting; Owner: report_server_app; Tablespace: 
@@ -262,7 +254,7 @@ CREATE TABLE reporting.report_version (
 CREATE TABLE reporting.role (
     role_id uuid NOT NULL,
     created_on timestamp NOT NULL,
-    email character varying(160),
+    email_address character varying(160),
     encoded_password character varying(32) NOT NULL,
     full_name character varying(32),
     login_role boolean NOT NULL,
@@ -363,7 +355,7 @@ CREATE TABLE reporting.subscription (
     delivery_datetime_run_at timestamp,
     delivery_time_zone_id character varying(80),
     description character varying(1024),
-    email character varying(160),
+    email_address character varying(160),
     enabled boolean NOT NULL,
     document_format_id uuid NOT NULL,
     report_version_id uuid NOT NULL,
@@ -423,6 +415,7 @@ CREATE TABLE reporting.subscription_parameter_value (
 );
 
 
+
 --
 -- Name: configuration_pkey; Type: CONSTRAINT; Schema: reporting; Owner: report_server_app; Tablespace: 
 --
@@ -437,6 +430,7 @@ ALTER TABLE reporting.configuration
 
 ALTER TABLE reporting.document_format
     ADD CONSTRAINT document_format_pkey PRIMARY KEY (document_format_id);
+
 
 
 --
