@@ -33,6 +33,11 @@ import com.qfree.obo.report.util.DateUtils;
  * 
  */
 @Entity
+/*
+ * This unique constrain allows multiple rows with the same value for 
+ * param_name if role_id=null. This is not want I want. I will need to enforce
+ * the unique constraint for role_id=null through careful coding.
+ */
 @Table(name = "configuration", schema = "reporting",
 		uniqueConstraints = {
 				@UniqueConstraint(columnNames = { "param_name", "role_id" },
@@ -72,7 +77,13 @@ public class Configuration implements Serializable {
 		 * Holds the report server database version. This is used when upgrading
 		 * the database to ensure that the appropriate upgrade scripts are run.
 		 */
-		DB_VERSION(ParamType.INTEGER);
+		DB_VERSION(ParamType.INTEGER),
+
+		/*
+		 * Holds the URL to which external authentication requests should be
+		 * sent.
+		 */
+		AUTHENTICATION_PROVIDER_URL(ParamType.STRING);
 	
 		private ParamType paramType;
 	
@@ -380,14 +391,39 @@ public class Configuration implements Serializable {
 	@Override
 	public String toString() {
 		StringBuilder builder = new StringBuilder();
-		builder.append("Configuration [role=");
+		builder.append("Configuration [configurationId=");
+		builder.append(configurationId);
+		builder.append(", role=");
 		builder.append(role);
 		builder.append(", paramName=");
 		builder.append(paramName);
+		builder.append(", paramType=");
+		builder.append(paramType);
+		builder.append(", booleanValue=");
+		builder.append(booleanValue);
+		builder.append(", byteaValue=");
+		builder.append("<" + ((byteaValue != null) ? byteaValue.length : 0) + " bytes>");
+		builder.append(", dateValue=");
+		builder.append(dateValue);
+		builder.append(", datetimeValue=");
+		builder.append(datetimeValue);
+		builder.append(", doubleValue=");
+		builder.append(doubleValue);
+		builder.append(", floatValue=");
+		builder.append(floatValue);
+		builder.append(", integerValue=");
+		builder.append(integerValue);
+		builder.append(", longValue=");
+		builder.append(longValue);
 		builder.append(", stringValue=");
 		builder.append(stringValue);
+		builder.append(", textValue=");
+		builder.append(textValue);
+		builder.append(", timeValue=");
+		builder.append(timeValue);
+		builder.append(", createdOn=");
+		builder.append(createdOn);
 		builder.append("]");
 		return builder.toString();
 	}
-
 }

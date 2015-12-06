@@ -12,11 +12,9 @@ import org.springframework.transaction.annotation.Transactional;
 import com.qfree.obo.report.db.ConfigurationRepository;
 import com.qfree.obo.report.db.RoleRepository;
 import com.qfree.obo.report.domain.Configuration;
-import com.qfree.obo.report.domain.Configuration;
 import com.qfree.obo.report.domain.Configuration.ParamName;
 import com.qfree.obo.report.domain.Configuration.ParamType;
 import com.qfree.obo.report.domain.Role;
-import com.qfree.obo.report.dto.ConfigurationResource;
 import com.qfree.obo.report.dto.ConfigurationResource;
 import com.qfree.obo.report.dto.RoleResource;
 import com.qfree.obo.report.util.RestUtils;
@@ -44,8 +42,8 @@ public class ConfigurationService {
 	}
 
 	/**
-	 * Generic version of {@code get} method that returns an object of the 
-	 * appropriate type that does need casting.
+	 * Generic version of {@code get} method that returns an object of the
+	 * appropriate type that does not need casting.
 	 * 
 	 * @param paramName
 	 * @param role
@@ -146,7 +144,7 @@ public class ConfigurationService {
 			}
 
 		} else {
-			logger.error("A Configuration entity does not exist for paramName = {}", paramName);
+			logger.warn("A Configuration entity does not exist for paramName = {}", paramName);
 		}
 
 		return object;
@@ -170,7 +168,7 @@ public class ConfigurationService {
 		} else {
 			/*
 			 * Do *not* call findByParamName(paramName, role) here with 
-			 * role=null. This will not work set comments where this query is
+			 * role=null. This will not work. See comments where this query is
 			 * defined in ConfigurationRepository.
 			 */
 			configuration = configurationRepository.findByParamName(paramName, role);
