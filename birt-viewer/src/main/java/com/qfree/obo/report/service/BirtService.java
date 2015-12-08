@@ -1,15 +1,18 @@
 package com.qfree.obo.report.service;
 
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.logging.Level;
 
@@ -17,30 +20,58 @@ import javax.annotation.PreDestroy;
 
 import org.eclipse.birt.core.exception.BirtException;
 import org.eclipse.birt.core.framework.Platform;
+import org.eclipse.birt.report.engine.api.CompressionMode;
+import org.eclipse.birt.report.engine.api.DocxRenderOption;
+import org.eclipse.birt.report.engine.api.EXCELRenderOption;
 import org.eclipse.birt.report.engine.api.EngineConfig;
+import org.eclipse.birt.report.engine.api.EngineConstants;
 import org.eclipse.birt.report.engine.api.EngineException;
 import org.eclipse.birt.report.engine.api.IGetParameterDefinitionTask;
+import org.eclipse.birt.report.engine.api.IParameterDefn;
 import org.eclipse.birt.report.engine.api.IParameterDefnBase;
 import org.eclipse.birt.report.engine.api.IParameterGroupDefn;
 import org.eclipse.birt.report.engine.api.IParameterSelectionChoice;
 import org.eclipse.birt.report.engine.api.IReportEngine;
 import org.eclipse.birt.report.engine.api.IReportEngineFactory;
 import org.eclipse.birt.report.engine.api.IReportRunnable;
+import org.eclipse.birt.report.engine.api.IRunAndRenderTask;
 import org.eclipse.birt.report.engine.api.IScalarParameterDefn;
+import org.eclipse.birt.report.engine.api.PDFRenderOption;
+import org.eclipse.birt.report.engine.api.RenderOption;
+import org.eclipse.birt.report.engine.api.ReportParameterConverter;
 import org.eclipse.birt.report.model.api.CascadingParameterGroupHandle;
 import org.eclipse.birt.report.model.api.ReportDesignHandle;
 import org.eclipse.birt.report.model.api.ScalarParameterHandle;
+import org.eclipse.birt.report.model.api.elements.DesignChoiceConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import com.qfree.obo.report.exceptions.DynamicSelectionListKeyException;
+import com.qfree.obo.report.exceptions.NoValueForReportParameterException;
+import com.qfree.obo.report.exceptions.ReportingException;
 import com.qfree.obo.report.exceptions.RptdesignOpenFromStreamException;
+import com.qfree.obo.report.exceptions.UntreatedCaseException;
+import com.qfree.obo.report.util.DateUtils;
 
 @Component
 public class BirtService {
 
 	private static final Logger logger = LoggerFactory.getLogger(BirtService.class);
+
+	private static final String BIRT_FORMAT_DOC = "doc";
+	private static final String BIRT_FORMAT_DOCX = "docx";
+	private static final String BIRT_FORMAT_HTML = "html";
+	private static final String BIRT_FORMAT_ODP = "odp";
+	private static final String BIRT_FORMAT_ODS = "ods";
+	private static final String BIRT_FORMAT_ODT = "odt";
+	private static final String BIRT_FORMAT_POSTSCRIPT = "postscript";
+	private static final String BIRT_FORMAT_PDF = "pdf";
+	private static final String BIRT_FORMAT_PPT = "ppt";
+	private static final String BIRT_FORMAT_PPTX = "pptx";
+	private static final String BIRT_FORMAT_XLS = "xls";
+	private static final String BIRT_FORMAT_XLSX = "xlsx";
+	private static final String BIRT_FORMAT_XLS_SPUDSOFT = "xls_spudsoft";
 
 	private IReportEngine engine = null;
 
@@ -49,6 +80,14 @@ public class BirtService {
 		if (engine == null) {
 			EngineConfig config = new EngineConfig();
 			config.setLogConfig(null, Level.FINE);
+
+			/*
+			 * Set parent classloader for engine. I am not sure what this buys
+			 * us.
+			 */
+			HashMap appContext = config.getAppContext();
+			appContext.put(EngineConstants.APPCONTEXT_CLASSLOADER_KEY, BirtService.class.getClassLoader());
+			config.setAppContext(appContext);
 
 			Platform.startup(config);
 			IReportEngineFactory factory = (IReportEngineFactory) Platform
@@ -80,6 +119,300 @@ public class BirtService {
 		shutdownBirt();
 	}
 
+	public void runAndRender(
+			String rptdesignXml,
+			Map<String, Object[]> parameterValueArrays,
+			String documentFormat,
+			String outputFileName,
+			ByteArrayOutputStream outputStream)
+					throws BirtException, ReportingException {
+
+		IReportEngine engine = getBirtReportEngine();
+		IReportRunnable runnableReportDesign = openReportDesign(rptdesignXml, engine);
+
+		/*
+		 * One can also open a design by passing an absolute path to an 
+		 * rptdesign file as shown here. This code is commented out and only 
+		 * used for testing.
+		 */
+		//runnableReportDesign = engine.openReportDesign(
+		//	"/home/jeffreyz/git/obo-birt-reports/birt-reports/tests/400-TestReport04_v1.1.rptdesign");
+		//runnableReportDesign = engine.openReportDesign("/home/jeffreyz/Desktop/cascade_v3.2.23.rptdesign");
+
+		/*
+		 * Create an engine task for obtaining report parameter definitions and
+		 * for setting report parameter values. 
+		 * 
+		 * This object is used finally to get a map of all parameter values that
+		 * is passed to a IRunAndRenderTask to set the parameter values before 
+		 * running the report.
+		 */
+		IGetParameterDefinitionTask getParamDefnTask = engine.createGetParameterDefinitionTask(runnableReportDesign);
+		boolean includeParameterGroups = false;
+		Collection<IScalarParameterDefn> parameters = (Collection<IScalarParameterDefn>) getParamDefnTask
+				.getParameterDefns(includeParameterGroups);
+
+		/*
+		 * Iterate through all parameter and set the value or values for each
+		 * parameter.
+		 */
+		for (IScalarParameterDefn parameter : parameters) {
+
+			String parameterName = parameter.getName();
+			logger.info("Scalar parameter '{}'", parameterName);
+
+			/*
+			 * Possible values for "DataType" are:
+			 * 
+			 *     IParameterDefn.TYPE_ANY       = 0
+			 *     IParameterDefn.TYPE_STRING    = 1
+			 *     IParameterDefn.TYPE_FLOAT     = 2
+			 *     IParameterDefn.TYPE_DECIMAL   = 3
+			 *     IParameterDefn.TYPE_DATE_TIME = 4
+			 *     IParameterDefn.TYPE_BOOLEAN   = 5
+			 *     IParameterDefn.TYPE_INTEGER   = 6
+			 *     IParameterDefn.TYPE_DATE      = 7
+			 *     IParameterDefn.TYPE_TIME      = 8
+			 */
+			int dataType = parameter.getDataType();
+
+			boolean isRequired = parameter.isRequired();
+
+			Object[] parameterValues = parameterValueArrays.get(parameterName);
+			if (parameterValues != null && parameterValues.length > 0) {
+
+				/*
+				 * This code converts the parameter value(s) to a String and 
+				 * then uses a ReportParameterConverter to parse the String into
+				 * an object that BIRT expects. This is a little convoluted, bt
+				 * the hope is that this will be a more reliable way to 
+				 * generated parameter values that are acceptable to BIRT.
+				 * 
+				 * This manipulation is performed only for report parameter
+				 * values of type datetime, date or time. It is assumed that
+				 * the other data types are simple enough that this extra step
+				 * can be avoided.
+				 * 
+				 * One day we can try passing the value(s) in the array 
+				 * parameterValues directly to task.setParameterValue(...) or
+				 * task.setParameterValue(...). 
+				 * 
+				 * This code reuses the array "parameterValues", which will make
+				 * it easy to refactor the code in the future if we decide to 
+				 * bypass in the future the extra code that uses 
+				 * ReportParameterConverter.
+				 */
+				ReportParameterConverter paramConverter;
+				Date date = null;
+				for (int i = 0; i < parameterValues.length; i++) {
+					Object object = parameterValues[i];
+
+					switch (dataType) {
+					case IParameterDefn.TYPE_DATE_TIME:
+
+						paramConverter = new ReportParameterConverter(DateUtils.BIRT_DATETIME_FORMAT_STRING,
+								Locale.getDefault());
+
+						logger.info("datetime Object    = {}", object);
+						date = (Date) object;
+						String birtDatetimeString = DateUtils.birtDatetimeStringFromDate(date);
+						logger.info("birtDatetimeString = {}", birtDatetimeString);
+						Object birtDateTimeObject = paramConverter.parse(birtDatetimeString, dataType);
+						logger.info("birtDateTimeObject = {}", birtDateTimeObject);
+
+						parameterValues[i] = birtDateTimeObject;
+						break;
+
+					case IParameterDefn.TYPE_DATE:
+						paramConverter = new ReportParameterConverter(DateUtils.BIRT_DATE_FORMAT_STRING,
+								Locale.getDefault());
+
+						logger.info("date Object    = {}", object);
+						date = (Date) object;
+						String birtDateString = DateUtils.birtDateStringFromDate(date);
+						logger.info("birtDateString = {}", birtDateString);
+						Object birtDateObject = paramConverter.parse(birtDateString, dataType);
+						logger.info("birtDateObject = {}", birtDateObject);
+
+						parameterValues[i] = birtDateObject;
+						break;
+
+					case IParameterDefn.TYPE_TIME:
+						paramConverter = new ReportParameterConverter(DateUtils.BIRT_TIME_FORMAT_STRING,
+								Locale.getDefault());
+
+						logger.info("date Object    = {}", object);
+						date = (Date) object;
+						String birtTimeString = DateUtils.birtTimeStringFromDate(date);
+						logger.info("birtTimeString = {}", birtTimeString);
+						Object birtTimeObject = paramConverter.parse(birtTimeString, dataType);
+						logger.info("birtTimeObject = {}", birtTimeObject);
+
+						parameterValues[i] = birtTimeObject;
+						break;
+					}
+				}
+
+				/*
+				 * This specifies the parameter type for this scalar parameter.
+				 * Possible values are:
+				 * 
+				 *     DesignChoiceConstants.SCALAR_PARAM_TYPE_SIMPLE = "simple"
+				 *     DesignChoiceConstants.SCALAR_PARAM_TYPE_MULTI_VALUE = "multi-value"
+				 *     DesignChoiceConstants.SCALAR_PARAM_TYPE_AD_HOC = "ad-hoc"
+				 */
+				String scalarParameterType = parameter.getScalarParameterType();
+
+				switch (scalarParameterType) {
+				case DesignChoiceConstants.SCALAR_PARAM_TYPE_SIMPLE:
+					/*
+					 * The report parameter is single-valued, so we pass a  
+					 * single object to task.setParameterValue(...).
+					 */
+					getParamDefnTask.setParameterValue(parameterName, parameterValues[0]);
+					break;
+				case DesignChoiceConstants.SCALAR_PARAM_TYPE_MULTI_VALUE:
+					/*
+					 * The report parameter is multi-valued, so we pass an  
+					 * array of values to task.setParameterValue(...), even if
+					 * the array only contains a single value.
+					 */
+					getParamDefnTask.setParameterValue(parameterName, parameterValues);
+					break;
+				default:
+					String errorMessage = String.format(
+							"scalarParameterType=\"%s\" for parameter \"%s\" is not supported when running a report",
+							scalarParameterType, parameterName);
+					throw new UntreatedCaseException(errorMessage);
+				}
+
+			} else if (isRequired) {
+				String errorMessage = String.format(
+						"Report parameter %s is required, but there are no values provided for it", parameterName);
+				throw new NoValueForReportParameterException(errorMessage);
+			}
+		}
+
+		/*
+		 * Get a map of all of the report parameter values.
+		 */
+		HashMap parameterValues = getParamDefnTask.getParameterValues();
+		logger.info("parameterValues = {}", parameterValues);
+		getParamDefnTask.close();
+
+		/*
+		 * Create a task for running and rendering the report.
+		 */
+		IRunAndRenderTask runAndRenderTask = engine.createRunAndRenderTask(runnableReportDesign);
+
+		//Set parameter values and validate
+		runAndRenderTask.setParameterValues(parameterValues);
+		boolean parametersAreValid = runAndRenderTask.validateParameters();
+		if (!parametersAreValid) {
+			logger.error("Report parameter values are not valid! parameterValues = {}", parameterValues);
+		}
+
+		RenderOption renderOption = null;
+		if (documentFormat.equals(BIRT_FORMAT_DOC)
+				|| documentFormat.equals(BIRT_FORMAT_ODP)
+				|| documentFormat.equals(BIRT_FORMAT_ODS)
+				|| documentFormat.equals(BIRT_FORMAT_ODT)
+				|| documentFormat.equals(BIRT_FORMAT_POSTSCRIPT)
+				|| documentFormat.equals(BIRT_FORMAT_PPT)
+				|| documentFormat.equals(BIRT_FORMAT_PPTX)
+				|| documentFormat.equals(BIRT_FORMAT_XLS_SPUDSOFT)) {
+
+			renderOption = new RenderOption();
+
+		} else if (documentFormat.equals(BIRT_FORMAT_DOCX)) {
+
+			DocxRenderOption docxRenderOption = new DocxRenderOption();
+			docxRenderOption.setCompressionMode(CompressionMode.BEST_COMPRESSION);
+			renderOption = (RenderOption) docxRenderOption;
+
+		} else if (documentFormat.equals(BIRT_FORMAT_PDF)) {
+
+			PDFRenderOption pdfRenderOption = new PDFRenderOption();
+			pdfRenderOption.setEmbededFont(true);
+			pdfRenderOption.setOption(PDFRenderOption.PDF_HYPHENATION, true);
+			pdfRenderOption.setOption(PDFRenderOption.PDF_PAGE_LIMIT, 100);
+			pdfRenderOption.setOption(PDFRenderOption.PAGE_OVERFLOW, PDFRenderOption.FIT_TO_PAGE_SIZE);
+			pdfRenderOption.setOption(PDFRenderOption.PDF_TEXT_WRAPPING, true);
+			renderOption = (RenderOption) pdfRenderOption;
+
+		} else if (documentFormat.equals(BIRT_FORMAT_XLS) || documentFormat.equals(BIRT_FORMAT_XLSX)) {
+
+			EXCELRenderOption excelRenderOption = new EXCELRenderOption();
+			renderOption.setOption(RenderOption.HTML_PAGINATION, false);
+			if (documentFormat.equals(BIRT_FORMAT_XLSX)) {
+				excelRenderOption.setOfficeVersion("office2007");
+			} else {
+				excelRenderOption.setOfficeVersion("office2003");
+			}
+			excelRenderOption.setHideGridlines(false);
+			excelRenderOption.setWrappingText(true);
+			renderOption = (RenderOption) excelRenderOption;
+
+			//	} else if (documentFormat.equals(BIRT_FORMAT_HTML)) {
+			//
+			//		HTMLRenderOption htmlRenderOption = new HTMLRenderOption();
+			//		htmlRenderOption.setOption(RenderOption.HTML_PAGINATION, false);
+			//		htmlRenderOption.setImageDirectory("xxxxxxxxxxxxxxxx");
+			//		/*
+			//		 * Setting this to true removes html and body tags:
+			//		 */
+			//		htmlRenderOption.setEmbeddable(false);
+			//		htmlRenderOption.setEnableInlineStyle(true); // useful if Embeddable=true
+			//		htmlRenderOption.setEnableCompactMode(true);
+			//		renderOption = (RenderOption) htmlRenderOption;
+
+		} else {
+			String errorMessage = String.format("No support for rendering to document format \"%s\"", documentFormat);
+			throw new UntreatedCaseException(errorMessage);
+		}
+
+		renderOption.setOutputFormat(documentFormat);
+		if (renderOption.getSupportedImageFormats() == null) {
+			renderOption.setSupportedImageFormats("PNG;GIF;JPG;BMP;SWF;SVG");
+		}
+		if (renderOption.getOption(RenderOption.HTML_PAGINATION) == null) {
+			renderOption.setOption(RenderOption.HTML_PAGINATION, true);
+		}
+		if (renderOption.getOption(RenderOption.RENDER_DPI) == null) {
+			renderOption.setOption(RenderOption.RENDER_DPI, 300);
+		}
+
+		if (outputFileName != null) {
+			renderOption.setOutputFileName(outputFileName);
+		} else if (outputStream != null) {
+			renderOption.setOutputStream(outputStream);
+			renderOption.closeOutputStreamOnExit(true);
+		} else {
+			throw new ReportingException("Cannot have both outputFileName==null and outputStream==null");
+		}
+
+		logger.info("renderOption.getOutputFormat() = {}", renderOption.getOutputFormat());
+
+		runAndRenderTask.setRenderOption(renderOption);
+
+		/*
+		 * Run and render report.
+		 */
+		logger.info("Executing runAndRenderTask.run()...");
+		runAndRenderTask.run();
+		runAndRenderTask.close();
+	}
+
+	/**
+	 * Parses a BIRT rptdesign document and returns a {@link Map} containing all
+	 * report parameters.
+	 * 
+	 * @param rptdesignXml
+	 * @return
+	 * @throws IOException
+	 * @throws BirtException
+	 * @throws RptdesignOpenFromStreamException
+	 */
 	public Map<String, Map<String, Serializable>> parseReportParams(String rptdesignXml)
 			throws IOException, BirtException, RptdesignOpenFromStreamException {
 
@@ -107,7 +440,9 @@ public class BirtService {
 		 * Create an engine task for obtaining report parameter definitions.
 		 */
 		IGetParameterDefinitionTask task = engine.createGetParameterDefinitionTask(runnableReportDesign);
-		Collection<IParameterDefnBase> params = (Collection<IParameterDefnBase>) task.getParameterDefns(true);
+		boolean includeParameterGroups = true;
+		Collection<IParameterDefnBase> params = (Collection<IParameterDefnBase>) task
+				.getParameterDefns(includeParameterGroups);
 
 		/*
 		 * Iterate through all parameter entries in "params". These can be 
@@ -145,6 +480,8 @@ public class BirtService {
 
 			}
 		}
+
+		task.close();
 
 		return parameters;
 	}
@@ -273,14 +610,16 @@ public class BirtService {
 
 		}
 
+		task.close();
+
 		return dynamicList;
 	}
 
 	/**
-	 * Opens a report design. 
+	 * Opens a report design.
 	 * 
-	 * The XML content of an rptdesign file is passed as a String, along with
-	 * a report engine.
+	 * The XML content of an rptdesign file is passed as a String, along with a
+	 * report engine.
 	 * 
 	 * @param rptdesignXml
 	 * @param engine
@@ -300,7 +639,7 @@ public class BirtService {
 	}
 
 	/**
-	 * Returns a {@link Map<String, Serializable>} containing attributes for 
+	 * Returns a {@link Map<String, Serializable>} containing attributes for
 	 * each parameter of a report.
 	 * 
 	 * @param task
@@ -316,9 +655,9 @@ public class BirtService {
 			IScalarParameterDefn scalarParameter,
 			IReportRunnable report,
 			IParameterGroupDefn parameterGroup) {
-	
+
 		Map<String, Serializable> parameter = new HashMap<>();
-	
+
 		/*
 		 * If the parameter is a member of a group (normal parameter group or a
 		 * cascading parameter group), we insert here into "parameter" a HashMap 
@@ -366,7 +705,7 @@ public class BirtService {
 			 */
 			groupDetails.put("GroupParameterType", new Integer(parameterGroup.getParameterType()));
 		}
-	
+
 		parameter.put("Name", scalarParameter.getName());
 		/*
 		 * The locale-specific display name for the parameter. The locale used 
@@ -498,7 +837,7 @@ public class BirtService {
 		 *     IParameterDefn.SELECTION_LIST_STATIC  = 2
 		 */
 		parameter.put("SelectionListType", scalarParameter.getSelectionListType());
-	
+
 		/*
 		 * Get the design element handle that the design engine creates when 
 		 * opening the report. From this, we obtain a ScalarParameterHandle
@@ -506,8 +845,9 @@ public class BirtService {
 		 * is used to extract more information about the parameter
 		 */
 		ReportDesignHandle reportHandle = (ReportDesignHandle) report.getDesignHandle();
-		ScalarParameterHandle parameterHandle = (ScalarParameterHandle) reportHandle.findParameter(scalarParameter.getName());
-	
+		ScalarParameterHandle parameterHandle = (ScalarParameterHandle) reportHandle
+				.findParameter(scalarParameter.getName());
+
 		/*
 		 * Specifies the parameter type for this scalar parameter. The same data
 		 * is available also above from 
@@ -518,13 +858,13 @@ public class BirtService {
 		 *     DesignChoiceConstants.SCALAR_PARAM_TYPE_AD_HOC = "ad-hoc"
 		 */
 		//parameter.put("ScalarParameterType", parameterHandle.getParamType());
-	
+
 		/*
 		 * This is an expression on the data row from the dynamic list data set 
 		 * that returns the value for the choice.
 		 */
 		parameter.put("ValueExpr", parameterHandle.getValueExpr());
-	
+
 		/*
 		 * Get selection list, if any. 
 		 * 
@@ -533,7 +873,7 @@ public class BirtService {
 		 */
 		if (scalarParameter.getControlType() != IScalarParameterDefn.TEXT_BOX) {
 			if (parameterHandle.getContainer() instanceof CascadingParameterGroupHandle) {
-	
+
 				/*
 				 * Get selection list for a cascading parameter. We use the
 				 * default values for each of the lists that are earlier in
@@ -562,7 +902,7 @@ public class BirtService {
 					 * the ".toString()" here is necessary:
 					 */
 					groupKeyValues[i] = defaultValues == null ? "" : defaultValues.get(0).toString();
-	
+
 					logger.debug("i = {}, handle.getDefaultValueList().get(0) = {}, class = {}", i,
 							handle.getDefaultValueList().get(0),
 							handle.getDefaultValueList().get(0).getClass().getSimpleName());
@@ -574,7 +914,7 @@ public class BirtService {
 				}
 				String parameterGroupName = parameterHandle.getContainer().getName();
 				//task.evaluateQuery(groupName); <-- Deprecated. Apparently, it has no use.
-	
+
 				/*
 				 * getSelectionListForCascadingGroup(parameterGroupName, groupKeyValues)
 				 * returns the selection list for the current parameter being
@@ -608,22 +948,22 @@ public class BirtService {
 				 * the order that they are inserted.
 				 */
 				HashMap<Object, String> dynamicList = new LinkedHashMap<>();
-	
+
 				for (IParameterSelectionChoice sI : selectionList) {
 					Object value = sI.getValue();
 					Object label = sI.getLabel();
 					dynamicList.put(value, (String) label);
 				}
 				parameter.put("SelectionList", dynamicList);
-	
+
 			} else {
-	
+
 				/*
 				 * Get selection list for a non-cascading parameter.
 				 */
 				Collection<IParameterSelectionChoice> selectionList = (Collection<IParameterSelectionChoice>) task
 						.getSelectionList(scalarParameter.getName());
-	
+
 				if (selectionList != null) {
 					/*
 					 * dynamicList must be a HashMap, not a Map, because it is 
@@ -634,7 +974,7 @@ public class BirtService {
 					 * the order that they are inserted.
 					 */
 					HashMap<Object, String> dynamicList = new LinkedHashMap<>();
-	
+
 					for (IParameterSelectionChoice selectionItem : selectionList) {
 						Object value = selectionItem.getValue();
 						String label = selectionItem.getLabel();
@@ -646,7 +986,7 @@ public class BirtService {
 		} else {
 			parameter.put("SelectionList", null);
 		}
-	
+
 		/*
 		 * Log all details for the report parameter associated with with the
 		 * object:
@@ -665,7 +1005,7 @@ public class BirtService {
 			logger.debug("  {} = {}", name, parameterEntry.getValue());
 			//}
 		}
-	
+
 		return parameter;
 	}
 

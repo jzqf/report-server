@@ -11,6 +11,8 @@ import com.qfree.obo.report.db.JobRepository;
 import com.qfree.obo.report.db.JobStatusRepository;
 import com.qfree.obo.report.domain.Job;
 import com.qfree.obo.report.domain.JobStatus;
+import com.qfree.obo.report.exceptions.ReportingException;
+import com.qfree.obo.report.service.JobService;
 
 @Component
 public class SubscriptionJobProcessorScheduledJob {
@@ -21,7 +23,10 @@ public class SubscriptionJobProcessorScheduledJob {
 	private JobRepository jobRepository;
 
 	@Autowired
-	JobStatusRepository jobStatusRepository;
+	private JobStatusRepository jobStatusRepository;
+
+	@Autowired
+	private JobService jobService;
 
 	/**
 	 * Runs periodically to process outstanding Job entities.
@@ -29,6 +34,7 @@ public class SubscriptionJobProcessorScheduledJob {
 	//TODO Use "synchronized" here??? Just to be sure we do not process the same Job in two different threads?
 	//     This may not be necessary, because I have used setConcurrent(false) in 
 	//     SubscriptionJobProcessorScheduler.scheduleJob(...)
+	//	@Transactional
 	public void run() {
 
 		/*
@@ -60,21 +66,119 @@ public class SubscriptionJobProcessorScheduledJob {
 
 		logger.info("");
 
-		JobStatus jobStatus_RUNNING = jobStatusRepository.findOne(JobStatus.RUNNING_ID);
-
+		/*
+		 * Since this run() method is not transactional, "queuedJobs" will be a 
+		 * list of DETACHED Job entities. This is the desired behavior. It 
+		 * allows changes to be persisted to Job entities below without forcing
+		 * all earlier changes to be rolled back in the event that an exception
+		 * is thrown. It also means that the status of each Job can be monitored
+		 * from other processes as it is updated - changes to Job entities will
+		 * be persisted and be visible to other processes after 
+		 */
 		List<Job> queuedJobs = jobRepository.findByJobStatusJobStatusId(JobStatus.QUEUED_ID);
 		logger.info("{} queued Jobs to process", queuedJobs.size());
 
-		//TODO USE A TRY FINALLY TO RESET STATUS TO QUEUED IF A NASTY EXCEPTION IS THROWN???
-
 		for (Job job : queuedJobs) {
-			logger.debug("job = {}", job);
-			logger.info("Setting status to \"RUNNING\"");
-			job.setJobStatus(jobStatus_RUNNING);
-			logger.info("Saving job");
-			job = jobRepository.save(job);
+
+			try {
+
+				job = jobService.setJobStatus(job.getJobId(), JobStatus.RUNNING_ID, null);
+
+				/*
+				 * We bypass the report rendering step if it looks like it was 
+				 * already performed. This bypass will happen only if "job" was
+				 * re-QUEUED elsewhere (probably because it was discovered that
+				 * the Job was not fully processed). A newly created Job always
+				 * has document==null, reportRanAt==null, ...
+				 */
+				if (job.getDocument() == null) {
+					/*
+					 * jobService.runAndRenderJob(...) must be a transactional 
+					 * method for several reasons:
+					 * 
+					 *   1. To be able to rollback changes in the event of an
+					 *   	exception being thrown.
+					 *   
+					 *   2.	To work with *attached* JPA objects so that 
+					 *   	org.hibernate.LazyInitializationException exceptions
+					 *   	are avoided.
+					 *   
+					 * In order for this method call to "runAndRenderJob" to be 
+					 * transactional, there are two requirements:
+					 * 
+					 *   1. The "runAndRenderJob method must be annotated with
+					 *      @Transactional.
+					 *      
+					 *   2. The "runAndRenderJob method must be a method of an 
+					 *      object managed by Spring, but not a method of the 
+					 *      current SubscriptionJobProcessorScheduledJob object. 
+					 *      This is because Spring sets up proxy methods for 
+					 *      @Transactional methods and calling a method directly 
+					 *      on the current object ("self invocation") will 
+					 *      bypass that proxy.
+					 *      
+					 * These requirements are satisfied by runAndRenderJob(...)
+					 * since it is a method of the "jobService" object injected 
+					 * above by Spring, and it is also annotated with 
+					 * @Transactional.
+					 */
+					jobService.runAndRenderJob(job.getJobId());
+				}
+
+				job = jobService.setJobStatus(job.getJobId(), JobStatus.DELIVERING_ID, null);
+
+				/*
+				 * We attempt to e-mail the rendered document only if there is 
+				 * an email address provided. It is conceivable that a Job was 
+				 * created to run a report *without* the rendered report then
+				 * being e-mailed. In such a case, the recipient must display
+				 * the Job record and then download the rendered report document
+				 * from the Job.
+				 * 
+				 * Current programming logic in this application tries to ensure
+				 * that all enabled Subscription entities have  value for their
+				 * "emilAddress" field. Since this value is assigned to a new
+				 * Job entity's "emailAddress" field when a new Job is created
+				 * in SubscriptionScheduledJob.run(), job.getEmailAddress()
+				 * should, ideally, never be null here. But future changes to
+				 * this application's logic/behaviour may change this; if so,
+				 * we handle that case here.
+				 */
+				if (job.getEmailAddress() != null && !job.getEmailAddress().isEmpty()) {
+					/*
+					 * We bypass the report delivery step if it looks like it
+					 * was already performed. This bypass will happen only if 
+					 * it was re-QUEUED elsewhere (probably because it was 
+					 * discovered that the Job was not fully processed). A newly
+					 * created Job always has reportEmailedAt==null, ...
+					 */
+					if (job.getReportEmailedAt() == null) {
+						/*
+						 * E-mail the rendered report document to the recipient.
+						 * 
+						 * jobService.emailJobDocument(...) must be a 
+						 * transactional method for the same reasons given in
+						 * the comment for the call to 
+						 * jobService.runAndRenderJob(...) above.
+						 */
+						jobService.emailJobDocument(job.getJobId());
+					}
+				}
+
+				/*
+				 * 
+				 */
+				job = jobService.setJobStatus(job.getJobId(), JobStatus.COMPLETED_ID, null);
+
+			} catch (ReportingException e) {
+				logger.error("Exception thrown processing Job with Id {}:\n{}", job.getJobId(), e);
+				try {
+					job = jobService.setJobStatus(job.getJobId(), JobStatus.FAILED_ID, e.getMessage());
+				} catch (ReportingException e1) {
+					logger.error("Exception thrown setting the status for a job: {}", e1.getMessage());
+				}
+			}
+
 		}
-
 	}
-
 }

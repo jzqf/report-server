@@ -136,26 +136,26 @@ public class RoleParameterValue implements Serializable {
 				DateUtils.nowUtc());
 	}
 
-	public RoleParameterValue(
-			RoleParameter roleParameter,
-			Boolean booleanValue,
-			Date dateValue,
-			Date datetimeValue,
-			Double floatValue,
-			Integer integerValue,
-			String stringValue,
-			Date timeValue) {
-		this(
-				roleParameter,
-				booleanValue,
-				dateValue,
-				datetimeValue,
-				floatValue,
-				integerValue,
-				stringValue,
-				timeValue,
-				DateUtils.nowUtc());
-	}
+	//	public RoleParameterValue(
+	//			RoleParameter roleParameter,
+	//			Boolean booleanValue,
+	//			Date dateValue,
+	//			Date datetimeValue,
+	//			Double floatValue,
+	//			Integer integerValue,
+	//			String stringValue,
+	//			Date timeValue) {
+	//		this(
+	//				roleParameter,
+	//				booleanValue,
+	//				dateValue,
+	//				datetimeValue,
+	//				floatValue,
+	//				integerValue,
+	//				stringValue,
+	//				timeValue,
+	//				DateUtils.nowUtc());
+	//	}
 
 	public RoleParameterValue(
 			RoleParameter roleParameter,

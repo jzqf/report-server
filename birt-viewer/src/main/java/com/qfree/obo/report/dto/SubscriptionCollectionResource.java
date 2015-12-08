@@ -11,8 +11,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.qfree.obo.report.domain.DocumentFormat;
+import com.qfree.obo.report.domain.ReportVersion;
 import com.qfree.obo.report.domain.Role;
 import com.qfree.obo.report.domain.Subscription;
+import com.qfree.obo.report.exceptions.ResourceFilterParseException;
+import com.qfree.obo.report.exceptions.ResourceFilterExecutionException;
+import com.qfree.obo.report.util.RestUtils;
 import com.qfree.obo.report.util.RestUtils.RestApiVersion;
 
 @XmlRootElement
@@ -52,6 +56,22 @@ public class SubscriptionCollectionResource extends AbstractCollectionResource<S
 				role.getSubscriptionsForActiveReportVersions(),
 				Subscription.class,
 				AbstractBaseResource.createHref(uriInfo, Role.class, role.getRoleId(), null),
+				ResourcePath.SUBSCRIPTIONS_PATH,
+				uriInfo,
+				queryParams,
+				apiVersion);
+	}
+
+	public SubscriptionCollectionResource(
+			ReportVersion reportVersion,
+			UriInfo uriInfo,
+			Map<String, List<String>> queryParams,
+			RestApiVersion apiVersion) throws ResourceFilterExecutionException, ResourceFilterParseException {
+		this(
+				reportVersion.getSubscriptions(RestUtils.parseFilterQueryParams(queryParams)),
+				Subscription.class,
+				AbstractBaseResource.createHref(
+						uriInfo, ReportVersion.class, reportVersion.getReportVersionId(), null),
 				ResourcePath.SUBSCRIPTIONS_PATH,
 				uriInfo,
 				queryParams,

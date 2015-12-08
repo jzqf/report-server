@@ -1,8 +1,12 @@
 package com.qfree.obo.report.domain;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -20,7 +24,9 @@ import javax.persistence.TemporalType;
 import javax.validation.constraints.NotNull;
 
 import com.qfree.obo.report.dto.JobResource;
+import com.qfree.obo.report.exceptions.ResourceFilterExecutionException;
 import com.qfree.obo.report.util.DateUtils;
+import com.qfree.obo.report.util.RestUtils;
 
 /**
  * The persistent class for the "job" database table.
@@ -155,13 +161,14 @@ public class Job implements Serializable {
 	private Date reportRanAt;
 
 	/**
-	 * E-mail address to which the rendered report will be sent. This allows a
-	 * subscription to be set up that delivers reports to other than a role's
-	 * primary e-mail address store with the Role entity.
+	 * E-mail address to which the rendered report will be sent.
+	 * 
+	 * This allows a subscription to be set up that delivers reports to other
+	 * than a role's primary e-mail address stored with the Role entity.
 	 */
 	// @NotBlank
-	@Column(name = "email", nullable = true, length = 160)
-	private String email;
+	@Column(name = "email_address", nullable = true, length = 160)
+	private String emailAddress;
 
 	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name = "report_emailed_at", nullable = true)
@@ -238,13 +245,13 @@ public class Job implements Serializable {
 				reportVersion,
 				role,
 				documentFormat,
+				jobResource.getEmailAddress(),
 				jobResource.getUrl(),
 				jobResource.getFileName(),
 				jobResource.getDocument(),
 				jobResource.getEncoded(),
-				null,
-				null,
-				null,
+				jobResource.getReportRanAt(),
+				jobResource.getReportEmailedAt(),
 				DateUtils.nowUtc());
 	}
 
@@ -255,10 +262,7 @@ public class Job implements Serializable {
 			ReportVersion reportVersion,
 			Role role,
 			DocumentFormat documentFormat,
-			String url,
-			String fileName,
-			String document,
-			Boolean encoded) {
+			String emailAddress) {
 		this(
 				subscription,
 				jobStatus,
@@ -266,10 +270,10 @@ public class Job implements Serializable {
 				reportVersion,
 				role,
 				documentFormat,
-				url,
-				fileName,
-				document,
-				encoded,
+				emailAddress,
+				null,
+				null,
+				null,
 				null,
 				null,
 				null,
@@ -283,12 +287,12 @@ public class Job implements Serializable {
 			ReportVersion report_version,
 			Role role,
 			DocumentFormat documentFormat,
+			String emailAddress,
 			String url,
 			String fileName,
 			String document,
 			Boolean encoded,
 			Date reportRanAt,
-			String email,
 			Date reportEmailedAt,
 			Date createdOn) {
 		this.subscription = subscription;
@@ -303,7 +307,7 @@ public class Job implements Serializable {
 		this.document = document;
 		this.encoded = encoded;
 		this.reportRanAt = null;
-		this.email = email;
+		this.emailAddress = emailAddress;
 		this.reportEmailedAt = null;
 		this.createdOn = (createdOn != null) ? createdOn : DateUtils.nowUtc();
 	}
@@ -365,20 +369,28 @@ public class Job implements Serializable {
 		return reportRanAt;
 	}
 
+	public void setReportRanAt() {
+		setReportRanAt(DateUtils.nowUtc());
+	}
+
 	public void setReportRanAt(Date reportRanAt) {
 		this.reportRanAt = reportRanAt;
 	}
 
-	public String getEmail() {
-		return email;
+	public String getEmailAddress() {
+		return emailAddress;
 	}
 
-	public void setEmail(String email) {
-		this.email = email;
+	public void setEmailAddress(String emailAddress) {
+		this.emailAddress = emailAddress;
 	}
 
 	public Date getReportEmailedAt() {
 		return reportEmailedAt;
+	}
+
+	public void setReportEmailedAt() {
+		setReportEmailedAt(DateUtils.nowUtc());
 	}
 
 	public void setReportEmailedAt(Date reportEmailedAt) {
@@ -462,14 +474,64 @@ public class Job implements Serializable {
 		builder.append(jobStatusSetAt);
 		builder.append(", reportRanAt=");
 		builder.append(reportRanAt);
-		builder.append(", email=");
-		builder.append(email);
+		builder.append(", emailAddress=");
+		builder.append(emailAddress);
 		builder.append(", reportEmailedAt=");
 		builder.append(reportEmailedAt);
 		builder.append(", createdOn=");
 		builder.append(createdOn);
 		builder.append("]");
 		return builder.toString();
+	}
+
+	/**
+	 * Returns a {@link List} of filtered {@link Job} entities given an
+	 * unfiltered list and a set of filter conditions.
+	 * 
+	 * This method first sets up one list for each attribute on which the list
+	 * of {@link Job} entities can be filtered on. Then the filtering is
+	 * performed by a call to a generic static method.
+	 * 
+	 * @param unfilteredJobs
+	 * @param filterConditions
+	 * @return
+	 * @throws ResourceFilterExecutionException
+	 */
+	public static List<Job> getFilteredJobs(List<Job> unfilteredJobs, List<List<Map<String, String>>> filterConditions)
+			throws ResourceFilterExecutionException {
+		if (filterConditions == null || filterConditions.size() == 0) {
+			return unfilteredJobs; // no filtering
+		}
+		List<Object> jobStatusIds = new ArrayList<>(unfilteredJobs.size());
+		List<Object> jobStatusAbbreviations = new ArrayList<>(unfilteredJobs.size());
+		List<Object> jobCreatedOns = new ArrayList<>(unfilteredJobs.size());
+		List<Object> jobIds = new ArrayList<>(unfilteredJobs.size());
+		for (Job job : unfilteredJobs) {
+			jobStatusIds.add(job.getJobStatus().getJobStatusId());
+			jobStatusAbbreviations.add(job.getJobStatus().getAbbreviation());
+			jobCreatedOns.add(job.getCreatedOn());
+			jobIds.add(job.getJobId());
+		}
+		Map<String, List<Object>> filterableAttributes = new HashMap<>(4);
+		/*
+		 * Here, the Map keys used *must* agree with the filter attributes used
+		 * in the value assigned to the "filter" query parameter in the resource
+		 * URI.
+		 */
+		filterableAttributes.put("jobStatusId", jobStatusIds);
+		filterableAttributes.put("jobStatusAbbreviation", jobStatusAbbreviations);
+		filterableAttributes.put("createdOn", jobCreatedOns);
+		filterableAttributes.put("jobId", jobIds);
+		/*
+		 * The list must be ordered in case pagination is used for the 
+		 * collection resource created from list of filtered entities. The only
+		 * sensible order is chronological order. Since the Job entities has a 
+		 * Long primary key, we could also sort by id.
+		 */
+		Comparator<Job> chronological = (Job job1, Job job2) -> job1.getCreatedOn().compareTo(job2.getCreatedOn());
+
+		return RestUtils.filterEntities(unfilteredJobs, filterConditions, filterableAttributes, chronological,
+				Job.class);
 	}
 
 }

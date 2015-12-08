@@ -52,11 +52,12 @@ insert into reporting.report_category (report_category_id, description, abbrevia
 insert into reporting.report_category (report_category_id, description, abbreviation, active, created_on) values ('72d7cb27-1770-4cc7-b301-44d39ccf1e76', 'Traffic'          , 'TRA'  , true, '2015-03-01T02:00:10');
 
 
-insert into reporting.job_status (job_status_id, description, abbreviation, active, created_on) values ('08de9764-735f-4c82-bbe9-3981b29cc133', 'Queued'   , 'QUEUED'   , true, current_timestamp AT TIME ZONE 'UTC');
-insert into reporting.job_status (job_status_id, description, abbreviation, active, created_on) values ('a613aae2-836a-4b03-a75d-cfb8303eaad5', 'Running'  , 'RUNNING'  , true, current_timestamp AT TIME ZONE 'UTC');
-insert into reporting.job_status (job_status_id, description, abbreviation, active, created_on) values ('f378fc09-35e4-4096-b1d1-2db14756b098', 'Completed', 'COMPLETED', true, current_timestamp AT TIME ZONE 'UTC');
-insert into reporting.job_status (job_status_id, description, abbreviation, active, created_on) values ('2a9cd697-af00-45bc-aa6a-053284b9d9e4', 'Failed'   , 'FAILED'   , true, current_timestamp AT TIME ZONE 'UTC');
-insert into reporting.job_status (job_status_id, description, abbreviation, active, created_on) values ('5125c537-e178-42de-b4dd-e538fa3da802', 'Canceled' , 'CANCELED' , true, current_timestamp AT TIME ZONE 'UTC');
+insert into reporting.job_status (job_status_id, description, abbreviation, active, created_on) values ('08de9764-735f-4c82-bbe9-3981b29cc133', 'Queued'    , 'QUEUED'    , true, current_timestamp AT TIME ZONE 'UTC');
+insert into reporting.job_status (job_status_id, description, abbreviation, active, created_on) values ('a613aae2-836a-4b03-a75d-cfb8303eaad5', 'Running'   , 'RUNNING'   , true, current_timestamp AT TIME ZONE 'UTC');
+insert into reporting.job_status (job_status_id, description, abbreviation, active, created_on) values ('24274a10-6d83-4f0f-a807-2c96d86ce5d6', 'Delivering', 'DELIVERING', true, current_timestamp AT TIME ZONE 'UTC');
+insert into reporting.job_status (job_status_id, description, abbreviation, active, created_on) values ('f378fc09-35e4-4096-b1d1-2db14756b098', 'Completed' , 'COMPLETED' , true, current_timestamp AT TIME ZONE 'UTC');
+insert into reporting.job_status (job_status_id, description, abbreviation, active, created_on) values ('2a9cd697-af00-45bc-aa6a-053284b9d9e4', 'Failed'    , 'FAILED'    , true, current_timestamp AT TIME ZONE 'UTC');
+insert into reporting.job_status (job_status_id, description, abbreviation, active, created_on) values ('5125c537-e178-42de-b4dd-e538fa3da802', 'Canceled'  , 'CANCELED'  , true, current_timestamp AT TIME ZONE 'UTC');
 
 
 insert into reporting.report (report_id, report_category_id, name, number, sort_order, active, created_on) values ('d65f3d9c-f67d-4beb-9936-9dfa19aa1407', '7a482694-51d2-42d0-b0e2-19dd13bbbc64', 'Test Report #01', 100, 100, true , '2014-06-09T22:00:00');
@@ -2364,13 +2365,13 @@ delete from tmp_rptdesign;
 -- Insert  tree of [role] records:
 
 -- encoded_password '44rSFJQ9qtHWTBAvrsKd5K/p2j0=' is Base64(SHA-1('password1'))
-INSERT INTO reporting.role (role_id, username, login_role, encoded_password, full_name, email, time_zone_id, created_on) VALUES ('29fe8a1f-7826-4df0-8bfd-151b54198655', 'user1', true , '44rSFJQ9qtHWTBAvrsKd5K/p2j0=', 'User Number 1', 'user1@somedomain.com', 'CET'           , '2015-05-07T09:10:00');
+INSERT INTO reporting.role (role_id, username, login_role, encoded_password, full_name, email_address, time_zone_id, created_on) VALUES ('29fe8a1f-7826-4df0-8bfd-151b54198655', 'user1', true , '44rSFJQ9qtHWTBAvrsKd5K/p2j0=', 'User Number 1', 'user1@somedomain.com', 'CET'           , '2015-05-07T09:10:00');
 -- encoded_password 'KqYKj/f81HPTIeAUav2eJt85UUc=' is Base64(SHA-1('password2'))
-INSERT INTO reporting.role (role_id, username, login_role, encoded_password, full_name, email, time_zone_id, created_on) VALUES ('fa06393a-d341-4bf6-b047-1a8c6a383483', 'user2', false, 'KqYKj/f81HPTIeAUav2eJt85UUc=', 'User Number 2', 'user2@somedomain.com', 'CET'           , '2015-05-07T09:12:01');
+INSERT INTO reporting.role (role_id, username, login_role, encoded_password, full_name, email_address, time_zone_id, created_on) VALUES ('fa06393a-d341-4bf6-b047-1a8c6a383483', 'user2', false, 'KqYKj/f81HPTIeAUav2eJt85UUc=', 'User Number 2', 'user2@somedomain.com', 'CET'           , '2015-05-07T09:12:01');
 -- encoded_password 'ERnP037iRzV+A0oI2ETuol9v0g8=' is Base64(SHA-1('password3'))
-INSERT INTO reporting.role (role_id, username, login_role, encoded_password, full_name, email, time_zone_id, created_on) VALUES ('b85fd129-17d9-40e7-ac11-7541040f8627', 'user3', true , 'ERnP037iRzV+A0oI2ETuol9v0g8=', 'User Number 3', 'user3@somedomain.com', 'Canada/Pacific', '2015-05-07T09:13:22');
+INSERT INTO reporting.role (role_id, username, login_role, encoded_password, full_name, email_address, time_zone_id, created_on) VALUES ('b85fd129-17d9-40e7-ac11-7541040f8627', 'user3', true , 'ERnP037iRzV+A0oI2ETuol9v0g8=', 'User Number 3', 'user3@somedomain.com', 'Canada/Pacific', '2015-05-07T09:13:22');
 -- encoded_password 'oddYTarKRzjUma1wgohrARFyddg=' is Base64(SHA-1('password4'))
-INSERT INTO reporting.role (role_id, username, login_role, encoded_password, full_name, email, time_zone_id, created_on) VALUES ('46e477dc-085f-4714-a24f-742428579fcc', 'user4', true , 'oddYTarKRzjUma1wgohrARFyddg=', 'User Number 4', 'user4@somedomain.com', 'GMT'           , '2015-05-07T09:14:09');
+INSERT INTO reporting.role (role_id, username, login_role, encoded_password, full_name, email_address, time_zone_id, created_on) VALUES ('46e477dc-085f-4714-a24f-742428579fcc', 'user4', true , 'oddYTarKRzjUma1wgohrARFyddg=', 'User Number 4', 'user4@somedomain.com', 'GMT'           , '2015-05-07T09:14:09');
 
 --INSERT INTO reporting.role (role_id, username, login_role, encoded_password, full_name, created_on) VALUES ('e73ee6a5-5236-4630-aba1-de18e76b8105', 'a', false, '', '', '2015-04-13T08:00:00');
 --
@@ -2740,7 +2741,7 @@ insert into reporting.role_report (role_report_id, role_id, report_id, created_o
 --insert into reporting.configuration (configuration_id, param_name, role_id, param_type, time_value    , created_on) VALUES ('96a86f9a-da4e-4173-9267-94a68176bff0', 'TEST_TIME'     , 'ee56f34d-dbb4-41c1-9d30-ce29cf973820', 'TIME'     , '00:00:01'                , '2015-07-14T00:00:00');
 --
 --
---insert into reporting.subscription (subscription_id, role_id, report_version_id, document_format_id, delivery_datetime_run_at, delivery_cron_schedule, delivery_time_zone_id, email, description, enabled, active, created_on) values ('7f68e31c-2884-4638-b3e5-c64697a28bd1', 'ee56f34d-dbb4-41c1-9d30-ce29cf973820', 'dbc0883b-afe3-4147-87b4-0ed35869cd35', '30800d77-5fdd-44bc-94a3-1502bd307c1d', '2016-01-01T03:00:00', '00 6 * * 1', 'CET', 'jeffreyz@q-free.com', 'Description for Subscription #1', false, true, '2015-06-06T15:45:30');
+--insert into reporting.subscription (subscription_id, role_id, report_version_id, document_format_id, delivery_datetime_run_at, delivery_cron_schedule, delivery_time_zone_id, email_address, description, enabled, active, created_on) values ('7f68e31c-2884-4638-b3e5-c64697a28bd1', 'ee56f34d-dbb4-41c1-9d30-ce29cf973820', 'dbc0883b-afe3-4147-87b4-0ed35869cd35', '30800d77-5fdd-44bc-94a3-1502bd307c1d', '2016-01-01T03:00:00', '00 6 * * 1', 'CET', 'jeffreyz@q-free.com', 'Description for Subscription #1', false, true, '2015-06-06T15:45:30');
 --
 --
 ---- [subscription_parameter] rows for [report_parameter]'s associated with 
@@ -2757,9 +2758,9 @@ insert into reporting.role_report (role_report_id, role_id, report_id, created_o
 ---- values for us (the DDL for this column includes: "default nextval('job_job_id_seq'::regclass)"
 ----
 ---- job for [report_version] "version 1" of report "Report name #01" run by role "aabb". [document_format] = PDF, [job_status] = "Queued":
---insert into reporting.job (report_version_id, subscription_id, job_status_id, job_status_remarks, role_id, document_format_id, url, file_name, document, encoded, job_status_set_at, report_ran_at, email, report_emailed_at, created_on) VALUES ('dbc0883b-afe3-4147-87b4-0ed35869cd35', null, '08de9764-735f-4c82-bbe9-3981b29cc133', null, 'ee56f34d-dbb4-41c1-9d30-ce29cf973820', '30800d77-5fdd-44bc-94a3-1502bd307c1d', null, null, null, null, '2015-06-06T00:00:15', null, null, null, '2015-06-06T00:00:15');
+--insert into reporting.job (report_version_id, subscription_id, job_status_id, job_status_remarks, role_id, document_format_id, url, file_name, document, encoded, job_status_set_at, report_ran_at, email_address, report_emailed_at, created_on) VALUES ('dbc0883b-afe3-4147-87b4-0ed35869cd35', null, '08de9764-735f-4c82-bbe9-3981b29cc133', null, 'ee56f34d-dbb4-41c1-9d30-ce29cf973820', '30800d77-5fdd-44bc-94a3-1502bd307c1d', null, null, null, null, '2015-06-06T00:00:15', null, null, null, '2015-06-06T00:00:15');
 ---- job for [report_version] "version 1" of report "Report name #01" run by role "aabb". [document_format] = OpenDocument Spreadsheet, [job_status] = "Queued":
---insert into reporting.job (report_version_id, subscription_id, job_status_id, job_status_remarks, role_id, document_format_id, url, file_name, document, encoded, job_status_set_at, report_ran_at, email, report_emailed_at, created_on) VALUES ('dbc0883b-afe3-4147-87b4-0ed35869cd35', null, '08de9764-735f-4c82-bbe9-3981b29cc133', null, 'ee56f34d-dbb4-41c1-9d30-ce29cf973820', '05a4ad8d-6f30-4d6d-83d5-995345a8dc58', null, null, null, null, '2015-06-06T00:00:15', null, null, null, '2015-06-07T00:00:15');
+--insert into reporting.job (report_version_id, subscription_id, job_status_id, job_status_remarks, role_id, document_format_id, url, file_name, document, encoded, job_status_set_at, report_ran_at, email_address, report_emailed_at, created_on) VALUES ('dbc0883b-afe3-4147-87b4-0ed35869cd35', null, '08de9764-735f-4c82-bbe9-3981b29cc133', null, 'ee56f34d-dbb4-41c1-9d30-ce29cf973820', '05a4ad8d-6f30-4d6d-83d5-995345a8dc58', null, null, null, null, '2015-06-06T00:00:15', null, null, null, '2015-06-07T00:00:15');
 --------------------------------------------------------------------------------
 
 

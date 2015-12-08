@@ -47,6 +47,9 @@ import com.qfree.obo.report.dto.ReportVersionCollectionResource;
 import com.qfree.obo.report.dto.ReportVersionResource;
 import com.qfree.obo.report.dto.ResourcePath;
 import com.qfree.obo.report.dto.RestErrorResource.RestError;
+import com.qfree.obo.report.dto.SubscriptionCollectionResource;
+import com.qfree.obo.report.exceptions.ResourceFilterParseException;
+import com.qfree.obo.report.exceptions.ResourceFilterExecutionException;
 import com.qfree.obo.report.exceptions.RestApiException;
 import com.qfree.obo.report.exceptions.RptdesignOpenFromStreamException;
 import com.qfree.obo.report.service.ReportParameterService;
@@ -551,4 +554,53 @@ public class ReportVersionController extends AbstractBaseController {
 		RestUtils.ifNullThen404(reportVersion, ReportVersion.class, "reportVersionId", id.toString());
 		return new ReportParameterCollectionResource(reportVersion, uriInfo, queryParams, apiVersion);
 	}
+
+	/*
+	 * Return the Subscription entities associated with a single ReportVersion 
+	 * that is specified by its id. This endpoint can be tested with:
+	 * 
+	 *   $ mvn clean spring-boot:run
+	 *   $ curl -X GET -iH "Accept: application/json;v=1" \
+	 *   http://localhost:8080/rest/reportVersions/293abf69-1516-4e9b-84ae-241d25c13e8d/subscriptions\
+	 *   ?expand=subscriptions
+	 * 
+	 * This endpoint supports filtering on roleId as follows:
+	 * 
+	 *   $ mvn clean spring-boot:run
+	 *   $ curl -X GET -iH "Accept: application/json;v=1" \
+	 *   http://localhost:8080/rest/reportVersions/293abf69-1516-4e9b-84ae-241d25c13e8d/subscriptions\
+	 *   ?expand=subscriptions\&filter=roleId.eq."b85fd129-17d9-40e7-ac11-7541040f8627"
+	 * 
+	 * @Transactional is used to avoid org.hibernate.LazyInitializationException
+	 * being thrown.
+	 */
+	@Path("/{id}" + ResourcePath.SUBSCRIPTIONS_PATH)
+	@GET
+	@Transactional
+	@Produces(MediaType.APPLICATION_JSON)
+	public SubscriptionCollectionResource getSubscriptionsByReportVersionId(
+			@PathParam("id") final UUID id,
+			@HeaderParam("Accept") final String acceptHeader,
+			@QueryParam(ResourcePath.EXPAND_QP_NAME) final List<String> expand,
+			@QueryParam(ResourcePath.SHOWALL_QP_NAME) final List<String> showAll,
+			@QueryParam(ResourcePath.FILTER_QP_NAME) final List<String> filter,
+			@QueryParam(ResourcePath.PAGE_OFFSET_QP_NAME) final List<String> pageOffset,
+			@QueryParam(ResourcePath.PAGE_LIMIT_QP_NAME) final List<String> pageLimit,
+			@Context final UriInfo uriInfo) {
+		Map<String, List<String>> queryParams = new HashMap<>();
+		queryParams.put(ResourcePath.EXPAND_QP_KEY, expand);
+		queryParams.put(ResourcePath.SHOWALL_QP_KEY, showAll);
+		queryParams.put(ResourcePath.FILTER_QP_KEY, filter);
+		RestUtils.checkPaginationQueryParams(pageOffset, pageLimit, queryParams);
+		RestApiVersion apiVersion = RestUtils.extractAPIVersion(acceptHeader, RestApiVersion.v1);
+
+		ReportVersion reportVersion = reportVersionRepository.findOne(id);
+		RestUtils.ifNullThen404(reportVersion, ReportVersion.class, "reportVersionId", id.toString());
+		try {
+			return new SubscriptionCollectionResource(reportVersion, uriInfo, queryParams, apiVersion);
+		} catch (ResourceFilterExecutionException | ResourceFilterParseException e) {
+			throw new RestApiException(RestError.FORBIDDEN_RESOURCE_FILTER_PROBLEM, e.getMessage(), e);
+		}
+	}
+
 }

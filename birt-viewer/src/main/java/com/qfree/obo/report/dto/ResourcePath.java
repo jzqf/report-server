@@ -218,6 +218,16 @@ public enum ResourcePath {
 	public static final String SUBSCRIPTIONPARAMETERVALUE_SHOWALL_PARAM = SUBSCRIPTIONPARAMETERVALUE_EXPAND_PARAM;
 
 	/*
+	 * This is the name of "filter" query parameter used for resource filtering. 
+	 */
+	public static final String FILTER_QP_NAME = "filter";
+	/*
+	 * This is the map key associated with the "filter" array that contains all
+	 * of the "filter" query parameter values for an HTTP request. 
+	 */
+	public static final String FILTER_QP_KEY = "filter";
+
+	/*
 	 * This are the names of the collection resource pagination query parameter
 	 * names for HTTP requests. 
 	 */

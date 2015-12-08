@@ -50,6 +50,8 @@ import com.qfree.obo.report.dto.SubscriptionCollectionResource;
 import com.qfree.obo.report.dto.SubscriptionParameterCollectionResource;
 import com.qfree.obo.report.dto.SubscriptionResource;
 import com.qfree.obo.report.exceptions.NoScheduleForSubscriptionException;
+import com.qfree.obo.report.exceptions.ResourceFilterExecutionException;
+import com.qfree.obo.report.exceptions.ResourceFilterParseException;
 import com.qfree.obo.report.exceptions.RestApiException;
 import com.qfree.obo.report.scheduling.schedulers.SubscriptionScheduler;
 import com.qfree.obo.report.service.SubscriptionService;
@@ -395,7 +397,7 @@ public class SubscriptionController extends AbstractBaseController {
 	 * This endpoint can be tested with:
 	 * 
 	 *   $ mvn clean spring-boot:run
-	 *   $ curl -i -H "Accept: application/json;v=1" -X GET \
+	 *   $ curl -X GET -iH "Accept: application/json;v=1" \
 	 *   http://localhost:8080/rest/subscriptions/c7f1d394-9814-4ede-bb01-2700187d79ca
 	 * 
 	 * @Transactional is used to avoid org.hibernate.LazyInitializationException
@@ -433,7 +435,7 @@ public class SubscriptionController extends AbstractBaseController {
 	 *   $ curl -iH "Accept: application/json;v=1" -H "Content-Type: application/json" -X PUT -d \
 	 *   '{"documentFormat":{"documentFormatId":"05a4ad8d-6f30-4d6d-83d5-995345a8dc58"},\
 	 *   "deliveryDatetimeRunAt":"2015-11-04T06:00:00.000","cronScheduleZoneId":"Canada/Pacific",\
-	 *   "email":"bozo@clown.net","description":"New description","enabled":true}' \
+	 *   "email_address":"bozo@clown.net","description":"New description","enabled":true}' \
 	 *   http://localhost:8080/rest/subscriptions/1778cb69-0561-42b9-889f-cfe8c66978db
 	 *   
 	 * This updates the subscription with UUID 1778cb69-0561-42b9-889f-cfe8c66978db
@@ -443,7 +445,7 @@ public class SubscriptionController extends AbstractBaseController {
 	 * deliveryCronSchedule:	-> null
 	 * deliveryTimeZoneId		-> "Canada/Pacific"
 	 * deliveryDatetimeRunAt:	-> "2015-11-04T06:00:00.000"
-	 * email:					-> "bozo@clown.net"
+	 * emailAddress:			-> "bozo@clown.net"
 	 * description:				-> "New description"
 	 * enabled:					-> true
 	 */
@@ -489,7 +491,7 @@ public class SubscriptionController extends AbstractBaseController {
 		 * but if their value does not need to be changed, they do not need to 
 		 * be included in the PUT data.
 		 */
-		// ALLOW email==null:
+		// ALLOW email_address==null:
 		// if (subscriptionResource.getEmail() == null) {
 		// subscriptionResource.setEmail(subscription.getEmail());
 		// }
@@ -556,7 +558,7 @@ public class SubscriptionController extends AbstractBaseController {
 			 * The subscription must have a valid e-mail address to which the 
 			 * rendered report will eventually be sent.
 			 */
-			if (subscriptionResource.getEmail() == null || subscriptionResource.getEmail().isEmpty()) {
+			if (subscriptionResource.getEmailAddress() == null || subscriptionResource.getEmailAddress().isEmpty()) {
 				throw new RestApiException(RestError.FORBIDDEN_ENABLED_SUBSCRIPTION_NO_EMAIL, Subscription.class);
 			}
 
@@ -806,7 +808,7 @@ public class SubscriptionController extends AbstractBaseController {
 		 */
 		if (rescheduleJob) {
 
-			logger.info("Deleting (if it exists) {}", subscription);
+			logger.info("Unscheduling (if it is scheduled) {}", subscription);
 			/*
 			 * If the subscription is scheduled, the scheduled job is deleted.
 			 */
@@ -973,17 +975,23 @@ public class SubscriptionController extends AbstractBaseController {
 			@HeaderParam("Accept") final String acceptHeader,
 			@QueryParam(ResourcePath.EXPAND_QP_NAME) final List<String> expand,
 			@QueryParam(ResourcePath.SHOWALL_QP_NAME) final List<String> showAll,
+			@QueryParam(ResourcePath.FILTER_QP_NAME) final List<String> filter,
 			@QueryParam(ResourcePath.PAGE_OFFSET_QP_NAME) final List<String> pageOffset,
 			@QueryParam(ResourcePath.PAGE_LIMIT_QP_NAME) final List<String> pageLimit,
 			@Context final UriInfo uriInfo) {
 		Map<String, List<String>> queryParams = new HashMap<>();
 		queryParams.put(ResourcePath.EXPAND_QP_KEY, expand);
 		queryParams.put(ResourcePath.SHOWALL_QP_KEY, showAll);
+		queryParams.put(ResourcePath.FILTER_QP_KEY, filter);
 		RestUtils.checkPaginationQueryParams(pageOffset, pageLimit, queryParams);
 		RestApiVersion apiVersion = RestUtils.extractAPIVersion(acceptHeader, RestApiVersion.v1);
 
 		Subscription subscription = subscriptionRepository.findOne(id);
 		RestUtils.ifNullThen404(subscription, Subscription.class, "subscriptionId", id.toString());
-		return new JobCollectionResource(subscription, uriInfo, queryParams, apiVersion);
+		try {
+			return new JobCollectionResource(subscription, uriInfo, queryParams, apiVersion);
+		} catch (ResourceFilterExecutionException | ResourceFilterParseException e) {
+			throw new RestApiException(RestError.FORBIDDEN_RESOURCE_FILTER_PROBLEM, e.getMessage(), e);
+		}
 	}
 }

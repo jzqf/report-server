@@ -3,6 +3,7 @@ package com.qfree.obo.report.domain;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import javax.persistence.CascadeType;
@@ -24,8 +25,11 @@ import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;
 import org.hibernate.validator.constraints.NotBlank;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.qfree.obo.report.dto.ReportVersionResource;
+import com.qfree.obo.report.exceptions.ResourceFilterExecutionException;
 import com.qfree.obo.report.util.DateUtils;
 
 /**
@@ -46,6 +50,8 @@ public class ReportVersion implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
+	private static final Logger logger = LoggerFactory.getLogger(ReportVersion.class);
+
 	@Id
 	@NotNull
 	@Type(type = "uuid-custom")
@@ -65,7 +71,7 @@ public class ReportVersion implements Serializable {
 	 */
 	@NotNull
 	@JoinColumn(name = "report_id", nullable = false,
-			foreignKey = @ForeignKey(name = "fk_reportversion_report"),
+			foreignKey = @ForeignKey(name = "fk_reportversion_report") ,
 			columnDefinition = "uuid")
 	private Report report;
 
@@ -80,7 +86,7 @@ public class ReportVersion implements Serializable {
 	 *     Deleting a ReportVersion will delete all of its Subscription's.
 	 */
 	@OneToMany(mappedBy = "reportVersion", cascade = CascadeType.ALL)
-	private List<Subscription> reportSubscriptions;
+	private List<Subscription> subscriptions;
 
 	/*
 	 * cascade = CascadeType.ALL:
@@ -102,7 +108,7 @@ public class ReportVersion implements Serializable {
 	private String rptdesign;
 
 	/**
-	 * A string value that represents the release version of the report as it 
+	 * A string value that represents the release version of the report as it
 	 * should be shown to users. The value is a string so that you can describe
 	 * the report version as a <major>.<minor>.<point> string, or in any other
 	 * chosen format.
@@ -112,8 +118,8 @@ public class ReportVersion implements Serializable {
 	private String versionName;
 
 	/**
-	 * An integer value that represents the version of the ReportVersion, 
-	 * relative to other versions for the same Report. The value is an integer 
+	 * An integer value that represents the version of the ReportVersion,
+	 * relative to other versions for the same Report. The value is an integer
 	 * so that it can be used for ordering in a UI or for other numerical uses.
 	 */
 	@NotNull
@@ -192,12 +198,30 @@ public class ReportVersion implements Serializable {
 		this.reportParameters = reportParameters;
 	}
 
-	public List<Subscription> getReportSubscriptions() {
-		return reportSubscriptions;
+	/**
+	 * Returns {@link List} of {@link Subscription} entities associated with the
+	 * {@link ReportVersion}.
+	 * 
+	 * Filtering can be performed on the set of all {@link Subscription}
+	 * entities associated with the {@link ReportVersion}. An important use case
+	 * is to filter on roleId to return only those Subscriptions related to that
+	 * Role.
+	 * 
+	 * @param filterConditions
+	 * @return
+	 * @throws ResourceFilterExecutionException
+	 */
+	public List<Subscription> getSubscriptions(List<List<Map<String, String>>> filterConditions)
+			throws ResourceFilterExecutionException {
+		return Subscription.getFilteredSubscriptions(getSubscriptions(), filterConditions);
 	}
 
-	public void setReportSubscriptions(List<Subscription> reportSubscriptions) {
-		this.reportSubscriptions = reportSubscriptions;
+	public List<Subscription> getSubscriptions() {
+		return subscriptions;
+	}
+
+	public void setSubscriptions(List<Subscription> subscriptions) {
+		this.subscriptions = subscriptions;
 	}
 
 	public List<Job> getJobs() {
@@ -274,6 +298,4 @@ public class ReportVersion implements Serializable {
 		builder.append("]");
 		return builder.toString();
 	}
-
-
 }

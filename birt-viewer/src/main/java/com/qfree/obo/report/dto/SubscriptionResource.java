@@ -49,7 +49,7 @@ public class SubscriptionResource extends AbstractBaseResource {
 	private Date deliveryDatetimeRunAt;
 
 	@XmlElement
-	private String email;
+	private String emailAddress;
 
 	@XmlElement
 	private String description;
@@ -164,7 +164,7 @@ public class SubscriptionResource extends AbstractBaseResource {
 			this.deliveryCronSchedule = subscription.getDeliveryCronSchedule();
 			this.deliveryTimeZoneId = subscription.getDeliveryTimeZoneId();
 			this.deliveryDatetimeRunAt = subscription.getDeliveryDatetimeRunAt();
-			this.email = subscription.getEmail();
+			this.emailAddress = subscription.getEmailAddress();
 			this.description = subscription.getDescription();
 			this.enabled = subscription.getEnabled();
 			this.active = subscription.getActive();
@@ -296,12 +296,12 @@ public class SubscriptionResource extends AbstractBaseResource {
 		this.deliveryDatetimeRunAt = deliveryDatetimeRunAt;
 	}
 
-	public String getEmail() {
-		return email;
+	public String getEmailAddress() {
+		return emailAddress;
 	}
 
-	public void setEmail(String email) {
-		this.email = email;
+	public void setEmailAddress(String emailAddress) {
+		this.emailAddress = emailAddress;
 	}
 
 	public String getDescription() {
@@ -370,8 +370,8 @@ public class SubscriptionResource extends AbstractBaseResource {
 		builder.append(deliveryTimeZoneId);
 		builder.append(", deliveryDatetimeRunAt=");
 		builder.append(deliveryDatetimeRunAt);
-		builder.append(", email=");
-		builder.append(email);
+		builder.append(", emailAddress=");
+		builder.append(emailAddress);
 		builder.append(", description=");
 		builder.append(description);
 		builder.append(", enabled=");
