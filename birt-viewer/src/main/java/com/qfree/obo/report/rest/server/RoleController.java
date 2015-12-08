@@ -38,8 +38,8 @@ import com.qfree.obo.report.dto.RestErrorResource.RestError;
 import com.qfree.obo.report.dto.RoleCollectionResource;
 import com.qfree.obo.report.dto.RoleResource;
 import com.qfree.obo.report.dto.SubscriptionCollectionResource;
-import com.qfree.obo.report.exceptions.ResourceFilterParseException;
 import com.qfree.obo.report.exceptions.ResourceFilterExecutionException;
+import com.qfree.obo.report.exceptions.ResourceFilterParseException;
 import com.qfree.obo.report.exceptions.RestApiException;
 import com.qfree.obo.report.service.RoleService;
 import com.qfree.obo.report.util.RestUtils;
@@ -126,14 +126,14 @@ public class RoleController extends AbstractBaseController {
 	 * This endpoint can be tested with:
 	 * 
 	 *   $ mvn clean spring-boot:run
-	 *   $ curl -i -H "Accept: application/json;v=1" -X GET \
-	 *   http://localhost:8080/rest/roles/b85fd129-17d9-40e7-ac11-7541040f8627
+	 *   $ curl -X GET -iH "Accept: application/json;v=1" http://localhost:8080/rest/roles/b85fd129-17d9-40e7-ac11-7541040f8627
 	 */
 	@Path("/{id}")
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	public RoleResource getById(
-			@PathParam("id") final UUID id,
+			@PathParam("id") final String idOrUsername,
+			//@PathParam("id") final UUID id,
 			@HeaderParam("Accept") final String acceptHeader,
 			@QueryParam(ResourcePath.EXPAND_QP_NAME) final List<String> expand,
 			@QueryParam(ResourcePath.SHOWALL_QP_NAME) final List<String> showAll,
@@ -143,11 +143,32 @@ public class RoleController extends AbstractBaseController {
 		queryParams.put(ResourcePath.SHOWALL_QP_KEY, showAll);
 		RestApiVersion apiVersion = RestUtils.extractAPIVersion(acceptHeader, RestApiVersion.v1);
 
+		logger.info("idOrUsername = {}", idOrUsername);
+
+		UUID id = null;
+		String username = null;
+		try {
+			id = UUID.fromString(idOrUsername);
+		} catch (IllegalArgumentException e) {
+			/*
+			 * idOrUsername does not represent a UUID, so we interpret it as a 
+			 * username.
+			 */
+			username = idOrUsername;
+		}
+
+		Role role = null;
+		if (id != null) {
+			role = roleRepository.findOne(id);
+			RestUtils.ifNullThen404(role, Role.class, "roleId", id.toString());
+		} else {
+			role = roleRepository.findByUsername(username);
+			RestUtils.ifNullThen404(role, Role.class, "username", username);
+		}
+
 		if (RestUtils.AUTO_EXPAND_PRIMARY_RESOURCES) {
 			addToExpandList(expand, Role.class);
 		}
-		Role role = roleRepository.findOne(id);
-		RestUtils.ifNullThen404(role, Role.class, "roleId", id.toString());
 		RoleResource roleResource = new RoleResource(role, uriInfo, queryParams, apiVersion);
 		return roleResource;
 	}

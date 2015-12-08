@@ -186,7 +186,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		 * Check whether we are running unit/integration tests. If so, we 
 		 * disable security.
 		 */
-		if (env.getProperty("app.version").equals("*test*") && false) {
+		if (env.getProperty("app.version").equals("*test*")) {
+			//		if (env.getProperty("app.version").equals("*test*") && false) {
 			//		if (env.getProperty("app.version").equals("*test*") || true) {
 
 			http

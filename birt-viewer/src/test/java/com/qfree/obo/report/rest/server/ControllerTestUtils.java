@@ -20,7 +20,8 @@ abstract class ControllerTestUtils {
 	public static Client setUpJaxRsClient() {
 		logger.info("Setting up JAX-RS Client with basic authentication...");
 
-		HttpAuthenticationFeature basicAuthenticationFeature = HttpAuthenticationFeature.basic("ui", "ui");
+		//HttpAuthenticationFeature basicAuthenticationFeature = HttpAuthenticationFeature.basic("ui", "ui");
+		HttpAuthenticationFeature basicAuthenticationFeature = HttpAuthenticationFeature.basic("a", "anything");
 
 		return ClientBuilder.newBuilder()
 				//	.register(JsonProcessingFeature.class)
