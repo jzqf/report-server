@@ -68,7 +68,7 @@ public class Role implements Serializable {
 	 * Base64 encoding of SHA-1 digest of salted password.
 	 */
 	@NotBlank
-	@Column(name = "encoded_password", nullable = false, length = 32)
+	@Column(name = "encoded_password", nullable = false, length = 64)
 	private String encodedPassword;
 
 	/**
@@ -134,43 +134,20 @@ public class Role implements Serializable {
 	private List<Configuration> configurations;
 
 	@NotNull
+	@Column(name = "enabled", nullable = false)
+	private Boolean enabled;
+
+	@NotNull
+	@Column(name = "active", nullable = false)
+	private Boolean active;
+
+	@NotNull
 	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name = "created_on", nullable = false)
 	private Date createdOn;
 
 	private Role() {
 	}
-
-	//	public Role(String encodedPassword, String username, String fullName, Boolean loginRole) {
-	//		this(
-	//				null,
-	//				encodedPassword,
-	//				username,
-	//				fullName,
-	//				loginRole,
-	//				null,
-	//				null,
-	//				DateUtils.nowUtc());
-	//	}
-
-	//	public Role(
-	//			String encodedPassword,
-	//			String username,
-	//			String fullName,
-	//			Boolean loginRole,
-	//			String emailAddress,
-	//			String timeZoneId,
-	//			Date createdOn) {
-	//		this(
-	//				null,
-	//				encodedPassword,
-	//				username,
-	//				fullName,
-	//				loginRole,
-	//				emailAddress,
-	//				timeZoneId,
-	//				createdOn);
-	//	}
 
 	public Role(RoleResource roleResource) {
 		this(
@@ -181,6 +158,8 @@ public class Role implements Serializable {
 				roleResource.isLoginRole(),
 				roleResource.getEmailAddress(),
 				roleResource.getTimeZoneId(),
+				roleResource.getEnabled(),
+				roleResource.getActive(),
 				roleResource.getCreatedOn());
 	}
 
@@ -192,6 +171,8 @@ public class Role implements Serializable {
 			Boolean loginRole,
 			String emailAddress,
 			String timeZoneId,
+			Boolean enabled,
+			Boolean active,
 			Date createdOn) {
 		this.roleId = roleId;
 		this.loginRole = loginRole;
@@ -200,6 +181,8 @@ public class Role implements Serializable {
 		this.encodedPassword = encodedPassword;
 		this.emailAddress = emailAddress;
 		this.timeZoneId = timeZoneId;
+		this.enabled = (enabled != null) ? enabled : true;
+		this.active = (active != null) ? active : true;
 		this.createdOn = (createdOn != null) ? createdOn : DateUtils.nowUtc();
 	}
 
@@ -253,6 +236,22 @@ public class Role implements Serializable {
 
 	public void setTimeZoneId(String timeZoneId) {
 		this.timeZoneId = timeZoneId;
+	}
+
+	public Boolean getEnabled() {
+		return enabled;
+	}
+
+	public void setEnabled(Boolean enabled) {
+		this.enabled = enabled;
+	}
+
+	public Boolean getActive() {
+		return active;
+	}
+
+	public void setActive(Boolean active) {
+		this.active = active;
 	}
 
 	public Date getCreatedOn() {
@@ -372,10 +371,13 @@ public class Role implements Serializable {
 		builder.append(emailAddress);
 		builder.append(", timeZoneId=");
 		builder.append(timeZoneId);
+		builder.append(", enabled=");
+		builder.append(enabled);
+		builder.append(", active=");
+		builder.append(active);
 		builder.append(", createdOn=");
 		builder.append(createdOn);
 		builder.append("]");
 		return builder.toString();
 	}
-
 }

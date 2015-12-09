@@ -47,6 +47,12 @@ public class RoleResource extends AbstractBaseResource {
 	private String timeZoneId;
 
 	@XmlElement
+	private Boolean enabled;
+
+	@XmlElement
+	private Boolean active;
+
+	@XmlElement
 	@XmlJavaTypeAdapter(DatetimeAdapter.class)
 	private Date createdOn;
 
@@ -103,6 +109,8 @@ public class RoleResource extends AbstractBaseResource {
 			this.loginRole = role.isLoginRole();
 			this.emailAddress = role.getEmailAddress();
 			this.timeZoneId = role.getTimeZoneId();
+			this.enabled = role.getEnabled();
+			this.active = role.getActive();
 			this.createdOn = role.getCreatedOn();
 		}
 		logger.debug("this = {}", this);
@@ -219,6 +227,22 @@ public class RoleResource extends AbstractBaseResource {
 		this.timeZoneId = timeZoneId;
 	}
 
+	public Boolean getEnabled() {
+		return enabled;
+	}
+
+	public void setEnabled(Boolean enabled) {
+		this.enabled = enabled;
+	}
+
+	public Boolean getActive() {
+		return active;
+	}
+
+	public void setActive(Boolean active) {
+		this.active = active;
+	}
+
 	public Date getCreatedOn() {
 		return createdOn;
 	}
@@ -244,6 +268,10 @@ public class RoleResource extends AbstractBaseResource {
 		builder.append(emailAddress);
 		builder.append(", timeZoneId=");
 		builder.append(timeZoneId);
+		builder.append(", enabled=");
+		builder.append(enabled);
+		builder.append(", active=");
+		builder.append(active);
 		builder.append(", createdOn=");
 		builder.append(createdOn);
 		builder.append("]");
