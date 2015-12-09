@@ -24,7 +24,10 @@ import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;
 import org.hibernate.validator.constraints.NotBlank;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
+import com.qfree.obo.report.SecurityConfig;
 import com.qfree.obo.report.dto.RoleResource;
 import com.qfree.obo.report.exceptions.ResourceFilterExecutionException;
 import com.qfree.obo.report.util.DateUtils;
@@ -65,7 +68,10 @@ public class Role implements Serializable {
 	private String fullName;
 
 	/**
-	 * Base64 encoding of SHA-1 digest of salted password.
+	 * A hashed version of the Role's password. The encoding algorithm is set by
+	 * the {@link PasswordEncoder} bean that can be obtained by Spring
+	 * {@literal @}{@link Autowired} DI. This {@link PasswordEncoder} bean is
+	 * configured in {@link SecurityConfig}.
 	 */
 	@NotBlank
 	@Column(name = "encoded_password", nullable = false, length = 64)

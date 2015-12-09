@@ -124,9 +124,8 @@ public class ReportController extends AbstractBaseController {
 
 		Report report = reportService.saveNewFromResource(reportResource);
 		// if (RestUtils.AUTO_EXPAND_PRIMARY_RESOURCES) {
-		addToExpandList(expand, Report.class);// Force primary resource to be
-												// "expanded"
-												// }
+		addToExpandList(expand, Report.class);// Force primary resource to be "expanded"
+		// }
 		ReportResource resource = new ReportResource(report, uriInfo, queryParams, apiVersion);
 		return created(resource);
 	}

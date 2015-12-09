@@ -104,7 +104,7 @@ public class ReportServerAuthenticationProvider implements AuthenticationProvide
 					logger.info("Request PASSED authentication by: {}", authenticationProviderUrl);
 					authenticated = true;
 				} else {
-					logger.info("Request FAILED authentication by: {}", authenticationProviderUrl);
+					logger.warn("Request FAILED authentication by: {}", authenticationProviderUrl);
 				}
 
 			} else {
@@ -139,18 +139,10 @@ public class ReportServerAuthenticationProvider implements AuthenticationProvide
 					 * authentication check. This is a feature, not a bug.
 					 */
 					if (passwordEncoder.matches(password, role.getEncodedPassword())) {
-
-						/* 
-						 * TODO For this to work, we must:!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-						 * 1. Increase length of encodedPassword to 64.
-						 * 2. Set new values for encodedPassword for each Role
-						 *    that uses the Spring Security PasswordEncoder 
-						 *    configured for this application.
-						 */
-
 						authenticated = true;
+						logger.info("Local authentcation PASSED. password = {}, role = {}", password, role);
 					} else {
-						logger.error("Local authentcation FAILED. password = {}, role = {}", password, role);
+						logger.warn("Local authentcation FAILED. password = {}, role = {}", password, role);
 					}
 				}
 

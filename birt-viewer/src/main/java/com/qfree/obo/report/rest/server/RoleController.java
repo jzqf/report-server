@@ -88,7 +88,12 @@ public class RoleController extends AbstractBaseController {
 		queryParams.put(ResourcePath.SHOWALL_QP_KEY, showAll);
 		RestApiVersion apiVersion = RestUtils.extractAPIVersion(acceptHeader, RestApiVersion.v1);
 
-		List<Role> roles = roleRepository.findAll();
+		List<Role> roles = null;
+		if (RestUtils.FILTER_INACTIVE_RECORDS && !ResourcePath.showAll(Role.class, showAll)) {
+			roles = roleRepository.findByActiveTrue();
+		} else {
+			roles = roleRepository.findAll();
+		}
 		return new RoleCollectionResource(roles, Role.class, uriInfo, queryParams, apiVersion);
 	}
 
@@ -96,9 +101,9 @@ public class RoleController extends AbstractBaseController {
 	 * This endpoint can be tested with:
 	 * 
 	 *   $ mvn clean spring-boot:run
-	 *   $ curl -iH "Accept: application/json;v=1" -H "Content-Type: application/json" -X POST -d \
-	 *   '{"username":"bozoc","fullName":"Bozo the clown","encodedPassword":"asdf=","loginRole":true,\
-	 *   "email_address":"bozo@circus.net","timeZoneId":"CET"}' http://localhost:8080/rest/roles
+	 *   $ curl -X POST -iH "Accept: application/json;v=1" -H "Content-Type: application/json" -d \
+	 *   '{"username":"bozoc","fullName":"Bozo the clown","unencodedPassword":"iambozo","loginRole":true,\
+	 *   "enabled":true,"email_address":"bozo@circus.net","timeZoneId":"CET"}' http://localhost:8080/rest/roles
 	 */
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
@@ -131,7 +136,7 @@ public class RoleController extends AbstractBaseController {
 	@Path("/{id}")
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
-	public RoleResource getById(
+	public RoleResource getByIdOrUsername(
 			@PathParam("id") final String idOrUsername,
 			//@PathParam("id") final UUID id,
 			@HeaderParam("Accept") final String acceptHeader,

@@ -20,7 +20,9 @@ import com.qfree.obo.report.domain.RoleRole;
  * @author Jeffrey Zelt
  */
 public interface RoleRepository extends JpaRepository<Role, UUID>, RoleRepositoryCustom {
-	  
+
+	List<Role> findByActiveTrue();
+
 	//	@NamedQuery(name = "Role.findByUsername", query = "select r from Role r where r.username = ?1")
 	@Query("SELECT r FROM Role r WHERE r.username = :username")
 	public Role findByUsername(@Param("username") String username);

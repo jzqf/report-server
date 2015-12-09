@@ -37,6 +37,13 @@ public class RoleResource extends AbstractBaseResource {
 	@XmlElement
 	private String encodedPassword;
 
+	/**
+	 * This unencoded password is not persisted. It is used, instead, only to
+	 * set or update {@link Role#encodedPassword}.
+	 */
+	@XmlElement
+	private String unencodedPassword;
+
 	@XmlElement
 	private Boolean loginRole;
 
@@ -106,6 +113,7 @@ public class RoleResource extends AbstractBaseResource {
 			this.username = role.getUsername();
 			this.fullName = role.getFullName();
 			this.encodedPassword = role.getEncodedPassword();
+			this.unencodedPassword = "[PROTECTED]";
 			this.loginRole = role.isLoginRole();
 			this.emailAddress = role.getEmailAddress();
 			this.timeZoneId = role.getTimeZoneId();
@@ -203,6 +211,14 @@ public class RoleResource extends AbstractBaseResource {
 		this.encodedPassword = encodedPassword;
 	}
 
+	public String getUnencodedPassword() {
+		return unencodedPassword;
+	}
+
+	public void setUnencodedPassword(String unencodedPassword) {
+		this.unencodedPassword = unencodedPassword;
+	}
+
 	public Boolean isLoginRole() {
 		return loginRole;
 	}
@@ -262,6 +278,8 @@ public class RoleResource extends AbstractBaseResource {
 		builder.append(fullName);
 		builder.append(", encodedPassword=");
 		builder.append(encodedPassword);
+		builder.append(", unencodedPassword=");
+		builder.append(unencodedPassword);
 		builder.append(", loginRole=");
 		builder.append(loginRole);
 		builder.append(", emailAddress=");
