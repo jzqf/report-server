@@ -311,10 +311,19 @@ public class RoleController extends AbstractBaseController {
 	 * This endpoint can be tested with:
 	 * 
 	 *   $ mvn clean spring-boot:run
-	 *   $ curl -iH "Accept: application/json;v=1" -H "Content-Type: application/json" -X PUT -d \
-	 *   '{"username":"baaa (modified)","fullName":"Mr. baaa","encodedPassword":"qwerty=","loginRole":true,\
+	 *   
+	 *   $ curl -X PUT -iH "Accept: application/json;v=1" -H "Content-Type: application/json" -d \
+	 *   '{"username":"bozoc","fullName":Bozo the clown","loginRole":true,\
 	 *   "email_address":"dumbo@circus.net","timeZoneId":"UTC"}' \
-	 *   http://localhost:8080/rest/roles/0db97c2a-fb78-464a-a0e7-8d25f6003c14
+	 *   http://localhost:8080/rest/roles/f9a94054-c62b-464c-874c-a61d18530c87
+	 * 
+	 * This example updates the password that is used to *locally* authenticate
+	 * the role:
+	 * 
+	 *   $ curl -X PUT -iH "Accept: application/json;v=1" -H "Content-Type: application/json" -d \
+	 *   '{"username":"bozoc","fullName":"Bozo the clown","loginRole":true,\
+	 *   "unencodedPassword":"iambozo2","email_address":"dumbo@circus.net","timeZoneId":"UTC"}' \
+	 *   http://localhost:8080/rest/roles/f9a94054-c62b-464c-874c-a61d18530c87
 	 */
 	@Path("/{id}")
 	@PUT
@@ -337,6 +346,40 @@ public class RoleController extends AbstractBaseController {
 		 */
 		roleResource.setRoleId(role.getRoleId());
 		roleResource.setCreatedOn(role.getCreatedOn());
+		/*
+		 * Treat attributes of roleResource that are effectively required,
+		 * meaning that the corresponding fields of Role cannot be null. These 
+		 * attributes can be omitted in the PUT data, but in that case they are 
+		 * then set here to the CURRENT values from the role entity. 
+		 */
+		if (roleResource.getActive() == null) {
+			roleResource.setActive(role.getActive());
+		}
+		if (roleResource.getEnabled() == null) {
+			roleResource.setEnabled(role.getEnabled());
+		}
+		/*
+		 * If no value for "unencodedPassword" is specified in roleResource, we
+		 * take this to mean that the current value for "encodedPassword" for
+		 * corresponding Role should be kept (not cleared). There is no way for
+		 * the caller of this endpoint to set "unencodedPassword" for 
+		 * roleResource to the current value of the password because this is 
+		 * unknown (it is not persisted and it cannot be recovered from its
+		 * hashed value, "encodedPassword").
+		 */
+		if (roleResource.getUnencodedPassword() == null || roleResource.getUnencodedPassword().isEmpty()) {
+			roleResource.setEncodedPassword(role.getEncodedPassword());
+		} else {
+			/*
+			 * For this case, the encoded password for the role will be set in
+			 * call to the "saveExistingFromResource" service method below.
+			 * Nevertheless, to avoid an unlikely security breach, we clear out
+			 * the encode password value here in case the caller is trying to 
+			 * set it directly.
+			 */
+			roleResource.setEncodedPassword(null);
+		}
+
 		/*
 		 * Save updated entity.
 		 */

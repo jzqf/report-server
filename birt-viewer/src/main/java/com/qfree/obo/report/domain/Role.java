@@ -73,8 +73,8 @@ public class Role implements Serializable {
 	 * {@literal @}{@link Autowired} DI. This {@link PasswordEncoder} bean is
 	 * configured in {@link SecurityConfig}.
 	 */
-	@NotBlank
-	@Column(name = "encoded_password", nullable = false, length = 64)
+	//@NotBlank
+	@Column(name = "encoded_password", nullable = true, length = 64)
 	private String encodedPassword;
 
 	/**

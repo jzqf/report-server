@@ -125,24 +125,28 @@ public class ReportServerAuthenticationProvider implements AuthenticationProvide
 			if (role != null) {
 
 				if (!authenticated) {
-					/*
-					 * The connection was not authenticated externally. Either
-					 * an external authentication provider is not configured or
-					 * authentication by the external provider failed. For both
-					 * cases we then try to authenticate locally against the 
-					 * Role we located. This means that if the password stored 
-					 * with the Role is *different* than that stored by the 
-					 * external authenticator, and if the user specifies the
-					 * password stored with the Role, then authentication by the
-					 * external provider will first fail, but then 
-					 * authentication will succeed during this local 
-					 * authentication check. This is a feature, not a bug.
-					 */
-					if (passwordEncoder.matches(password, role.getEncodedPassword())) {
-						authenticated = true;
-						logger.info("Local authentcation PASSED. password = {}, role = {}", password, role);
+					if (role.getEncodedPassword() != null && !role.getEncodedPassword().isEmpty()) {
+						/*
+						 * The connection was not authenticated externally. Either
+						 * an external authentication provider is not configured or
+						 * authentication by the external provider failed. For both
+						 * cases we then try to authenticate locally against the 
+						 * Role we located. This means that if the password stored 
+						 * with the Role is *different* than that stored by the 
+						 * external authenticator, and if the user specifies the
+						 * password stored with the Role, then authentication by the
+						 * external provider will first fail, but then 
+						 * authentication will succeed during this local 
+						 * authentication check. This is a feature, not a bug.
+						 */
+						if (passwordEncoder.matches(password, role.getEncodedPassword())) {
+							authenticated = true;
+							logger.info("Local authentcation PASSED. password = {}, role = {}", password, role);
+						} else {
+							logger.warn("Local authentcation FAILED. password = {}, role = {}", password, role);
+						}
 					} else {
-						logger.warn("Local authentcation FAILED. password = {}, role = {}", password, role);
+						logger.warn("Local authentication is not possible. There is no password for role = {}", role);
 					}
 				}
 

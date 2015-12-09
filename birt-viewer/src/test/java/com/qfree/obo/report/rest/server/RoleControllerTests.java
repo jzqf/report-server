@@ -193,13 +193,13 @@ public class RoleControllerTests {
 
 		String newUsername = "new-user-from-post";
 		String newFullName = "Full Name of new-user-from-post";
-		String newEncodedPassword = "8sV4cDCNyH9DLlkS1N5vjjInIbo=";  // Base64(SHA-1("newpassword"))
+		String newUnencodedPassword = "blahblahblah";
 		Boolean newLoginRole = true;
 
 		RoleResource roleResource = new RoleResource();
 		roleResource.setUsername(newUsername);
 		roleResource.setFullName(newFullName);
-		roleResource.setEncodedPassword(newEncodedPassword);
+		roleResource.setUnencodedPassword(newUnencodedPassword);
 		roleResource.setLoginRole(newLoginRole);
 		logger.debug("roleResource = {}", roleResource);
 
@@ -226,7 +226,8 @@ public class RoleControllerTests {
 		assertThat(responseEntity, is(not(nullValue())));
 		assertThat(responseEntity.getUsername(), is(newUsername));
 		assertThat(responseEntity.getFullName(), is(newFullName));
-		assertThat(responseEntity.getEncodedPassword(), is(newEncodedPassword));
+		//assertThat(responseEntity.getEncodedPassword(), is(???????????????????));
+		assertThat(responseEntity.getEncodedPassword(), is(not(nullValue())));
 		assertThat(responseEntity.isLoginRole(), is(newLoginRole));
 		assertThat(responseEntity.getHref(), is(not(nullValue())));
 		assertThat(responseEntity.getMediaType(), is(not(nullValue())));
@@ -243,6 +244,7 @@ public class RoleControllerTests {
 		 * there is a significant difference; otherwise, this could cause 
 		 * problems with continuous integration and automatic builds.
 		 */
+		String newEncodedPassword = responseEntity.getEncodedPassword();
 		logger.debug(" DateUtils.nowUtc() = {}, responseEntity.getCreatedOn() = {}",
 				DateUtils.nowUtc(), responseEntity.getCreatedOn());
 		long millisecondsSinceCreated = (DateUtils.nowUtc()).getTime() - responseEntity.getCreatedOn().getTime();
@@ -309,7 +311,7 @@ public class RoleControllerTests {
 		 */
 		String newUsername = "aaaa (modified by PUT)";
 		String newFullName = "Full Name set by PUY";
-		String newEncodedPassword = "8sV4cDCNyH9DLlkS1N5vjjInIbo=";  // Base64(SHA-1("newpassword"))
+		String newUnencodedPassword = "some-new-password";
 		Boolean newLoginRole = true;
 
 		Role role = roleRepository.findOne(uuidOfRole);
@@ -323,7 +325,7 @@ public class RoleControllerTests {
 		RoleResource roleResource = new RoleResource();
 		roleResource.setUsername(newUsername);
 		roleResource.setFullName(newFullName);
-		roleResource.setEncodedPassword(newEncodedPassword);
+		roleResource.setUnencodedPassword(newUnencodedPassword);
 		roleResource.setLoginRole(newLoginRole);
 		logger.debug("roleResource = {}", roleResource);
 
@@ -351,9 +353,12 @@ public class RoleControllerTests {
 		assertThat(resource, is(not(nullValue())));
 		assertThat(resource.getUsername(), is(newUsername));
 		assertThat(resource.getFullName(), is(newFullName));
-		assertThat(resource.getEncodedPassword(), is(newEncodedPassword));
+		//assertThat(resource.getEncodedPassword(), is(??????????????????));
+		assertThat(resource.getEncodedPassword(), is(not(nullValue())));
+		assertThat(resource.getEncodedPassword(), is(not(currentEncodedPassword)));
 		assertThat(resource.isLoginRole(), is(newLoginRole));
 		assertThat(DateUtils.entityTimestampToNormalDate(resource.getCreatedOn()), is(currentCreatedOn));
+		String newEncodedPassword = resource.getEncodedPassword();
 
 		/*
 		 * Check that the Role entity was updated properly. We cannot
@@ -374,6 +379,8 @@ public class RoleControllerTests {
 		assertThat(role, is(not(nullValue())));
 		assertThat(role.getUsername(), is(newUsername));
 		assertThat(role.getFullName(), is(newFullName));
+		//assertThat(role.getEncodedPassword(), is(??????????????????));
+		assertThat(role.getEncodedPassword(), is(not(nullValue())));
 		assertThat(role.getEncodedPassword(), is(newEncodedPassword));
 		assertThat(role.isLoginRole(), is(newLoginRole));
 		assertThat(DateUtils.entityTimestampToNormalDate(role.getCreatedOn()), is(currentCreatedOn));

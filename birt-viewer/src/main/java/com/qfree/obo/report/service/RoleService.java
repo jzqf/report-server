@@ -33,6 +33,14 @@ public class RoleService {
 	public Role saveNewFromResource(RoleResource roleResource) {
 		RestUtils.ifNewResourceIdNotNullThen403(roleResource.getRoleId(), Role.class,
 				"roleId", roleResource.getRoleId());
+		/*
+		 * We do not support setting "encodedPassword" directly because we
+		 * need to ensure that the hashing algorithm used by the configured
+		 * "passwordEncoder" bean is used. In order to set "encodedPassword",
+		 * a value must be supplied for "unencodedPassword" and then 
+		 *  "encodedPassword" will be computed from it.
+		 */
+		roleResource.setEncodedPassword(null);
 		return saveOrUpdateFromResource(roleResource);
 	}
 
