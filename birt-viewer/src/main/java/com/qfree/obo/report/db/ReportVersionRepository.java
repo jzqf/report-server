@@ -20,7 +20,9 @@ import com.qfree.obo.report.domain.ReportVersion;
  */
 public interface ReportVersionRepository extends JpaRepository<ReportVersion, UUID>, ReportVersionRepositoryCustom {
 
-	List<ReportVersion> findByActiveTrue();
+	public List<ReportVersion> findByActiveTrue();
+
+	public ReportVersion findByFileName(String fileName);
 
 	//	@Query("SELECT rv FROM ReportVersion rv INNER JOIN rv.report r WHERE r.reportId = :reportId")
 	@Query("SELECT rv FROM Report r INNER JOIN r.reportVersions rv WHERE r.reportId = :reportId")

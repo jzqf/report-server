@@ -22,7 +22,9 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
 
+import com.qfree.obo.report.db.ReportVersionRepository;
 import com.qfree.obo.report.db.RoleRepository;
+import com.qfree.obo.report.domain.ReportVersion;
 import com.qfree.obo.report.domain.Role;
 
 public class RoleReportFilter implements Filter {
@@ -32,11 +34,14 @@ public class RoleReportFilter implements Filter {
 	@Autowired
 	private RoleRepository roleRepository;
 
+	@Autowired
+	private ReportVersionRepository reportVersionRepository;
+
 	@Override
 	public void doFilter(ServletRequest req, ServletResponse res,
 			FilterChain chain) throws IOException, ServletException {
 
-		logger.info("----- In doFilter!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+		logger.info("----- In doFilter!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
 
 		HttpServletRequest request = (HttpServletRequest) req;
 		//	logger.info("request = {}", request);
@@ -78,8 +83,6 @@ public class RoleReportFilter implements Filter {
 		}
 		logger.info("reportFilename = {}", reportFilename);
 
-		// LOG LOG LOG LOG LOG LOG LOG LOG LOG LOG LOG LOG LOG LOG LOG LOG LOG LOG LOG LOG LOG LOG LOG LOG LOG LOG LOG in case of error!!!!!!!!!!!!1
-
 		/*
 		 * Extract name of principal. This is the user name from the HTTP 
 		 * Authorization header).
@@ -111,7 +114,6 @@ public class RoleReportFilter implements Filter {
 
 		logger.info("roleRepository = {}", roleRepository);
 
-		//TODO Return false if username==null or does not match a Role, or... or if reportFileName...
 		if (userHasAccessToReport(username, reportFilename)) {
 			chain.doFilter(req, res);
 			return;
@@ -130,35 +132,38 @@ public class RoleReportFilter implements Filter {
 	private boolean userHasAccessToReport(String username, String reportFileName) {
 		if (username != null && !username.isEmpty() && reportFileName != null && !reportFileName.isEmpty()) {
 
-			//TODO Add code below to check the user has access to the report!
-
 			/*
 			 * "username" must match an existing Role that is active and 
 			 * enabled.
 			 */
-			username = "user2";
+			//username = "user2";
 			Role role = roleRepository.findByUsername(username);
 			logger.info("role = {}", role);
-			//TODO Test that role is active and enabled:
-			//if (role != null && role.isActive() && role.isEnabled()) {
-			if (role != null) {
-
-
-			/*
-			 * "reportFileName" must match an existing Report Version that is 
-			 * active. In addition, the linked Report must also be active.
-			 */
-			// ...
+			if (role != null && role.getActive() && role.getEnabled()) {
 
 				/*
-				 * Finally, there must exist a RoleReport entity for the Role and
-				 * Report located above. This indicates that the user has access to
-				 * the report.
+				 * "reportFileName" must match an existing Report Version that
+				 * is active. In addition, the linked Report must also be
+				 * active.
 				 */
-			// ...
+				ReportVersion reportVersion = reportVersionRepository.findByFileName(reportFileName);
+				logger.info("reportVersion = {}", reportVersion);
+				if (reportVersion != null && reportVersion.isActive()
+						|| reportFileName.equals("test/test_db_config.rptdesign")
+						|| reportFileName.equals("test/test_rs_config.rptdesign")) {
 
-				return true;
+					/*
+					 * Finally, there must exist a RoleReport entity for the Role and
+					 * Report located above. This indicates that the user has access to
+					 * the report.
+					 */
 
+					//TODO Add code to check the user has access to the Report!
+					// ...
+
+					return true;
+
+				}
 			}
 
 		}
