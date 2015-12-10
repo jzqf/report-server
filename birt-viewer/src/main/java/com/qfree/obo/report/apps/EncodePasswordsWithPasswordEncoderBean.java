@@ -20,6 +20,10 @@ public class EncodePasswordsWithPasswordEncoderBean {
 		//String encodedPassword=null;
 		String unencodedPassword = null;
 
+		unencodedPassword = "reportadmin";
+		logger.info("unencodedPassword = {}, encodedPassword = {}", unencodedPassword,
+				passwordEncoder.encode(unencodedPassword));
+
 		unencodedPassword = "password1";
 		logger.info("unencodedPassword = {}, encodedPassword = {}", unencodedPassword,
 				passwordEncoder.encode(unencodedPassword));

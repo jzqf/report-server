@@ -46,6 +46,16 @@ public class Role implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
+	/**
+	 * Primary key of the built-in "reportadmin" Role.
+	 * 
+	 * This Role should never be deleted, but if it does, it should be recreated
+	 * with this id. This role should probably not be made inactive or disabled,
+	 * either, but there might arise special conditions that will perhaps make
+	 * this desirable.
+	 */
+	public static final UUID ADMIN_ROLE_ID = UUID.fromString("54aa1d35-f67d-47e6-8bea-cadd6085796e");
+
 	@Id
 	@NotNull
 	@Type(type = "uuid-custom")
