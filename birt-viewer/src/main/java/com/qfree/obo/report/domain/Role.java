@@ -111,6 +111,13 @@ public class Role implements Serializable {
 
 	/*
 	 * cascade = CascadeType.ALL:
+	 *     Deleting a Role will delete all of its RoleAuthority's.
+	 */
+	@OneToMany(mappedBy = "role", cascade = CascadeType.ALL)
+	private List<RoleAuthority> roleAuthorities;
+
+	/*
+	 * cascade = CascadeType.ALL:
 	 *     Deleting a Role will delete all of its Subscription's.
 	 */
 	@OrderBy("createdOn ASC")
@@ -286,6 +293,14 @@ public class Role implements Serializable {
 
 	public void setRoleReports(List<RoleReport> roleReports) {
 		this.roleReports = roleReports;
+	}
+
+	public List<RoleAuthority> getRoleAuthorities() {
+		return roleAuthorities;
+	}
+
+	public void setRoleAuthorities(List<RoleAuthority> roleAuthorities) {
+		this.roleAuthorities = roleAuthorities;
 	}
 
 	/**

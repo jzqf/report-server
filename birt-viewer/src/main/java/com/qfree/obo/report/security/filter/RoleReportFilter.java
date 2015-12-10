@@ -159,7 +159,10 @@ public class RoleReportFilter implements Filter {
 					 */
 
 					//TODO Add code to check the user has access to the Report!
+					// It is possible that I could trigger a Lazy...Exception when 
+					// I access the Report from the ReportVersion. If I do, try adding @Transactional(readOnly = true) to method.
 					// ...
+					logger.warn("***** FINSIH THIS METHOD. MUST CHECK FOR RoleReport ENTITY! *****");
 
 					return true;
 

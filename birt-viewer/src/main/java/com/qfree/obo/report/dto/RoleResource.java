@@ -53,9 +53,24 @@ public class RoleResource extends AbstractBaseResource {
 	@XmlElement
 	private String timeZoneId;
 
+	/**
+	 * If false, the user will not be able to log in with this role, even if
+	 * loginRole=true.
+	 */
 	@XmlElement
 	private Boolean enabled;
 
+	/**
+	 * {@link List}&lt;{@link AuthorityResource}&gt; containing all granted
+	 * authorities for a {@link Role}.
+	 */
+	@XmlElement
+	private List<AuthorityResource> authorities;
+
+	/**
+	 * If false, this role should be hidden from all lists of roles, as if it
+	 * were deleted.
+	 */
 	@XmlElement
 	private Boolean active;
 
@@ -120,6 +135,18 @@ public class RoleResource extends AbstractBaseResource {
 			this.enabled = role.getEnabled();
 			this.active = role.getActive();
 			this.createdOn = role.getCreatedOn();
+
+			logger.info("***** CREATE AuthoritiesCollectionResource HERE AND ASSIGN TO this.authorities *****");
+			// e.g., see ReportResource or SubscriptionCollectionResource (that calls
+			//    role.getSubscriptionsForActiveReportVersions() to get a list of Subscriptions) - replace with
+			//    something that returns the result of a native SQL repository query (so I can EVENTUALLY use a
+			//    recursive CTE). But to do that, we will probably need to pass a service class object or a
+			//    repository object to this constructor, because we cannot use DI in Resource or Entity classes.
+			//    We will need to pass this bean to this constructor from RoleController methods. If null is
+			//    passed, then do not assign anything to this.authorities here. This extra functionality is really
+			//    only needed for RoleController.getByIdOrUsername(...), which Iztok will call to get the details
+			//    for a Role given the user's name.
+
 		}
 		logger.debug("this = {}", this);
 	}

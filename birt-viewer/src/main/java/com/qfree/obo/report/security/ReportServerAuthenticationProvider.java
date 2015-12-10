@@ -156,17 +156,21 @@ public class ReportServerAuthenticationProvider implements AuthenticationProvide
 					 * still need to check the Role to see if it is both
 					 * "active" and "enabled".
 					 */
-					//TODO CHECK active & enabled!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+					if (role.getEnabled() && role.getActive()) {
 
-					//Create list grantedAuths and return in a UsernamePasswordAuthenticationToken!
+						//TODO Create List GrantedAuthority that holds the values of *active* GrantedOperation entities 
+						// for the role. This can initially include only those directly linked to the Role, but 
+						// eventually I need to use a native query that uses a recursive CTE to also include all ancestors.
+						logger.info(
+								"**** FINISH THIS CODE. CREATE List<GrantedAuthority> FROM GrantedOperation entities");
 
-					final List<GrantedAuthority> grantedAuths = new ArrayList<>();
-					grantedAuths.add(new SimpleGrantedAuthority("ROLE_RESTAPI"));
-					final UserDetails principal = new User(username, password, grantedAuths);
-					final Authentication auth = new UsernamePasswordAuthenticationToken(
-							principal, password, grantedAuths);
-					return auth;
-
+						final List<GrantedAuthority> grantedAuths = new ArrayList<>();
+						grantedAuths.add(new SimpleGrantedAuthority("ROLE_RESTAPI")); // DELETE THIS LINE!!!!!!!!!!!!!!
+						final UserDetails principal = new User(username, password, grantedAuths);
+						final Authentication auth = new UsernamePasswordAuthenticationToken(
+								principal, password, grantedAuths);
+						return auth;
+					}
 				}
 
 			} else {

@@ -24,19 +24,19 @@ import org.hibernate.annotations.TypeDef;
 import com.qfree.obo.report.util.DateUtils;
 
 /**
- * The persistent class for the "role_report" database table.
+ * The persistent class for the "role_authority" database table.
  * 
- * Instances/rows specify which reports are available to each role.
+ * Instances/rows specify which authorities are assigned to each role.
  * 
  * @author Jeffrey Zelt
  * 
  */
 @Entity
-@Table(name = "role_report", schema = "reporting",
-		uniqueConstraints = { @UniqueConstraint(columnNames = { "role_id", "report_id" },
-				name = "uc_rolereport_role_report") })
+@Table(name = "role_authority", schema = "reporting",
+		uniqueConstraints = { @UniqueConstraint(columnNames = { "role_id", "authority_id" },
+				name = "uc_roleauthority_role_authority") })
 @TypeDef(name = "uuid-custom", defaultForType = UUID.class, typeClass = UuidCustomType.class)
-public class RoleReport implements Serializable {
+public class RoleAuthority implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
@@ -45,9 +45,9 @@ public class RoleReport implements Serializable {
 	//	@Type(type = "pg-uuid")
 	@GeneratedValue(generator = "uuid2")
 	@GenericGenerator(name = "uuid2", strategy = "uuid2")
-	@Column(name = "role_report_id", unique = true, nullable = false,
+	@Column(name = "role_authority_id", unique = true, nullable = false,
 			columnDefinition = "uuid DEFAULT uuid_generate_v4()")
-	private UUID roleReportId;
+	private UUID roleAuthorityId;
 
 	@ManyToOne
 	/*
@@ -58,7 +58,7 @@ public class RoleReport implements Serializable {
 	 */
 	@NotNull
 	@JoinColumn(name = "role_id", nullable = false,
-			foreignKey = @ForeignKey(name = "fk_rolereport_role"),
+			foreignKey = @ForeignKey(name = "fk_roleauthority_role") ,
 			columnDefinition = "uuid")
 	private Role role;
 
@@ -70,43 +70,43 @@ public class RoleReport implements Serializable {
 	 * is not what is wanted.
 	 */
 	@NotNull
-	@JoinColumn(name = "report_id", nullable = false,
-			foreignKey = @ForeignKey(name = "fk_rolereport_report"),
+	@JoinColumn(name = "authority_id", nullable = false,
+			foreignKey = @ForeignKey(name = "fk_roleauthority_authority") ,
 			columnDefinition = "uuid")
-	private Report report;
+	private Authority authority;
 
 	@NotNull
 	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name = "created_on", nullable = false)
 	private Date createdOn;
 
-	private RoleReport() {
+	private RoleAuthority() {
 	}
 
-	public RoleReport(Role role, Report report) {
-		this(role, report, DateUtils.nowUtc());
+	public RoleAuthority(Role role, Authority authority) {
+		this(role, authority, DateUtils.nowUtc());
 	}
 
-	public RoleReport(Role role, Report report, Date createdOn) {
+	public RoleAuthority(Role role, Authority authority, Date createdOn) {
 		this.role = role;
-		this.report = report;
+		this.authority = authority;
 		this.createdOn = (createdOn != null) ? createdOn : DateUtils.nowUtc();
 	}
 
-	public UUID getRoleReportId() {
-		return this.roleReportId;
+	public UUID getRoleAuthorityId() {
+		return this.roleAuthorityId;
 	}
 
 	public Date getCreatedOn() {
 		return this.createdOn;
 	}
 
-	public Report getReport() {
-		return this.report;
+	public Authority getAuthority() {
+		return this.authority;
 	}
 
-	public void setReport(Report report) {
-		this.report = report;
+	public void setAuthority(Authority authority) {
+		this.authority = authority;
 	}
 
 	public Role getRole() {
@@ -120,12 +120,12 @@ public class RoleReport implements Serializable {
 	@Override
 	public String toString() {
 		StringBuilder builder = new StringBuilder();
-		builder.append("RoleReport [roleReportId=");
-		builder.append(roleReportId);
+		builder.append("RoleAuthority [roleAuthorityId=");
+		builder.append(roleAuthorityId);
 		builder.append(", role=");
 		builder.append(role);
-		builder.append(", report=");
-		builder.append(report);
+		builder.append(", authority=");
+		builder.append(authority);
 		builder.append(", createdOn=");
 		builder.append(createdOn);
 		builder.append("]");
