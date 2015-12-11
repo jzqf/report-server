@@ -25,6 +25,7 @@ import com.qfree.obo.report.dto.ResourcePath;
 import com.qfree.obo.report.dto.RestErrorResource.RestError;
 import com.qfree.obo.report.dto.RoleResource;
 import com.qfree.obo.report.exceptions.RestApiException;
+import com.qfree.obo.report.service.AuthorityService;
 import com.qfree.obo.report.service.RoleService;
 import com.qfree.obo.report.util.RestUtils;
 import com.qfree.obo.report.util.RestUtils.RestApiVersion;
@@ -37,13 +38,16 @@ public class LoginAttemptController extends AbstractBaseController {
 
 	private final RoleRepository roleRepository;
 	private final RoleService roleService;
+	private final AuthorityService authorityService;
 
 	@Autowired
 	public LoginAttemptController(
 			RoleRepository roleRepository,
-			RoleService roleService) {
+			RoleService roleService,
+			AuthorityService authorityService) {
 		this.roleRepository = roleRepository;
 		this.roleService = roleService;
+		this.authorityService = authorityService;
 	}
 
 	//	/*
@@ -109,7 +113,7 @@ public class LoginAttemptController extends AbstractBaseController {
 					//	if (RestUtils.AUTO_EXPAND_PRIMARY_RESOURCES) {
 					addToExpandList(expand, Role.class);  // Force primary resource to be "expanded"
 					//	}
-					RoleResource resource = new RoleResource(role, uriInfo, queryParams, apiVersion);
+					RoleResource resource = new RoleResource(role, authorityService, uriInfo, queryParams, apiVersion);
 					return resource;
 
 				} else {

@@ -99,7 +99,7 @@ public class RoleController extends AbstractBaseController {
 		} else {
 			roles = roleRepository.findAll();
 		}
-		return new RoleCollectionResource(roles, Role.class, uriInfo, queryParams, apiVersion);
+		return new RoleCollectionResource(roles, Role.class, authorityService, uriInfo, queryParams, apiVersion);
 	}
 
 	/*
@@ -128,7 +128,7 @@ public class RoleController extends AbstractBaseController {
 		//	if (RestUtils.AUTO_EXPAND_PRIMARY_RESOURCES) {
 		addToExpandList(expand, Role.class); // Force primary resource to be "expanded"
 		//	}
-		RoleResource resource = new RoleResource(role, uriInfo, queryParams, apiVersion);
+		RoleResource resource = new RoleResource(role, authorityService, uriInfo, queryParams, apiVersion);
 		return created(resource);
 	}
 
@@ -179,7 +179,7 @@ public class RoleController extends AbstractBaseController {
 		if (RestUtils.AUTO_EXPAND_PRIMARY_RESOURCES) {
 			addToExpandList(expand, Role.class);
 		}
-		RoleResource roleResource = new RoleResource(role, uriInfo, queryParams, apiVersion);
+		RoleResource roleResource = new RoleResource(role, authorityService, uriInfo, queryParams, apiVersion);
 		return roleResource;
 	}
 

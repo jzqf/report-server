@@ -155,7 +155,12 @@ public class SubscriptionResource extends AbstractBaseResource {
 			this.reportVersionResource = new ReportVersionResource(subscription.getReportVersion(),
 					uriInfo, newQueryParams, apiVersion);
 
-			this.roleResource = new RoleResource(subscription.getRole(),
+			/*
+			 * We do not have access to an AuthorityService bean here, so we
+			 * just pass null here. As a result, the RoleResource will not
+			 * have an "authorities" attribute.
+			 */
+			this.roleResource = new RoleResource(subscription.getRole(), null,
 					uriInfo, newQueryParams, apiVersion);
 
 			this.documentFormatResource = new DocumentFormatResource(subscription.getDocumentFormat(),
