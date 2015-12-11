@@ -8,7 +8,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
 @XmlRootElement
-@XmlAccessorType(XmlAccessType.FIELD)
+@XmlAccessorType(XmlAccessType.FIELD) // so we can annotate fields with @XmlTransient
 public class RestErrorResource {
 
 	//	private static final String STATUS_PROP_NAME = "status";
@@ -493,17 +493,20 @@ public class RestErrorResource {
 	private String errorCode;
 	@XmlElement
 	private String errorMessage;
-	@XmlElement //@XmlTransient
-	private String resourceName;// @XmlTransient means this will not be serialized to JSON
-	@XmlElement //@XmlTransient
-	private String attrName;// @XmlTransient means this will not be serialized to JSON
-	@XmlElement //@XmlTransient
-	private String attrValue;// @XmlTransient means this will not be serialized to JSON
+	@XmlElement
+	//@XmlTransient // Do not serialize this field - requires @XmlAccessorType(XmlAccessType.FIELD)
+	private String resourceName;
+	@XmlElement
+	//@XmlTransient // Do not serialize this field - requires @XmlAccessorType(XmlAccessType.FIELD)
+	private String attrName;
+	@XmlElement
+	//@XmlTransient // Do not serialize this field - requires @XmlAccessorType(XmlAccessType.FIELD)
+	private String attrValue;
 	@XmlElement
 	private String moreInfoUrl;
-	@XmlTransient
+	@XmlTransient // Do not serialize this field - requires @XmlAccessorType(XmlAccessType.FIELD)
 	//	@XmlElement
-	private Throwable cause;// @XmlTransient means this will not be serialized to JSON
+	private Throwable cause;
 
 	public RestErrorResource() {
 	}

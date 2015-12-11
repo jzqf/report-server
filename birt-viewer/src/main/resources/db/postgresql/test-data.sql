@@ -141,6 +141,11 @@ INSERT INTO reporting.role_role (role_role_id, parent_role_id, child_role_id, cr
 -- parent='a', child='ac':
 INSERT INTO reporting.role_role (role_role_id, parent_role_id, child_role_id, created_on) VALUES ('a71d5e9f-752e-4e92-936e-71d7276da511', 'e73ee6a5-5236-4630-aba1-de18e76b8105', 'e745b03b-a63d-4c14-8b3c-d9aa773080f1', '2015-04-13T09:00:00');
 
+-- Make user "aa" a child of "reportadmin", effectively making it, as well as 
+-- any of its descendents ("aaa", "aab", ... "aaaa", "aaab",...), i.e., any role
+-- whose username starts with "aa" an administrator:
+INSERT INTO reporting.role_role (role_role_id, parent_role_id, child_role_id, created_on) VALUES ('3b2c7b99-cf00-43c6-85a7-f4e17bbea386', '54aa1d35-f67d-47e6-8bea-cadd6085796e', '1f47643b-0cb7-42a1-82bd-ab912d369567', current_timestamp AT TIME ZONE 'UTC');
+
 -- Children of "aa":
 INSERT INTO reporting.role (role_id, username, login_role, encoded_password, full_name, enabled, active, created_on) VALUES ('1994c086-7d8d-47c0-ab1d-5bfa7e8d0267', 'aaa', false, '', '', true, true, '2015-04-13T08:00:00');
 INSERT INTO reporting.role (role_id, username, login_role, encoded_password, full_name, enabled, active, created_on) VALUES ('149c594e-9ae6-4c48-b02d-e84659d030ad', 'aab', false, '', '', true, true, '2015-04-13T08:00:00');

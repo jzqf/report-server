@@ -2386,6 +2386,9 @@ INSERT INTO reporting.role (role_id, username, login_role, encoded_password, ful
 INSERT INTO reporting.role (role_id, username, login_role, encoded_password, full_name, email_address, time_zone_id, enabled, active, created_on) VALUES ('b85fd129-17d9-40e7-ac11-7541040f8627', 'user3'      , true , '$2a$08$qmN5yWFDL9MT8kjftuVeguljomDvAMkSDaFnw9oSwKdV0RHmNg5TG', 'User Number 3'       , 'user3@somedomain.com', 'Canada/Pacific', true, true, current_timestamp AT TIME ZONE 'UTC');
 -- encoded_password is BCrypt.encode('password4')
 INSERT INTO reporting.role (role_id, username, login_role, encoded_password, full_name, email_address, time_zone_id, enabled, active, created_on) VALUES ('46e477dc-085f-4714-a24f-742428579fcc', 'user4'      , true , '$2a$08$Co4iHF1kcy1j3r7nd6hBgOAJUgDKaIitNx.BTW8gbVukqwRZr6MLu', 'User Number 4'       , 'user4@somedomain.com', 'GMT'           , true, true, current_timestamp AT TIME ZONE 'UTC');
+--
+-- Make user "user4" a child of "reportadmin", effectively making "user4" an administrator:
+INSERT INTO reporting.role_role (role_role_id, parent_role_id, child_role_id, created_on) VALUES ('3b2c7b99-cf00-43c6-85a7-f4e17bbea386', '54aa1d35-f67d-47e6-8bea-cadd6085796e', '46e477dc-085f-4714-a24f-742428579fcc', current_timestamp AT TIME ZONE 'UTC');
 
 
 -- Give the "Administrator" role all authorities by creating "role_authority" rows:

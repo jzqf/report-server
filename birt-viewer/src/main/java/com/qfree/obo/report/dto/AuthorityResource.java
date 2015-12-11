@@ -8,6 +8,8 @@ import java.util.Map;
 import java.util.UUID;
 
 import javax.ws.rs.core.UriInfo;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
@@ -21,6 +23,7 @@ import com.qfree.obo.report.util.RestUtils;
 import com.qfree.obo.report.util.RestUtils.RestApiVersion;
 
 @XmlRootElement
+@XmlAccessorType(XmlAccessType.FIELD) // so we can annotate fields with @XmlTransient
 public class AuthorityResource extends AbstractBaseResource {
 
 	private static final Logger logger = LoggerFactory.getLogger(AuthorityResource.class);
@@ -35,12 +38,25 @@ public class AuthorityResource extends AbstractBaseResource {
 	//	@XmlElement
 	//	private List<RoleAuthority> roleAuthorities;
 
-	@XmlTransient // @XmlTransient means this will not be serialized to JSON
+	/**
+	 * We omit the "active" field from AuthorityResource object returned by the
+	 * ReST API because
+	 * 
+	 * <ol>
+	 * <li>There is nothing the client can do with this value, anyway.</li>
+	 * <li>Inactive {@link Authority} objects are never returned by the ReST
+	 * API. In this way, authorities can be deactivated in a report server
+	 * installation evne if they are currently granted to roles. There is no
+	 * good reason to expose this behaviour by returning this value in the ReST
+	 * API.</li>
+	 * </ol>
+	 */
 	//	@XmlElement
+	@XmlTransient // Do not serialize this field - requires @XmlAccessorType(XmlAccessType.FIELD)
 	private Boolean active;
 
-	@XmlTransient // @XmlTransient means this will not be serialized to JSON
 	//	@XmlElement
+	@XmlTransient // Do not serialize this field - requires @XmlAccessorType(XmlAccessType.FIELD)
 	@XmlJavaTypeAdapter(DatetimeAdapter.class)
 	private Date createdOn;
 
