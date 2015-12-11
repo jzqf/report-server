@@ -31,6 +31,7 @@ import com.qfree.obo.report.db.RoleRepository;
 import com.qfree.obo.report.domain.Report;
 import com.qfree.obo.report.domain.Role;
 import com.qfree.obo.report.domain.UuidCustomType;
+import com.qfree.obo.report.dto.AuthorityCollectionResource;
 import com.qfree.obo.report.dto.JobCollectionResource;
 import com.qfree.obo.report.dto.ReportCollectionResource;
 import com.qfree.obo.report.dto.ResourcePath;
@@ -41,6 +42,7 @@ import com.qfree.obo.report.dto.SubscriptionCollectionResource;
 import com.qfree.obo.report.exceptions.ResourceFilterExecutionException;
 import com.qfree.obo.report.exceptions.ResourceFilterParseException;
 import com.qfree.obo.report.exceptions.RestApiException;
+import com.qfree.obo.report.service.AuthorityService;
 import com.qfree.obo.report.service.RoleService;
 import com.qfree.obo.report.util.RestUtils;
 import com.qfree.obo.report.util.RestUtils.RestApiVersion;
@@ -59,15 +61,18 @@ public class RoleController extends AbstractBaseController {
 	private final RoleRepository roleRepository;
 	private final RoleService roleService;
 	private final ReportRepository reportRepository;
+	private final AuthorityService authorityService;
 
 	@Autowired
 	public RoleController(
 			RoleRepository roleRepository,
 			RoleService roleService,
-			ReportRepository reportRepository) {
+			ReportRepository reportRepository,
+			AuthorityService authorityService) {
 		this.roleRepository = roleRepository;
 		this.roleService = roleService;
 		this.reportRepository = reportRepository;
+		this.authorityService = authorityService;
 	}
 
 	/*
@@ -463,4 +468,37 @@ public class RoleController extends AbstractBaseController {
 		return new SubscriptionCollectionResource(role, uriInfo, queryParams, apiVersion);
 	}
 
+	/*
+	 * Return the Authority entities associated with a single Role that is 
+	 * specified by its id. This endpoint can be tested with:
+	 * 
+	 *   $ mvn clean spring-boot:run
+	 *   $ curl -X GET -iH "Accept: application/json;v=1" \
+	 *   http://localhost:8080/rest/roles/46e477dc-085f-4714-a24f-742428579fcc/authorities?expand=authorities
+	 * 
+	 * @Transactional is used to avoid org.hibernate.LazyInitializationException
+	 * being thrown.
+	 */
+	@Path("/{id}" + ResourcePath.AUTHORITIES_PATH)
+	@GET
+	@Transactional
+	@Produces(MediaType.APPLICATION_JSON)
+	public AuthorityCollectionResource getAuthoritiesByRoleId(
+			@PathParam("id") final UUID id,
+			@HeaderParam("Accept") final String acceptHeader,
+			@QueryParam(ResourcePath.EXPAND_QP_NAME) final List<String> expand,
+			//@QueryParam(ResourcePath.SHOWALL_QP_NAME) final List<String> showAll,
+			//@QueryParam(ResourcePath.PAGE_OFFSET_QP_NAME) final List<String> pageOffset,
+			//@QueryParam(ResourcePath.PAGE_LIMIT_QP_NAME) final List<String> pageLimit,
+			@Context final UriInfo uriInfo) {
+		Map<String, List<String>> queryParams = new HashMap<>();
+		queryParams.put(ResourcePath.EXPAND_QP_KEY, expand);
+		//queryParams.put(ResourcePath.SHOWALL_QP_KEY, showAll);
+		//RestUtils.checkPaginationQueryParams(pageOffset, pageLimit, queryParams);
+		RestApiVersion apiVersion = RestUtils.extractAPIVersion(acceptHeader, RestApiVersion.v1);
+
+		Role role = roleRepository.findOne(id);
+		RestUtils.ifNullThen404(role, Role.class, "roleId", id.toString());
+		return new AuthorityCollectionResource(role, authorityService, uriInfo, queryParams, apiVersion);
+	}
 }
