@@ -12,6 +12,7 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
@@ -39,6 +40,8 @@ import com.qfree.obo.report.security.filter.RoleReportFilter;
  */
 @Configuration
 @EnableWebSecurity
+//@EnableGlobalMethodSecurity(securedEnabled = true) // Enables @Secured for method security, but does not seem to work
+@EnableGlobalMethodSecurity(prePostEnabled = true) // Enables use of @PreAuthorize, ... to enforce method level security
 @PropertySource("classpath:config.properties")
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
@@ -229,19 +232,20 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 					.authorizeRequests()
 
 					.antMatchers("/upload_report.html")
-					.access("hasRole('ROLE_ADMIN') or hasIpAddress('127.0.0.1') or hasIpAddress('0:0:0:0:0:0:0:1')")
-					//.access("isAuthenticated() or hasIpAddress('127.0.0.1') or hasIpAddress('0:0:0:0:0:0:0:1')")
+					.access("isAuthenticated() or hasIpAddress('127.0.0.1') or hasIpAddress('0:0:0:0:0:0:0:1')")
+					//.access("hasRole('ROLE_ADMIN') or hasIpAddress('127.0.0.1') or hasIpAddress('0:0:0:0:0:0:0:1')")
 					//.access("isAuthenticated() or permitAll")
 					//.authenticated()
 
 					.antMatchers("/RequestHeaders")
-					.access("hasRole('ROLE_ADMIN') or hasIpAddress('127.0.0.1') or hasIpAddress('0:0:0:0:0:0:0:1')")
+					.access("isAuthenticated() or hasIpAddress('127.0.0.1') or hasIpAddress('0:0:0:0:0:0:0:1')")
+					//.access("hasRole('ROLE_ADMIN') or hasIpAddress('127.0.0.1') or hasIpAddress('0:0:0:0:0:0:0:1')")
 
 					/*
 					 * Report server ReST API:
 					 */
-					.antMatchers("/rest/**").access("hasRole('ROLE_RESTAPI')")
-					//.antMatchers("/rest/**").authenticated()
+					.antMatchers("/rest/**").authenticated()
+					//.antMatchers("/rest/**").access("hasRole('ROLE_RESTAPI')")
 					//.antMatchers("/rest/**").permitAll()
 
 					//	.antMatchers(HttpMethod.POST, "/xxxxxx").authenticated()

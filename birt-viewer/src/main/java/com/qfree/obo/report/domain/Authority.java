@@ -39,6 +39,85 @@ public class Authority implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
+	/*
+	 * Primary keys of the built-in "authorities".
+	 */
+	public static final UUID AUTHORITY_UUID_MANAGE_CATEGORIES = UUID.fromString("dae0f68f-11c6-438c-8312-aca4d95731fc");
+	public static final UUID AUTHORITY_UUID_MANAGE_JOBS = UUID.fromString("12b1cb22-7686-4c9b-b73b-a25d4cb31663");
+	public static final UUID AUTHORITY_UUID_DELETE_JOBS = UUID.fromString("ace1edd3-6a5b-4b40-a802-79616472b89");
+	public static final UUID AUTHORITY_UUID_MANAGE_REPORTS = UUID.fromString("7b758de7-cd54-43fa-baa0-dfbe59e66000");
+	public static final UUID AUTHORITY_UUID_UPLOAD_REPORTS = UUID.fromString("2efd4eca-bcb2-4cec-b804-3142c8297d65");
+	public static final UUID AUTHORITY_UUID_MANAGE_ROLES = UUID.fromString("2dac7af0-ba7d-4009-a313-e9a288272e90");
+	public static final UUID AUTHORITY_UUID_MANAGE_SUBSCRIPTIONS = UUID
+			.fromString("608d6156-b155-487d-bdd3-4e00260b7443");
+	public static final UUID AUTHORITY_UUID_DELETE_SUBSCRIPTIONS = UUID
+			.fromString("94db0a84-e366-4ab8-aeba-171482979f3d");
+
+	/*
+	 * Names of the built-in "authorities".
+	 * 
+	 * These names are used in @Secured annotations.
+	 */
+	public static final String AUTHORITY_NAME_MANAGE_CATEGORIES = "MANAGE_CATEGORIES";
+	public static final String AUTHORITY_NAME_MANAGE_JOBS = "MANAGE_JOBS";
+	public static final String AUTHORITY_NAME_DELETE_JOBS = "DELETE_JOBS";
+	public static final String AUTHORITY_NAME_MANAGE_REPORTS = "MANAGE_REPORTS";
+	public static final String AUTHORITY_NAME_UPLOAD_REPORTS = "UPLOAD_REPORTS";
+	public static final String AUTHORITY_NAME_MANAGE_ROLES = "MANAGE_ROLES";
+	public static final String AUTHORITY_NAME_MANAGE_SUBSCRIPTIONS = "MANAGE_SUBSCRIPTIONS";
+	public static final String AUTHORITY_NAME_DELETE_SUBSCRIPTIONS = "DELETE_SUBSCRIPTIONS";
+
+	//	/**
+	//	 * Enum to hold details associated with "authorities" so that they are not
+	//	 * hardwired into the code.
+	//	 * 
+	//	 * @author jeffreyz
+	//	 *
+	//	 */
+	//	public enum SecurityAuthority {
+	//
+	//		MANAGE_CATEGORIES(
+	//				Authority.AUTHORITY_UUID_MANAGE_CATEGORIES,
+	//				Authority.AUTHORITY_NAME_MANAGE_CATEGORIES),
+	//		MANAGE_JOBS(
+	//				Authority.AUTHORITY_UUID_MANAGE_JOBS,
+	//				Authority.AUTHORITY_NAME_MANAGE_JOBS),
+	//		DELETE_JOBS(
+	//				Authority.AUTHORITY_UUID_DELETE_JOBS,
+	//				Authority.AUTHORITY_NAME_DELETE_JOBS),
+	//		MANAGE_REPORTS(
+	//				Authority.AUTHORITY_UUID_MANAGE_REPORTS,
+	//				Authority.AUTHORITY_NAME_MANAGE_REPORTS),
+	//		UPLOAD_REPORTS(
+	//				Authority.AUTHORITY_UUID_UPLOAD_REPORTS,
+	//				Authority.AUTHORITY_NAME_UPLOAD_REPORTS),
+	//		MANAGE_ROLES(
+	//				Authority.AUTHORITY_UUID_MANAGE_ROLES,
+	//				Authority.AUTHORITY_NAME_MANAGE_ROLES),
+	//		MANAGE_SUBSCRIPTIONS(
+	//				Authority.AUTHORITY_UUID_MANAGE_SUBSCRIPTIONS,
+	//				Authority.AUTHORITY_NAME_MANAGE_SUBSCRIPTIONS),
+	//		DELETE_SUBSCRIPTIONS(
+	//				Authority.AUTHORITY_UUID_DELETE_SUBSCRIPTIONS,
+	//				Authority.AUTHORITY_NAME_DELETE_SUBSCRIPTIONS);
+	//
+	//		private final UUID uuid;
+	//		private final String name;
+	//
+	//		private SecurityAuthority(UUID path, String expandParam) {
+	//			this.uuid = path;
+	//			this.name = expandParam;
+	//		}
+	//
+	//		public UUID getUuid() {
+	//			return uuid;
+	//		}
+	//
+	//		public String getName() {
+	//			return name;
+	//		}
+	//	}
+
 	@Id
 	//	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	//	@Column(name = "authority_id", unique = true, nullable = false)

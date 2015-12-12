@@ -24,6 +24,7 @@ import org.springframework.security.core.userdetails.User;
 
 import com.qfree.obo.report.db.ReportVersionRepository;
 import com.qfree.obo.report.db.RoleRepository;
+import com.qfree.obo.report.domain.Authority;
 import com.qfree.obo.report.domain.ReportVersion;
 import com.qfree.obo.report.domain.Role;
 
@@ -104,8 +105,8 @@ public class RoleReportFilter implements Filter {
 				logger.debug("user.getAuthorities() = {}", user.getAuthorities());
 				Collection<GrantedAuthority> authorities = user.getAuthorities();
 				for (GrantedAuthority grantedAuthority : authorities) {
-					if (grantedAuthority.getAuthority().equalsIgnoreCase("ROLE_RESTAPI")) {
-						logger.debug("User has authority ROLE_RESTAPI");
+					if (grantedAuthority.getAuthority().equalsIgnoreCase(Authority.AUTHORITY_NAME_MANAGE_REPORTS)) {
+						logger.debug("User has authority MANAGE_REPORTS");
 					}
 				}
 			}

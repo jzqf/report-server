@@ -22,6 +22,7 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import com.qfree.obo.report.db.AuthorityRepository;
 import com.qfree.obo.report.db.RoleRepository;
 import com.qfree.obo.report.domain.Configuration.ParamName;
 import com.qfree.obo.report.domain.Role;
@@ -42,6 +43,10 @@ public class ReportServerAuthenticationProvider implements AuthenticationProvide
 
 	@Autowired
 	private ConfigurationService configurationService;
+
+	@Autowired
+	//private AuthorityService authorityService;
+	private AuthorityRepository authorityRepository;
 
 	@Autowired
 	private PasswordEncoder passwordEncoder;
@@ -158,14 +163,16 @@ public class ReportServerAuthenticationProvider implements AuthenticationProvide
 					 */
 					if (role.getEnabled() && role.getActive()) {
 
-						//TODO Create List GrantedAuthority that holds the values of *active* GrantedOperation entities 
-						// for the role. This can initially include only those directly linked to the Role, but 
-						// eventually I need to use a native query that uses a recursive CTE to also include all ancestors.
-						logger.info(
-								"**** FINISH THIS CODE. CREATE List<GrantedAuthority> FROM GrantedOperation entities");
+						//List<Authority> authorities = authorityService.getActiveAuthoritiesByRoleId(role.getRoleId());
+						List<String> authorities = authorityRepository
+								.findActiveAuthorityNamesByRoleIdRecursive(role.getRoleId().toString());
+						logger.info("authorities = {}", authorities);
 
-						final List<GrantedAuthority> grantedAuths = new ArrayList<>();
-						grantedAuths.add(new SimpleGrantedAuthority("ROLE_RESTAPI")); // DELETE THIS LINE!!!!!!!!!!!!!!
+						final List<GrantedAuthority> grantedAuths = new ArrayList<>(authorities.size());
+						for (String authority : authorities) {
+							grantedAuths.add(new SimpleGrantedAuthority(authority));
+						}
+						//grantedAuths.add(new SimpleGrantedAuthority("MANAGE_XXXXXXXX"));
 						final UserDetails principal = new User(username, password, grantedAuths);
 						final Authentication auth = new UsernamePasswordAuthenticationToken(
 								principal, password, grantedAuths);

@@ -23,11 +23,13 @@ import javax.ws.rs.core.UriInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.qfree.obo.report.db.ReportRepository;
 import com.qfree.obo.report.db.RoleRepository;
+import com.qfree.obo.report.domain.Authority;
 import com.qfree.obo.report.domain.Report;
 import com.qfree.obo.report.domain.Role;
 import com.qfree.obo.report.domain.UuidCustomType;
@@ -81,6 +83,8 @@ public class RoleController extends AbstractBaseController {
 	 *   $ mvn clean spring-boot:run
 	 *   $ curl -i -H "Accept: application/json;v=1" -X GET http://localhost:8080/rest/roles?expand=roles
 	 */
+	//@PreAuthorize("hasAuthority('MANAGE_ROLES')")
+	@PreAuthorize("hasAuthority('" + Authority.AUTHORITY_NAME_MANAGE_ROLES + "')")
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	public RoleCollectionResource getList(
