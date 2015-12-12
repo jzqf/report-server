@@ -103,6 +103,20 @@ public class RoleController extends AbstractBaseController {
 		} else {
 			roles = roleRepository.findAll();
 		}
+
+		if (roles != null) {
+			/*
+			 * Remove the built-in (pre-defined) role "qfreereportserveradmin" if it
+			 * appears in the list.
+			 */
+			for (int i = 0; i < roles.size(); i++) {
+				if (roles.get(i).getRoleId().equals(Role.QFREE_ADMIN_ROLE_ID)) {
+					roles.remove(i);
+					break;
+				}
+			}
+		}
+
 		return new RoleCollectionResource(roles, Role.class, authorityService, uriInfo, queryParams, apiVersion);
 	}
 
