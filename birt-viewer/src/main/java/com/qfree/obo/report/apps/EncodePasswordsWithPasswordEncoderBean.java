@@ -44,6 +44,10 @@ public class EncodePasswordsWithPasswordEncoderBean {
 		logger.info("matches1 = {}", matches1);
 		logger.info("matches2 = {}", matches2);
 
+		unencodedPassword = "qfreereportserveradmin_Af5Dj%4$";
+		logger.info("unencodedPassword = {}, encodedPassword = {}", unencodedPassword,
+				passwordEncoder.encode(unencodedPassword));
+
 		context.close();
 	}
 

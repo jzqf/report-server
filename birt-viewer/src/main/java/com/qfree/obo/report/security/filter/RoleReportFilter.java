@@ -50,8 +50,6 @@ public class RoleReportFilter implements Filter {
 	public void doFilter(ServletRequest req, ServletResponse res,
 			FilterChain chain) throws IOException, ServletException {
 
-		logger.info("----- In doFilter!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-
 		HttpServletRequest request = (HttpServletRequest) req;
 		//	logger.info("request = {}", request);
 		//	logger.info("request.getRequestURI() = {}", request.getRequestURI());

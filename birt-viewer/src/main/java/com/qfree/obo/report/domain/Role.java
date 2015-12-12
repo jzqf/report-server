@@ -56,6 +56,14 @@ public class Role implements Serializable {
 	 */
 	public static final UUID ADMIN_ROLE_ID = UUID.fromString("54aa1d35-f67d-47e6-8bea-cadd6085796e");
 
+	/**
+	 * Primary key of the built-in "qfreereportserveradmin" Role.
+	 * 
+	 * This Role should never be deleted, but if it does, it should be recreated
+	 * with this id.
+	 */
+	public static final UUID QFREE_ADMIN_ROLE_ID = UUID.fromString("10ab3537-0b12-44fa-a27b-6cf1aac14282");
+
 	@Id
 	@NotNull
 	@Type(type = "uuid-custom")

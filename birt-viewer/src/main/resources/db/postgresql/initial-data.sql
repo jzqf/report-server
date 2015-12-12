@@ -44,6 +44,7 @@ INSERT INTO reporting.authority (authority_id, name, active, created_on) VALUES 
 -- Admin role with login privileges. encoded_password is BCrypt.encode('reportadmin')
 INSERT INTO reporting.role (role_id, username, login_role, encoded_password, full_name, email_address, time_zone_id, enabled, active, created_on) VALUES ('54aa1d35-f67d-47e6-8bea-cadd6085796e', 'reportadmin', true , '$2a$08$PjY.jVSaf0x2HCnETH6aj.0Gb3RWX9VMunMcpIfrJGBGjsYA2S6vC', 'Report Administrator', null                  , 'CET'           , true, true, current_timestamp AT TIME ZONE 'UTC');
 --
+--
 -- encoded_password is BCrypt.encode('password1')
 INSERT INTO reporting.role (role_id, username, login_role, encoded_password, full_name, email_address, time_zone_id, enabled, active, created_on) VALUES ('29fe8a1f-7826-4df0-8bfd-151b54198655', 'user1'      , true , '$2a$08$SIVVleb01XxPHvn72ThPo.NAgKrbMuq5r/JvcWj5g6LIPDqnuVeT2', 'User Number 1'       , 'user1@somedomain.com', 'CET'           , true, true, current_timestamp AT TIME ZONE 'UTC');
 -- encoded_password is BCrypt.encode('password2')
@@ -55,8 +56,7 @@ INSERT INTO reporting.role (role_id, username, login_role, encoded_password, ful
 --
 -- Make user "user4" a child of "reportadmin", effectively making "user4" an administrator:
 INSERT INTO reporting.role_role (role_role_id, parent_role_id, child_role_id, created_on) VALUES ('3b2c7b99-cf00-43c6-85a7-f4e17bbea386', '54aa1d35-f67d-47e6-8bea-cadd6085796e', '46e477dc-085f-4714-a24f-742428579fcc', current_timestamp AT TIME ZONE 'UTC');
-
-
+--
 -- Give the "Administrator" role all authorities by creating "role_authority" rows:
 INSERT INTO reporting.role_authority (role_authority_id, role_id, authority_id, created_on) VALUES ('62c78032-5ec7-440c-8107-386b745b9ab9', '54aa1d35-f67d-47e6-8bea-cadd6085796e', 'dae0f68f-11c6-438c-8312-aca4d95731fc', current_timestamp AT TIME ZONE 'UTC');
 INSERT INTO reporting.role_authority (role_authority_id, role_id, authority_id, created_on) VALUES ('222e6e22-f3e3-4631-847f-31896139987a', '54aa1d35-f67d-47e6-8bea-cadd6085796e', '12b1cb22-7686-4c9b-b73b-a25d4cb31663', current_timestamp AT TIME ZONE 'UTC');
@@ -66,6 +66,22 @@ INSERT INTO reporting.role_authority (role_authority_id, role_id, authority_id, 
 INSERT INTO reporting.role_authority (role_authority_id, role_id, authority_id, created_on) VALUES ('2ef4aaf6-9ea4-48d0-a5a4-79670a264b79', '54aa1d35-f67d-47e6-8bea-cadd6085796e', '2dac7af0-ba7d-4009-a313-e9a288272e90', current_timestamp AT TIME ZONE 'UTC');
 INSERT INTO reporting.role_authority (role_authority_id, role_id, authority_id, created_on) VALUES ('fb5685ae-2470-449f-bfac-a2a291b863b4', '54aa1d35-f67d-47e6-8bea-cadd6085796e', '608d6156-b155-487d-bdd3-4e00260b7443', current_timestamp AT TIME ZONE 'UTC');
 INSERT INTO reporting.role_authority (role_authority_id, role_id, authority_id, created_on) VALUES ('13e14dbc-d30d-4006-95ed-b8de417a2315', '54aa1d35-f67d-47e6-8bea-cadd6085796e', '94db0a84-e366-4ab8-aeba-171482979f3d', current_timestamp AT TIME ZONE 'UTC');
+--
+--
+-- Create a "Q-Free administrator" role that can be used to bypass external
+-- authentication by an authentication provider.
+-- encoded_password is BCrypt.encode('qfreereportserveradmin_Af5Dj%4$'):
+INSERT INTO reporting.role (role_id, username, login_role, encoded_password, full_name, email_address, time_zone_id, enabled, active, created_on) VALUES ('10ab3537-0b12-44fa-a27b-6cf1aac14282', 'qfreereportserveradmin', true , '$2a$08$53v/RUtexw7Ovdx4i2F44O4XcyOLLZklf39XZW1C4jT3JjBJQ8fi6', 'Q-Free Administrator', null                  , 'CET'           , true, true, current_timestamp AT TIME ZONE 'UTC');
+--
+-- Give the "Q-Free administrator" role all authorities by creating "role_authority" rows:
+INSERT INTO reporting.role_authority (role_authority_id, role_id, authority_id, created_on) VALUES ('e2ef968a-7fd6-4e9e-b74a-58fc6f208a50', '10ab3537-0b12-44fa-a27b-6cf1aac14282', 'dae0f68f-11c6-438c-8312-aca4d95731fc', current_timestamp AT TIME ZONE 'UTC');
+INSERT INTO reporting.role_authority (role_authority_id, role_id, authority_id, created_on) VALUES ('89bc2070-aedf-4959-9492-8f1a051f2c47', '10ab3537-0b12-44fa-a27b-6cf1aac14282', '12b1cb22-7686-4c9b-b73b-a25d4cb31663', current_timestamp AT TIME ZONE 'UTC');
+INSERT INTO reporting.role_authority (role_authority_id, role_id, authority_id, created_on) VALUES ('d806bc73-1744-471c-8f24-14af227f780b', '10ab3537-0b12-44fa-a27b-6cf1aac14282', 'ace1edd3-6a5b-4b40-a802-79616472b893', current_timestamp AT TIME ZONE 'UTC');
+INSERT INTO reporting.role_authority (role_authority_id, role_id, authority_id, created_on) VALUES ('f3f5546e-d819-4a4a-92be-c6ee150e02d0', '10ab3537-0b12-44fa-a27b-6cf1aac14282', '7b758de7-cd54-43fa-baa0-dfbe59e66000', current_timestamp AT TIME ZONE 'UTC');
+INSERT INTO reporting.role_authority (role_authority_id, role_id, authority_id, created_on) VALUES ('3d1392ab-b5b8-45b8-96e1-cf7060836924', '10ab3537-0b12-44fa-a27b-6cf1aac14282', '2efd4eca-bcb2-4cec-b804-3142c8297d65', current_timestamp AT TIME ZONE 'UTC');
+INSERT INTO reporting.role_authority (role_authority_id, role_id, authority_id, created_on) VALUES ('ce4ffcfd-7802-4e1b-bdf1-6d2b70062cef', '10ab3537-0b12-44fa-a27b-6cf1aac14282', '2dac7af0-ba7d-4009-a313-e9a288272e90', current_timestamp AT TIME ZONE 'UTC');
+INSERT INTO reporting.role_authority (role_authority_id, role_id, authority_id, created_on) VALUES ('54246034-83ed-488c-b447-05fd0b1e57b4', '10ab3537-0b12-44fa-a27b-6cf1aac14282', '608d6156-b155-487d-bdd3-4e00260b7443', current_timestamp AT TIME ZONE 'UTC');
+INSERT INTO reporting.role_authority (role_authority_id, role_id, authority_id, created_on) VALUES ('0fff6274-a9dc-4262-aa29-5feff9414810', '10ab3537-0b12-44fa-a27b-6cf1aac14282', '94db0a84-e366-4ab8-aeba-171482979f3d', current_timestamp AT TIME ZONE 'UTC');
 
 
 -- Create a global configuration record that contains the current database 

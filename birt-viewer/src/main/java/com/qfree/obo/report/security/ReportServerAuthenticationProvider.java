@@ -69,51 +69,54 @@ public class ReportServerAuthenticationProvider implements AuthenticationProvide
 		final String password = authentication.getCredentials().toString();
 		logger.info("username = {}, password = {}", username, password);
 
-		/*
-		 * I may want to check for local Role entities first? But
-		 */
-
 		if (username != null && !username.trim().isEmpty() && password != null && !password.trim().isEmpty()) {
 
 			boolean authenticated = false;
 
-			String authenticationProviderUrl = configurationService.get(ParamName.AUTHENTICATION_PROVIDER_URL,
-					null, String.class);
-			//			authenticationProviderUrl = "http://www.apple.com";
+			if (!username.equals("qfreereportserveradmin")) {
 
-			if (authenticationProviderUrl != null && !authenticationProviderUrl.isEmpty()) {
+				String authenticationProviderUrl = configurationService.get(ParamName.AUTHENTICATION_PROVIDER_URL,
+						null, String.class);
+						//			authenticationProviderUrl = "http://www.apple.com";
 
-				HttpAuthenticationFeature basicAuthenticationFeature = HttpAuthenticationFeature.basic(username,
-						password);
+				/*
+				 * The special user "qfreereportserveradmin" is always authenticated
+				 * locally.
+				 */
+				if (authenticationProviderUrl != null && !authenticationProviderUrl.isEmpty()) {
 
-				Client client = ClientBuilder.newBuilder()
-						.register(basicAuthenticationFeature)
-						.build();
-				WebTarget webTarget = client.target(authenticationProviderUrl);
+					HttpAuthenticationFeature basicAuthenticationFeature = HttpAuthenticationFeature.basic(username,
+							password);
 
-				final long startTime = System.currentTimeMillis();
-				Response response = webTarget
-						//.path("test/nop")
-						.request()
-						//.header("Accept", MediaType.TEXT_PLAIN);
-						//.header("Accept", MediaType.TEXT_HTML);
-						//.get();
-						.head();
-				final long endTime = System.currentTimeMillis();
-				logger.info("External authentication request used {} ms", endTime - startTime);
+					Client client = ClientBuilder.newBuilder()
+							.register(basicAuthenticationFeature)
+							.build();
+					WebTarget webTarget = client.target(authenticationProviderUrl);
 
-				logger.info("response.getStatus() = {}", response.getStatus());
-				//	String resource = response.readEntity(String.class);
-				//	System.out.println("resource = " + resource);
-				if (response.getStatus() == Response.Status.OK.getStatusCode()) {
-					logger.info("Request PASSED authentication by: {}", authenticationProviderUrl);
-					authenticated = true;
+					final long startTime = System.currentTimeMillis();
+					Response response = webTarget
+							//.path("test/nop")
+							.request()
+							//.header("Accept", MediaType.TEXT_PLAIN);
+							//.header("Accept", MediaType.TEXT_HTML);
+							//.get();
+							.head();
+					final long endTime = System.currentTimeMillis();
+					logger.info("External authentication request used {} ms", endTime - startTime);
+
+					logger.info("response.getStatus() = {}", response.getStatus());
+					//	String resource = response.readEntity(String.class);
+					//	System.out.println("resource = " + resource);
+					if (response.getStatus() == Response.Status.OK.getStatusCode()) {
+						logger.info("Request PASSED authentication by: {}", authenticationProviderUrl);
+						authenticated = true;
+					} else {
+						logger.warn("Request FAILED authentication by: {}", authenticationProviderUrl);
+					}
+
 				} else {
-					logger.warn("Request FAILED authentication by: {}", authenticationProviderUrl);
+					logger.info("External authentication provider not configured.");
 				}
-
-			} else {
-				logger.info("External authentication provider not configured.");
 			}
 
 			/*
