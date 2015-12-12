@@ -140,91 +140,18 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	}
 
 	@Override
-	protected void configure(AuthenticationManagerBuilder auth)
-			throws Exception {
-
-		/*
-		 * Check whether we are running unit/integration tests. If so, we 
-		 * disable security.
-		 */
-		if (env.getProperty("app.version").equals("*test*") && false) {
-			//		if (env.getProperty("app.version").equals("*test*") || true) {
-
-		} else if (true) {
-
-			auth
-					.authenticationProvider(reportServerAuthenticationProvider());
-					//	.inMemoryAuthentication()
-					//	.withUser("ui").password(passwordEncoder().encode("ui")).authorities("ROLE_RESTAPI").and()
-					//	.withUser("admin").password(passwordEncoder().encode("admin"))
-					//	.authorities("ROLE_ADMIN", "ROLE_RESTAPI")
-
-			//	.withUser("ui").password("ui").authorities("ROLE_RESTAPI").and()
-			//	.withUser("admin").password("admin").authorities("ROLE_ADMIN", "ROLE_RESTAPI")
-			//.withUser("ui").password("ui").roles("RESTAPI").and()
-			//.withUser("admin").password("admin").roles("ADMIN", "RESTAPI")
-
-			//			.and().passwordEncoder(passwordEncoder());
-
-		} else {
-
-			auth
-					.inMemoryAuthentication()
-					.withUser("ui").password(passwordEncoder().encode("ui")).authorities("ROLE_RESTAPI").and()
-					.withUser("admin").password(passwordEncoder().encode("admin"))
-					.authorities("ROLE_ADMIN", "ROLE_RESTAPI")
-					//	.withUser("ui").password("ui").authorities("ROLE_RESTAPI").and()
-					//	.withUser("admin").password("admin").authorities("ROLE_ADMIN", "ROLE_RESTAPI")
-					//.withUser("ui").password("ui").roles("RESTAPI").and()
-					//.withUser("admin").password("admin").roles("ADMIN", "RESTAPI")
-					.and().passwordEncoder(passwordEncoder());
-
-		}
+	protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+		auth.authenticationProvider(reportServerAuthenticationProvider());
 	}
 
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
 
 		/*
-		 * Check whether we are running unit/integration tests. If so, we 
-		 * disable security.
+		 * Check whether security is enabled.
 		 */
-		if (env.getProperty("app.version").equals("*test*")) {
-			//		if (env.getProperty("app.version").equals("*test*") && false) {
-			//		if (env.getProperty("app.version").equals("*test*") || true) {
-
-			http
-					/*
-					 * Turn off security. 
-					 */
-					.authorizeRequests().anyRequest().permitAll()
-
-					/*
-					 * CSRF must be disabled since integration tests do not include a
-					 * CSRF synchronizer token. Spring Security enables CSRF by default,
-					 * and it expects a CSRF token for any state-changing request (this
-					 * includes most requests that do *not* use the HTTP methods GET, 
-					 * HEAD, OPTIONS or TRACE). If such requests do not carry a CSRF 
-					 * token, the request will fail with a CsrfException. I think that
-					 * this results in an HTTP status 403 for state-changing JAX-RS 
-					 * client requests to the ReST controllers via Spring Boot's
-					 * embedded Tomcat server. See:
-					 * 
-					 * http://docs.spring.io/spring-security/site/docs/current/reference/html/csrf.html
-					 */
-					.and().csrf().disable();
-
-			//} else if (false) {
-			//
-			//	http
-			//			.csrf().disable()
-			//			.sessionManagement()
-			//			.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-			//			.and().authorizeRequests()
-			//			.anyRequest().authenticated()
-			//			.and().httpBasic();
-
-		} else {
+		if (env.getProperty("appsecurity.enable").equals("true")) {
+			//if (!env.getProperty("app.version").equals("*test*")) {
 
 			http
 					.addFilterAfter(requestMatchingRoleReportFilter(), FilterSecurityInterceptor.class)
@@ -233,22 +160,14 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
 					.antMatchers("/upload_report.html")
 					.access("isAuthenticated() or hasIpAddress('127.0.0.1') or hasIpAddress('0:0:0:0:0:0:0:1')")
-					//.access("hasRole('ROLE_ADMIN') or hasIpAddress('127.0.0.1') or hasIpAddress('0:0:0:0:0:0:0:1')")
-					//.access("isAuthenticated() or permitAll")
-					//.authenticated()
 
 					.antMatchers("/RequestHeaders")
 					.access("isAuthenticated() or hasIpAddress('127.0.0.1') or hasIpAddress('0:0:0:0:0:0:0:1')")
-					//.access("hasRole('ROLE_ADMIN') or hasIpAddress('127.0.0.1') or hasIpAddress('0:0:0:0:0:0:0:1')")
 
 					/*
 					 * Report server ReST API:
 					 */
 					.antMatchers("/rest/**").authenticated()
-					//.antMatchers("/rest/**").access("hasRole('ROLE_RESTAPI')")
-					//.antMatchers("/rest/**").permitAll()
-
-					//	.antMatchers(HttpMethod.POST, "/xxxxxx").authenticated()
 
 					/*
 					 * All other URLs:
@@ -264,20 +183,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 					.antMatchers("/rest/**").requiresInsecure()
 					.anyRequest().requiresInsecure()
 
-					/*
-					 * If the user is not authenticated, this tells Spring 
-					 * Security to display a very simple log-in form where the
-					 * user can specify a user name and password. This is 
-					 * pointless for ReST requests made by an application, but
-					 * it is useful when we are testing GET requests with a web
-					 * browser.
-					 * 
-					 * DO NOT USE formLogin() FOR STATELESS CREATION POLICY. IT
-					 * MAKE IT IMPOSSIBLE TO SPECIFY A USER NAME AND PASSWORD
-					 * FROM A WEB BROWSER.
-					 */
-					//.and().formLogin()
-
 					.and().httpBasic().realmName("Q-Free Report Server")
 
 					/*
@@ -292,11 +197,21 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 					.and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
 
 					/*
-					 * This application is not meant to be accessed via a web 
-					 * browser, so CSRF should not be an issue. If we do not
-					 * enable CSRF, each request will be forced to include a
-					 * CSRF token.
+					 * Spring Security enables CSRF by default, and it expects a
+					 * CSRF token for any state-changing request (this includes
+					 * most requests that do *not* use the HTTP methods GET, 
+					 * HEAD, OPTIONS or TRACE). If such requests do not carry a
+					 * CSRF token, the request will fail with a CsrfException.
 					 */
+					.and().csrf().disable();
+
+		} else {
+
+			/*
+			 * Turn off security. 
+			 */
+			http
+					.authorizeRequests().anyRequest().permitAll()
 					.and().csrf().disable();
 		}
 	}

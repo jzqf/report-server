@@ -73,16 +73,15 @@ public class ReportServerAuthenticationProvider implements AuthenticationProvide
 
 			boolean authenticated = false;
 
+			/*
+			 * The special user "qfreereportserveradmin" is always authenticated
+			 * locally.
+			 */
 			if (!username.equals("qfreereportserveradmin")) {
 
 				String authenticationProviderUrl = configurationService.get(ParamName.AUTHENTICATION_PROVIDER_URL,
 						null, String.class);
-						//			authenticationProviderUrl = "http://www.apple.com";
-
-				/*
-				 * The special user "qfreereportserveradmin" is always authenticated
-				 * locally.
-				 */
+				//String authenticationProviderUrl = "http://www.apple.com";
 				if (authenticationProviderUrl != null && !authenticationProviderUrl.isEmpty()) {
 
 					HttpAuthenticationFeature basicAuthenticationFeature = HttpAuthenticationFeature.basic(username,
@@ -186,15 +185,6 @@ public class ReportServerAuthenticationProvider implements AuthenticationProvide
 			} else {
 				logger.error("No Role for username = {}", username);
 			}
-
-			//	if (username.equals("ui") && password.equals("ui")) {
-			//		//if (username.equals("admin") && password.equals("system")) {
-			//		final List<GrantedAuthority> grantedAuths = new ArrayList<>();
-			//		grantedAuths.add(new SimpleGrantedAuthority("ROLE_RESTAPI"));
-			//		final UserDetails principal = new User(username, password, grantedAuths);
-			//		final Authentication auth = new UsernamePasswordAuthenticationToken(principal, password, grantedAuths);
-			//		return auth;
-			//	}
 
 		} else {
 			logger.warn("The name and/or password are missing. The connection cannot be authenticated."
