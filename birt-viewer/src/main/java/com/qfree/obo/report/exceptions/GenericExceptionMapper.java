@@ -9,6 +9,7 @@ import javax.ws.rs.ext.Provider;
 import org.postgresql.util.PSQLException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.security.access.AccessDeniedException;
 
 import com.qfree.obo.report.dto.RestErrorResource;
 import com.qfree.obo.report.dto.RestErrorResource.RestError;
@@ -69,6 +70,14 @@ public class GenericExceptionMapper implements ExceptionMapper<Throwable> {
 			 */
 			restError = RestError.INTERNAL_SERVER_ERROR;
 			restErrorResource = new RestErrorResource(restError, rootCause.getMessage(), ex);
+		} else if ((ex != null) && (ex.getClass().equals(AccessDeniedException.class))) {
+			/*
+			 * This exception is thrown when a security violation occurs for
+			 * method-level security configured with @PreAuthorize.
+			 */
+			restError = RestError.FORBIDDEN_RESOURCE_ROLE_METHOD_ACCESS_VIOLATION;
+			restErrorResource = new RestErrorResource(restError, ex.getMessage() + ". " + restError.getErrorMessage(),
+					ex);
 		}else {
 			restError = RestError.INTERNAL_SERVER_ERROR;
 			restErrorResource = new RestErrorResource(restError, ex.getMessage(), ex);

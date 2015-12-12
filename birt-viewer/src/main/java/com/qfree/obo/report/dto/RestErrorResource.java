@@ -250,6 +250,12 @@ public class RestErrorResource {
 				null),
 		FORBIDDEN_RESOURCE_FILTER_PROBLEM(
 				Response.Status.FORBIDDEN, "403.29", "Problem encountered during resource filtering", null),
+		FORBIDDEN_RESOURCE_ROLE_METHOD_ACCESS_VIOLATION(
+				Response.Status.FORBIDDEN, "403.30",
+				"The authenticated role does not have the authority to call a method.", null),
+		//FORBIDDEN_RESOURCE_ROLE_REPORT_ACCESS_VIOLATION(
+		//		Response.Status.FORBIDDEN, "403.XX",
+		//		"The authenticated role does not have permission to view the requested report.", null),
 
 		/**
 		 * {@code 404 Not Found}.
