@@ -464,7 +464,7 @@ public class RoleControllerTests {
 			 * 
 			 * With recursive CTE expression:
 			 */
-			if (RoleController.returnAllReportsForEachRole == false) {
+			if (RoleController.ALLOW_ALL_REPORTS_FOR_EACH_ROLE == false) {
 				assertThat(reportCollectionResource.getItems(), IsCollectionWithSize.hasSize(3));
 				assertThat(reportCollectionResource.getItems(), hasSize(3));
 			} else {
@@ -486,7 +486,7 @@ public class RoleControllerTests {
 			 * 
 			 * Without recursive CTE expression:
 			 */
-			if (RoleController.returnAllReportsForEachRole == false) {
+			if (RoleController.ALLOW_ALL_REPORTS_FOR_EACH_ROLE == false) {
 				assertThat(reportCollectionResource.getItems(), IsCollectionWithSize.hasSize(1));
 				assertThat(reportCollectionResource.getItems(), hasSize(1));
 			} else {
@@ -523,7 +523,7 @@ public class RoleControllerTests {
 			/*
 			 * With recursive CTE expression:
 			 */
-			if (RoleController.returnAllReportsForEachRole == false) {
+			if (RoleController.ALLOW_ALL_REPORTS_FOR_EACH_ROLE == false) {
 				assertThat(reportCollectionResource.getItems(), IsCollectionWithSize.hasSize(4));
 				assertThat(reportCollectionResource.getItems(), hasSize(4));
 			} else {
@@ -540,7 +540,7 @@ public class RoleControllerTests {
 			/*
 			 * Without recursive CTE expression:
 			 */
-			if (RoleController.returnAllReportsForEachRole == false) {
+			if (RoleController.ALLOW_ALL_REPORTS_FOR_EACH_ROLE == false) {
 				assertThat(reportCollectionResource.getItems(), IsCollectionWithSize.hasSize(2));
 				assertThat(reportCollectionResource.getItems(), hasSize(2));
 			} else {

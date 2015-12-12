@@ -9,6 +9,8 @@ import org.springframework.data.repository.query.Param;
 
 import com.qfree.obo.report.domain.Report;
 import com.qfree.obo.report.domain.ReportVersion;
+import com.qfree.obo.report.domain.Role;
+import com.qfree.obo.report.domain.RoleRole;
 
 /**
  * Repository interface for {@link ReportVersion} persistence.
@@ -35,4 +37,76 @@ public interface ReportVersionRepository extends JpaRepository<ReportVersion, UU
 	@Query("SELECT MAX(rv.versionCode) FROM Report r INNER JOIN r.reportVersions rv WHERE r = :report")
 	public Integer maxVersionCodeForReport(@Param("report") Report report);
 
+	/**
+	 * Returns a {@link List}&lt;{@link String}&gt; containing the fileName of
+	 * all {@link ReportVersion} entities that a specified {@link Role} has
+	 * access to.
+	 * 
+	 * <p>
+	 * A maximum of 10 levels of {@link RoleRole} relations will be followed.
+	 * This is to avoid endless recursion for the case where a circular loop is
+	 * created, e.g., a parent of a {@link Role} is set to be a child of that
+	 * {@link Role}. The UI should protect the user from such situations, but in
+	 * case this protection is not provided, this will provide a last line of
+	 * defense.
+	 * 
+	 * @param roleId
+	 *            String representation of the id of the {@link Role} for which
+	 *            report version filenames will be returned.
+	 * @param activeOnly
+	 *            If {@code true}, only {@link ReportVersion}s that have
+	 *            {@code active=true} and for which {@code active=true} for its
+	 *            parent{@link Report} will be returned.
+	 * @return
+	 */
+	@Query(value = "WITH RECURSIVE ancestor(level, role_id, username) AS (" +
+
+	// CTE anchor member:
+
+			"SELECT 0 AS level, role.role_id, role.username " +
+			"FROM role " +
+			//"WHERE role.role_id=:roleId " +
+			"WHERE role.role_id=CAST(:roleId AS uuid) " +
+
+			"UNION ALL " +
+
+	// CTE recursive member:
+
+			"SELECT level+1, role.role_id, role.username " +
+			"FROM ancestor " +
+			"INNER JOIN role_role link ON link.child_role_id=ancestor.role_id " +
+			"INNER JOIN role ON role.role_id=link.parent_role_id " +
+			"WHERE level<10 " +
+
+			") " +
+
+	// Statement using the CTE:
+
+	/* 
+	 * Here, we do a select on a derived table. The reason for this approach
+	 * is that we want to order the results by report_version.file_name,
+	 * but since I need to eliminate duplicate rows with DISTINCT
+	 * (these duplicates occur because [role_report] junction records may
+	 * link both a [role] as well as one or more of its ancestor [role] records
+	 * to the same [report]), the SELECT list must include the column that we
+	 * order on, in this case report_version.file_name. Therefore, I perform the 
+	 * DISTINCT operation in the definition of the derived table, and then I use
+	 * the derived table in the FROM clause of the outer SELECT, where I am free
+	 * to also order by DT.file_name since this outer SELECT does not use 
+	 * DISTINCT.
+	 */
+			"SELECT DT.file_name FROM " +
+			"(" +
+			"    SELECT DISTINCT report_version.file_name AS file_name FROM role_report " +
+			"    INNER JOIN ancestor ON ancestor.role_id=role_report.role_id " +
+			"    INNER JOIN report ON report.report_id=role_report.report_id " +
+			"    INNER JOIN report_version ON report_version.report_id=report.report_id " +
+			"    WHERE ((report.active        =true OR :activeOnly=false) AND " +
+			"           (report_version.active=true OR :activeOnly=false))" +
+			") DT " +
+			"ORDER BY DT.file_name",
+			nativeQuery = true)
+	public List<String> findReportVersionFilenamesByRoleIdRecursive(
+			@Param("roleId") String roleId,
+			@Param("activeOnly") Boolean activeOnly);
 }

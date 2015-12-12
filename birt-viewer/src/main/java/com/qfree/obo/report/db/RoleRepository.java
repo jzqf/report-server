@@ -90,20 +90,21 @@ public interface RoleRepository extends JpaRepository<Role, UUID>, RoleRepositor
 
 	// Statement using the CTE:
 
-	/* Here, we do a select on a derived table. The reason for this
-	* approach is that we want to order the results by report.number,
-	* but since I need to eliminate duplicate rows with DISTINCT
-	* (these duplicates occur because [role_report] junction records
-	* may link both a [role] as well as one or more of its ancestor
-	* [role] records to
-	* the same [report]), the SELECT list must include the column that
-	* we order on, in this case report.number. But I only want to 
-	* return a list of report_id's; hence, I perform a select on the
-	* derived table (that takes care of the DISTINCT business for us)
-	* to create the derived table, and then I can order by DT.number 
-	* without including it in the SELECT list because this outer 
-	* SELECT does not use DISTINCT.
-	*/
+	/* 
+	 * Here, we do a select on a derived table. The reason for this
+	 * approach is that we want to order the results by report.number,
+	 * but since I need to eliminate duplicate rows with DISTINCT
+	 * (these duplicates occur because [role_report] junction records
+	 * may link both a [role] as well as one or more of its ancestor
+	 * [role] records to
+	 * the same [report]), the SELECT list must include the column that
+	 * we order on, in this case report.number. But I only want to 
+	 * return a list of report_id's; hence, I perform a select on the
+	 * derived table (that takes care of the DISTINCT business for us)
+	 * to create the derived table, and then I can order by DT.number 
+	 * without including it in the SELECT list because this outer 
+	 * SELECT does not use DISTINCT.
+	 */
 			"SELECT DT.report_id FROM " +
 			"(" +
 			"    SELECT DISTINCT CAST(report.report_id AS varchar), report.number FROM role_report " +

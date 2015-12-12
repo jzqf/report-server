@@ -2,6 +2,7 @@ package com.qfree.obo.report.security.filter;
 
 import java.io.IOException;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.Filter;
@@ -23,10 +24,14 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
 
 import com.qfree.obo.report.db.ReportVersionRepository;
+import com.qfree.obo.report.db.RoleReportRepository;
 import com.qfree.obo.report.db.RoleRepository;
 import com.qfree.obo.report.domain.Authority;
 import com.qfree.obo.report.domain.ReportVersion;
 import com.qfree.obo.report.domain.Role;
+import com.qfree.obo.report.domain.RoleReport;
+import com.qfree.obo.report.domain.UuidCustomType;
+import com.qfree.obo.report.rest.server.RoleController;
 
 public class RoleReportFilter implements Filter {
 
@@ -37,6 +42,9 @@ public class RoleReportFilter implements Filter {
 
 	@Autowired
 	private ReportVersionRepository reportVersionRepository;
+
+	@Autowired
+	private RoleReportRepository roleReportRepository;
 
 	@Override
 	public void doFilter(ServletRequest req, ServletResponse res,
@@ -142,6 +150,11 @@ public class RoleReportFilter implements Filter {
 			logger.info("role = {}", role);
 			if (role != null && role.getActive() && role.getEnabled()) {
 
+				if (reportFileName.equals("test/test_db_config.rptdesign")
+						|| reportFileName.equals("test/test_rs_config.rptdesign")) {
+					return true;
+				}
+
 				/*
 				 * "reportFileName" must match an existing Report Version that
 				 * is active. In addition, the linked Report must also be
@@ -149,9 +162,7 @@ public class RoleReportFilter implements Filter {
 				 */
 				ReportVersion reportVersion = reportVersionRepository.findByFileName(reportFileName);
 				logger.info("reportVersion = {}", reportVersion);
-				if (reportVersion != null && reportVersion.isActive()
-						|| reportFileName.equals("test/test_db_config.rptdesign")
-						|| reportFileName.equals("test/test_rs_config.rptdesign")) {
+				if (reportVersion != null && reportVersion.isActive()) {
 
 					/*
 					 * Finally, there must exist a RoleReport entity for the Role and
@@ -159,13 +170,48 @@ public class RoleReportFilter implements Filter {
 					 * the report.
 					 */
 
-					//TODO Add code to check the user has access to the Report!
-					// It is possible that I could trigger a Lazy...Exception when 
-					// I access the Report from the ReportVersion. If I do, try adding @Transactional(readOnly = true) to method.
-					// ...
-					logger.warn("***** FINSIH THIS METHOD. MUST CHECK FOR RoleReport ENTITY! *****");
+					/*
+					 * If I modify this code and it then triggers a Lazy...Exception,
+					 * try annotating this method with @Transactional(readOnly = true).
+					 */
+					if (RoleController.ALLOW_ALL_REPORTS_FOR_EACH_ROLE) {
+						return true;
+					} else {
+						/*
+						 * The H2 database does not support recursive CTE expressions, so it is 
+						 * necessary to run different code if the database is not PostgreSQL.
+						 * This only affects integration tests, because only PostreSQL is used
+						 * in production. 
+						 */
+						if (UuidCustomType.DB_VENDOR.equals(UuidCustomType.POSTGRESQL_VENDOR)) {
 
-					return true;
+							Boolean activeReportsOnly = true;
+							List<String> availableReportVersions = reportVersionRepository
+									.findReportVersionFilenamesByRoleIdRecursive(role.getRoleId().toString(),
+											activeReportsOnly);
+							for (String filename : availableReportVersions) {
+								if (reportFileName.equals(filename)) {
+									return true;
+								}
+							}
+
+						} else {
+
+							/*
+							 * This code only treats those Reports associated with RoleReport
+							 * entities that are *directly* linked to the Role role. This does *not*
+							 * include Reports associated with RoleReport entities that are linked 
+							 * to ancestors (parents, gransparents, ...) of Role role.
+							 */
+							RoleReport roleReport = roleReportRepository.findByRoleRoleIdAndReportReportId(
+									role.getRoleId(),
+									reportVersion.getReport().getReportId());
+							if (roleReport != null && roleReport.getReport().isActive()) {
+								return true;
+							}
+
+						}
+					}
 
 				}
 			}

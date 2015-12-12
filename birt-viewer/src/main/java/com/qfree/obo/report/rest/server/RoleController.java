@@ -58,7 +58,7 @@ public class RoleController extends AbstractBaseController {
 	 * This is just for a transition period until we have better/different
 	 * role management implemented.
 	 */
-	public static final boolean returnAllReportsForEachRole = true;
+	public static final boolean ALLOW_ALL_REPORTS_FOR_EACH_ROLE = true;
 
 	private final RoleRepository roleRepository;
 	private final RoleService roleService;
@@ -234,7 +234,7 @@ public class RoleController extends AbstractBaseController {
 		RestUtils.ifNullThen404(role, Role.class, "roleId", id.toString());
 
 		List<Report> reports = new ArrayList<>(0);
-		if (returnAllReportsForEachRole == true) {
+		if (ALLOW_ALL_REPORTS_FOR_EACH_ROLE == true) {
 			if (RestUtils.FILTER_INACTIVE_RECORDS && !ResourcePath.showAll(Report.class, showAll)) {
 				reports = reportRepository.findByActiveTrue();
 			} else {
