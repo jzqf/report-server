@@ -159,10 +159,14 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 					.authorizeRequests()
 
 					.antMatchers("/upload_report.html")
-					.access("isAuthenticated() or hasIpAddress('127.0.0.1') or hasIpAddress('0:0:0:0:0:0:0:1')")
+					//TODO MANAGE_ROLES -> RUN_DIAGNOSTICS
+					.access("hasAuthority('MANAGE_ROLES') or hasIpAddress('127.0.0.1') or hasIpAddress('0:0:0:0:0:0:0:1')")
+					//         .access("isAuthenticated() or hasIpAddress('127.0.0.1') or hasIpAddress('0:0:0:0:0:0:0:1')")
 
 					.antMatchers("/RequestHeaders")
-					.access("isAuthenticated() or hasIpAddress('127.0.0.1') or hasIpAddress('0:0:0:0:0:0:0:1')")
+					//TODO MANAGE_ROLES -> RUN_DIAGNOSTICS
+					.access("hasAuthority('MANAGE_ROLES') or hasIpAddress('127.0.0.1') or hasIpAddress('0:0:0:0:0:0:0:1')")
+					//         .access("isAuthenticated() or hasIpAddress('127.0.0.1') or hasIpAddress('0:0:0:0:0:0:0:1')")
 
 					/*
 					 * Report server ReST API:
@@ -172,7 +176,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 					/*
 					 * All other URLs:
 					 */
-					.anyRequest().authenticated()
+					.anyRequest().denyAll()
+					//.anyRequest().authenticated()
 					//.anyRequest().permitAll()
 
 					/*

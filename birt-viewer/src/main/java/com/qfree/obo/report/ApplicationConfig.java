@@ -231,6 +231,29 @@ public class ApplicationConfig {
 		return new ServletRegistrationBean(new RequestHeadersServlet(), "/RequestHeaders");
 	}
 
+	//	/**
+	//	 * This bean is needed to register the servlet TestReSTServlet with Spring
+	//	 * Boot for when this application is run in Spring Boot's embedded Tomcat
+	//	 * server via:
+	//	 * 
+	//	 * mvn clean spring-boot:run
+	//	 * 
+	//	 * This bean is *not* needed if this application is run by installing it as
+	//	 * a WAR file in Tomcat.
+	//	 * 
+	//	 * @return
+	//	 */
+	//	@Bean
+	//	public ServletRegistrationBean RegisterTestReSTServlet() {
+	//		//ServletRegistrationBean servletRegistrationBean = new ServletRegistrationBean(new TestReSTServlet(),
+	//		//		"/TestRest");
+	//		ServletRegistrationBean servletRegistrationBean = new ServletRegistrationBean();
+	//		servletRegistrationBean.setServlet(new TestReSTServlet());
+	//		servletRegistrationBean.addUrlMappings("/TestRest");
+	//		servletRegistrationBean.setEnabled(false); // <- set to true to enable servlet for Spring Boot's embedded Tomcat
+	//		return servletRegistrationBean;
+	//	}
+
 	public static void main(String[] args) {
 		SpringApplication.run(ApplicationConfig.class, args);
 	}
