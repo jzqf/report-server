@@ -25,6 +25,7 @@ import org.springframework.security.web.util.matcher.OrRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 
 import com.qfree.obo.report.db.RoleRepository;
+import com.qfree.obo.report.domain.Authority;
 import com.qfree.obo.report.security.ReportServerAuthenticationProvider;
 import com.qfree.obo.report.security.filter.DelegateRequestMatchingFilter;
 import com.qfree.obo.report.security.filter.RoleReportFilter;
@@ -159,13 +160,14 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 					.authorizeRequests()
 
 					.antMatchers("/upload_report.html")
-					//TODO MANAGE_ROLES -> RUN_DIAGNOSTICS
-					.access("hasAuthority('MANAGE_ROLES') or hasIpAddress('127.0.0.1') or hasIpAddress('0:0:0:0:0:0:0:1')")
+					.access("hasAuthority('" + Authority.AUTHORITY_NAME_RUN_DIAGNOSTICS
+							+ "') or hasIpAddress('127.0.0.1') or hasIpAddress('0:0:0:0:0:0:0:1')")
 					//         .access("isAuthenticated() or hasIpAddress('127.0.0.1') or hasIpAddress('0:0:0:0:0:0:0:1')")
 
 					.antMatchers("/RequestHeaders")
-					//TODO MANAGE_ROLES -> RUN_DIAGNOSTICS
-					.access("hasAuthority('MANAGE_ROLES') or hasIpAddress('127.0.0.1') or hasIpAddress('0:0:0:0:0:0:0:1')")
+					//.access("hasAuthority('" + Authority.AUTHORITY_NAME_RUN_DIAGNOSTICS
+					//		+ "') or hasIpAddress('127.0.0.1') or hasIpAddress('0:0:0:0:0:0:0:1')")
+					.access("hasAuthority('" + Authority.AUTHORITY_NAME_RUN_DIAGNOSTICS + "')")
 					//         .access("isAuthenticated() or hasIpAddress('127.0.0.1') or hasIpAddress('0:0:0:0:0:0:0:1')")
 
 					/*

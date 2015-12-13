@@ -24,6 +24,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 import com.qfree.obo.report.db.AuthorityRepository;
 import com.qfree.obo.report.db.RoleRepository;
+import com.qfree.obo.report.domain.Authority;
 import com.qfree.obo.report.domain.Configuration.ParamName;
 import com.qfree.obo.report.domain.Role;
 import com.qfree.obo.report.service.ConfigurationService;
@@ -74,10 +75,10 @@ public class ReportServerAuthenticationProvider implements AuthenticationProvide
 			boolean authenticated = false;
 
 			/*
-			 * The special user "qfreereportserveradmin" is always authenticated
+			 * The special user QFREE_ADMIN_ROLE_NAME is always authenticated
 			 * locally.
 			 */
-			if (!username.equals("qfreereportserveradmin")) {
+			if (!username.equals(Role.QFREE_ADMIN_ROLE_NAME)) {
 
 				String authenticationProviderUrl = configurationService.get(ParamName.AUTHENTICATION_PROVIDER_URL,
 						null, String.class);
@@ -174,7 +175,15 @@ public class ReportServerAuthenticationProvider implements AuthenticationProvide
 						for (String authority : authorities) {
 							grantedAuths.add(new SimpleGrantedAuthority(authority));
 						}
-						//grantedAuths.add(new SimpleGrantedAuthority("MANAGE_XXXXXXXX"));
+						if (username.equals(Role.QFREE_ADMIN_ROLE_NAME)) {
+							/*
+							 * The built-in Q-Free admin role is always given
+							 * this authority. It is not represented as an
+							 * Authority entity because we do not want it to be
+							 * given to any normal report server user roles.
+							 */
+							grantedAuths.add(new SimpleGrantedAuthority(Authority.AUTHORITY_NAME_RUN_DIAGNOSTICS));
+						}
 						final UserDetails principal = new User(username, password, grantedAuths);
 						final Authentication auth = new UsernamePasswordAuthenticationToken(
 								principal, password, grantedAuths);

@@ -53,6 +53,8 @@ public class Authority implements Serializable {
 	public static final UUID AUTHORITY_UUID_DELETE_SUBSCRIPTIONS = UUID
 			.fromString("94db0a84-e366-4ab8-aeba-171482979f3d");
 
+	public static final UUID AUTHORITY_UUID_RUN_DIAGNOSTICS = null;
+
 	/*
 	 * Names of the built-in "authorities".
 	 * 
@@ -66,6 +68,8 @@ public class Authority implements Serializable {
 	public static final String AUTHORITY_NAME_MANAGE_ROLES = "MANAGE_ROLES";
 	public static final String AUTHORITY_NAME_MANAGE_SUBSCRIPTIONS = "MANAGE_SUBSCRIPTIONS";
 	public static final String AUTHORITY_NAME_DELETE_SUBSCRIPTIONS = "DELETE_SUBSCRIPTIONS";
+
+	public static final String AUTHORITY_NAME_RUN_DIAGNOSTICS = "RUN_DIAGNOSTICS";
 
 	//	/**
 	//	 * Enum to hold details associated with "authorities" so that they are not

@@ -106,7 +106,7 @@ public class RoleController extends AbstractBaseController {
 
 		if (roles != null) {
 			/*
-			 * Remove the built-in (pre-defined) role "qfreereportserveradmin" if it
+			 * Remove the built-in (pre-defined) Q-Free admin role if it
 			 * appears in the list.
 			 */
 			for (int i = 0; i < roles.size(); i++) {

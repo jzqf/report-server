@@ -63,6 +63,7 @@ public class Role implements Serializable {
 	 * with this id.
 	 */
 	public static final UUID QFREE_ADMIN_ROLE_ID = UUID.fromString("10ab3537-0b12-44fa-a27b-6cf1aac14282");
+	public static final String QFREE_ADMIN_ROLE_NAME = "qfreereportserveradmin";
 
 	@Id
 	@NotNull
