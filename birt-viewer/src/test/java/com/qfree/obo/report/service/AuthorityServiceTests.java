@@ -38,7 +38,7 @@ public class AuthorityServiceTests {
 		List<Authority> authorities = authorityService.getActiveAuthoritiesByRoleId(Role.ADMIN_ROLE_ID);
 		logger.info("authorities = {}", authorities);
 		assertThat(authorities, is(not(nullValue())));
-		assertThat(authorities, hasSize(8));
+		assertThat(authorities, hasSize(14));
 	}
 
 	@Test
@@ -53,7 +53,7 @@ public class AuthorityServiceTests {
 		List<Authority> authorities = authorityService.getActiveAuthoritiesByRoleId(uuidOfRole_aa);
 		logger.info("authorities = {}", authorities);
 		assertThat(authorities, is(not(nullValue())));
-		assertThat(authorities, hasSize(8));
+		assertThat(authorities, hasSize(14));
 	}
 
 	@Test
@@ -68,7 +68,7 @@ public class AuthorityServiceTests {
 		List<Authority> authorities = authorityService.getActiveAuthoritiesByRoleId(uuidOfRole_aabc);
 		logger.info("authorities = {}", authorities);
 		assertThat(authorities, is(not(nullValue())));
-		assertThat(authorities, hasSize(8));
+		assertThat(authorities, hasSize(14));
 	}
 
 	@Test

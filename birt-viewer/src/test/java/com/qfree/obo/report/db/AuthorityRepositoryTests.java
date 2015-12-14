@@ -35,7 +35,7 @@ public class AuthorityRepositoryTests {
 	@Test
 	@Transactional
 	public void count() {
-		assertThat(authorityRepository.count(), is(equalTo(8L)));
+		assertThat(authorityRepository.count(), is(equalTo(14L)));
 	}
 
 	@Test

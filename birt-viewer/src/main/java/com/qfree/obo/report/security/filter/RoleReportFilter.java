@@ -1,7 +1,6 @@
 package com.qfree.obo.report.security.filter;
 
 import java.io.IOException;
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -19,14 +18,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
 
 import com.qfree.obo.report.db.ReportVersionRepository;
 import com.qfree.obo.report.db.RoleReportRepository;
 import com.qfree.obo.report.db.RoleRepository;
-import com.qfree.obo.report.domain.Authority;
 import com.qfree.obo.report.domain.ReportVersion;
 import com.qfree.obo.report.domain.Role;
 import com.qfree.obo.report.domain.RoleReport;
@@ -109,12 +106,12 @@ public class RoleReportFilter implements Filter {
 				logger.debug("user.getUsername()    = {}", user.getUsername());
 				logger.debug("user.getPassword()    = {}", user.getPassword());
 				logger.debug("user.getAuthorities() = {}", user.getAuthorities());
-				Collection<GrantedAuthority> authorities = user.getAuthorities();
-				for (GrantedAuthority grantedAuthority : authorities) {
-					if (grantedAuthority.getAuthority().equalsIgnoreCase(Authority.AUTHORITY_NAME_MANAGE_REPORTS)) {
-						logger.debug("User has authority MANAGE_REPORTS");
-					}
-				}
+				//Collection<GrantedAuthority> authorities = user.getAuthorities();
+				//for (GrantedAuthority grantedAuthority : authorities) {
+				//	if (grantedAuthority.getAuthority().equalsIgnoreCase(Authority.AUTHORITY_NAME_MANAGE_REPORTS)) {
+				//		logger.debug("User has authority MANAGE_REPORTS");
+				//	}
+				//}
 			}
 		}
 		logger.info("username = {}", username);

@@ -83,10 +83,10 @@ public class RoleController extends AbstractBaseController {
 	 *   $ mvn clean spring-boot:run
 	 *   $ curl -i -H "Accept: application/json;v=1" -X GET http://localhost:8080/rest/roles?expand=roles
 	 */
-	//@PreAuthorize("hasAuthority('MANAGE_ROLES')")
-	@PreAuthorize("hasAuthority('" + Authority.AUTHORITY_NAME_MANAGE_ROLES + "')")
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
+	//@PreAuthorize("hasAuthority('MANAGE_ROLES')")
+	@PreAuthorize("hasAuthority('" + Authority.AUTHORITY_NAME_MANAGE_ROLES + "')")
 	public RoleCollectionResource getList(
 			@HeaderParam("Accept") final String acceptHeader,
 			@QueryParam(ResourcePath.EXPAND_QP_NAME) final List<String> expand,

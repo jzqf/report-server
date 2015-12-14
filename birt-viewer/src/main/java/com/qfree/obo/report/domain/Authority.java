@@ -42,9 +42,21 @@ public class Authority implements Serializable {
 	/*
 	 * Primary keys of the built-in "authorities".
 	 */
+	public static final UUID AUTHORITY_UUID_MANAGE_AUTHORITIES = UUID
+			.fromString("1e4f29b9-3183-4f54-a4ee-96c2347d7e06");
 	public static final UUID AUTHORITY_UUID_MANAGE_CATEGORIES = UUID.fromString("dae0f68f-11c6-438c-8312-aca4d95731fc");
+	public static final UUID AUTHORITY_UUID_MANAGE_FILEFORMATS = UUID
+			.fromString("cd2c5d93-9b57-4a8b-b789-84dd567e0fa2");
+	public static final UUID AUTHORITY_UUID_MANAGE_FILESYNCING = UUID
+			.fromString("7e1ee8bb-3d5d-481a-b0f9-5c3fae3f4e38");
+	public static final UUID AUTHORITY_UUID_MANAGE_JOBPROCESSOR = UUID
+			.fromString("e5b569e6-bb2a-4f00-a9ca-f85ef0a3a339");
 	public static final UUID AUTHORITY_UUID_MANAGE_JOBS = UUID.fromString("12b1cb22-7686-4c9b-b73b-a25d4cb31663");
 	public static final UUID AUTHORITY_UUID_DELETE_JOBS = UUID.fromString("ace1edd3-6a5b-4b40-a802-79616472b89");
+	public static final UUID AUTHORITY_UUID_MANAGE_JOBSTATUSES = UUID
+			.fromString("bb8f7964-504a-4544-8638-11a62cc9a2ca");
+	public static final UUID AUTHORITY_UUID_MANAGE_PREFERENCES = UUID
+			.fromString("1bbc9e73-1095-4471-bdb2-726b10e47936");
 	public static final UUID AUTHORITY_UUID_MANAGE_REPORTS = UUID.fromString("7b758de7-cd54-43fa-baa0-dfbe59e66000");
 	public static final UUID AUTHORITY_UUID_UPLOAD_REPORTS = UUID.fromString("2efd4eca-bcb2-4cec-b804-3142c8297d65");
 	public static final UUID AUTHORITY_UUID_MANAGE_ROLES = UUID.fromString("2dac7af0-ba7d-4009-a313-e9a288272e90");
@@ -60,9 +72,15 @@ public class Authority implements Serializable {
 	 * 
 	 * These names are used in @Secured annotations.
 	 */
+	public static final String AUTHORITY_NAME_MANAGE_AUTHORITIES = "MANAGE_AUTHORITIES";
+	public static final String AUTHORITY_NAME_MANAGE_FILEFORMATS = "MANAGE_FILEFORMATS";
+	public static final String AUTHORITY_NAME_MANAGE_FILESYNCING = "MANAGE_FILESYNCING";
 	public static final String AUTHORITY_NAME_MANAGE_CATEGORIES = "MANAGE_CATEGORIES";
+	public static final String AUTHORITY_NAME_MANAGE_JOBPROCESSOR = "MANAGE_JOBPROCESSOR";
 	public static final String AUTHORITY_NAME_MANAGE_JOBS = "MANAGE_JOBS";
 	public static final String AUTHORITY_NAME_DELETE_JOBS = "DELETE_JOBS";
+	public static final String AUTHORITY_NAME_MANAGE_JOBSTATUSES = "MANAGE_JOBSTATUSES";
+	public static final String AUTHORITY_NAME_MANAGE_PREFERENCES = "MANAGE_PREFERENCES";
 	public static final String AUTHORITY_NAME_MANAGE_REPORTS = "MANAGE_REPORTS";
 	public static final String AUTHORITY_NAME_UPLOAD_REPORTS = "UPLOAD_REPORTS";
 	public static final String AUTHORITY_NAME_MANAGE_ROLES = "MANAGE_ROLES";
