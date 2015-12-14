@@ -148,83 +148,81 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
 
-		/*
-		 * Check whether security is enabled.
-		 */
-		if (env.getProperty("appsecurity.enable").equals("true")) {
-			//if (!env.getProperty("app.version").equals("*test*")) {
+		//		/*
+		//		 * Check whether security is enabled.
+		//		 */
+		//		if (env.getProperty("appsecurity.enable").equals("true")) {
 
-			http
-					.addFilterAfter(requestMatchingRoleReportFilter(), FilterSecurityInterceptor.class)
+		http
+				.addFilterAfter(requestMatchingRoleReportFilter(), FilterSecurityInterceptor.class)
 
-					.authorizeRequests()
+				.authorizeRequests()
 
-					.antMatchers("/upload_report.html")
-					.access("hasAuthority('" + Authority.AUTHORITY_NAME_RUN_DIAGNOSTICS
-							+ "') or hasIpAddress('127.0.0.1') or hasIpAddress('0:0:0:0:0:0:0:1')")
-					//         .access("isAuthenticated() or hasIpAddress('127.0.0.1') or hasIpAddress('0:0:0:0:0:0:0:1')")
+				.antMatchers("/upload_report.html")
+				.access("hasAuthority('" + Authority.AUTHORITY_NAME_RUN_DIAGNOSTICS
+						+ "') or hasIpAddress('127.0.0.1') or hasIpAddress('0:0:0:0:0:0:0:1')")
+				//         .access("isAuthenticated() or hasIpAddress('127.0.0.1') or hasIpAddress('0:0:0:0:0:0:0:1')")
 
-					.antMatchers("/RequestHeaders")
-					//.access("hasAuthority('" + Authority.AUTHORITY_NAME_RUN_DIAGNOSTICS
-					//		+ "') or hasIpAddress('127.0.0.1') or hasIpAddress('0:0:0:0:0:0:0:1')")
-					.access("hasAuthority('" + Authority.AUTHORITY_NAME_RUN_DIAGNOSTICS + "')")
-					//         .access("isAuthenticated() or hasIpAddress('127.0.0.1') or hasIpAddress('0:0:0:0:0:0:0:1')")
+				.antMatchers("/RequestHeaders")
+				//.access("hasAuthority('" + Authority.AUTHORITY_NAME_RUN_DIAGNOSTICS
+				//		+ "') or hasIpAddress('127.0.0.1') or hasIpAddress('0:0:0:0:0:0:0:1')")
+				.access("hasAuthority('" + Authority.AUTHORITY_NAME_RUN_DIAGNOSTICS + "')")
+				//         .access("isAuthenticated() or hasIpAddress('127.0.0.1') or hasIpAddress('0:0:0:0:0:0:0:1')")
 
-					/*
-					 * Report server ReST API:
-					 */
-					.antMatchers("/rest/**").authenticated()
+				/*
+				 * Report server ReST API:
+				 */
+				.antMatchers("/rest/**").authenticated()
 
-					/*
-					 * All other URLs:
-					 */
-					.anyRequest().denyAll()
-					//.anyRequest().authenticated()
-					//.anyRequest().permitAll()
+				/*
+				 * All other URLs:
+				 */
+				.anyRequest().denyAll()
+				//.anyRequest().authenticated()
+				//.anyRequest().permitAll()
 
-					/*
-					 * Enforce channel security.
-					 */
-					.and().requiresChannel()
-					.antMatchers("/upload_report.html").requiresInsecure()
-					.antMatchers("/rest/**").requiresInsecure()
-					.anyRequest().requiresInsecure()
+				/*
+				 * Enforce channel security.
+				 */
+				.and().requiresChannel()
+				.antMatchers("/upload_report.html").requiresInsecure()
+				.antMatchers("/rest/**").requiresInsecure()
+				.anyRequest().requiresInsecure()
 
-					.and().httpBasic().realmName("Q-Free Report Server")
+				.and().httpBasic().realmName("Q-Free Report Server")
 
-					/*
-					 * This tells Spring Security to *NOT* create a session, 
-					 * i.e., it will never set a cookie named JSESSIONID with a
-					 * UUID value such as A7E9BDD3E80D5FC534B9B6F49F3B7125. 
-					 * Since no session is ever created, Spring Security will 
-					 * expect authentication credentials in each request and it
-					 * will check these credentials against its user store for
-					 * each request.
-					 */
-					.and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+				/*
+				 * This tells Spring Security to *NOT* create a session, 
+				 * i.e., it will never set a cookie named JSESSIONID with a
+				 * UUID value such as A7E9BDD3E80D5FC534B9B6F49F3B7125. 
+				 * Since no session is ever created, Spring Security will 
+				 * expect authentication credentials in each request and it
+				 * will check these credentials against its user store for
+				 * each request.
+				 */
+				.and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
 
-					/*
-					 * Spring Security enables CSRF by default, and it expects a
-					 * CSRF token for any state-changing request (this includes
-					 * most requests that do *not* use the HTTP methods GET, 
-					 * HEAD, OPTIONS or TRACE). If such requests do not carry a
-					 * CSRF token, the request will fail with a CsrfException.
-					 */
-					.and().csrf().disable();
+				/*
+				 * Spring Security enables CSRF by default, and it expects a
+				 * CSRF token for any state-changing request (this includes
+				 * most requests that do *not* use the HTTP methods GET, 
+				 * HEAD, OPTIONS or TRACE). If such requests do not carry a
+				 * CSRF token, the request will fail with a CsrfException.
+				 */
+				.and().csrf().disable();
 
-		} else {
-
-			/*
-			 * Turn off security. 
-			 */
-			http
-					.authorizeRequests()
-					.anyRequest().authenticated()
-					.and().httpBasic().realmName("Q-Free Report Server")
-					//.anyRequest().permitAll()
-					//.antMatchers("/**").permitAll()
-					.and().csrf().disable();
-		}
+		//		} else {
+		//
+		//			/*
+		//			 * Turn off security. 
+		//			 */
+		//			http
+		//					.authorizeRequests()
+		//					.anyRequest().authenticated()
+		//					.and().httpBasic().realmName("Q-Free Report Server")
+		//					//.anyRequest().permitAll()
+		//					.and().csrf().disable();
+		//		}
 	}
 
 }

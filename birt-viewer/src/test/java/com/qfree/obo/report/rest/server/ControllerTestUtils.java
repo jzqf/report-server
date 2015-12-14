@@ -8,6 +8,8 @@ import org.glassfish.jersey.client.authentication.HttpAuthenticationFeature;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.qfree.obo.report.domain.Role;
+
 /**
  * 
  * @author Jeffrey Zelt
@@ -20,9 +22,14 @@ abstract class ControllerTestUtils {
 	public static Client setUpJaxRsClient() {
 		logger.info("Setting up JAX-RS Client with basic authentication...");
 
-		HttpAuthenticationFeature basicAuthenticationFeature = HttpAuthenticationFeature.basic("qfreereportserveradmin",
+		/*
+		 * Use the security credentials of the built-in Q-Free admin role. This
+		 * role is always authenticated locally. The password here must match
+		 * the hashed password stored in Role.encodedPassword.
+		 */
+		HttpAuthenticationFeature basicAuthenticationFeature = HttpAuthenticationFeature.basic(
+				Role.QFREE_ADMIN_ROLE_NAME,
 				"qfreereportserveradmin_Af5Dj%4$");
-		//HttpAuthenticationFeature basicAuthenticationFeature = HttpAuthenticationFeature.basic("a", "anything");
 
 		return ClientBuilder.newBuilder()
 				//	.register(JsonProcessingFeature.class)
