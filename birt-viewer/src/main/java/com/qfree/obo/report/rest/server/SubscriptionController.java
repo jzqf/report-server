@@ -28,12 +28,14 @@ import org.quartz.SchedulerException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.qfree.obo.report.db.RoleParameterRepository;
 import com.qfree.obo.report.db.RoleParameterValueRepository;
 import com.qfree.obo.report.db.SubscriptionRepository;
+import com.qfree.obo.report.domain.Authority;
 import com.qfree.obo.report.domain.ReportParameter;
 import com.qfree.obo.report.domain.RoleParameter;
 import com.qfree.obo.report.domain.RoleParameterValue;
@@ -108,6 +110,7 @@ public class SubscriptionController extends AbstractBaseController {
 	@GET
 	@Transactional
 	@Produces(MediaType.APPLICATION_JSON)
+	@PreAuthorize("hasAuthority('" + Authority.AUTHORITY_NAME_MANAGE_SUBSCRIPTIONS + "')")
 	public SubscriptionCollectionResource getList(
 			@HeaderParam("Accept") final String acceptHeader,
 			@QueryParam(ResourcePath.EXPAND_QP_NAME) final List<String> expand,
@@ -856,6 +859,7 @@ public class SubscriptionController extends AbstractBaseController {
 	@Transactional
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
+	@PreAuthorize("hasAuthority('" + Authority.AUTHORITY_NAME_DELETE_SUBSCRIPTIONS + "')")
 	public SubscriptionResource deleteById(
 			//public Response updateById(
 			@PathParam("id") final UUID id,

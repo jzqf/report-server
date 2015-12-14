@@ -21,10 +21,12 @@ import javax.ws.rs.core.UriInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.qfree.obo.report.db.DocumentFormatRepository;
+import com.qfree.obo.report.domain.Authority;
 import com.qfree.obo.report.domain.DocumentFormat;
 import com.qfree.obo.report.dto.DocumentFormatCollectionResource;
 import com.qfree.obo.report.dto.DocumentFormatResource;
@@ -63,6 +65,7 @@ public class DocumentFormatController extends AbstractBaseController {
 	@Transactional
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
+	@PreAuthorize("hasAuthority('" + Authority.AUTHORITY_NAME_MANAGE_FILEFORMATS + "')")
 	public DocumentFormatCollectionResource getList(
 			@HeaderParam("Accept") final String acceptHeader,
 			@QueryParam(ResourcePath.EXPAND_QP_NAME) final List<String> expand,
@@ -168,6 +171,7 @@ public class DocumentFormatController extends AbstractBaseController {
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	@Transactional
+	@PreAuthorize("hasAuthority('" + Authority.AUTHORITY_NAME_MANAGE_FILEFORMATS + "')")
 	public Response updateById(
 			DocumentFormatResource documentFormatResource,
 			@PathParam("id") final UUID id,

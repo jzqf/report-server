@@ -22,10 +22,12 @@ import javax.ws.rs.core.UriInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.qfree.obo.report.db.ReportCategoryRepository;
+import com.qfree.obo.report.domain.Authority;
 import com.qfree.obo.report.domain.ReportCategory;
 import com.qfree.obo.report.dto.ReportCategoryCollectionResource;
 import com.qfree.obo.report.dto.ReportCategoryResource;
@@ -60,7 +62,6 @@ public class ReportCategoryController extends AbstractBaseController {
 	 */
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
-	//	public List<ReportCategoryResource> getList(
 	public ReportCategoryCollectionResource getList(
 			@HeaderParam("Accept") final String acceptHeader,
 			@QueryParam(ResourcePath.EXPAND_QP_NAME) final List<String> expand,
@@ -103,6 +104,7 @@ public class ReportCategoryController extends AbstractBaseController {
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	@Transactional
+	@PreAuthorize("hasAuthority('" + Authority.AUTHORITY_NAME_MANAGE_CATEGORIES + "')")
 	public Response create(
 			ReportCategoryResource reportCategoryResource,
 			@HeaderParam("Accept") final String acceptHeader,
@@ -166,6 +168,7 @@ public class ReportCategoryController extends AbstractBaseController {
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	@Transactional
+	@PreAuthorize("hasAuthority('" + Authority.AUTHORITY_NAME_MANAGE_CATEGORIES + "')")
 	public Response updateById(
 			ReportCategoryResource reportCategoryResource,
 			@PathParam("id") final UUID id,

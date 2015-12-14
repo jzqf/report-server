@@ -184,6 +184,7 @@ public class RoleControllerTests {
 	@Test
 	@DirtiesContext
 	@Transactional
+	//@WithMockUser(authorities = { "MANAGE_ROLES" })
 	public void testCreateByPost() {
 		/* This is the default version for the endpoint 
 		 * AbstractResource.ROLES_PATH using HTTP POST.

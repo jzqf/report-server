@@ -22,10 +22,12 @@ import javax.ws.rs.core.UriInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.qfree.obo.report.db.ParameterGroupRepository;
+import com.qfree.obo.report.domain.Authority;
 import com.qfree.obo.report.domain.ParameterGroup;
 import com.qfree.obo.report.dto.ParameterGroupResource;
 import com.qfree.obo.report.dto.ResourcePath;
@@ -89,7 +91,7 @@ public class ParameterGroupController extends AbstractBaseController {
 	 * This endpoint can be tested with:
 	 * 
 	 *   $ mvn clean spring-boot:run
-	 *   $ curl -iH "Accept: application/json;v=1" -H "Content-Type: application/json" -X POST -d \
+	 *   $ curl -X POST -iH "Accept: application/json;v=1" -H "Content-Type: application/json" -d \
 	 *   '{"name":"ParameterGroup name","promptText":"Group prompt text",\
 	 *   "groupType":4, "createdOn":"1958-05-06T12:00:00.000Z"}' \
 	 *   http://localhost:8080/rest/parameterGroups
@@ -97,7 +99,7 @@ public class ParameterGroupController extends AbstractBaseController {
 	 * This endpoint will throw a "403 Forbidden" error because an id for the 
 	 * ParameterGroup to create is given:
 	 * 
-	 *	curl -iH "Accept: application/json;v=1" -H "Content-Type: application/json" -X POST -d \
+	 *	curl -X POST -iH "Accept: application/json;v=1" -H "Content-Type: application/json" -d \
 	 *	'{"name":"ParameterGroup name","promptText":"Group prompt text","groupType":4}' \
 	 *	http://localhost:8080/rest/parameterGroups
 	 */
@@ -105,6 +107,7 @@ public class ParameterGroupController extends AbstractBaseController {
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	@Transactional
+	@PreAuthorize("hasAuthority('" + Authority.AUTHORITY_NAME_MANAGE_REPORTS + "')")
 	public Response create(
 			ParameterGroupResource parameterGroupResource,
 			@HeaderParam("Accept") final String acceptHeader,
@@ -170,6 +173,7 @@ public class ParameterGroupController extends AbstractBaseController {
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	@Transactional
+	@PreAuthorize("hasAuthority('" + Authority.AUTHORITY_NAME_MANAGE_REPORTS + "')")
 	public Response updateById(
 			ParameterGroupResource parameterGroupResource,
 			@PathParam("id") final UUID id,

@@ -23,10 +23,12 @@ import javax.ws.rs.core.UriInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.qfree.obo.report.db.ReportRepository;
+import com.qfree.obo.report.domain.Authority;
 import com.qfree.obo.report.domain.Report;
 import com.qfree.obo.report.dto.ReportCollectionResource;
 import com.qfree.obo.report.dto.ReportResource;
@@ -62,8 +64,7 @@ public class ReportController extends AbstractBaseController {
 	 * This endpoint can be tested with:
 	 * 
 	 *   $ mvn clean spring-boot:run
-	 *   $ curl -i -H "Accept: application/json;v=1" -X GET \
-	 *   http://localhost:8080/rest/reports
+	 *   $ curl -X GET -iH "Accept: application/json;v=1" http://localhost:8080/rest/reports?expand=reports
 	 * 
 	 * @Transactional is used to avoid org.hibernate.LazyInitializationException
 	 * being thrown when evaluating report.getReportVersions().
@@ -71,9 +72,10 @@ public class ReportController extends AbstractBaseController {
 	@Transactional
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
+	@PreAuthorize("hasAuthority('" + Authority.AUTHORITY_NAME_MANAGE_REPORTS + "')")
 	public ReportCollectionResource getList(
 			@HeaderParam("Accept") final String acceptHeader,
-			//	@Context SecurityContext sc,
+			//@Context SecurityContext sc, // javax.ws.rs.core.SecurityContext
 			@QueryParam(ResourcePath.EXPAND_QP_NAME) final List<String> expand,
 			@QueryParam(ResourcePath.SHOWALL_QP_NAME) final List<String> showAll,
 			@Context final UriInfo uriInfo) {
@@ -111,6 +113,8 @@ public class ReportController extends AbstractBaseController {
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
+	@PreAuthorize("hasAuthority('" + Authority.AUTHORITY_NAME_MANAGE_REPORTS + "')" +
+			" or hasAuthority('" + Authority.AUTHORITY_NAME_UPLOAD_REPORTS + "')")
 	public Response create(
 			ReportResource reportResource,
 			@HeaderParam("Accept") final String acceptHeader,
@@ -186,6 +190,7 @@ public class ReportController extends AbstractBaseController {
 	@PUT
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
+	@PreAuthorize("hasAuthority('" + Authority.AUTHORITY_NAME_MANAGE_REPORTS + "')")
 	public Response updateById(
 			ReportResource reportResource,
 			@PathParam("id") final UUID id,

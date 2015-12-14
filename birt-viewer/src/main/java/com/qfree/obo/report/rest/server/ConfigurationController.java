@@ -21,11 +21,13 @@ import javax.ws.rs.core.UriInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.qfree.obo.report.db.ConfigurationRepository;
 import com.qfree.obo.report.db.RoleRepository;
+import com.qfree.obo.report.domain.Authority;
 import com.qfree.obo.report.domain.Configuration;
 import com.qfree.obo.report.domain.Configuration.ParamName;
 import com.qfree.obo.report.domain.Role;
@@ -59,6 +61,7 @@ public class ConfigurationController extends AbstractBaseController {
 
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
+	@PreAuthorize("hasAuthority('" + Authority.AUTHORITY_NAME_MANAGE_PREFERENCES + "')")
 	public ConfigurationCollectionResource getList(
 			@HeaderParam("Accept") final String acceptHeader,
 			@QueryParam(ResourcePath.EXPAND_QP_NAME) final List<String> expand,
@@ -125,6 +128,7 @@ public class ConfigurationController extends AbstractBaseController {
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	@Transactional
+	@PreAuthorize("hasAuthority('" + Authority.AUTHORITY_NAME_MANAGE_PREFERENCES + "')")
 	public Response createOrUpdate(
 			ConfigurationResource configurationResource,
 			@HeaderParam("Accept") final String acceptHeader,
@@ -201,6 +205,7 @@ public class ConfigurationController extends AbstractBaseController {
 	@Path("/{id}")
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
+	@PreAuthorize("hasAuthority('" + Authority.AUTHORITY_NAME_MANAGE_PREFERENCES + "')")
 	public ConfigurationResource getById(
 			@PathParam("id") final UUID id,
 			@HeaderParam("Accept") final String acceptHeader,

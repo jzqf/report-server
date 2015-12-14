@@ -218,7 +218,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 			 * Turn off security. 
 			 */
 			http
-					.authorizeRequests().anyRequest().permitAll()
+					.authorizeRequests()
+					.anyRequest().authenticated()
+					.and().httpBasic().realmName("Q-Free Report Server")
+					//.anyRequest().permitAll()
+					//.antMatchers("/**").permitAll()
 					.and().csrf().disable();
 		}
 	}

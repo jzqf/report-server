@@ -24,12 +24,14 @@ import org.eclipse.birt.report.engine.api.IParameterDefn;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.qfree.obo.report.db.ParameterGroupRepository;
 import com.qfree.obo.report.db.ReportParameterRepository;
 import com.qfree.obo.report.db.ReportVersionRepository;
+import com.qfree.obo.report.domain.Authority;
 import com.qfree.obo.report.domain.ParameterGroup;
 import com.qfree.obo.report.domain.ReportParameter;
 import com.qfree.obo.report.domain.SelectionListValue;
@@ -240,6 +242,7 @@ public class ReportParameterController extends AbstractBaseController {
 	@PUT
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
+	@PreAuthorize("hasAuthority('" + Authority.AUTHORITY_NAME_MANAGE_REPORTS + "')")
 	public Response updateById(
 			ReportParameterResource reportParameterResource,
 			@PathParam("id") final UUID id,

@@ -796,6 +796,14 @@ public class RestUtils {
 		return filterConditions;
 	}
 
+	/**
+	 * Returns a {@link List} representing the filter conditions parsed from the
+	 * "filter" query parameters in the ReST resource URI.
+	 * 
+	 * @param queryParams
+	 * @return
+	 * @throws ResourceFilterParseException
+	 */
 	public static List<List<Map<String, String>>> parseFilterQueryParams(Map<String, List<String>> queryParams)
 			throws ResourceFilterParseException {
 

@@ -18,6 +18,7 @@ import javax.ws.rs.core.UriInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -55,7 +56,7 @@ public class AuthorityController extends AbstractBaseController {
 	@GET
 	@Transactional
 	@Produces(MediaType.APPLICATION_JSON)
-	//@PreAuthorize("hasAuthority('" + Authority.AUTHORITY_NAME_MANAGE_AUTHORITIES + "')")
+	@PreAuthorize("hasAuthority('" + Authority.AUTHORITY_NAME_MANAGE_AUTHORITIES + "')")
 	public AuthorityCollectionResource getList(
 			@HeaderParam("Accept") final String acceptHeader,
 			@QueryParam(ResourcePath.EXPAND_QP_NAME) final List<String> expand,
