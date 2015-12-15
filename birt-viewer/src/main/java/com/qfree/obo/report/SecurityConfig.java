@@ -148,97 +148,110 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
 
-		//		/*
-		//		 * Check whether security is enabled.
-		//		 */
-		//		if (env.getProperty("appsecurity.enable").equals("true")) {
-
-		http
-				.addFilterAfter(requestMatchingRoleReportFilter(), FilterSecurityInterceptor.class)
-
-				.authorizeRequests()
-
-				.antMatchers("/upload_report.html")
-				.access("hasAuthority('" + Authority.AUTHORITY_NAME_RUN_DIAGNOSTICS
-						+ "') or hasIpAddress('127.0.0.1') or hasIpAddress('0:0:0:0:0:0:0:1')")
-				//         .access("isAuthenticated() or hasIpAddress('127.0.0.1') or hasIpAddress('0:0:0:0:0:0:0:1')")
-
-				.antMatchers("/RequestHeaders")
-				//.access("hasAuthority('" + Authority.AUTHORITY_NAME_RUN_DIAGNOSTICS
-				//		+ "') or hasIpAddress('127.0.0.1') or hasIpAddress('0:0:0:0:0:0:0:1')")
-				.access("hasAuthority('" + Authority.AUTHORITY_NAME_RUN_DIAGNOSTICS + "')")
-				//         .access("isAuthenticated() or hasIpAddress('127.0.0.1') or hasIpAddress('0:0:0:0:0:0:0:1')")
-
-				/*
-				 * Report server ReST API:
-				 */
-				.antMatchers("/rest/**").authenticated()
-
-				/*
-				 * All other URLs:
-				 */
-				.anyRequest().denyAll()
-				//.anyRequest().authenticated()
-				//.anyRequest().permitAll()
-
-				//				/*
-				//				 * Enforce channel security.
-				//				 */
-				//				.and().requiresChannel()
-				//				.antMatchers("/upload_report.html").requiresInsecure()
-				//				.antMatchers("/rest/**").requiresInsecure()
-				//				.anyRequest().requiresInsecure()
-
-				.and().httpBasic().realmName("Q-Free Report Server")
-
-				/*
-				 * This tells Spring Security to *NOT* create a session, 
-				 * i.e., it will never set a cookie named JSESSIONID with a
-				 * UUID value such as A7E9BDD3E80D5FC534B9B6F49F3B7125. 
-				 * Since no session is ever created, Spring Security will 
-				 * expect authentication credentials in each request and it
-				 * will check these credentials against its user store for
-				 * each request.
-				 */
-				.and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
-
 		/*
-		 * Enforce channel security.
+		 * Check whether security is enabled.
 		 */
-		if (env.getProperty("appsecurity.require.https").equals("true")) {
-			http.requiresChannel()
-					.antMatchers("/upload_report.html").requiresSecure()
-					.antMatchers("/rest/**").requiresSecure()
-					.anyRequest().requiresSecure();
+		if (env.getProperty("appsecurity.enable").equals("true")) {
+
+			http
+					.addFilterAfter(requestMatchingRoleReportFilter(), FilterSecurityInterceptor.class)
+
+					.authorizeRequests()
+
+					.antMatchers("/upload_report.html")
+					.access("hasAuthority('" + Authority.AUTHORITY_NAME_RUN_DIAGNOSTICS
+							+ "') or hasIpAddress('127.0.0.1') or hasIpAddress('0:0:0:0:0:0:0:1')")
+					//         .access("isAuthenticated() or hasIpAddress('127.0.0.1') or hasIpAddress('0:0:0:0:0:0:0:1')")
+
+					.antMatchers("/RequestHeaders")
+					//.access("hasAuthority('" + Authority.AUTHORITY_NAME_RUN_DIAGNOSTICS
+					//		+ "') or hasIpAddress('127.0.0.1') or hasIpAddress('0:0:0:0:0:0:0:1')")
+					.access("hasAuthority('" + Authority.AUTHORITY_NAME_RUN_DIAGNOSTICS + "')")
+					//         .access("isAuthenticated() or hasIpAddress('127.0.0.1') or hasIpAddress('0:0:0:0:0:0:0:1')")
+
+					/*
+					 * Report server ReST API:
+					 */
+					.antMatchers("/rest/**").authenticated()
+
+					/*
+					 * All other URLs:
+					 */
+					.anyRequest().denyAll()
+					//.anyRequest().authenticated()
+					//.anyRequest().permitAll()
+
+					.and().httpBasic().realmName("Q-Free Report Server")
+
+					/*
+					 * This tells Spring Security to *NOT* create a session, 
+					 * i.e., it will never set a cookie named JSESSIONID with a
+					 * UUID value such as A7E9BDD3E80D5FC534B9B6F49F3B7125. 
+					 * Since no session is ever created, Spring Security will 
+					 * expect authentication credentials in each request and it
+					 * will check these credentials against its user store for
+					 * each request.
+					 */
+					.and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+
+			/*
+			 * Enforce channel security.
+			 */
+			if (env.getProperty("appsecurity.require.https").equals("true")) {
+				http
+						.requiresChannel()
+						.antMatchers("/upload_report.html").requiresSecure()
+						.antMatchers("/rest/**").requiresSecure()
+						.anyRequest().requiresSecure();
+			} else {
+				http
+						.requiresChannel()
+						.antMatchers("/upload_report.html").requiresInsecure()
+						.antMatchers("/rest/**").requiresInsecure()
+						.anyRequest().requiresInsecure();
+			}
+
+			/*
+			 * Spring Security enables CSRF by default, and it expects a
+			 * CSRF token for any state-changing request (this includes
+			 * most requests that do *not* use the HTTP methods GET, 
+			 * HEAD, OPTIONS or TRACE). If such requests do not carry a
+			 * CSRF token, the request will fail with a CsrfException.
+			 */
+			http.csrf().disable();
+
 		} else {
-			http.requiresChannel()
-					.antMatchers("/upload_report.html").requiresInsecure()
-					.antMatchers("/rest/**").requiresInsecure()
-					.anyRequest().requiresInsecure();
+
+			/*
+			 * Turn off security. 
+			 */
+			http
+					.authorizeRequests()
+					//	.anyRequest().authenticated()
+					//	.and().httpBasic().realmName("Q-Free Report Server")
+					.anyRequest().permitAll()
+					/*
+					 * We need to assign these authorities to the "anonymous"
+					 * user in order to satisfy method-level security 
+					 * constraints imposed with @PreAuthorize.
+					 */
+					.and().anonymous().authorities(
+							"MANAGE_AUTHORITIES",
+							"MANAGE_FILEFORMATS",
+							"MANAGE_FILESYNCING",
+							"MANAGE_CATEGORIES",
+							"MANAGE_JOBPROCESSOR",
+							"MANAGE_JOBS",
+							"DELETE_JOBS",
+							"MANAGE_JOBSTATUSES",
+							"MANAGE_PREFERENCES",
+							"MANAGE_REPORTS",
+							"UPLOAD_REPORTS",
+							"MANAGE_ROLES",
+							"MANAGE_SUBSCRIPTIONS",
+							"DELETE_SUBSCRIPTIONS")
+					.and().csrf().disable();
 		}
-
-		/*
-		 * Spring Security enables CSRF by default, and it expects a
-		 * CSRF token for any state-changing request (this includes
-		 * most requests that do *not* use the HTTP methods GET, 
-		 * HEAD, OPTIONS or TRACE). If such requests do not carry a
-		 * CSRF token, the request will fail with a CsrfException.
-		 */
-		//.and().csrf().disable();
-		http.csrf().disable();
-
-		//		} else {
-		//
-		//			/*
-		//			 * Turn off security. 
-		//			 */
-		//			http
-		//					.authorizeRequests()
-		//					.anyRequest().authenticated()
-		//					.and().httpBasic().realmName("Q-Free Report Server")
-		//					//.anyRequest().permitAll()
-		//					.and().csrf().disable();
-		//		}
 	}
 
 }
