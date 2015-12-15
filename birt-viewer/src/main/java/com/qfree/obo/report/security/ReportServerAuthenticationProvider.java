@@ -18,7 +18,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
@@ -184,7 +183,9 @@ public class ReportServerAuthenticationProvider implements AuthenticationProvide
 							 */
 							grantedAuths.add(new SimpleGrantedAuthority(Authority.AUTHORITY_NAME_RUN_DIAGNOSTICS));
 						}
-						final UserDetails principal = new User(username, password, grantedAuths);
+						//final UserDetails principal = new User(username, password, grantedAuths);
+						final UserDetails principal = new ReportServerUser(role.getRoleId(), username, password,
+								grantedAuths);
 						final Authentication auth = new UsernamePasswordAuthenticationToken(
 								principal, password, grantedAuths);
 						return auth;

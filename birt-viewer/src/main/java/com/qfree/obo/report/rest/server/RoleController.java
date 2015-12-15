@@ -337,7 +337,7 @@ public class RoleController extends AbstractBaseController {
 	 *   $ mvn clean spring-boot:run
 	 *   
 	 *   $ curl -X PUT -iH "Accept: application/json;v=1" -H "Content-Type: application/json" -d \
-	 *   '{"username":"bozoc","fullName":Bozo the clown","loginRole":true,\
+	 *   '{"username":"bozoc","fullName":"Bozo the clown","loginRole":true,\
 	 *   "email_address":"dumbo@circus.net","timeZoneId":"UTC"}' \
 	 *   http://localhost:8080/rest/roles/f9a94054-c62b-464c-874c-a61d18530c87
 	 * 
@@ -353,13 +353,43 @@ public class RoleController extends AbstractBaseController {
 	@PUT
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	@PreAuthorize("hasAuthority('" + Authority.AUTHORITY_NAME_MANAGE_ROLES + "')")
+	/*
+	 * The authenticated user must either:
+	 * 
+	 *   1. Have the authority "MANAGE_ROLES", or
+	 *   
+	 *   2. Have a value of Role.roleId equal to the value of roleId for the
+	 *      Role to be updated, i.e., the user is updating his/her own Role.
+	 */
+	@PreAuthorize("hasAuthority('" + Authority.AUTHORITY_NAME_MANAGE_ROLES + "')"
+			+ " or #id == principal.roleId")
+	//		+" or #roleResource.username == principal.username")
 	public Response updateById(
 			RoleResource roleResource,
 			@PathParam("id") final UUID id,
 			@HeaderParam("Accept") final String acceptHeader,
+			//@Context SecurityContext sc, // javax.ws.rs.core.SecurityContext
 			@Context final UriInfo uriInfo) {
 		RestApiVersion apiVersion = RestUtils.extractAPIVersion(acceptHeader, RestApiVersion.v1);
+
+		//logger.info("sc = {}", sc);
+		//if (sc != null) {
+		//	logger.info("sc.getUserPrincipal() = {}", sc.getUserPrincipal());
+		//	if (sc.getUserPrincipal() != null) {
+		//		Principal principal = sc.getUserPrincipal();
+		//		logger.info("sc.getUserPrincipal().getName() = {}", principal.getName());
+		//		logger.info("principal.getClass() = {}", principal.getClass());
+		//		if (principal instanceof UsernamePasswordAuthenticationToken) {
+		//			UsernamePasswordAuthenticationToken upat = (UsernamePasswordAuthenticationToken) principal;
+		//			Object o = upat.getPrincipal();
+		//			logger.info("o.getClass() = {}", o.getClass());
+		//			if (o instanceof ReportServerUser) {
+		//				ReportServerUser reportServerUser = (ReportServerUser) o;
+		//				logger.info("reportServerUser.getRoleId() = {}", reportServerUser.getRoleId());
+		//			}
+		//		}
+		//	}
+		//}
 
 		/*
 		 * Retrieve Role entity to be updated.
