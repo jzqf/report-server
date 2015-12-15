@@ -195,6 +195,20 @@ public class Role implements Serializable {
 				roleResource.getCreatedOn());
 	}
 
+	public Role(String username) {
+		this(
+				null,
+				null,
+				username,
+				null,
+				true,
+				null,
+				null,
+				true,
+				true,
+				null);
+	}
+
 	public Role(
 			UUID roleId,
 			String encodedPassword,

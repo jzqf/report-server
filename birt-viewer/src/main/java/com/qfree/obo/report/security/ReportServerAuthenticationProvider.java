@@ -12,6 +12,8 @@ import org.glassfish.jersey.client.authentication.HttpAuthenticationFeature;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.core.env.Environment;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -28,9 +30,18 @@ import com.qfree.obo.report.domain.Configuration.ParamName;
 import com.qfree.obo.report.domain.Role;
 import com.qfree.obo.report.service.ConfigurationService;
 
+@PropertySource("classpath:config.properties")
 public class ReportServerAuthenticationProvider implements AuthenticationProvider {
 
 	private static final Logger logger = LoggerFactory.getLogger(ReportServerAuthenticationProvider.class);
+
+	/*
+	 * The injected "env" object here will contain key/value pairs for each 
+	 * property in the properties files specified above in the @PropertySource
+	 * annotation.
+	 */
+	@Autowired
+	private Environment env;
 
 	//	@Autowired
 	//	private HttpServletRequest httpServletRequest;
@@ -117,11 +128,33 @@ public class ReportServerAuthenticationProvider implements AuthenticationProvide
 					logger.info("External authentication provider not configured.");
 				}
 			}
-
+			authenticated = true;
 			Role role = roleRepository.findByUsername(username);
-			if (authenticated && role == null && true) {
-
+			if (authenticated && role == null && env.getProperty("appsecurity.auto.create.roles").equals("true")) {
+				/*
+				 * If all of the following are true:
+				 * 
+				 *    1. A user is successfully authenticated by an external
+				 *       authentication provider,
+				 *       
+				 *    2. There is no corresponding Role in the report server 
+				 *       database for the authenticated user,
+				 *    
+				 *    3. The configuration parameter
+				 *       "appsecurity.auto.create.roles" is equal to "true",
+				 * 
+				 * then a Role entity is *automatically* created here for the 
+				 * user.
+				 * 
+				 * If, however, "appsecurity.auto.create.roles" is "false", then
+				 * a Role will need to be created by another means before this
+				 * user can successfully be authenticated here because a Role is
+				 * needed for *authorization* in the report server application.
+				 */
+				role = new Role(username);
+				role = roleRepository.save(role);
 			}
+
 			/*
 			 * Whether or not the connection is authenticated by an external 
 			 * authentication provider, there must be a Role in the report
