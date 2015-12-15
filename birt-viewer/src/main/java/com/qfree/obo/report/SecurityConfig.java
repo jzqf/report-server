@@ -181,13 +181,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 				//.anyRequest().authenticated()
 				//.anyRequest().permitAll()
 
-				/*
-				 * Enforce channel security.
-				 */
-				.and().requiresChannel()
-				.antMatchers("/upload_report.html").requiresInsecure()
-				.antMatchers("/rest/**").requiresInsecure()
-				.anyRequest().requiresInsecure()
+				//				/*
+				//				 * Enforce channel security.
+				//				 */
+				//				.and().requiresChannel()
+				//				.antMatchers("/upload_report.html").requiresInsecure()
+				//				.antMatchers("/rest/**").requiresInsecure()
+				//				.anyRequest().requiresInsecure()
 
 				.and().httpBasic().realmName("Q-Free Report Server")
 
@@ -200,16 +200,32 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 				 * will check these credentials against its user store for
 				 * each request.
 				 */
-				.and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+				.and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 
-				/*
-				 * Spring Security enables CSRF by default, and it expects a
-				 * CSRF token for any state-changing request (this includes
-				 * most requests that do *not* use the HTTP methods GET, 
-				 * HEAD, OPTIONS or TRACE). If such requests do not carry a
-				 * CSRF token, the request will fail with a CsrfException.
-				 */
-				.and().csrf().disable();
+		/*
+		 * Enforce channel security.
+		 */
+		if (env.getProperty("appsecurity.require.https").equals("true")) {
+			http.requiresChannel()
+					.antMatchers("/upload_report.html").requiresSecure()
+					.antMatchers("/rest/**").requiresSecure()
+					.anyRequest().requiresSecure();
+		} else {
+			http.requiresChannel()
+					.antMatchers("/upload_report.html").requiresInsecure()
+					.antMatchers("/rest/**").requiresInsecure()
+					.anyRequest().requiresInsecure();
+		}
+
+		/*
+		 * Spring Security enables CSRF by default, and it expects a
+		 * CSRF token for any state-changing request (this includes
+		 * most requests that do *not* use the HTTP methods GET, 
+		 * HEAD, OPTIONS or TRACE). If such requests do not carry a
+		 * CSRF token, the request will fail with a CsrfException.
+		 */
+		//.and().csrf().disable();
+		http.csrf().disable();
 
 		//		} else {
 		//

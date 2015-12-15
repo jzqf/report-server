@@ -118,6 +118,10 @@ public class ReportServerAuthenticationProvider implements AuthenticationProvide
 				}
 			}
 
+			Role role = roleRepository.findByUsername(username);
+			if (authenticated && role == null && true) {
+
+			}
 			/*
 			 * Whether or not the connection is authenticated by an external 
 			 * authentication provider, there must be a Role in the report
@@ -128,7 +132,6 @@ public class ReportServerAuthenticationProvider implements AuthenticationProvide
 			 * that the hashed password from the Role must match the password
 			 * from the authentication header).
 			 */
-			Role role = roleRepository.findByUsername(username);
 			if (role != null) {
 
 				if (!authenticated) {
