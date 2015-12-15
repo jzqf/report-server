@@ -48,6 +48,10 @@ public class EncodePasswordsWithPasswordEncoderBean {
 		logger.info("unencodedPassword = {}, encodedPassword = {}", unencodedPassword,
 				passwordEncoder.encode(unencodedPassword));
 
+		unencodedPassword = "ReportServer*RESTADMIN";
+		logger.info("unencodedPassword = {}, encodedPassword = {}", unencodedPassword,
+				passwordEncoder.encode(unencodedPassword));
+
 		context.close();
 	}
 

@@ -85,10 +85,10 @@ public class ReportServerAuthenticationProvider implements AuthenticationProvide
 			boolean authenticated = false;
 
 			/*
-			 * The special user QFREE_ADMIN_ROLE_NAME is always authenticated
-			 * locally.
+			 * The special users Role.QFREE_ADMIN_ROLE_NAME and 
+			 * Role.QFREE_REST_ADMIN_ROLE_NAME are always authenticated locally.
 			 */
-			if (!username.equals(Role.QFREE_ADMIN_ROLE_NAME)) {
+			if (!(username.equals(Role.QFREE_ADMIN_ROLE_NAME) || username.equals(Role.QFREE_REST_ADMIN_ROLE_NAME))) {
 
 				String authenticationProviderUrl = configurationService.get(ParamName.AUTHENTICATION_PROVIDER_URL,
 						null, String.class);
@@ -128,7 +128,7 @@ public class ReportServerAuthenticationProvider implements AuthenticationProvide
 					logger.info("External authentication provider not configured.");
 				}
 			}
-			authenticated = true;
+
 			Role role = roleRepository.findByUsername(username);
 			if (authenticated && role == null && env.getProperty("appsecurity.auto.create.roles").equals("true")) {
 				/*

@@ -110,9 +110,9 @@ public class RoleController extends AbstractBaseController {
 			 * appears in the list.
 			 */
 			for (int i = 0; i < roles.size(); i++) {
-				if (roles.get(i).getRoleId().equals(Role.QFREE_ADMIN_ROLE_ID)) {
+				if (roles.get(i).getRoleId().equals(Role.QFREE_ADMIN_ROLE_ID)
+						|| roles.get(i).getRoleId().equals(Role.QFREE_REST_ADMIN_ROLE_ID)) {
 					roles.remove(i);
-					break;
 				}
 			}
 		}
