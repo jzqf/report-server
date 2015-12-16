@@ -14,6 +14,7 @@ import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -172,6 +173,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	}
 
 	@Override
+	public void configure(WebSecurity web) throws Exception {
+		web.ignoring().antMatchers("/webcontent/birt/**");
+	}
+	@Override
 	protected void configure(HttpSecurity http) throws Exception {
 
 		/*
@@ -181,6 +186,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
 			http
 					.addFilterAfter(requestMatchingRoleReportFilter(), FilterSecurityInterceptor.class)
+					/*
+					 * Use this filter to log all request URIs. This may be 
+					 * necessary to determine why an HTTP request fails. Make
+					 * sure the configuration below does not exclude a URI that
+					 * needs to be processed.
+					 */
 					//.addFilterAfter(logRequestsFilter(), SecurityContextPersistenceFilter.class)
 
 					.authorizeRequests()
@@ -222,7 +233,29 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 					 * "viewservlets" to request media/asset files (CSS files, 
 					 * JavaScript files, images, ...).
 					 */
+					/*
+					 * permitAll() doesnot disable any security filters. Testing
+					 * shows that the "authenticate" method of my custom 
+					 * AuthenticationProvider that is registered above, 
+					 * "ReportServerAuthenticationProvider" is still executed
+					 * for each request. This could lead to a large number of
+					 * external authentication provider requests, which could
+					 * slow things down. To avoid this behaviour, I tell Spring 
+					 * Security to completely ignore this Ant pattern in
+					 * configure(WebSecurity web) above. 
+					 * 
+					 * If I ever choose to have these requests authenticated,
+					 * then I must both:
+					 * 
+					 *   1. Change ".permitAll()" -> .authenticated() here, and:
+					 *   
+					 *   2. Remove or comment ou the following line from 
+					 *      configure(WebSecurity web) above:
+					 *      
+					 *        web.ignoring().antMatchers("/webcontent/birt/**")
+					 */
 					.antMatchers("/webcontent/birt/**").permitAll() // to speed things up
+					//.antMatchers("/webcontent/birt/**").authenticated()
 
 					/*
 					 * All other URLs:
