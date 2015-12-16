@@ -253,6 +253,9 @@ public class RestErrorResource {
 		FORBIDDEN_RESOURCE_ROLE_METHOD_ACCESS_VIOLATION(
 				Response.Status.FORBIDDEN, "403.30",
 				"The authenticated role does not have the authority to call a method.", null),
+		FORBIDDEN_ROLE_AUTHORITY_VIOLATION_UPDATE_ROLE(
+				Response.Status.FORBIDDEN, "403.31",
+				"The authenticated role does not have the authority to update the selected Role resource.", null),
 		//FORBIDDEN_RESOURCE_ROLE_REPORT_ACCESS_VIOLATION(
 		//		Response.Status.FORBIDDEN, "403.XX",
 		//		"The authenticated role does not have permission to view the requested report.", null),

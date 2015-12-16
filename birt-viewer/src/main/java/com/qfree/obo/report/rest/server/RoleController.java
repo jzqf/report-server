@@ -1,5 +1,6 @@
 package com.qfree.obo.report.rest.server;
 
+import java.security.Principal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -18,12 +19,14 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.UriInfo;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -44,6 +47,7 @@ import com.qfree.obo.report.dto.SubscriptionCollectionResource;
 import com.qfree.obo.report.exceptions.ResourceFilterExecutionException;
 import com.qfree.obo.report.exceptions.ResourceFilterParseException;
 import com.qfree.obo.report.exceptions.RestApiException;
+import com.qfree.obo.report.security.ReportServerUser;
 import com.qfree.obo.report.service.AuthorityService;
 import com.qfree.obo.report.service.RoleService;
 import com.qfree.obo.report.util.RestUtils;
@@ -249,7 +253,7 @@ public class RoleController extends AbstractBaseController {
 		RestUtils.ifNullThen404(role, Role.class, "roleId", id.toString());
 
 		List<Report> reports = new ArrayList<>(0);
-		if (ALLOW_ALL_REPORTS_FOR_EACH_ROLE == true) {
+		if (ALLOW_ALL_REPORTS_FOR_EACH_ROLE) {
 			if (RestUtils.FILTER_INACTIVE_RECORDS && !ResourcePath.showAll(Report.class, showAll)) {
 				reports = reportRepository.findByActiveTrue();
 			} else {
@@ -368,28 +372,39 @@ public class RoleController extends AbstractBaseController {
 			RoleResource roleResource,
 			@PathParam("id") final UUID id,
 			@HeaderParam("Accept") final String acceptHeader,
-			//@Context SecurityContext sc, // javax.ws.rs.core.SecurityContext
+			@Context SecurityContext securityContext, // javax.ws.rs.core.SecurityContext
 			@Context final UriInfo uriInfo) {
 		RestApiVersion apiVersion = RestUtils.extractAPIVersion(acceptHeader, RestApiVersion.v1);
 
-		//logger.info("sc = {}", sc);
-		//if (sc != null) {
-		//	logger.info("sc.getUserPrincipal() = {}", sc.getUserPrincipal());
-		//	if (sc.getUserPrincipal() != null) {
-		//		Principal principal = sc.getUserPrincipal();
-		//		logger.info("sc.getUserPrincipal().getName() = {}", principal.getName());
-		//		logger.info("principal.getClass() = {}", principal.getClass());
-		//		if (principal instanceof UsernamePasswordAuthenticationToken) {
-		//			UsernamePasswordAuthenticationToken upat = (UsernamePasswordAuthenticationToken) principal;
-		//			Object o = upat.getPrincipal();
-		//			logger.info("o.getClass() = {}", o.getClass());
-		//			if (o instanceof ReportServerUser) {
-		//				ReportServerUser reportServerUser = (ReportServerUser) o;
-		//				logger.info("reportServerUser.getRoleId() = {}", reportServerUser.getRoleId());
-		//			}
-		//		}
-		//	}
-		//}
+		logger.debug("securityContext = {}", securityContext);
+		if (securityContext != null) {
+			logger.debug("securityContext.getUserPrincipal() = {}", securityContext.getUserPrincipal());
+			if (securityContext.getUserPrincipal() != null) {
+				Principal principal = securityContext.getUserPrincipal();
+				logger.debug("securityContext.getUserPrincipal().getName() = {}", principal.getName());
+				logger.debug("principal.getClass() = {}", principal.getClass());
+				if (principal instanceof UsernamePasswordAuthenticationToken) {
+					UsernamePasswordAuthenticationToken upat = (UsernamePasswordAuthenticationToken) principal;
+					Object o = upat.getPrincipal();
+					logger.debug("o.getClass() = {}", o.getClass());
+					if (o instanceof ReportServerUser) {
+						ReportServerUser reportServerUser = (ReportServerUser) o;
+						logger.debug("reportServerUser.getRoleId() = {}", reportServerUser.getRoleId());
+						/*
+						 * Only the built-in QFREE_ADMIN_ROLE user, which
+						 * currently has the username "qfree-reportserver-admin"
+						 * can edit the Role entity for this user. No other 
+						 * user, regardless of which authorities have been 
+						 * granted to it, can do this.
+						 */
+						if (id.equals(Role.QFREE_ADMIN_ROLE_ID)
+								&& !reportServerUser.getRoleId().equals(Role.QFREE_ADMIN_ROLE_ID)) {
+							throw new RestApiException(RestError.FORBIDDEN_ROLE_AUTHORITY_VIOLATION_UPDATE_ROLE);
+						}
+					}
+				}
+			}
+		}
 
 		/*
 		 * Retrieve Role entity to be updated.
@@ -407,6 +422,12 @@ public class RoleController extends AbstractBaseController {
 		 * attributes can be omitted in the PUT data, but in that case they are 
 		 * then set here to the CURRENT values from the role entity. 
 		 */
+		if (roleResource.getUsername() == null) {
+			roleResource.setUsername(role.getUsername());
+		}
+		if (roleResource.isLoginRole() == null) {
+			roleResource.setLoginRole(role.isLoginRole());
+		}
 		if (roleResource.getActive() == null) {
 			roleResource.setActive(role.getActive());
 		}
