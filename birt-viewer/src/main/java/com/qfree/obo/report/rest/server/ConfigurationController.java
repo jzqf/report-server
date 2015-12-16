@@ -109,11 +109,19 @@ public class ConfigurationController extends AbstractBaseController {
 	 *   '{"paramName":"AUTHENTICATION_PROVIDER_URL","paramType":"STRING","stringValue":"http://www.apple.com"}' \
 	 *   http://localhost:8080/rest/configurations
 	 *   
+	 *   $ curl -X POST -iH "Accept: application/json;v=1" -H "Content-Type: application/json" -d \
+	 *   '{"paramName":"AUTHENTICATION_PROVIDER_HTTP_METHOD","paramType":"STRING","stringValue":"HEAD"}' \
+	 *   http://localhost:8080/rest/configurations
+	 *   
 	 * This should *update* the Configuration (not create a new Configuration)
 	 * that was created by the previous curl command:
 	 * 
 	 *   $ curl -X POST -iH "Accept: application/json;v=1" -H "Content-Type: application/json" -d \
 	 *   '{"paramName":"AUTHENTICATION_PROVIDER_URL","paramType":"STRING","stringValue":"http://www.vg.no"}' \
+	 *   http://localhost:8080/rest/configurations
+	 * 
+	 *   $ curl -X POST -iH "Accept: application/json;v=1" -H "Content-Type: application/json" -d \
+	 *   '{"paramName":"AUTHENTICATION_PROVIDER_HTTP_METHOD","paramType":"STRING","stringValue":"GET"}' \
 	 *   http://localhost:8080/rest/configurations
 	 * 
 	 * This endpoint will throw a "403 Forbidden" error because an id for the 

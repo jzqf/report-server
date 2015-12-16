@@ -28,6 +28,7 @@ import com.qfree.obo.report.db.RoleRepository;
 import com.qfree.obo.report.domain.Authority;
 import com.qfree.obo.report.security.ReportServerAuthenticationProvider;
 import com.qfree.obo.report.security.filter.DelegateRequestMatchingFilter;
+import com.qfree.obo.report.security.filter.LogRequestsFilter;
 import com.qfree.obo.report.security.filter.RoleReportFilter;
 
 /**
@@ -102,6 +103,15 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		//return new RoleReportFilter();
 	}
 
+	/*
+	 * I registered this filter as a Spring bean here only so that it supports
+	 * @Autowired DI.
+	 */
+	@Bean
+	public LogRequestsFilter logRequestsFilter() {
+		return new LogRequestsFilter();
+	}
+
 	@Bean
 	public AuthenticationProvider reportServerAuthenticationProvider() {
 		return new ReportServerAuthenticationProvider();
@@ -140,6 +150,22 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		return filterRegistrationBean;
 	}
 
+	/*
+	 * Without this FilterRegistrationBean beans, the filter registered here 
+	 * run 3 times for each request. This may be do to Spring Boot automatically 
+	 * registering Filter classes as filters for Filter classes that are 
+	 * registered as Spring beans. However, I want this filters to run only
+	 * once per request, and this is configured below in the overridden Spring
+	 * Security configure(HttpSecurity http) method.
+	 */
+	@Bean
+	public FilterRegistrationBean LogRequestsFilterRegistration() {
+		FilterRegistrationBean filterRegistrationBean = new FilterRegistrationBean();
+		filterRegistrationBean.setFilter(logRequestsFilter());
+		filterRegistrationBean.setEnabled(false);
+		return filterRegistrationBean;
+	}
+
 	@Override
 	protected void configure(AuthenticationManagerBuilder auth) throws Exception {
 		auth.authenticationProvider(reportServerAuthenticationProvider());
@@ -155,12 +181,14 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
 			http
 					.addFilterAfter(requestMatchingRoleReportFilter(), FilterSecurityInterceptor.class)
+					//.addFilterAfter(logRequestsFilter(), SecurityContextPersistenceFilter.class)
 
 					.authorizeRequests()
 
 					.antMatchers("/upload_report.html")
-					.access("hasAuthority('" + Authority.AUTHORITY_NAME_RUN_DIAGNOSTICS
-							+ "') or hasIpAddress('127.0.0.1') or hasIpAddress('0:0:0:0:0:0:0:1')")
+					//.access("hasAuthority('" + Authority.AUTHORITY_NAME_RUN_DIAGNOSTICS
+					//		+ "') or hasIpAddress('127.0.0.1') or hasIpAddress('0:0:0:0:0:0:0:1')")
+					.access("hasAuthority('" + Authority.AUTHORITY_NAME_RUN_DIAGNOSTICS + "')")
 					//         .access("isAuthenticated() or hasIpAddress('127.0.0.1') or hasIpAddress('0:0:0:0:0:0:0:1')")
 
 					.antMatchers("/RequestHeaders")
@@ -173,6 +201,28 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 					 * Report server ReST API:
 					 */
 					.antMatchers("/rest/**").authenticated()
+
+					/*
+					 * This pattern matches the URLs used by Q-Free-authored
+					 * reports to request media/asset files (CSS files, 
+					 * JavaScript files, images, ...).
+					 */
+					.antMatchers("/webcontent/qfree/**").authenticated()
+
+					/*
+					 * These 3 patterns match the URL mappings for BIRT 
+					 * "viewservlets" that display reports.
+					 */
+					.antMatchers("/frameset/**").authenticated()
+					.antMatchers("/run/**").authenticated()
+					.antMatchers("/preview/**").authenticated()
+
+					/*
+					 * This pattern matches the URLs used by the BIRT 
+					 * "viewservlets" to request media/asset files (CSS files, 
+					 * JavaScript files, images, ...).
+					 */
+					.antMatchers("/webcontent/birt/**").permitAll() // to speed things up
 
 					/*
 					 * All other URLs:

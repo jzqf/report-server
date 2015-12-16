@@ -3,8 +3,10 @@ package com.qfree.obo.report.security;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.ws.rs.HttpMethod;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.Invocation;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.Response;
 
@@ -44,10 +46,10 @@ public class ReportServerAuthenticationProvider implements AuthenticationProvide
 	private Environment env;
 
 	//	@Autowired
-	//	private HttpServletRequest httpServletRequest;
+	//	private HttpServletRequest httpServletRequest;  <- injected object is not usable
 
 	//	@Autowired
-	//	private ServletRequest servletRequest;
+	//	private ServletRequest servletRequest;  <- injected object is not usable
 
 	@Autowired
 	private RoleRepository roleRepository;
@@ -90,10 +92,14 @@ public class ReportServerAuthenticationProvider implements AuthenticationProvide
 			 */
 			if (!(username.equals(Role.QFREE_ADMIN_ROLE_NAME) || username.equals(Role.QFREE_REST_ADMIN_ROLE_NAME))) {
 
-				String authenticationProviderUrl = configurationService.get(ParamName.AUTHENTICATION_PROVIDER_URL,
-						null, String.class);
-				//String authenticationProviderUrl = "http://www.apple.com";
-				if (authenticationProviderUrl != null && !authenticationProviderUrl.isEmpty()) {
+				String authenticationProviderUrl = configurationService.get(
+						ParamName.AUTHENTICATION_PROVIDER_URL, null, String.class);
+				String authenticationProviderHttpMethod = configurationService.get(
+						ParamName.AUTHENTICATION_PROVIDER_HTTP_METHOD, null, String.class);
+				//String authenticationProviderUrl = "http://www.vg.no";
+				//authenticationProviderHttpMethod = "HEAD";
+				if (authenticationProviderUrl != null && !authenticationProviderUrl.isEmpty()
+						&& authenticationProviderHttpMethod != null && !authenticationProviderHttpMethod.isEmpty()) {
 
 					HttpAuthenticationFeature basicAuthenticationFeature = HttpAuthenticationFeature.basic(username,
 							password);
@@ -104,24 +110,63 @@ public class ReportServerAuthenticationProvider implements AuthenticationProvide
 					WebTarget webTarget = client.target(authenticationProviderUrl);
 
 					final long startTime = System.currentTimeMillis();
-					Response response = webTarget
+					//Response response = webTarget
+					//		//.path("test/nop")
+					//		.request()
+					//		//.header("Accept", MediaType.TEXT_PLAIN);
+					//		//.header("Accept", MediaType.TEXT_HTML);
+					//		//.get();
+					//		.head();
+					Invocation.Builder invocationBuilder = webTarget
 							//.path("test/nop")
-							.request()
-							//.header("Accept", MediaType.TEXT_PLAIN);
-							//.header("Accept", MediaType.TEXT_HTML);
-							//.get();
-							.head();
+							.request();
+					//.header("Accept", MediaType.TEXT_PLAIN);
+					//.header("Accept", MediaType.TEXT_HTML);
+
+					Response response = null;
+					switch (authenticationProviderHttpMethod) {
+					case HttpMethod.GET:
+						response = invocationBuilder.get();
+						break;
+					case HttpMethod.HEAD:
+						response = invocationBuilder.head();
+						break;
+					case HttpMethod.OPTIONS:
+						response = invocationBuilder.options();
+						break;
+					/*
+					 * We do not allow "POST" or "PUT" because an entity 
+					 * must specified that contains the POST or PUT data.
+					 */
+					//	case HttpMethod.POST:
+					//		response = invocationBuilder.post();
+					//		break;
+					//	case HttpMethod.PUT:
+					//		response = invocationBuilder.put();
+					//		break;
+					default:
+						logger.warn("HTTP method {} not supported for external authentication",
+								authenticationProviderHttpMethod);
+						response = null;
+					}
 					final long endTime = System.currentTimeMillis();
 					logger.info("External authentication request used {} ms", endTime - startTime);
 
-					logger.info("response.getStatus() = {}", response.getStatus());
-					//	String resource = response.readEntity(String.class);
-					//	System.out.println("resource = " + resource);
-					if (response.getStatus() == Response.Status.OK.getStatusCode()) {
-						logger.info("Request PASSED authentication by: {}", authenticationProviderUrl);
-						authenticated = true;
+					if (response != null) {
+						logger.info("response.getStatus() = {}", response.getStatus());
+						//	String resource = response.readEntity(String.class);
+						//	System.out.println("resource = " + resource);
+						if (response.getStatus() == Response.Status.OK.getStatusCode()) {
+							logger.info("Request PASSED authentication by: ({}, {})",
+									authenticationProviderHttpMethod, authenticationProviderUrl);
+							authenticated = true;
+						} else {
+							logger.warn("Request FAILED authentication by: ({}, {})",
+									authenticationProviderHttpMethod, authenticationProviderUrl);
+						}
 					} else {
-						logger.warn("Request FAILED authentication by: {}", authenticationProviderUrl);
+						logger.warn("Request FAILED authentication by: ({}, {})",
+								authenticationProviderHttpMethod, authenticationProviderUrl);
 					}
 
 				} else {

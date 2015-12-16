@@ -83,7 +83,12 @@ public class Configuration implements Serializable {
 		 * Holds the URL to which external authentication requests should be
 		 * sent.
 		 */
-		AUTHENTICATION_PROVIDER_URL(ParamType.STRING);
+		AUTHENTICATION_PROVIDER_URL(ParamType.STRING),
+		/*
+		 * Holds the HTTP method to use for external authentication requests
+		 * with AUTHENTICATION_PROVIDER_URL.
+		 */
+		AUTHENTICATION_PROVIDER_HTTP_METHOD(ParamType.STRING);
 	
 		private ParamType paramType;
 	

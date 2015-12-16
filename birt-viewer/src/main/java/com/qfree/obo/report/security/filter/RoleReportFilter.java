@@ -49,10 +49,10 @@ public class RoleReportFilter implements Filter {
 
 		HttpServletRequest request = (HttpServletRequest) req;
 		//	logger.info("request = {}", request);
-		//	logger.info("request.getRequestURI() = {}", request.getRequestURI());
 		//	logger.info("request.getRequestURL() = {}", request.getRequestURL());
-		//	logger.info("request.getServletPath() = {}", request.getServletPath());
+		//	logger.info("request.getRequestURI() = {}", request.getRequestURI());
 		//	logger.info("request.getContextPath() = {}", request.getContextPath());
+		//	logger.info("request.getServletPath() = {}", request.getServletPath());
 		//	logger.info("request.getPathInfo() = {}", request.getPathInfo());// <--- ****************
 		//	for (Map.Entry<String, String[]> mapEntry : request.getParameterMap().entrySet()) {
 		//		logger.info("    ParameterMap<{}> = {}", mapEntry.getKey(), mapEntry.getValue());
