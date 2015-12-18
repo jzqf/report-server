@@ -25,11 +25,11 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import com.qfree.obo.report.db.AuthorityRepository;
 import com.qfree.obo.report.db.RoleRepository;
 import com.qfree.obo.report.domain.Authority;
 import com.qfree.obo.report.domain.Configuration.ParamName;
 import com.qfree.obo.report.domain.Role;
+import com.qfree.obo.report.service.AuthorityService;
 import com.qfree.obo.report.service.ConfigurationService;
 
 @PropertySource("classpath:config.properties")
@@ -58,8 +58,7 @@ public class ReportServerAuthenticationProvider implements AuthenticationProvide
 	private ConfigurationService configurationService;
 
 	@Autowired
-	//private AuthorityService authorityService;
-	private AuthorityRepository authorityRepository;
+	private AuthorityService authorityService;
 
 	@Autowired
 	private PasswordEncoder passwordEncoder;
@@ -246,9 +245,7 @@ public class ReportServerAuthenticationProvider implements AuthenticationProvide
 					 */
 					if (role.getEnabled() && role.getActive()) {
 
-						//List<Authority> authorities = authorityService.getActiveAuthoritiesByRoleId(role.getRoleId());
-						List<String> authorities = authorityRepository
-								.findActiveAuthorityNamesByRoleIdRecursive(role.getRoleId().toString());
+						List<String> authorities = authorityService.findActiveAuthorityNamesByRoleId(role.getRoleId());
 						logger.info("authorities = {}", authorities);
 
 						final List<GrantedAuthority> grantedAuths = new ArrayList<>(authorities.size());

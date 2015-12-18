@@ -123,6 +123,13 @@ public class RoleReportFilter implements Filter {
 			return;
 		}
 
+		/*
+		 * This will also occur if no ReportVersion exists for the value of 
+		 * reportFilename specified in the request. But it is better to return
+		 * a 403 here than 404 because we do not want to reveal more 
+		 * information to someone who is sniffing around than is absolutely 
+		 * necessary.
+		 */
 		logger.warn("User does not have access to requested report. HTTP 403 Forbidden will be returned.\n"
 				+ "    username       = {}\n"
 				+ "    reportFilename = {}", username, reportFilename);

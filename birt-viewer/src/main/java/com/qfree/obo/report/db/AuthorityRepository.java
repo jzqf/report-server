@@ -101,6 +101,25 @@ public interface AuthorityRepository extends JpaRepository<Authority, UUID> {
 			@Param("roleId") String roleId);
 
 	/**
+	 * Returns a {@link List}&lt;{@link String}&gt; that contains the ids (as
+	 * strings) of {@link Authority} entities that have been granted
+	 * <b>directly</b> to a {@link Role} with a specified value of roleId.
+	 * 
+	 * @param roleId
+	 *            String representation of the id of the {@link Role} for which
+	 *            {@link Authority} id values will be returned.
+	 * @return
+	 */
+	@Query(value = "SELECT a.name FROM authority a " +
+			"INNER JOIN role_authority ra ON ra.authority_id=a.authority_id " +
+			"INNER JOIN role r ON r.role_id=ra.role_id " +
+			"WHERE r.role_id=CAST(:roleId AS uuid) AND a.active=true " +
+			"ORDER BY a.name",
+			nativeQuery = true)
+	public List<String> findActiveAuthorityNamesByRoleId(
+			@Param("roleId") String roleId);
+
+	/**
 	 * Returns a {@link List}&lt;{@link String}&gt; that contains the names of
 	 * {@link Authority} entities that have <b>either</b> been granted
 	 * <i>directly</> or <i>indirectly</> to a {@link Role} with a specified

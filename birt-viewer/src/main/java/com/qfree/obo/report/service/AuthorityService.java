@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.qfree.obo.report.db.AuthorityRepository;
 import com.qfree.obo.report.domain.Authority;
+import com.qfree.obo.report.domain.UuidCustomType;
 
 @Component
 @Transactional
@@ -29,7 +30,8 @@ public class AuthorityService {
 	@Transactional
 	public List<Authority> getActiveAuthoritiesByRoleId(UUID roleId) {
 
-		List<String> uuidStrings = authorityRepository.findActiveAuthorityIdsByRoleIdRecursive(roleId.toString());
+		//List<String> uuidStrings = authorityRepository.findActiveAuthorityIdsByRoleIdRecursive(roleId.toString());
+		List<String> uuidStrings = findActiveAuthorityIdsByRoleId(roleId);
 		List<Authority> authorities = new ArrayList<>(uuidStrings.size());
 		for (String uuidString : uuidStrings) {
 			try {
@@ -43,6 +45,34 @@ public class AuthorityService {
 			}
 		}
 		return authorities;
+	}
+
+	public List<String> findActiveAuthorityIdsByRoleId(UUID roleId) {
+		/*
+		 * The H2 database does not support recursive CTE expressions, so it is 
+		 * necessary to run different code if the database is not PostgreSQL.
+		 * This only affects integration tests, because only PostreSQL is used
+		 * in production. 
+		 */
+		if (UuidCustomType.DB_VENDOR.equals(UuidCustomType.POSTGRESQL_VENDOR)) {
+			return authorityRepository.findActiveAuthorityIdsByRoleIdRecursive(roleId.toString());
+		} else {
+			return authorityRepository.findActiveAuthorityIdsByRoleId(roleId.toString());
+		}
+	}
+
+	public List<String> findActiveAuthorityNamesByRoleId(UUID roleId) {
+		/*
+		 * The H2 database does not support recursive CTE expressions, so it is 
+		 * necessary to run different code if the database is not PostgreSQL.
+		 * This only affects integration tests, because only PostreSQL is used
+		 * in production. 
+		 */
+		if (UuidCustomType.DB_VENDOR.equals(UuidCustomType.POSTGRESQL_VENDOR)) {
+			return authorityRepository.findActiveAuthorityNamesByRoleIdRecursive(roleId.toString());
+		} else {
+			return authorityRepository.findActiveAuthorityNamesByRoleId(roleId.toString());
+		}
 	}
 
 }
