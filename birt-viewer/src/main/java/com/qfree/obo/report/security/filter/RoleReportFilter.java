@@ -116,8 +116,6 @@ public class RoleReportFilter implements Filter {
 		}
 		logger.info("username = {}", username);
 
-		logger.info("roleRepository = {}", roleRepository);
-
 		if (userHasAccessToReport(username, reportFilename)) {
 			chain.doFilter(req, res);
 			return;

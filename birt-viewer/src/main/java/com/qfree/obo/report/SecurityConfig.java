@@ -234,7 +234,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 					 * JavaScript files, images, ...).
 					 */
 					/*
-					 * permitAll() doesnot disable any security filters. Testing
+					 * permitAll() does not disable any security filters. Testing
 					 * shows that the "authenticate" method of my custom 
 					 * AuthenticationProvider that is registered above, 
 					 * "ReportServerAuthenticationProvider" is still executed
