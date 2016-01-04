@@ -61,7 +61,7 @@ public class ReportSyncController extends AbstractBaseController {
 	@GET
 	@Produces(MediaType.TEXT_PLAIN)
 	@PreAuthorize("hasAuthority('" + Authority.AUTHORITY_NAME_MANAGE_FILESYNCING + "')")
-	public int getList(
+	public int getAvailablePermits(
 			@HeaderParam("Accept") final String acceptHeader,
 			@QueryParam(ResourcePath.EXPAND_QP_NAME) final List<String> expand,
 			@QueryParam(ResourcePath.SHOWALL_QP_NAME) final List<String> showAll,

@@ -21,7 +21,7 @@ public class ReportUtils {
 	 * This counting semaphore is used to ensure that only one thread is 
 	 * performing some sort of synchronization action between the rptdesign
 	 * files in the report server application server's file system and the
-	 * rptdesign definition stored in the report server's database.
+	 * rptdesign definitions stored in the report server's database.
 	 */
 	public static final Semaphore reportSyncSemaphore = new Semaphore(1);
 

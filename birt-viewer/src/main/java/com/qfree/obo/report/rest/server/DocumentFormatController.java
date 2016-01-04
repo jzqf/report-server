@@ -65,7 +65,7 @@ public class DocumentFormatController extends AbstractBaseController {
 	@Transactional
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
-	@PreAuthorize("hasAuthority('" + Authority.AUTHORITY_NAME_MANAGE_FILEFORMATS + "')")
+	//@PreAuthorize("hasAuthority('" + Authority.AUTHORITY_NAME_MANAGE_FILEFORMATS + "')")
 	public DocumentFormatCollectionResource getList(
 			@HeaderParam("Accept") final String acceptHeader,
 			@QueryParam(ResourcePath.EXPAND_QP_NAME) final List<String> expand,
