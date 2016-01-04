@@ -210,40 +210,48 @@ public class ReportServerAuthenticationProvider implements AuthenticationProvide
 			 * from the authentication header).
 			 */
 			if (role != null) {
+				/*
+				 * Although a Role has been matched with the supplied username,
+				 * it is still necessary to check that the Role is "active", 
+				 * "enabled" and that it is a "login" role.
+				 */
+				if (role.getEnabled() && role.getActive() && role.isLoginRole()) {
 
-				if (!authenticated) {
-					if (role.getEncodedPassword() != null && !role.getEncodedPassword().isEmpty()) {
-						/*
-						 * The connection was not authenticated externally. Either
-						 * an external authentication provider is not configured or
-						 * authentication by the external provider failed. For both
-						 * cases we then try to authenticate locally against the 
-						 * Role we located. This means that if the password stored 
-						 * with the Role is *different* than that stored by the 
-						 * external authenticator, and if the user specifies the
-						 * password stored with the Role, then authentication by the
-						 * external provider will first fail, but then 
-						 * authentication will succeed during this local 
-						 * authentication check. This is a feature, not a bug.
-						 */
-						if (passwordEncoder.matches(password, role.getEncodedPassword())) {
-							authenticated = true;
-							logger.info("Local authentcation PASSED. password = {}, role = {}", password, role);
+					if (!authenticated) {
+						if (role.getEncodedPassword() != null && !role.getEncodedPassword().isEmpty()) {
+							/*
+							 * The connection was not authenticated externally. Either
+							 * an external authentication provider is not configured or
+							 * authentication by the external provider failed. For both
+							 * cases we then try to authenticate locally against the 
+							 * Role we located. This means that if the password stored 
+							 * with the Role is *different* than that stored by the 
+							 * external authenticator, and if the user specifies the
+							 * password stored with the Role, then authentication by the
+							 * external provider will first fail, but then 
+							 * authentication will succeed during this local 
+							 * authentication check. This is a feature, not a bug.
+							 */
+							if (passwordEncoder.matches(password, role.getEncodedPassword())) {
+								authenticated = true;
+								logger.info("Local authentcation PASSED. password = {}, role = {}", password, role);
+							} else {
+								logger.warn("Local authentcation FAILED. password = {}, role = {}", password, role);
+							}
 						} else {
-							logger.warn("Local authentcation FAILED. password = {}, role = {}", password, role);
+							logger.warn("Local authentication is not possible. There is no password for role = {}",
+									role);
 						}
-					} else {
-						logger.warn("Local authentication is not possible. There is no password for role = {}", role);
 					}
-				}
 
-				if (authenticated) {
-					/*
-					 * Although the connection has been authenticated, we
-					 * still need to check the Role to see if it is both
-					 * "active" and "enabled".
-					 */
-					if (role.getEnabled() && role.getActive()) {
+					if (authenticated) {
+						/*
+						 * The final step is to locate all Authority entities
+						 * to grant the user and then return a 
+						 * UsernamePasswordAuthenticationToken that contains
+						 * all security data associated with the authenticated
+						 * principal.
+						 */
 
 						List<String> authorities = authorityService.findActiveAuthorityNamesByRoleId(role.getRoleId());
 						logger.info("authorities = {}", authorities);
@@ -265,11 +273,21 @@ public class ReportServerAuthenticationProvider implements AuthenticationProvide
 						final UserDetails principal = new ReportServerUser(
 								role.getRoleId(),
 								username, password,
-								role.getEnabled(), role.getActive(),
+								role.getEnabled(), role.getActive(), role.isLoginRole(),
 								grantedAuths);
 						final Authentication auth = new UsernamePasswordAuthenticationToken(
 								principal, password, grantedAuths);
 						return auth;
+					}
+				} else {
+					if (!role.getEnabled()) {
+						logger.warn("Attempt to authenticate with a disabled Role: {}", role);
+					}
+					if (!role.getActive()) {
+						logger.warn("Attempt to authenticate with an inactive Role: {}", role);
+					}
+					if (!role.isLoginRole()) {
+						logger.warn("Attempt to authenticate with a non-login Role: {}", role);
 					}
 				}
 

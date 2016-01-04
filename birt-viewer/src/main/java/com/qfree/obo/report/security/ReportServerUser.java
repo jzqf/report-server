@@ -41,18 +41,37 @@ public class ReportServerUser extends User {
 	 * The value of Role.active for the authenticated user.
 	 * 
 	 * If this is false, the request should be refused (authentication should
-	 * fail).
+	 * fail). This means that this field should ideally <b>never</b> be false,
+	 * which in turn means that there is no real need to introduce this field at
+	 * all. The only reason that this field has been included is in case there
+	 * is one day introduced a mechanism to bypass the requirement that the Role
+	 * is "enabled"; in that case, it could be useful to know if a user has been
+	 * authenticated via a disabled Role.
 	 */
 	private final Boolean active;
+
+	/**
+	 * The value of Role.loginRole for the authenticated user.
+	 * 
+	 * If this is false, the request should be refused (authentication should
+	 * fail). This means that this field should ideally <b>never</b> be false,
+	 * which in turn means that there is no real need to introduce this field at
+	 * all. The only reason that this field has been included is in case there
+	 * is one day introduced a mechanism to bypass the requirement that the Role
+	 * is a "login" Role; in that case, it could be useful to know if a user has
+	 * been authenticated via a non-login Role.
+	 */
+	private final Boolean loginRole;
 
 	public ReportServerUser(
 			UUID roleId,
 			String username, String password,
-			boolean enabled, boolean active,
+			boolean enabled, boolean active, boolean loginRole,
 			Collection<? extends GrantedAuthority> authorities) {
 		super(username, password, enabled, true, true, true, authorities);
 		this.roleId = roleId;
 		this.active = active;
+		this.loginRole = loginRole;
 	}
 
 	public UUID getRoleId() {
@@ -63,6 +82,10 @@ public class ReportServerUser extends User {
 		return active;
 	}
 
+	public Boolean isLoginRole() {
+		return loginRole;
+	}
+
 	@Override
 	public String toString() {
 		StringBuilder builder = new StringBuilder();
@@ -70,6 +93,8 @@ public class ReportServerUser extends User {
 		builder.append(roleId);
 		builder.append(", active=");
 		builder.append(active);
+		builder.append(", loginRole=");
+		builder.append(loginRole);
 		builder.append(", getAuthorities()=");
 		builder.append(getAuthorities());
 		builder.append(", getUsername()=");
