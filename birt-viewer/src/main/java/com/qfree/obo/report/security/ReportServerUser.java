@@ -37,26 +37,30 @@ public class ReportServerUser extends User {
 	 */
 	private final UUID roleId;
 
-	public ReportServerUser(UUID roleId, String username, String password,
-			Collection<? extends GrantedAuthority> authorities) {
-		super(username, password, authorities);
-		this.roleId = roleId;
-	}
+	/**
+	 * The value of Role.active for the authenticated user.
+	 * 
+	 * If this is false, the request should be refused (authentication should
+	 * fail).
+	 */
+	private final Boolean active;
 
-	//	public ReportServerUser(String username, String password, Collection<? extends GrantedAuthority> authorities) {
-	//		super(username, password, authorities);
-	//		this.roleId = null;
-	//	}
-	//
-	//	public ReportServerUser(String username, String password, boolean enabled, boolean accountNonExpired,
-	//			boolean credentialsNonExpired, boolean accountNonLocked,
-	//			Collection<? extends GrantedAuthority> authorities) {
-	//		super(username, password, enabled, accountNonExpired, credentialsNonExpired, accountNonLocked, authorities);
-	//		this.roleId = null;
-	//	}
+	public ReportServerUser(
+			UUID roleId,
+			String username, String password,
+			boolean enabled, boolean active,
+			Collection<? extends GrantedAuthority> authorities) {
+		super(username, password, enabled, true, true, true, authorities);
+		this.roleId = roleId;
+		this.active = active;
+	}
 
 	public UUID getRoleId() {
 		return roleId;
+	}
+
+	public Boolean isActive() {
+		return active;
 	}
 
 	@Override
@@ -64,10 +68,14 @@ public class ReportServerUser extends User {
 		StringBuilder builder = new StringBuilder();
 		builder.append("ReportServerUser [roleId=");
 		builder.append(roleId);
+		builder.append(", active=");
+		builder.append(active);
 		builder.append(", getAuthorities()=");
 		builder.append(getAuthorities());
 		builder.append(", getUsername()=");
 		builder.append(getUsername());
+		builder.append(", isEnabled()=");
+		builder.append(isEnabled());
 		builder.append("]");
 		return builder.toString();
 	}

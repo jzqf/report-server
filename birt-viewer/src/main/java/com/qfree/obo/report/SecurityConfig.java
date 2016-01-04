@@ -25,7 +25,6 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.web.util.matcher.OrRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 
-import com.qfree.obo.report.db.RoleRepository;
 import com.qfree.obo.report.domain.Authority;
 import com.qfree.obo.report.security.ReportServerAuthenticationProvider;
 import com.qfree.obo.report.security.filter.DelegateRequestMatchingFilter;
@@ -67,9 +66,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	public PasswordEncoder passwordEncoder() {
 		return new BCryptPasswordEncoder(BCRYPT_STRENGTH);
 	}
-
-	@Autowired
-	private RoleRepository roleRepository;
 
 	/*
 	 * I registered this filter as a Spring bean here only so that it supports
@@ -257,10 +253,21 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 					.antMatchers("/webcontent/birt/**").permitAll() // to speed things up
 					//.antMatchers("/webcontent/birt/**").authenticated()
 
+					//					/*
+					//					 * This covers, in particular, the home page which exposes
+					//					 * the test reports and some links.
+					//					 */
+					//					.antMatchers("/**")
+					//					.access("hasAuthority('" + Authority.AUTHORITY_NAME_RUN_DIAGNOSTICS + "')")
+
 					/*
-					 * All other URLs:
+					 * All other URLs.
+					 * 
+					 * This covers, in particular, the home page which exposes
+					 * the test reports and some links.
 					 */
-					.anyRequest().denyAll()
+					.anyRequest().access("hasAuthority('" + Authority.AUTHORITY_NAME_RUN_DIAGNOSTICS + "')")
+					//.anyRequest().denyAll()
 					//.anyRequest().authenticated()
 					//.anyRequest().permitAll()
 

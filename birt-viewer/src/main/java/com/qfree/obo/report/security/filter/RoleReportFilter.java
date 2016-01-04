@@ -19,7 +19,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.User;
 
 import com.qfree.obo.report.db.ReportVersionRepository;
 import com.qfree.obo.report.db.RoleReportRepository;
@@ -29,6 +28,7 @@ import com.qfree.obo.report.domain.Role;
 import com.qfree.obo.report.domain.RoleReport;
 import com.qfree.obo.report.domain.UuidCustomType;
 import com.qfree.obo.report.rest.server.RoleController;
+import com.qfree.obo.report.security.ReportServerUser;
 
 public class RoleReportFilter implements Filter {
 
@@ -85,7 +85,7 @@ public class RoleReportFilter implements Filter {
 		if (reportFileNames != null && reportFileNames.length == 1) {
 			reportFilename = reportFileNames[0];
 		}
-		logger.info("reportFilename = {}", reportFilename);
+		logger.debug("reportFilename = {}", reportFilename);
 
 		/*
 		 * Extract name of principal. This is the user name from the HTTP 
@@ -93,30 +93,37 @@ public class RoleReportFilter implements Filter {
 		 */
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 		logger.debug("authentication = {}", authentication);
-		String username = null;
+		Object principal = null;
+		ReportServerUser user = null;
+		//String username = null;
 		if (authentication instanceof UsernamePasswordAuthenticationToken) {
-			Object principal = authentication.getPrincipal();
-			logger.debug("principal.getClass().getName() = {}", principal.getClass().getName());
-			logger.debug("principal = {}", principal);
-			logger.debug("principal.toString() = {}", principal.toString());
-			if (principal instanceof User) {
-				User user = (User) principal;
-				username = user.getUsername();
-				logger.debug("user = {}", user);
-				logger.debug("user.getUsername()    = {}", user.getUsername());
-				logger.debug("user.getPassword()    = {}", user.getPassword());
-				logger.debug("user.getAuthorities() = {}", user.getAuthorities());
+			principal = authentication.getPrincipal();
+			//logger.debug("principal.getClass().getName() = {}", principal.getClass().getName());
+			//logger.debug("principal = {}", principal);
+			//logger.debug("principal.toString() = {}", principal.toString());
+			//if (principal instanceof User) {
+			//	User user = (User) principal;
+			if (principal instanceof ReportServerUser) {
+				user = (ReportServerUser) principal;
+				//username = user.getUsername();
+				//logger.debug("user = {}", user);
+				//logger.debug("user.getUsername()    = {}", user.getUsername());
+				//logger.debug("user.getPassword()    = {}", user.getPassword());
+				//logger.debug("user.isEnabled()      = {}", user.isEnabled());
+				//logger.debug("user.isActive()       = {}", user.isActive());
+				//logger.debug("user.getAuthorities() = {}", user.getAuthorities());
 				//Collection<GrantedAuthority> authorities = user.getAuthorities();
 				//for (GrantedAuthority grantedAuthority : authorities) {
 				//	if (grantedAuthority.getAuthority().equalsIgnoreCase(Authority.AUTHORITY_NAME_MANAGE_REPORTS)) {
 				//		logger.debug("User has authority MANAGE_REPORTS");
 				//	}
 				//}
+			} else {
+				logger.error("principal is *not* an instance of ReportServerUser. principal = {}", principal);
 			}
 		}
-		logger.info("username = {}", username);
 
-		if (userHasAccessToReport(username, reportFilename)) {
+		if (userHasAccessToReport(user, reportFilename)) {
 			chain.doFilter(req, res);
 			return;
 		}
@@ -129,8 +136,8 @@ public class RoleReportFilter implements Filter {
 		 * necessary.
 		 */
 		logger.warn("User does not have access to requested report. HTTP 403 Forbidden will be returned.\n"
-				+ "    username       = {}\n"
-				+ "    reportFilename = {}", username, reportFilename);
+				+ "    user           = {}\n"
+				+ "    reportFilename = {}", user, reportFilename);
 
 		HttpServletResponse httpResponse = (HttpServletResponse) res;
 		httpResponse.setStatus(HttpServletResponse.SC_FORBIDDEN);
@@ -138,29 +145,40 @@ public class RoleReportFilter implements Filter {
 
 	}
 
-	private boolean userHasAccessToReport(String username, String reportFileName) {
-		if (username != null && !username.isEmpty() && reportFileName != null && !reportFileName.isEmpty()) {
+	/**
+	 * Returns <code>true</code> if the {@link Role} that corresponds to the
+	 * specified {@link ReportServerUser} security principle has access to the
+	 * report with the specified filename.
+	 * 
+	 * user.getUsername() must match an existing Role that is active and
+	 * enabled.
+	 * 
+	 * @param user
+	 * @param reportFilename
+	 * @return
+	 */
+	private boolean userHasAccessToReport(ReportServerUser user, String reportFilename) {
+		if (user != null && reportFilename != null && !reportFilename.isEmpty()) {
+
+			logger.info("reportFilename = {}", reportFilename);
+			logger.info("user           = {}", user);
 
 			/*
-			 * "username" must match an existing Role that is active and 
-			 * enabled.
+			 * "user.getUsername()" must match an existing Role that is active and enabled.
 			 */
-			//username = "user2";
-			Role role = roleRepository.findByUsername(username);
-			logger.info("role = {}", role);
-			if (role != null && role.getActive() && role.getEnabled()) {
+			if (user.isActive() && user.isEnabled()) {
 
-				if (reportFileName.equals("test/test_db_config.rptdesign")
-						|| reportFileName.equals("test/test_rs_config.rptdesign")) {
+				if (reportFilename.equals("test/test_db_config.rptdesign")
+						|| reportFilename.equals("test/test_rs_config.rptdesign")) {
 					return true;
 				}
 
 				/*
-				 * "reportFileName" must match an existing Report Version that
+				 * "reportFilename" must match an existing Report Version that
 				 * is active. In addition, the linked Report must also be
 				 * active.
 				 */
-				ReportVersion reportVersion = reportVersionRepository.findByFileName(reportFileName);
+				ReportVersion reportVersion = reportVersionRepository.findByFileName(reportFilename);
 				logger.info("reportVersion = {}", reportVersion);
 				if (reportVersion != null && reportVersion.isActive()) {
 
@@ -168,12 +186,11 @@ public class RoleReportFilter implements Filter {
 					 * Finally, there must exist a RoleReport entity for the Role and
 					 * Report located above. This indicates that the user has access to
 					 * the report.
-					 */
-
-					/*
+					 * 
 					 * If I modify this code and it then triggers a Lazy...Exception,
 					 * try annotating this method with @Transactional(readOnly = true).
 					 */
+
 					if (RoleController.ALLOW_ALL_REPORTS_FOR_EACH_ROLE) {
 						return true;
 					} else {
@@ -187,10 +204,10 @@ public class RoleReportFilter implements Filter {
 
 							Boolean activeReportsOnly = true;
 							List<String> availableReportVersions = reportVersionRepository
-									.findReportVersionFilenamesByRoleIdRecursive(role.getRoleId().toString(),
+									.findReportVersionFilenamesByRoleIdRecursive(user.getRoleId().toString(),
 											activeReportsOnly);
 							for (String filename : availableReportVersions) {
-								if (reportFileName.equals(filename)) {
+								if (reportFilename.equals(filename)) {
 									return true;
 								}
 							}
@@ -201,10 +218,10 @@ public class RoleReportFilter implements Filter {
 							 * This code only treats those Reports associated with RoleReport
 							 * entities that are *directly* linked to the Role role. This does *not*
 							 * include Reports associated with RoleReport entities that are linked 
-							 * to ancestors (parents, gransparents, ...) of Role role.
+							 * to ancestors (parents, grandparents, ...) of Role role.
 							 */
 							RoleReport roleReport = roleReportRepository.findByRoleRoleIdAndReportReportId(
-									role.getRoleId(),
+									user.getRoleId(),
 									reportVersion.getReport().getReportId());
 							if (roleReport != null && roleReport.getReport().isActive()) {
 								return true;

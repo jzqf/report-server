@@ -262,7 +262,10 @@ public class ReportServerAuthenticationProvider implements AuthenticationProvide
 							grantedAuths.add(new SimpleGrantedAuthority(Authority.AUTHORITY_NAME_RUN_DIAGNOSTICS));
 						}
 						//final UserDetails principal = new User(username, password, grantedAuths);
-						final UserDetails principal = new ReportServerUser(role.getRoleId(), username, password,
+						final UserDetails principal = new ReportServerUser(
+								role.getRoleId(),
+								username, password,
+								role.getEnabled(), role.getActive(),
 								grantedAuths);
 						final Authentication auth = new UsernamePasswordAuthenticationToken(
 								principal, password, grantedAuths);
