@@ -20,6 +20,7 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.data.repository.query.SecurityEvaluationContextExtension;
 import org.springframework.security.web.access.intercept.FilterSecurityInterceptor;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.web.util.matcher.OrRequestMatcher;
@@ -68,14 +69,14 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	}
 
 	/*
-	 * According to the Spring Security documentation, this bean provides 
-	 * support for Spring Data with Spring Security, although it does not 
-	 * describe what this support covers.
+	 * This bean provides support for Spring Security in Spring Data. In
+	 * particular, it seems to expose Spring Security as SpEL expressions in 
+	 * Spring Data queries.
 	 */
-	//	@Bean
-	//	public SecurityEvaluationContextExtension securityEvaluationContextExtension() {
-	//		return new SecurityEvaluationContextExtension();
-	//	}
+	@Bean
+	public SecurityEvaluationContextExtension securityEvaluationContextExtension() {
+		return new SecurityEvaluationContextExtension();
+	}
 
 	/*
 	 * I registered this filter as a Spring bean here only so that it supports
