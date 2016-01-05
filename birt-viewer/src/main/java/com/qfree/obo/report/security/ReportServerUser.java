@@ -45,8 +45,14 @@ public class ReportServerUser extends User {
 	 * which in turn means that there is no real need to introduce this field at
 	 * all. The only reason that this field has been included is in case there
 	 * is one day introduced a mechanism to bypass the requirement that the Role
-	 * is "enabled"; in that case, it could be useful to know if a user has been
-	 * authenticated via a disabled Role.
+	 * is "active"; in that case, it could be useful to know if a user has been
+	 * authenticated via an inactive Role. It could also be the case that the
+	 * value of this field needs to be checked <i>before</i> the connection is
+	 * authenticated, but currently this is not the case.
+	 * 
+	 * The same observation also applies to the "enabled" field, but it is
+	 * inherited from {@link User} and, therefore is not documented in this
+	 * class.
 	 */
 	private final Boolean active;
 
@@ -59,7 +65,9 @@ public class ReportServerUser extends User {
 	 * all. The only reason that this field has been included is in case there
 	 * is one day introduced a mechanism to bypass the requirement that the Role
 	 * is a "login" Role; in that case, it could be useful to know if a user has
-	 * been authenticated via a non-login Role.
+	 * been authenticated via a non-login Role. It could also be the case that
+	 * the value of this field needs to be checked <i>before</i> the connection
+	 * is authenticated, but currently this is not the case.
 	 */
 	private final Boolean loginRole;
 

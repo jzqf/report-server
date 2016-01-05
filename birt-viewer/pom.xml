@@ -48,7 +48,7 @@
 		<birt-runtime.version>4.4.2</birt-runtime.version>
 		<birt-runtime.viewservlets.version>4.4.1</birt-runtime.viewservlets.version>
 		<!-- <servlet-api.version>3.1.0</servlet-api.version> -->
-		<!-- <hibernate.version>4.3.8.Final</hibernate.version> -->
+		<!-- <hibernate.version>4.3.11.Final</hibernate.version> -->
 		<quartz.version>2.2.1</quartz.version>
 		<!-- <javax.mail.version>1.5.4</javax.mail.version> -->
 		<tomcat7.maven.plugin.version>2.2</tomcat7.maven.plugin.version>
@@ -56,11 +56,15 @@
 		  The following versions must agree with the properties defined with the
 		  same name in:
 		  
-		  http://central.maven.org/maven2/org/springframework/boot/spring-boot-dependencies/1.2.3.RELEASE/spring-boot-dependencies-1.2.3.RELEASE.pom
+		  http://central.maven.org/maven2/org/springframework/boot/spring-boot-dependencies/1.3.1.RELEASE/spring-boot-dependencies-1.3.1.RELEASE.pom
 		  
-		  where "1.2.3.RELEASE" should be replaced with whatever version of 
+		  where "1.3.1.RELEASE" should be replaced with whatever version of 
 		  Spring Boot you are using. This version of Spring Boot is defined by
-		  the property "spring-boot.version" in reporting-master/pom.xml.
+		  the property "spring-boot.version" in reporting-master/pom.xml. Links
+		  to all of POM files for all versions of "spring-boot-dependencies" can
+		  be found here:
+		  
+		  http://mvnrepository.com/artifact/org.springframework.boot/spring-boot-dependencies
 		  
 		  The reason why we must define the "jersey.version" property here, and
 		  give it the correct value, is because Spring Boot specifies the 
@@ -70,11 +74,11 @@
 		  Spring Boot has specified the version. However, Spring Boot does *not*
 		  specify the version for *all* possible Jersey components. This POM
 		  file specifies dependencies for Jersey artifacts that Spring Boot does
-		  not manage. We are forced to specify explicitly the Jersey version
+		  *not* manage. We are forced to specify explicitly the Jersey version
 		  number for these artifacts, and we want this version number to be the
 		  same as the jersey version number that Spring Boot specifies for the
-		  Jersey components that it manages. If we do not do this, we will end
-		  up using one version number for some Jersey components and another
+		  Jersey components that it does manage. If we do not do this, we will
+		  end up using one version number for some Jersey components and another
 		  version number for other Jersey components. This will almost certainly
 		  lead to problems. For example, strange exceptions will be thrown with
 		  no useful explanation to debug the problem. 
@@ -91,15 +95,15 @@
 			   ("hamcrest.version", ...).
 			   
 			3. Browse through the POM file for the "spring-boot-starter-parent"
-			   artifact, which for version 1.2.3.RELEASE is:
+			   artifact, which for version 1.3.1.RELEASE is:
 			   
-			   http://central.maven.org/maven2/org/springframework/boot/spring-boot-starter-parent/1.2.3.RELEASE/spring-boot-starter-parent-1.2.3.RELEASE.pom
+			   http://central.maven.org/maven2/org/springframework/boot/spring-boot-starter-parent/1.3.1.RELEASE/spring-boot-starter-parent-1.3.1.RELEASE.pom
 
 			   Copy the two blocks of content to replace the corresponding 
 			   blocks in reporting-master/pom.xml that I have marked with 
 			   comments that explain they were copied from that POM file.
 		-->
-		<jersey.version>2.14</jersey.version>
+		<jersey.version>2.22.1</jersey.version>
 
 		<!-- The main class to start by executing java -jar -->
 		<start-class>com.qfree.obo.report.ApplicationConfig</start-class>
@@ -375,10 +379,11 @@
 		  the safest treatment is to just add the dependency for "spring-webmvc"
 		  here.
 		  
-		  Currently, I am using Spring Boot 1.2.3.RELEASE. After I upgrade to a 
-		  newer version, I should try removing this dependency on "spring-webmvc"
-		  to see if it is still required. To test if it is required, just 
-		  execute "mvn clean test" and "mvn clean spring-boot:run".
+		  I added this fix while using Spring Boot 1.2.3.RELEASE. After I 
+		  upgrade to a newer version, I should try removing this dependency on 
+		  "spring-webmvc" to see if it is still required. To test if it is 
+		  required, just execute "mvn clean test" and 
+		  "mvn clean spring-boot:run".
 		-->
 		<dependency>
 			<groupId>org.springframework</groupId>
@@ -448,7 +453,7 @@
 		<dependency>
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-dbcp2</artifactId>
-			<!-- <version>2.1</version> -->
+			<!-- <version>2.1.1</version> -->
 			<!-- <scope>provided</scope> -->
 			<exclusions>
 				<exclusion>
@@ -462,7 +467,7 @@
 		<dependency>
 			<groupId>org.postgresql</groupId>
 			<artifactId>postgresql</artifactId>
-			<version>9.4-1201-jdbc41</version>
+			<!-- <version>9.4-1201-jdbc41</version> -->
 		</dependency>
 		
 		<!-- H2 JDBC driver. Used for testing with embedded DB. -->
