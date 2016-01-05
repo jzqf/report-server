@@ -68,6 +68,16 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	}
 
 	/*
+	 * According to the Spring Security documentation, this bean provides 
+	 * support for Spring Data with Spring Security, although it does not 
+	 * describe what this support covers.
+	 */
+	//	@Bean
+	//	public SecurityEvaluationContextExtension securityEvaluationContextExtension() {
+	//		return new SecurityEvaluationContextExtension();
+	//	}
+
+	/*
 	 * I registered this filter as a Spring bean here only so that it supports
 	 * @Autowired DI.
 	 */
@@ -168,10 +178,17 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		auth.authenticationProvider(reportServerAuthenticationProvider());
 	}
 
+	/*
+	 * This is so that media asset files (images, CSS files, JavaScript files,
+	 * etc.) are ignored by Spring Security. This means that Spring Security
+	 * will not require that a Basic Authentication header is provided, and if
+	 * an Authentication header *is* provided, it will be ignored.
+	 */
 	@Override
 	public void configure(WebSecurity web) throws Exception {
 		web.ignoring().antMatchers("/webcontent/birt/**");
 	}
+
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
 
