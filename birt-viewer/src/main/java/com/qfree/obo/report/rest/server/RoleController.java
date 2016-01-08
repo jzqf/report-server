@@ -130,7 +130,7 @@ public class RoleController extends AbstractBaseController {
 	 *   $ mvn clean spring-boot:run
 	 *   $ curl -X POST -iH "Accept: application/json;v=1" -H "Content-Type: application/json" -d \
 	 *   '{"username":"bozoc","fullName":"Bozo the clown","unencodedPassword":"iambozo","loginRole":true,\
-	 *   "enabled":true,"email_address":"bozo@circus.net","timeZoneId":"CET"}' http://localhost:8080/rest/roles
+	 *   "enabled":true,"emailAddress":"bozo@circus.net","timeZoneId":"CET"}' http://localhost:8080/rest/roles
 	 */
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
@@ -342,7 +342,7 @@ public class RoleController extends AbstractBaseController {
 	 *   
 	 *   $ curl -X PUT -iH "Accept: application/json;v=1" -H "Content-Type: application/json" -d \
 	 *   '{"username":"bozoc","fullName":"Bozo the clown","loginRole":true,\
-	 *   "email_address":"dumbo@circus.net","timeZoneId":"UTC"}' \
+	 *   "emailAddress":"dumbo@circus.net","timeZoneId":"UTC"}' \
 	 *   http://localhost:8080/rest/roles/f9a94054-c62b-464c-874c-a61d18530c87
 	 * 
 	 * This example updates the password that is used to *locally* authenticate
@@ -350,7 +350,7 @@ public class RoleController extends AbstractBaseController {
 	 * 
 	 *   $ curl -X PUT -iH "Accept: application/json;v=1" -H "Content-Type: application/json" -d \
 	 *   '{"username":"bozoc","fullName":"Bozo the clown","loginRole":true,\
-	 *   "unencodedPassword":"iambozo2","email_address":"dumbo@circus.net","timeZoneId":"UTC"}' \
+	 *   "unencodedPassword":"iambozo2","emailAddress":"dumbo@circus.net","timeZoneId":"UTC"}' \
 	 *   http://localhost:8080/rest/roles/f9a94054-c62b-464c-874c-a61d18530c87
 	 */
 	@Path("/{id}")
@@ -366,8 +366,9 @@ public class RoleController extends AbstractBaseController {
 	 *      Role to be updated, i.e., the user is updating his/her own Role.
 	 */
 	@PreAuthorize("hasAuthority('" + Authority.AUTHORITY_NAME_MANAGE_ROLES + "')"
-			+ " or #id == principal.roleId")
-	//		+" or #roleResource.username == principal.username")
+	//      + " or #id == principal.roleId")
+	//		+ " or @dos.role(#id).getRoleId() == principal.roleId")
+			+ " or @dos.ownsRole(#id, principal.roleId)")
 	public Response updateById(
 			RoleResource roleResource,
 			@PathParam("id") final UUID id,

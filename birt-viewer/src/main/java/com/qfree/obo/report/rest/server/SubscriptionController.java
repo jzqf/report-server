@@ -457,6 +457,9 @@ public class SubscriptionController extends AbstractBaseController {
 	@Transactional
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
+	@PreAuthorize("hasAuthority('" + Authority.AUTHORITY_NAME_MANAGE_SUBSCRIPTIONS + "')"
+	//		+ " or @dos.subscription(#id).getRole().getRoleId() == principal.roleId")
+			+ " or @dos.ownsSubscription(#id, principal.roleId)")
 	public Response updateById(
 			SubscriptionResource subscriptionResource,
 			@PathParam("id") final UUID id,
