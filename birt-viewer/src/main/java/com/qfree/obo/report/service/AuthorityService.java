@@ -27,6 +27,33 @@ public class AuthorityService {
 		this.authorityRepository = authorityRepository;
 	}
 
+	/**
+	 * Returns an {@link Authority} {@link List} for all {@link Authority}
+	 * entities that are linked <b>directly</b> to a {@link Role}, i.e.,
+	 * {@link Role} inheritance is not taken into account.
+	 * 
+	 * @param roleId
+	 * @return
+	 */
+	@Transactional
+	public List<Authority> getActiveAuthoritiesByRoleIdDirect(UUID roleId) {
+
+		List<String> uuidStrings = authorityRepository.findActiveAuthorityIdsByRoleId(roleId.toString());
+		List<Authority> authorities = new ArrayList<>(uuidStrings.size());
+		for (String uuidString : uuidStrings) {
+			try {
+				UUID authorityId = UUID.fromString(uuidString);
+				Authority authority = authorityRepository.findOne(authorityId);
+				if (authority != null) {
+					authorities.add(authority);
+				}
+			} catch (IllegalArgumentException e) {
+				logger.error("Illegal value for authorityId: {}", uuidString);
+			}
+		}
+		return authorities;
+	}
+
 	@Transactional
 	public List<Authority> getActiveAuthoritiesByRoleId(UUID roleId) {
 

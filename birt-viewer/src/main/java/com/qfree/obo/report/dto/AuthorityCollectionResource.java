@@ -33,9 +33,17 @@ public class AuthorityCollectionResource extends AbstractCollectionResource<Auth
 			Map<String, List<String>> queryParams,
 			RestApiVersion apiVersion) {
 		this(
-				//role.getAuthorities(),
-				//authorityRepository.findActiveAuthorityIdsByRoleIdRecursive(role.getRoleId().toString()),
-				authorityService.getActiveAuthoritiesByRoleId(role.getRoleId()),
+				/*
+				 * This returns all Authorities linked to the Role, either 
+				 * directly or indirectly (If PostgreSQL is used - H2 does not
+				 * support recursive CTEs):
+				 */
+				//authorityService.getActiveAuthoritiesByRoleId(role.getRoleId()),
+				/*
+				 * This returns all Authorities linked *directly* to the Role. 
+				 * Role inheritance is *not* used:
+				 */
+				authorityService.getActiveAuthoritiesByRoleIdDirect(role.getRoleId()),
 				Authority.class,
 				AbstractBaseResource.createHref(uriInfo, Role.class, role.getRoleId(), null),
 				ResourcePath.AUTHORITIES_PATH,
