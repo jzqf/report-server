@@ -164,6 +164,7 @@ public class RoleController extends AbstractBaseController {
 	@Path("/{id}")
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
+	@PreAuthorize("hasAuthority('" + Authority.AUTHORITY_NAME_MANAGE_ROLES + "')")
 	public RoleResource getByIdOrUsername(
 			@PathParam("id") final String idOrUsername,
 			//@PathParam("id") final UUID id,
