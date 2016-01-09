@@ -62,11 +62,20 @@ public class RoleResource extends AbstractBaseResource {
 	private Boolean enabled;
 
 	/**
-	 * {@link List}&lt;{@link AuthorityResource}&gt; containing all granted
-	 * authorities for a {@link Role}.
+	 * {@link List}&lt;{@link AuthorityResource}&gt; contains all granted
+	 * directAuthorities <b>directly<b> linked to a {@link Role}. Role
+	 * inheritance is not taken into account.
 	 */
 	@XmlElement
-	private AuthorityCollectionResource authorities;
+	private AuthorityCollectionResource directAuthorities;
+
+	/**
+	 * {@link List}&lt;{@link AuthorityResource}&gt; contains all granted
+	 * directAuthorities linked to a {@link Role} either directly or via Role
+	 * inheritance.
+	 */
+	@XmlElement
+	private AuthorityCollectionResource allAuthorities;
 
 	/**
 	 * If false, this role should be hidden from all lists of roles, as if it
@@ -139,15 +148,22 @@ public class RoleResource extends AbstractBaseResource {
 			this.createdOn = role.getCreatedOn();
 
 			if (authorityService != null) {
+				boolean includeInheritedAuthorities;
 				/*
-				 * "authorityService" is passed as an argument to this 
-				 * constructor because we cannot use Spring DI with this 
-				 * resource class (it is not a Spring-managed class).
+				 * "authorityService" is passed as an argument to the
+				 * AuthorityCollectionResource constructor because we cannot use
+				 * Spring DI with this resource class (it is not a 
+				 * Spring-managed class).
 				 */
-				this.authorities = new AuthorityCollectionResource(role, authorityService,
-						uriInfo, newQueryParams, apiVersion);
+				includeInheritedAuthorities = false;
+				this.directAuthorities = new AuthorityCollectionResource(role, includeInheritedAuthorities,
+						authorityService, uriInfo, newQueryParams, apiVersion);
+				includeInheritedAuthorities = true;
+				this.allAuthorities = new AuthorityCollectionResource(role, includeInheritedAuthorities,
+						authorityService, uriInfo, newQueryParams, apiVersion);
 			} else {
-				this.authorities = null;
+				this.directAuthorities = null;
+				this.allAuthorities = null;
 			}
 
 		}

@@ -572,6 +572,8 @@ public class RoleController extends AbstractBaseController {
 
 		Role role = roleRepository.findOne(id);
 		RestUtils.ifNullThen404(role, Role.class, "roleId", id.toString());
-		return new AuthorityCollectionResource(role, authorityService, uriInfo, queryParams, apiVersion);
+		boolean includeInheritedAuthorities = true;
+		return new AuthorityCollectionResource(role, includeInheritedAuthorities,
+				authorityService, uriInfo, queryParams, apiVersion);
 	}
 }
