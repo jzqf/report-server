@@ -66,7 +66,7 @@ public class DocumentFormatController extends AbstractBaseController {
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	@PreAuthorize("hasAuthority('" + Authority.AUTHORITY_NAME_USE_RESTAPI + "')"
-	//+ " and hasAuthority('" + Authority.AUTHORITY_NAME_MANAGE_FILEFORMATS + "')"
+			+ " and hasAuthority('" + Authority.AUTHORITY_NAME_MANAGE_FILEFORMATS + "')"
 	)
 	public DocumentFormatCollectionResource getList(
 			@HeaderParam("Accept") final String acceptHeader,
@@ -139,6 +139,9 @@ public class DocumentFormatController extends AbstractBaseController {
 	@Path("/{id}")
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
+	@PreAuthorize("hasAuthority('" + Authority.AUTHORITY_NAME_USE_RESTAPI + "')"
+			+ " and hasAuthority('" + Authority.AUTHORITY_NAME_MANAGE_FILEFORMATS + "')"
+	)
 	public DocumentFormatResource getById(
 			@PathParam("id") final UUID id,
 			@HeaderParam("Accept") final String acceptHeader,

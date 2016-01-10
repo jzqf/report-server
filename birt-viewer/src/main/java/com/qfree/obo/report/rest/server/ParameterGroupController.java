@@ -140,6 +140,8 @@ public class ParameterGroupController extends AbstractBaseController {
 	@Path("/{id}")
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
+	@PreAuthorize("hasAuthority('" + Authority.AUTHORITY_NAME_USE_RESTAPI + "') and "
+			+ "hasAuthority('" + Authority.AUTHORITY_NAME_MANAGE_REPORTS + "')")
 	public ParameterGroupResource getById(
 			@PathParam("id") final UUID id,
 			@HeaderParam("Accept") final String acceptHeader,
@@ -174,7 +176,8 @@ public class ParameterGroupController extends AbstractBaseController {
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	@Transactional
-	@PreAuthorize("hasAuthority('" + Authority.AUTHORITY_NAME_MANAGE_REPORTS + "')")
+	@PreAuthorize("hasAuthority('" + Authority.AUTHORITY_NAME_USE_RESTAPI + "') and "
+			+ "hasAuthority('" + Authority.AUTHORITY_NAME_MANAGE_REPORTS + "')")
 	public Response updateById(
 			ParameterGroupResource parameterGroupResource,
 			@PathParam("id") final UUID id,

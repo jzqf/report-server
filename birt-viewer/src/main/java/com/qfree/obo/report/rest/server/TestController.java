@@ -267,7 +267,8 @@ public class TestController extends AbstractBaseController {
 	@GET
 	@Path("/parse_report_params")
 	@Produces(MediaType.TEXT_PLAIN)
-	@PreAuthorize("hasAuthority('" + Authority.AUTHORITY_NAME_RUN_DIAGNOSTICS + "')")
+	@PreAuthorize("hasAuthority('" + Authority.AUTHORITY_NAME_USE_RESTAPI + "') and "
+			+ "hasAuthority('" + Authority.AUTHORITY_NAME_RUN_DIAGNOSTICS + "')")
 	public String parseReportParamsTest(
 			@HeaderParam("Accept") final String acceptHeader,
 			@Context final UriInfo uriInfo) {

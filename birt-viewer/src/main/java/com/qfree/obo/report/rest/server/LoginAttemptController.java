@@ -17,9 +17,11 @@ import javax.ws.rs.core.UriInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Component;
 
 import com.qfree.obo.report.db.RoleRepository;
+import com.qfree.obo.report.domain.Authority;
 import com.qfree.obo.report.domain.Role;
 import com.qfree.obo.report.dto.ResourcePath;
 import com.qfree.obo.report.dto.RestErrorResource.RestError;
@@ -85,6 +87,7 @@ public class LoginAttemptController extends AbstractBaseController {
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
+	@PreAuthorize("hasAuthority('" + Authority.AUTHORITY_NAME_USE_RESTAPI + "')")
 	public RoleResource authenticate(
 			RoleResource roleResource,
 			@HeaderParam("Accept") final String acceptHeader,

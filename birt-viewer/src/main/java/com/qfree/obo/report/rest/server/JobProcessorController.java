@@ -63,6 +63,8 @@ public class JobProcessorController extends AbstractBaseController {
 	@Path("/status")
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
+	@PreAuthorize("hasAuthority('" + Authority.AUTHORITY_NAME_USE_RESTAPI + "') and "
+			+ "hasAuthority('" + Authority.AUTHORITY_NAME_MANAGE_JOBPROCESSOR + "')")
 	public JobProcessorResource status(
 			@HeaderParam("Accept") final String acceptHeader,
 			@QueryParam(ResourcePath.EXPAND_QP_NAME) final List<String> expand,

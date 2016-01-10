@@ -136,6 +136,9 @@ public class JobController extends AbstractBaseController {
 	@GET
 	@Transactional
 	@Produces(MediaType.APPLICATION_JSON)
+	@PreAuthorize("hasAuthority('" + Authority.AUTHORITY_NAME_USE_RESTAPI + "')"
+			+ " and hasAuthority('" + Authority.AUTHORITY_NAME_MANAGE_JOBS + "')"
+	)
 	public JobResource getById(
 			@PathParam("id") final Long id,
 			@HeaderParam("Accept") final String acceptHeader,
@@ -199,6 +202,8 @@ public class JobController extends AbstractBaseController {
 			"application/vnd.ms-excel",
 			"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
 			MediaType.APPLICATION_JSON })
+	@PreAuthorize("hasAuthority('" + Authority.AUTHORITY_NAME_USE_RESTAPI + "') and "
+			+ "hasAuthority('" + Authority.AUTHORITY_NAME_MANAGE_JOBS + "')")
 	public Response getJobDocumentByJobId(
 			@PathParam("id") final Long id,
 			@HeaderParam("Accept") final String acceptHeader,
@@ -254,6 +259,8 @@ public class JobController extends AbstractBaseController {
 	@Transactional
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
+	@PreAuthorize("hasAuthority('" + Authority.AUTHORITY_NAME_USE_RESTAPI + "') and "
+			+ "hasAuthority('" + Authority.AUTHORITY_NAME_MANAGE_JOBS + "')")
 	public Response cancelJob(
 			@PathParam("id") final Long id,
 			@HeaderParam("Accept") final String acceptHeader,
@@ -377,6 +384,8 @@ public class JobController extends AbstractBaseController {
 	@GET
 	@Transactional
 	@Produces(MediaType.APPLICATION_JSON)
+	@PreAuthorize("hasAuthority('" + Authority.AUTHORITY_NAME_USE_RESTAPI + "') and "
+			+ "hasAuthority('" + Authority.AUTHORITY_NAME_MANAGE_JOBS + "')")
 	public JobParameterCollectionResource getJobParametersByJobId(
 			@PathParam("id") final Long id,
 			@HeaderParam("Accept") final String acceptHeader,

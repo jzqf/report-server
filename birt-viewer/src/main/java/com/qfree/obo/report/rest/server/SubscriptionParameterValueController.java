@@ -18,9 +18,11 @@ import javax.ws.rs.core.UriInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Component;
 
 import com.qfree.obo.report.db.SubscriptionParameterValueRepository;
+import com.qfree.obo.report.domain.Authority;
 import com.qfree.obo.report.domain.SubscriptionParameterValue;
 import com.qfree.obo.report.dto.ResourcePath;
 import com.qfree.obo.report.dto.SubscriptionParameterValueResource;
@@ -52,6 +54,8 @@ public class SubscriptionParameterValueController extends AbstractBaseController
 	@Path("/{id}")
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
+	@PreAuthorize("hasAuthority('" + Authority.AUTHORITY_NAME_USE_RESTAPI + "')"
+			+ " and hasAuthority('" + Authority.AUTHORITY_NAME_MANAGE_SUBSCRIPTIONS + "')")
 	public SubscriptionParameterValueResource getById(
 			@PathParam("id") final UUID id,
 			@HeaderParam("Accept") final String acceptHeader,
