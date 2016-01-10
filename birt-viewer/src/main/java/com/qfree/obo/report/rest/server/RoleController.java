@@ -89,8 +89,8 @@ public class RoleController extends AbstractBaseController {
 	 */
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
-	//@PreAuthorize("hasAuthority('MANAGE_ROLES')")
-	@PreAuthorize("hasAuthority('" + Authority.AUTHORITY_NAME_MANAGE_ROLES + "')")
+	@PreAuthorize("hasAuthority('" + Authority.AUTHORITY_NAME_USE_RESTAPI + "') and "
+			+ "hasAuthority('" + Authority.AUTHORITY_NAME_MANAGE_ROLES + "')")
 	public RoleCollectionResource getList(
 			@HeaderParam("Accept") final String acceptHeader,
 			@QueryParam(ResourcePath.EXPAND_QP_NAME) final List<String> expand,
@@ -135,7 +135,8 @@ public class RoleController extends AbstractBaseController {
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	@PreAuthorize("hasAuthority('" + Authority.AUTHORITY_NAME_MANAGE_ROLES + "')")
+	@PreAuthorize("hasAuthority('" + Authority.AUTHORITY_NAME_USE_RESTAPI + "') and "
+			+ "hasAuthority('" + Authority.AUTHORITY_NAME_MANAGE_ROLES + "')")
 	public Response create(
 			RoleResource roleResource,
 			@HeaderParam("Accept") final String acceptHeader,
@@ -164,7 +165,8 @@ public class RoleController extends AbstractBaseController {
 	@Path("/{id}")
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
-	@PreAuthorize("hasAuthority('" + Authority.AUTHORITY_NAME_MANAGE_ROLES + "')")
+	@PreAuthorize("hasAuthority('" + Authority.AUTHORITY_NAME_USE_RESTAPI + "') and "
+			+ "hasAuthority('" + Authority.AUTHORITY_NAME_MANAGE_ROLES + "')")
 	public RoleResource getByIdOrUsername(
 			@PathParam("id") final String idOrUsername,
 			//@PathParam("id") final UUID id,
@@ -359,17 +361,18 @@ public class RoleController extends AbstractBaseController {
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	/*
-	 * The authenticated user must either:
+	 * The authenticated user must have the authority "USE_RESTAPI" and either:
 	 * 
 	 *   1. Have the authority "MANAGE_ROLES", or
 	 *   
 	 *   2. Have a value of Role.roleId equal to the value of roleId for the
 	 *      Role to be updated, i.e., the user is updating his/her own Role.
 	 */
-	@PreAuthorize("hasAuthority('" + Authority.AUTHORITY_NAME_MANAGE_ROLES + "')"
+	@PreAuthorize("hasAuthority('" + Authority.AUTHORITY_NAME_USE_RESTAPI + "') and "
+			+ "(hasAuthority('" + Authority.AUTHORITY_NAME_MANAGE_ROLES + "')"
 	//      + " or #id == principal.roleId")
 	//		+ " or @dos.role(#id).getRoleId() == principal.roleId")
-			+ " or @dos.ownsRole(#id, principal.roleId)")
+			+ " or @dos.ownsRole(#id, principal.roleId))")
 	public Response updateById(
 			RoleResource roleResource,
 			@PathParam("id") final UUID id,

@@ -65,6 +65,8 @@ public class Authority implements Serializable {
 	public static final UUID AUTHORITY_UUID_DELETE_SUBSCRIPTIONS = UUID
 			.fromString("94db0a84-e366-4ab8-aeba-171482979f3d");
 
+	public static final UUID AUTHORITY_UUID_USE_RESTAPI = UUID.fromString("e2883c0e-5972-4225-a805-27410a2866f4");
+
 	public static final UUID AUTHORITY_UUID_RUN_DIAGNOSTICS = null;
 
 	/*
@@ -86,6 +88,8 @@ public class Authority implements Serializable {
 	public static final String AUTHORITY_NAME_MANAGE_ROLES = "MANAGE_ROLES";
 	public static final String AUTHORITY_NAME_MANAGE_SUBSCRIPTIONS = "MANAGE_SUBSCRIPTIONS";
 	public static final String AUTHORITY_NAME_DELETE_SUBSCRIPTIONS = "DELETE_SUBSCRIPTIONS";
+
+	public static final String AUTHORITY_NAME_USE_RESTAPI = "USE_RESTAPI";
 
 	public static final String AUTHORITY_NAME_RUN_DIAGNOSTICS = "RUN_DIAGNOSTICS";
 

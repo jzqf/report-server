@@ -104,7 +104,8 @@ public class ReportCategoryController extends AbstractBaseController {
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	@Transactional
-	@PreAuthorize("hasAuthority('" + Authority.AUTHORITY_NAME_MANAGE_CATEGORIES + "')")
+	@PreAuthorize("hasAuthority('" + Authority.AUTHORITY_NAME_USE_RESTAPI + "') and "
+			+ "hasAuthority('" + Authority.AUTHORITY_NAME_MANAGE_CATEGORIES + "')")
 	public Response create(
 			ReportCategoryResource reportCategoryResource,
 			@HeaderParam("Accept") final String acceptHeader,
@@ -168,7 +169,8 @@ public class ReportCategoryController extends AbstractBaseController {
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	@Transactional
-	@PreAuthorize("hasAuthority('" + Authority.AUTHORITY_NAME_MANAGE_CATEGORIES + "')")
+	@PreAuthorize("hasAuthority('" + Authority.AUTHORITY_NAME_USE_RESTAPI + "') and "
+			+ "hasAuthority('" + Authority.AUTHORITY_NAME_MANAGE_CATEGORIES + "')")
 	public Response updateById(
 			ReportCategoryResource reportCategoryResource,
 			@PathParam("id") final UUID id,

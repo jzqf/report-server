@@ -344,6 +344,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 					 * constraints imposed with @PreAuthorize.
 					 */
 					.and().anonymous().authorities(
+							"USE_RESTAPI",
 							"MANAGE_AUTHORITIES",
 							"MANAGE_FILEFORMATS",
 							"MANAGE_FILESYNCING",

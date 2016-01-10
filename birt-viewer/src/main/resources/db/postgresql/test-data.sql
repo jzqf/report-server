@@ -113,6 +113,7 @@ insert into reporting.report_parameter (report_parameter_id, report_version_id, 
 
 
 -- Create "authority" rows:
+INSERT INTO reporting.authority (authority_id, name, active, created_on) VALUES ('e2883c0e-5972-4225-a805-27410a2866f4', 'USE_RESTAPI'         , true, current_timestamp AT TIME ZONE 'UTC');
 INSERT INTO reporting.authority (authority_id, name, active, created_on) VALUES ('1e4f29b9-3183-4f54-a4ee-96c2347d7e06', 'MANAGE_AUTHORITIES'  , true, current_timestamp AT TIME ZONE 'UTC');
 INSERT INTO reporting.authority (authority_id, name, active, created_on) VALUES ('dae0f68f-11c6-438c-8312-aca4d95731fc', 'MANAGE_CATEGORIES'   , true, current_timestamp AT TIME ZONE 'UTC');
 INSERT INTO reporting.authority (authority_id, name, active, created_on) VALUES ('cd2c5d93-9b57-4a8b-b789-84dd567e0fa2', 'MANAGE_FILEFORMATS'  , true, current_timestamp AT TIME ZONE 'UTC');
@@ -469,7 +470,8 @@ INSERT INTO reporting.role_role (role_role_id, parent_role_id, child_role_id, cr
 INSERT INTO reporting.role_role (role_role_id, parent_role_id, child_role_id, created_on) VALUES ('9d67a2b4-4093-46f9-969b-1133970bf988', '149c594e-9ae6-4c48-b02d-e84659d030ad', '2c22e099-32a0-4f23-b7f6-571e7ffa9dc9', '2015-04-13T09:00:00');
 
 
--- Give the "Administrator" role all authorities by creating "role_authority" rows:
+-- Give the "Administrator" role most authorities by creating "role_authority" rows:
+--INSERT INTO reporting.role_authority (role_authority_id, role_id, authority_id, created_on) VALUES ('80f98056-85c0-4ed0-989c-7e5354ab8151', '54aa1d35-f67d-47e6-8bea-cadd6085796e', 'e2883c0e-5972-4225-a805-27410a2866f4', current_timestamp AT TIME ZONE 'UTC');
 INSERT INTO reporting.role_authority (role_authority_id, role_id, authority_id, created_on) VALUES ('f812aab5-2390-43f3-add3-a3d673939a73', '54aa1d35-f67d-47e6-8bea-cadd6085796e', '1e4f29b9-3183-4f54-a4ee-96c2347d7e06', current_timestamp AT TIME ZONE 'UTC');
 INSERT INTO reporting.role_authority (role_authority_id, role_id, authority_id, created_on) VALUES ('62c78032-5ec7-440c-8107-386b745b9ab9', '54aa1d35-f67d-47e6-8bea-cadd6085796e', 'dae0f68f-11c6-438c-8312-aca4d95731fc', current_timestamp AT TIME ZONE 'UTC');
 INSERT INTO reporting.role_authority (role_authority_id, role_id, authority_id, created_on) VALUES ('eb8e56c2-7a8e-4dbe-97ca-a0e6166b258a', '54aa1d35-f67d-47e6-8bea-cadd6085796e', 'cd2c5d93-9b57-4a8b-b789-84dd567e0fa2', current_timestamp AT TIME ZONE 'UTC');
@@ -486,6 +488,7 @@ INSERT INTO reporting.role_authority (role_authority_id, role_id, authority_id, 
 INSERT INTO reporting.role_authority (role_authority_id, role_id, authority_id, created_on) VALUES ('13e14dbc-d30d-4006-95ed-b8de417a2315', '54aa1d35-f67d-47e6-8bea-cadd6085796e', '94db0a84-e366-4ab8-aeba-171482979f3d', current_timestamp AT TIME ZONE 'UTC');
 --
 -- Give the "Q-Free administrator" role all authorities by creating "role_authority" rows:
+INSERT INTO reporting.role_authority (role_authority_id, role_id, authority_id, created_on) VALUES ('be6a207f-10f7-4e86-a174-392b4934d2a0', '10ab3537-0b12-44fa-a27b-6cf1aac14282', 'e2883c0e-5972-4225-a805-27410a2866f4', current_timestamp AT TIME ZONE 'UTC');
 INSERT INTO reporting.role_authority (role_authority_id, role_id, authority_id, created_on) VALUES ('4cb38206-bd6c-4db1-a596-0944b386c093', '10ab3537-0b12-44fa-a27b-6cf1aac14282', '1e4f29b9-3183-4f54-a4ee-96c2347d7e06', current_timestamp AT TIME ZONE 'UTC');
 INSERT INTO reporting.role_authority (role_authority_id, role_id, authority_id, created_on) VALUES ('e2ef968a-7fd6-4e9e-b74a-58fc6f208a50', '10ab3537-0b12-44fa-a27b-6cf1aac14282', 'dae0f68f-11c6-438c-8312-aca4d95731fc', current_timestamp AT TIME ZONE 'UTC');
 INSERT INTO reporting.role_authority (role_authority_id, role_id, authority_id, created_on) VALUES ('143e65a8-3051-4512-bf02-940455f25744', '10ab3537-0b12-44fa-a27b-6cf1aac14282', 'cd2c5d93-9b57-4a8b-b789-84dd567e0fa2', current_timestamp AT TIME ZONE 'UTC');
@@ -502,6 +505,7 @@ INSERT INTO reporting.role_authority (role_authority_id, role_id, authority_id, 
 INSERT INTO reporting.role_authority (role_authority_id, role_id, authority_id, created_on) VALUES ('0fff6274-a9dc-4262-aa29-5feff9414810', '10ab3537-0b12-44fa-a27b-6cf1aac14282', '94db0a84-e366-4ab8-aeba-171482979f3d', current_timestamp AT TIME ZONE 'UTC');
 --
 -- Give the "ReST Administrator" role all authorities by creating "role_authority" rows:
+INSERT INTO reporting.role_authority (role_authority_id, role_id, authority_id, created_on) VALUES ('ad0fcb0d-6d89-41ad-9ed7-82292757c496', '689833f9-e55c-4eaf-aba6-79f8b1d1a058', 'e2883c0e-5972-4225-a805-27410a2866f4', current_timestamp AT TIME ZONE 'UTC');
 INSERT INTO reporting.role_authority (role_authority_id, role_id, authority_id, created_on) VALUES ('9186ccf4-bfac-43fd-a200-7484f4d7b0b5', '689833f9-e55c-4eaf-aba6-79f8b1d1a058', '1e4f29b9-3183-4f54-a4ee-96c2347d7e06', current_timestamp AT TIME ZONE 'UTC');
 INSERT INTO reporting.role_authority (role_authority_id, role_id, authority_id, created_on) VALUES ('bfeb5c18-545e-4a47-b412-25df077bfc19', '689833f9-e55c-4eaf-aba6-79f8b1d1a058', 'dae0f68f-11c6-438c-8312-aca4d95731fc', current_timestamp AT TIME ZONE 'UTC');
 INSERT INTO reporting.role_authority (role_authority_id, role_id, authority_id, created_on) VALUES ('cc1392c8-bf80-474b-9cb8-e01e9ef067b6', '689833f9-e55c-4eaf-aba6-79f8b1d1a058', 'cd2c5d93-9b57-4a8b-b789-84dd567e0fa2', current_timestamp AT TIME ZONE 'UTC');
