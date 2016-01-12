@@ -23,11 +23,13 @@ import org.eclipse.birt.report.engine.api.IParameterDefn;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.qfree.obo.report.db.RoleParameterRepository;
 import com.qfree.obo.report.db.SubscriptionParameterRepository;
+import com.qfree.obo.report.domain.Authority;
 import com.qfree.obo.report.domain.RoleParameter;
 import com.qfree.obo.report.domain.RoleParameterValue;
 import com.qfree.obo.report.domain.SubscriptionParameter;
@@ -167,6 +169,8 @@ public class SubscriptionParameterController extends AbstractBaseController {
 	@Path("/{id}")
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
+	@PreAuthorize("hasAuthority('" + Authority.AUTHORITY_NAME_USE_RESTAPI + "')"
+			+ " and hasAuthority('" + Authority.AUTHORITY_NAME_MANAGE_SUBSCRIPTIONS + "')")
 	public SubscriptionParameterResource getById(
 			@PathParam("id") final UUID id,
 			@HeaderParam("Accept") final String acceptHeader,
@@ -254,6 +258,8 @@ public class SubscriptionParameterController extends AbstractBaseController {
 	@PUT
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
+	@PreAuthorize("hasAuthority('" + Authority.AUTHORITY_NAME_USE_RESTAPI + "')"
+			+ " and hasAuthority('" + Authority.AUTHORITY_NAME_MANAGE_SUBSCRIPTIONS + "')")
 	public SubscriptionParameterValueCollectionResource updateSubscriptionParameterValuesBySubscriptionParameterId(
 			SubscriptionParameterResource subscriptionParameterResource,
 			@PathParam("id") final UUID id,
@@ -671,6 +677,8 @@ public class SubscriptionParameterController extends AbstractBaseController {
 	@Path("/{id}" + ResourcePath.SUBSCRIPTIONPARAMETERVALUES_PATH)
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
+	@PreAuthorize("hasAuthority('" + Authority.AUTHORITY_NAME_USE_RESTAPI + "')"
+			+ " and hasAuthority('" + Authority.AUTHORITY_NAME_MANAGE_SUBSCRIPTIONS + "')")
 	public SubscriptionParameterValueCollectionResource getSubscriptionParameterValuesBySubscriptionParameterId(
 			@PathParam("id") final UUID id,
 			@HeaderParam("Accept") final String acceptHeader,

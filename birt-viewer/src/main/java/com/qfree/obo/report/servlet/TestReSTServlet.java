@@ -5,7 +5,6 @@ import java.io.PrintWriter;
 
 import javax.json.JsonArray;
 import javax.servlet.ServletException;
-import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -16,9 +15,15 @@ import org.slf4j.LoggerFactory;
 import com.qfree.obo.report.rest.client.RestClientTest;
 
 /**
- * Servlet implementation class RequestHeadersServlet
+ * Servlet implementation class TestReSTServlet.
+ * 
  */
-@WebServlet(description = "For testing JAX-RS stuff", urlPatterns = { "/TestRest" })
+/*
+ * Comment out the @WebServlet annotation to disable this servlet when this
+ * application is installed as a WAR file in Tomcat. If @WebServlet is *not*
+ * commented out, there should be an entry in SecurityConfig for this servlet.
+ */
+//@WebServlet(description = "For testing JAX-RS stuff", urlPatterns = { "/TestRest" })
 public class TestReSTServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
@@ -62,7 +67,7 @@ public class TestReSTServlet extends HttpServlet {
 
 		} catch (Exception e) {
 			e.printStackTrace();
-		}
+			}
 	}
 
 	public String getServletInfo() {

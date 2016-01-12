@@ -8,16 +8,8 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
 @XmlRootElement
-@XmlAccessorType(XmlAccessType.FIELD)
+@XmlAccessorType(XmlAccessType.FIELD) // so we can annotate fields with @XmlTransient
 public class RestErrorResource {
-
-	//	private static final String STATUS_PROP_NAME = "status";
-	//	private static final String CODE_PROP_NAME = "code";
-	//	private static final String MESSAGE_PROP_NAME = "message";
-	//	private static final String DEVELOPER_MESSAGE_PROP_NAME = "developerMessage";
-	//	private static final String MORE_INFO_PROP_NAME = "moreInfo";
-	//
-	//	private static final String DEFAULT_MORE_INFO_URL = "mailto:support@stormpath.com";
 
 	public enum RestError {
 
@@ -250,6 +242,15 @@ public class RestErrorResource {
 				null),
 		FORBIDDEN_RESOURCE_FILTER_PROBLEM(
 				Response.Status.FORBIDDEN, "403.29", "Problem encountered during resource filtering", null),
+		FORBIDDEN_RESOURCE_ROLE_METHOD_ACCESS_VIOLATION(
+				Response.Status.FORBIDDEN, "403.30",
+				"The authenticated role does not have the authority to call a method.", null),
+		FORBIDDEN_ROLE_AUTHORITY_VIOLATION_UPDATE_ROLE(
+				Response.Status.FORBIDDEN, "403.31",
+				"The authenticated role does not have the authority to update the selected Role resource.", null),
+		//FORBIDDEN_RESOURCE_ROLE_REPORT_ACCESS_VIOLATION(
+		//		Response.Status.FORBIDDEN, "403.XX",
+		//		"The authenticated role does not have permission to view the requested report.", null),
 
 		/**
 		 * {@code 404 Not Found}.
@@ -493,17 +494,20 @@ public class RestErrorResource {
 	private String errorCode;
 	@XmlElement
 	private String errorMessage;
-	@XmlElement //@XmlTransient
-	private String resourceName;// @XmlTransient means this will not be serialized to JSON
-	@XmlElement //@XmlTransient
-	private String attrName;// @XmlTransient means this will not be serialized to JSON
-	@XmlElement //@XmlTransient
-	private String attrValue;// @XmlTransient means this will not be serialized to JSON
+	@XmlElement
+	//@XmlTransient // Do not serialize this field - requires @XmlAccessorType(XmlAccessType.FIELD)
+	private String resourceName;
+	@XmlElement
+	//@XmlTransient // Do not serialize this field - requires @XmlAccessorType(XmlAccessType.FIELD)
+	private String attrName;
+	@XmlElement
+	//@XmlTransient // Do not serialize this field - requires @XmlAccessorType(XmlAccessType.FIELD)
+	private String attrValue;
 	@XmlElement
 	private String moreInfoUrl;
-	@XmlTransient
+	@XmlTransient // Do not serialize this field - requires @XmlAccessorType(XmlAccessType.FIELD)
 	//	@XmlElement
-	private Throwable cause;// @XmlTransient means this will not be serialized to JSON
+	private Throwable cause;
 
 	public RestErrorResource() {
 	}

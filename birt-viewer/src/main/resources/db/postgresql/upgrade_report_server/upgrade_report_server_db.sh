@@ -289,7 +289,7 @@ if [ -d "$SQL_UPGRADE_DIR" ]; then
 		do
 			if [ -r "$SQL_UPGRADE_DIR/upgrade_report_server_db_to_v$i.sql" ]; then
 				log_info "Upgrading database to version $i..."
-				psql -f $SQL_UPGRADE_DIR/upgrade_report_server_db_to_v$i.sql -h $DBSERVER -p $DBPORT -d $DBNAME -U $DBUSER >> "$LOGFILE" 2>&1
+				psql -f $SQL_UPGRADE_DIR/upgrade_report_server_db_to_v$i.sql -v ON_ERROR_STOP=1 -h $DBSERVER -p $DBPORT -d $DBNAME -U $DBUSER >> "$LOGFILE" 2>&1
 				if [ $? -eq 0 ]; then
 					log_info "Successfully upgraded database to version $i"
 				else

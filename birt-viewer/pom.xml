@@ -41,14 +41,14 @@
 	</developers>
 	<issueManagement>
 		<system>JIRA</system>
-		<url>https://issues.q-free.com:8443/browse/QF15203</url>
+		<url>https://issues.q-free.com/browse/QF15203</url>
 	</issueManagement>
 
 	<properties>
 		<birt-runtime.version>4.4.2</birt-runtime.version>
 		<birt-runtime.viewservlets.version>4.4.1</birt-runtime.viewservlets.version>
 		<!-- <servlet-api.version>3.1.0</servlet-api.version> -->
-		<!-- <hibernate.version>4.3.8.Final</hibernate.version> -->
+		<!-- <hibernate.version>4.3.11.Final</hibernate.version> -->
 		<quartz.version>2.2.1</quartz.version>
 		<!-- <javax.mail.version>1.5.4</javax.mail.version> -->
 		<tomcat7.maven.plugin.version>2.2</tomcat7.maven.plugin.version>
@@ -56,14 +56,32 @@
 		  The following versions must agree with the properties defined with the
 		  same name in:
 		  
-		  http://central.maven.org/maven2/org/springframework/boot/spring-boot-dependencies/1.2.3.RELEASE/spring-boot-dependencies-1.2.3.RELEASE.pom
+		  http://central.maven.org/maven2/org/springframework/boot/spring-boot-dependencies/1.3.1.RELEASE/spring-boot-dependencies-1.3.1.RELEASE.pom
 		  
-		  where "1.2.3.RELEASE" should be replaced with whatever version of 
-		  Spring Boot you are using. It seems that Spring Boot has very strict
-		  requirements on attribute versions, and if you don'yt get them right,
-		  strange exceptions will be thrown with no useful explanation to debug
-		  the problem. This version of Spring Boot is defined by the property 
-		  "spring-boot.version" in reporting-master/pom.xml.
+		  where "1.3.1.RELEASE" should be replaced with whatever version of 
+		  Spring Boot you are using. This version of Spring Boot is defined by
+		  the property "spring-boot.version" in reporting-master/pom.xml. Links
+		  to all of POM files for all versions of "spring-boot-dependencies" can
+		  be found here:
+		  
+		  http://mvnrepository.com/artifact/org.springframework.boot/spring-boot-dependencies
+		  
+		  The reason why we must define the "jersey.version" property here, and
+		  give it the correct value, is because Spring Boot specifies the 
+		  version of the Jersey framework that should be used for some Jersey
+		  components, e.g., jersey-container-servlet and others. It is not
+		  necessary to specify the version for those Jersey components for which
+		  Spring Boot has specified the version. However, Spring Boot does *not*
+		  specify the version for *all* possible Jersey components. This POM
+		  file specifies dependencies for Jersey artifacts that Spring Boot does
+		  *not* manage. We are forced to specify explicitly the Jersey version
+		  number for these artifacts, and we want this version number to be the
+		  same as the jersey version number that Spring Boot specifies for the
+		  Jersey components that it does manage. If we do not do this, we will
+		  end up using one version number for some Jersey components and another
+		  version number for other Jersey components. This will almost certainly
+		  lead to problems. For example, strange exceptions will be thrown with
+		  no useful explanation to debug the problem. 
 		  
 		  The procedure for updating the version of Spring Boot used by this 
 		  application is:
@@ -77,15 +95,15 @@
 			   ("hamcrest.version", ...).
 			   
 			3. Browse through the POM file for the "spring-boot-starter-parent"
-			   artifact, which for version 1.2.3.RELEASE is:
+			   artifact, which for version 1.3.1.RELEASE is:
 			   
-			   http://central.maven.org/maven2/org/springframework/boot/spring-boot-starter-parent/1.2.3.RELEASE/spring-boot-starter-parent-1.2.3.RELEASE.pom
+			   http://central.maven.org/maven2/org/springframework/boot/spring-boot-starter-parent/1.3.1.RELEASE/spring-boot-starter-parent-1.3.1.RELEASE.pom
 
 			   Copy the two blocks of content to replace the corresponding 
 			   blocks in reporting-master/pom.xml that I have marked with 
 			   comments that explain they were copied from that POM file.
 		-->
-		<jersey.version>2.14</jersey.version>
+		<jersey.version>2.22.1</jersey.version>
 
 		<!-- The main class to start by executing java -jar -->
 		<start-class>com.qfree.obo.report.ApplicationConfig</start-class>
@@ -293,6 +311,93 @@
 			<!-- <version>${spring.version}</version> -->
 		</dependency>
 		
+		<!-- Spring security -->
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-core</artifactId>
+			<!-- <version>${spring.security.version}</version> -->
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-config</artifactId>
+			<!-- <version>${spring.security.version}</version> -->
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-web</artifactId>
+			<!-- <version>${spring.security.version}</version> -->
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-data</artifactId>
+			<!-- <version>${spring.security.version}</version> -->
+		</dependency>
+		<!-- This "test" dependency is not currently used (as of v0.11): -->
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-test</artifactId>
+			<!-- <version>${spring.security.version}</version> -->
+			<scope>test</scope>
+		</dependency>
+		<!--
+		  Without this dependency on Spring MVC, it is not possible to run or
+		  test this application. Various exceptions are thrown, depending on 
+		  what you try to do. These include:
+		  
+			 "java.lang.IllegalStateException: Could not evaluate condition on 
+			  org.springframework.boot.autoconfigure.jdbc.XADataSourceAutoConfiguration 
+			  due to internal class not found. This can happen if you are @ComponentScanning a
+			  springframework package (e.g. if you put a @ComponentScan in the default package by mistake)"
+			  
+			 "java.lang.IllegalStateException: Could not evaluate condition on 
+			  org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration$JdbcTemplateConfiguration 
+			  due to internal class not found. This can happen if you are @ComponentScanning a
+			  springframework package (e.g. if you put a @ComponentScan in the default package by mistake)"
+			  
+			 "java.lang.NoClassDefFoundError: org/springframework/web/servlet/mvc/method/annotation/RequestMappingHandlerMapping"
+			  
+			 "java.lang.ClassNotFoundException: org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping"
+
+		  Note that my code does not make use of any Spring MVC dependencies, so
+		  this problem is likely do to some sort of auto-configuration performed
+		  by Spring Boot. This is very annoying.
+		  
+		  It *was* possible to remove this "spring-webmvc" dependency and still
+		  avoid these exceptions *provided* that I added:
+		  
+		  	ManagementSecurityAutoConfiguration.class
+		 
+		  to the "exclude" list of auto-configuration modules in the 
+		  @EnableAutoConfiguration annotation in ApplicationConfig.java, but
+		  this had the side effect that the following URL then no longer worked:
+		  
+		    http://localhost:8080/autoconfig
+		  
+		  Or course, this URL is only supposed to work if we run the application
+		  via:
+		  
+		    mvn clean spring-boot:run
+		    
+		  (I don't believe it is supposed to work when we deploy the application
+		  to Tomcat.)
+		  
+		  To avoid the possibility of other subtle problems, I have decided that
+		  the safest treatment is to just add the dependency for "spring-webmvc"
+		  here.
+		  
+		  I added this fix while using Spring Boot 1.2.3.RELEASE. After I 
+		  upgrade to a newer version, I should try removing this dependency on 
+		  "spring-webmvc" to see if it is still required. To test if it is 
+		  required, just execute "mvn clean test" and 
+		  "mvn clean spring-boot:run".
+		-->
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-webmvc</artifactId>
+			<!-- <version>${spring.version}</version> -->
+		</dependency>
+
+
 		<!-- Needed for:
 		     org.springframework.scheduling.quartz.SchedulerFactoryBean -->
 		<dependency>
@@ -354,7 +459,7 @@
 		<dependency>
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-dbcp2</artifactId>
-			<!-- <version>2.1</version> -->
+			<!-- <version>2.1.1</version> -->
 			<!-- <scope>provided</scope> -->
 			<exclusions>
 				<exclusion>
@@ -368,7 +473,7 @@
 		<dependency>
 			<groupId>org.postgresql</groupId>
 			<artifactId>postgresql</artifactId>
-			<version>9.4-1201-jdbc41</version>
+			<!-- <version>9.4-1201-jdbc41</version> -->
 		</dependency>
 		
 		<!-- H2 JDBC driver. Used for testing with embedded DB. -->

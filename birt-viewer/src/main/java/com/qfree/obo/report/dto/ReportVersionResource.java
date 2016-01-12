@@ -22,7 +22,7 @@ import com.qfree.obo.report.util.RestUtils;
 import com.qfree.obo.report.util.RestUtils.RestApiVersion;
 
 @XmlRootElement
-@XmlAccessorType(XmlAccessType.FIELD)
+@XmlAccessorType(XmlAccessType.FIELD) // so we can annotate fields with @XmlTransient
 public class ReportVersionResource extends AbstractBaseResource {
 
 	private static final Logger logger = LoggerFactory.getLogger(ReportVersionResource.class);
@@ -38,8 +38,7 @@ public class ReportVersionResource extends AbstractBaseResource {
 	private String fileName;
 
 	@XmlElement
-	// Do not serialize this field - needs @XmlAccessorType(XmlAccessType.FIELD);
-	//@XmlTransient
+	//@XmlTransient  // Do not serialize this field - requires @XmlAccessorType(XmlAccessType.FIELD)
 	private String rptdesign;
 
 	@XmlElement

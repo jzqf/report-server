@@ -112,14 +112,45 @@ insert into reporting.report_parameter (report_parameter_id, report_version_id, 
 --------------------------------------------------------------------------------
 
 
+-- Create "authority" rows:
+INSERT INTO reporting.authority (authority_id, name, active, created_on) VALUES ('e2883c0e-5972-4225-a805-27410a2866f4', 'USE_RESTAPI'         , true, current_timestamp AT TIME ZONE 'UTC');
+INSERT INTO reporting.authority (authority_id, name, active, created_on) VALUES ('1e4f29b9-3183-4f54-a4ee-96c2347d7e06', 'MANAGE_AUTHORITIES'  , true, current_timestamp AT TIME ZONE 'UTC');
+INSERT INTO reporting.authority (authority_id, name, active, created_on) VALUES ('dae0f68f-11c6-438c-8312-aca4d95731fc', 'MANAGE_CATEGORIES'   , true, current_timestamp AT TIME ZONE 'UTC');
+INSERT INTO reporting.authority (authority_id, name, active, created_on) VALUES ('cd2c5d93-9b57-4a8b-b789-84dd567e0fa2', 'MANAGE_FILEFORMATS'  , true, current_timestamp AT TIME ZONE 'UTC');
+INSERT INTO reporting.authority (authority_id, name, active, created_on) VALUES ('7e1ee8bb-3d5d-481a-b0f9-5c3fae3f4e38', 'MANAGE_FILESYNCING'  , true, current_timestamp AT TIME ZONE 'UTC');
+INSERT INTO reporting.authority (authority_id, name, active, created_on) VALUES ('e5b569e6-bb2a-4f00-a9ca-f85ef0a3a339', 'MANAGE_JOBPROCESSOR' , true, current_timestamp AT TIME ZONE 'UTC');
+INSERT INTO reporting.authority (authority_id, name, active, created_on) VALUES ('12b1cb22-7686-4c9b-b73b-a25d4cb31663', 'MANAGE_JOBS'         , true, current_timestamp AT TIME ZONE 'UTC');
+INSERT INTO reporting.authority (authority_id, name, active, created_on) VALUES ('ace1edd3-6a5b-4b40-a802-79616472b893', 'DELETE_JOBS'         , true, current_timestamp AT TIME ZONE 'UTC');
+INSERT INTO reporting.authority (authority_id, name, active, created_on) VALUES ('bb8f7964-504a-4544-8638-11a62cc9a2ca', 'MANAGE_JOBSTATUSES'  , true, current_timestamp AT TIME ZONE 'UTC');
+INSERT INTO reporting.authority (authority_id, name, active, created_on) VALUES ('1bbc9e73-1095-4471-bdb2-726b10e47936', 'MANAGE_PREFERENCES'  , true, current_timestamp AT TIME ZONE 'UTC');
+INSERT INTO reporting.authority (authority_id, name, active, created_on) VALUES ('7b758de7-cd54-43fa-baa0-dfbe59e66000', 'MANAGE_REPORTS'      , true, current_timestamp AT TIME ZONE 'UTC');
+INSERT INTO reporting.authority (authority_id, name, active, created_on) VALUES ('2efd4eca-bcb2-4cec-b804-3142c8297d65', 'UPLOAD_REPORTS'      , true, current_timestamp AT TIME ZONE 'UTC');
+INSERT INTO reporting.authority (authority_id, name, active, created_on) VALUES ('2dac7af0-ba7d-4009-a313-e9a288272e90', 'MANAGE_ROLES'        , true, current_timestamp AT TIME ZONE 'UTC');
+INSERT INTO reporting.authority (authority_id, name, active, created_on) VALUES ('608d6156-b155-487d-bdd3-4e00260b7443', 'MANAGE_SUBSCRIPTIONS', true, current_timestamp AT TIME ZONE 'UTC');
+INSERT INTO reporting.authority (authority_id, name, active, created_on) VALUES ('94db0a84-e366-4ab8-aeba-171482979f3d', 'DELETE_SUBSCRIPTIONS', true, current_timestamp AT TIME ZONE 'UTC');
+
+
 -- Insert  tree of [role] records:
 
-INSERT INTO reporting.role (role_id, username, login_role, encoded_password, full_name, created_on) VALUES ('e73ee6a5-5236-4630-aba1-de18e76b8105', 'a', false, '', '', '2015-04-13T08:00:00');
+-- Admin role with login privileges. encoded_password is BCrypt.encode('reportadmin')
+INSERT INTO reporting.role (role_id, username, login_role, encoded_password, full_name, email_address, time_zone_id, enabled, active, created_on) VALUES ('54aa1d35-f67d-47e6-8bea-cadd6085796e', 'reportadmin'           , true , '$2a$08$PjY.jVSaf0x2HCnETH6aj.0Gb3RWX9VMunMcpIfrJGBGjsYA2S6vC', 'Report Administrator', null, 'CET', true, true, current_timestamp AT TIME ZONE 'UTC');
+--
+-- Create a "Q-Free administrator" role that can be used to bypass external
+-- authentication by an authentication provider.
+-- encoded_password is BCrypt.encode('qfreereportserveradmin_Af5Dj%4$'):
+INSERT INTO reporting.role (role_id, username, login_role, encoded_password, full_name, email_address, time_zone_id, enabled, active, created_on) VALUES ('10ab3537-0b12-44fa-a27b-6cf1aac14282', 'qfree-reportserver-admin', true , '$2a$08$53v/RUtexw7Ovdx4i2F44O4XcyOLLZklf39XZW1C4jT3JjBJQ8fi6', 'Q-Free Administrator', null, 'CET', true, true, current_timestamp AT TIME ZONE 'UTC');
+--
+-- Create a role has full access to a ReST API endpoints. It will bypass 
+-- external authentication by an authentication provider.
+-- encoded_password is BCrypt.encode('ReportServer*RESTADMIN'):
+INSERT INTO reporting.role (role_id, username, login_role, encoded_password, full_name, email_address, time_zone_id, enabled, active, created_on) VALUES ('689833f9-e55c-4eaf-aba6-79f8b1d1a058', 'reportserver-restadmin', true , '$2a$08$4sGkB9oqsz0ws5liaPYofem6WwiQzmZ6DzDP7cuvwWN24ycZZefbq', 'ReST Administrator'  , null, 'CET', true, true, current_timestamp AT TIME ZONE 'UTC');
+
+INSERT INTO reporting.role (role_id, username, login_role, encoded_password, full_name, enabled, active, created_on) VALUES ('e73ee6a5-5236-4630-aba1-de18e76b8105', 'a', false, '', '', true, true, '2015-04-13T08:00:00');
 
 -- Children of "a":
-INSERT INTO reporting.role (role_id, username, login_role, encoded_password, full_name, created_on) VALUES ('1f47643b-0cb7-42a1-82bd-ab912d369567', 'aa', false, '', '', '2015-04-13T08:00:00');
-INSERT INTO reporting.role (role_id, username, login_role, encoded_password, full_name, created_on) VALUES ('07d768c2-9243-4521-bf31-53cfe7a54eb7', 'ab', false, '', '', '2015-04-13T08:00:00');
-INSERT INTO reporting.role (role_id, username, login_role, encoded_password, full_name, created_on) VALUES ('e745b03b-a63d-4c14-8b3c-d9aa773080f1', 'ac', false, '', '', '2015-04-13T08:00:00');
+INSERT INTO reporting.role (role_id, username, login_role, encoded_password, full_name, enabled, active, created_on) VALUES ('1f47643b-0cb7-42a1-82bd-ab912d369567', 'aa', false, '', '', true, true, '2015-04-13T08:00:00');
+INSERT INTO reporting.role (role_id, username, login_role, encoded_password, full_name, enabled, active, created_on) VALUES ('07d768c2-9243-4521-bf31-53cfe7a54eb7', 'ab', false, '', '', true, true, '2015-04-13T08:00:00');
+INSERT INTO reporting.role (role_id, username, login_role, encoded_password, full_name, enabled, active, created_on) VALUES ('e745b03b-a63d-4c14-8b3c-d9aa773080f1', 'ac', false, '', '', true, true, '2015-04-13T08:00:00');
 -- parent='a', child='aa':
 INSERT INTO reporting.role_role (role_role_id, parent_role_id, child_role_id, created_on) VALUES ('d8654af5-c855-4eae-9ec9-4358b46c07bc', 'e73ee6a5-5236-4630-aba1-de18e76b8105', '1f47643b-0cb7-42a1-82bd-ab912d369567', '2015-04-13T09:00:00');
 -- parent='a', child='ab':
@@ -127,10 +158,15 @@ INSERT INTO reporting.role_role (role_role_id, parent_role_id, child_role_id, cr
 -- parent='a', child='ac':
 INSERT INTO reporting.role_role (role_role_id, parent_role_id, child_role_id, created_on) VALUES ('a71d5e9f-752e-4e92-936e-71d7276da511', 'e73ee6a5-5236-4630-aba1-de18e76b8105', 'e745b03b-a63d-4c14-8b3c-d9aa773080f1', '2015-04-13T09:00:00');
 
+-- Make user "aa" a child of "reportadmin", effectively making it, as well as 
+-- any of its descendents ("aaa", "aab", ... "aaaa", "aaab",...), i.e., any role
+-- whose username starts with "aa" an administrator:
+INSERT INTO reporting.role_role (role_role_id, parent_role_id, child_role_id, created_on) VALUES ('3b2c7b99-cf00-43c6-85a7-f4e17bbea386', '54aa1d35-f67d-47e6-8bea-cadd6085796e', '1f47643b-0cb7-42a1-82bd-ab912d369567', current_timestamp AT TIME ZONE 'UTC');
+
 -- Children of "aa":
-INSERT INTO reporting.role (role_id, username, login_role, encoded_password, full_name, created_on) VALUES ('1994c086-7d8d-47c0-ab1d-5bfa7e8d0267', 'aaa', false, '', '', '2015-04-13T08:00:00');
-INSERT INTO reporting.role (role_id, username, login_role, encoded_password, full_name, created_on) VALUES ('149c594e-9ae6-4c48-b02d-e84659d030ad', 'aab', false, '', '', '2015-04-13T08:00:00');
-INSERT INTO reporting.role (role_id, username, login_role, encoded_password, full_name, created_on) VALUES ('63c8df84-8eec-4703-944c-a3819accb707', 'aac', false, '', '', '2015-04-13T08:00:00');
+INSERT INTO reporting.role (role_id, username, login_role, encoded_password, full_name, enabled, active, created_on) VALUES ('1994c086-7d8d-47c0-ab1d-5bfa7e8d0267', 'aaa', false, '', '', true, true, '2015-04-13T08:00:00');
+INSERT INTO reporting.role (role_id, username, login_role, encoded_password, full_name, enabled, active, created_on) VALUES ('149c594e-9ae6-4c48-b02d-e84659d030ad', 'aab', false, '', '', true, true, '2015-04-13T08:00:00');
+INSERT INTO reporting.role (role_id, username, login_role, encoded_password, full_name, enabled, active, created_on) VALUES ('63c8df84-8eec-4703-944c-a3819accb707', 'aac', false, '', '', true, true, '2015-04-13T08:00:00');
 -- parent='aa', child='aaa':
 INSERT INTO reporting.role_role (role_role_id, parent_role_id, child_role_id, created_on) VALUES ('a464e97e-40a5-4c6b-b465-98e7b794c00d', '1f47643b-0cb7-42a1-82bd-ab912d369567', '1994c086-7d8d-47c0-ab1d-5bfa7e8d0267', '2015-04-13T09:00:00');
 -- parent='aa', child='aab':
@@ -139,9 +175,9 @@ INSERT INTO reporting.role_role (role_role_id, parent_role_id, child_role_id, cr
 INSERT INTO reporting.role_role (role_role_id, parent_role_id, child_role_id, created_on) VALUES ('336ef842-9ebe-4064-9b09-3ae9881fc5ef', '1f47643b-0cb7-42a1-82bd-ab912d369567', '63c8df84-8eec-4703-944c-a3819accb707', '2015-04-13T09:00:00');
 
 -- Children of "ab":
-INSERT INTO reporting.role (role_id, username, login_role, encoded_password, full_name, created_on) VALUES ('36078747-e2fe-4f2e-9545-df87f8edc2f9', 'aba', false, '', '', '2015-04-13T08:00:00');
-INSERT INTO reporting.role (role_id, username, login_role, encoded_password, full_name, created_on) VALUES ('39adb1d3-098f-4a56-9563-14a65b750c27', 'abb', false, '', '', '2015-04-13T08:00:00');
-INSERT INTO reporting.role (role_id, username, login_role, encoded_password, full_name, created_on) VALUES ('6acb9991-30ea-4358-9f77-4a06cabefe1f', 'abc', false, '', '', '2015-04-13T08:00:00');
+INSERT INTO reporting.role (role_id, username, login_role, encoded_password, full_name, enabled, active, created_on) VALUES ('36078747-e2fe-4f2e-9545-df87f8edc2f9', 'aba', false, '', '', true, true, '2015-04-13T08:00:00');
+INSERT INTO reporting.role (role_id, username, login_role, encoded_password, full_name, enabled, active, created_on) VALUES ('39adb1d3-098f-4a56-9563-14a65b750c27', 'abb', false, '', '', true, true, '2015-04-13T08:00:00');
+INSERT INTO reporting.role (role_id, username, login_role, encoded_password, full_name, enabled, active, created_on) VALUES ('6acb9991-30ea-4358-9f77-4a06cabefe1f', 'abc', false, '', '', true, true, '2015-04-13T08:00:00');
 -- parent='ab', child='aba':
 INSERT INTO reporting.role_role (role_role_id, parent_role_id, child_role_id, created_on) VALUES ('d1f98324-58f4-45f4-8208-321deda15fcf', '07d768c2-9243-4521-bf31-53cfe7a54eb7', '36078747-e2fe-4f2e-9545-df87f8edc2f9', '2015-04-13T09:00:00');
 -- parent='ab', child='abb':
@@ -150,9 +186,9 @@ INSERT INTO reporting.role_role (role_role_id, parent_role_id, child_role_id, cr
 INSERT INTO reporting.role_role (role_role_id, parent_role_id, child_role_id, created_on) VALUES ('59b85cd4-3f83-4e09-bb5a-c1ea3d45fbd4', '07d768c2-9243-4521-bf31-53cfe7a54eb7', '6acb9991-30ea-4358-9f77-4a06cabefe1f', '2015-04-13T09:00:00');
 
 -- Children of "ac":
-INSERT INTO reporting.role (role_id, username, login_role, encoded_password, full_name, created_on) VALUES ('35b9a821-235a-413f-b76a-d0fa228e122a', 'aca', false, '', '', '2015-04-13T08:00:00');
-INSERT INTO reporting.role (role_id, username, login_role, encoded_password, full_name, created_on) VALUES ('475242f1-3377-4ead-ba89-ea5eff04b559', 'acb', false, '', '', '2015-04-13T08:00:00');
-INSERT INTO reporting.role (role_id, username, login_role, encoded_password, full_name, created_on) VALUES ('4fcf016c-d30a-4d50-b7b1-4bd8d4fdc5ae', 'acc', false, '', '', '2015-04-13T08:00:00');
+INSERT INTO reporting.role (role_id, username, login_role, encoded_password, full_name, enabled, active, created_on) VALUES ('35b9a821-235a-413f-b76a-d0fa228e122a', 'aca', false, '', '', true, true, '2015-04-13T08:00:00');
+INSERT INTO reporting.role (role_id, username, login_role, encoded_password, full_name, enabled, active, created_on) VALUES ('475242f1-3377-4ead-ba89-ea5eff04b559', 'acb', false, '', '', true, true, '2015-04-13T08:00:00');
+INSERT INTO reporting.role (role_id, username, login_role, encoded_password, full_name, enabled, active, created_on) VALUES ('4fcf016c-d30a-4d50-b7b1-4bd8d4fdc5ae', 'acc', false, '', '', true, true, '2015-04-13T08:00:00');
 -- parent='ac', child='aca':
 INSERT INTO reporting.role_role (role_role_id, parent_role_id, child_role_id, created_on) VALUES ('e969d37e-5449-47be-b58e-9c4157ddea3c', 'e745b03b-a63d-4c14-8b3c-d9aa773080f1', '35b9a821-235a-413f-b76a-d0fa228e122a', '2015-04-13T09:00:00');
 -- parent='ac', child='acb':
@@ -161,9 +197,9 @@ INSERT INTO reporting.role_role (role_role_id, parent_role_id, child_role_id, cr
 INSERT INTO reporting.role_role (role_role_id, parent_role_id, child_role_id, created_on) VALUES ('15a7727c-c36d-472f-8f29-6012f5b1a227', 'e745b03b-a63d-4c14-8b3c-d9aa773080f1', '4fcf016c-d30a-4d50-b7b1-4bd8d4fdc5ae', '2015-04-13T09:00:00');
 
 -- Children of "aaa":
-INSERT INTO reporting.role (role_id, username, login_role, encoded_password, full_name, created_on) VALUES ('6c328253-5fa6-4b11-8052-ef38197931b0', 'aaaa', false, '', '', '2015-04-13T08:00:00');
-INSERT INTO reporting.role (role_id, username, login_role, encoded_password, full_name, created_on) VALUES ('9fe6532b-2f52-4f8e-ace1-f7165dccbd5f', 'aaab', false, '', '', '2015-04-13T08:00:00');
-INSERT INTO reporting.role (role_id, username, login_role, encoded_password, full_name, created_on) VALUES ('2326720a-adda-47f1-a68e-53a66112be34', 'aaac', false, '', '', '2015-04-13T08:00:00');
+INSERT INTO reporting.role (role_id, username, login_role, encoded_password, full_name, enabled, active, created_on) VALUES ('6c328253-5fa6-4b11-8052-ef38197931b0', 'aaaa', false, '', '', true, true, '2015-04-13T08:00:00');
+INSERT INTO reporting.role (role_id, username, login_role, encoded_password, full_name, enabled, active, created_on) VALUES ('9fe6532b-2f52-4f8e-ace1-f7165dccbd5f', 'aaab', false, '', '', true, true, '2015-04-13T08:00:00');
+INSERT INTO reporting.role (role_id, username, login_role, encoded_password, full_name, enabled, active, created_on) VALUES ('2326720a-adda-47f1-a68e-53a66112be34', 'aaac', false, '', '', true, true, '2015-04-13T08:00:00');
 -- parent='aaa', child='aaaa':
 INSERT INTO reporting.role_role (role_role_id, parent_role_id, child_role_id, created_on) VALUES ('70a3da53-11bb-4951-8bde-33561e0c9ac5', '1994c086-7d8d-47c0-ab1d-5bfa7e8d0267', '6c328253-5fa6-4b11-8052-ef38197931b0', '2015-04-13T09:00:00');
 -- parent='aaa', child='aaab':
@@ -172,9 +208,9 @@ INSERT INTO reporting.role_role (role_role_id, parent_role_id, child_role_id, cr
 INSERT INTO reporting.role_role (role_role_id, parent_role_id, child_role_id, created_on) VALUES ('c2b733de-253f-4ddd-bc47-36cd9074a990', '1994c086-7d8d-47c0-ab1d-5bfa7e8d0267', '2326720a-adda-47f1-a68e-53a66112be34', '2015-04-13T09:00:00');
 
 -- Children of "aab":
-INSERT INTO reporting.role (role_id, username, login_role, encoded_password, full_name, created_on) VALUES ('dcbf65cb-39a3-44bd-a2ef-802c451497be', 'aaba', false, '', '', '2015-04-13T08:00:00');
-INSERT INTO reporting.role (role_id, username, login_role, encoded_password, full_name, created_on) VALUES ('ee56f34d-dbb4-41c1-9d30-ce29cf973820', 'aabb', false, '', '', '2015-04-13T08:00:00');
-INSERT INTO reporting.role (role_id, username, login_role, encoded_password, full_name, created_on) VALUES ('f46f6b53-d70e-4044-91e2-ff749159fd90', 'aabc', false, '', '', '2015-04-13T08:00:00');
+INSERT INTO reporting.role (role_id, username, login_role, encoded_password, full_name, enabled, active, created_on) VALUES ('dcbf65cb-39a3-44bd-a2ef-802c451497be', 'aaba', false, '', '', true, true, '2015-04-13T08:00:00');
+INSERT INTO reporting.role (role_id, username, login_role, encoded_password, full_name, enabled, active, created_on) VALUES ('ee56f34d-dbb4-41c1-9d30-ce29cf973820', 'aabb', false, '', '', true, true, '2015-04-13T08:00:00');
+INSERT INTO reporting.role (role_id, username, login_role, encoded_password, full_name, enabled, active, created_on) VALUES ('f46f6b53-d70e-4044-91e2-ff749159fd90', 'aabc', false, '', '', true, true, '2015-04-13T08:00:00');
 -- parent='aab', child='aaba':
 INSERT INTO reporting.role_role (role_role_id, parent_role_id, child_role_id, created_on) VALUES ('9c43849b-087b-42ed-b034-9149d421891c', '149c594e-9ae6-4c48-b02d-e84659d030ad', 'dcbf65cb-39a3-44bd-a2ef-802c451497be', '2015-04-13T09:00:00');
 -- parent='aab', child='aabb':
@@ -183,9 +219,9 @@ INSERT INTO reporting.role_role (role_role_id, parent_role_id, child_role_id, cr
 INSERT INTO reporting.role_role (role_role_id, parent_role_id, child_role_id, created_on) VALUES ('0234b8b7-6d88-4218-ab5e-4593d03d9bd8', '149c594e-9ae6-4c48-b02d-e84659d030ad', 'f46f6b53-d70e-4044-91e2-ff749159fd90', '2015-04-13T09:00:00');
 
 -- Children of "aac":
-INSERT INTO reporting.role (role_id, username, login_role, encoded_password, full_name, created_on) VALUES ('83f93a4b-473c-4af8-b79a-7796fa04e1f9', 'aaca', false, '', '', '2015-04-13T08:00:00');
-INSERT INTO reporting.role (role_id, username, login_role, encoded_password, full_name, created_on) VALUES ('82f54907-c95e-4a10-8266-e68ad4da6dde', 'aacb', false, '', '', '2015-04-13T08:00:00');
-INSERT INTO reporting.role (role_id, username, login_role, encoded_password, full_name, created_on) VALUES ('b7908014-c7ee-4f34-8073-8e1016d620e7', 'aacc', false, '', '', '2015-04-13T08:00:00');
+INSERT INTO reporting.role (role_id, username, login_role, encoded_password, full_name, enabled, active, created_on) VALUES ('83f93a4b-473c-4af8-b79a-7796fa04e1f9', 'aaca', false, '', '', true, true, '2015-04-13T08:00:00');
+INSERT INTO reporting.role (role_id, username, login_role, encoded_password, full_name, enabled, active, created_on) VALUES ('82f54907-c95e-4a10-8266-e68ad4da6dde', 'aacb', false, '', '', true, true, '2015-04-13T08:00:00');
+INSERT INTO reporting.role (role_id, username, login_role, encoded_password, full_name, enabled, active, created_on) VALUES ('b7908014-c7ee-4f34-8073-8e1016d620e7', 'aacc', false, '', '', true, true, '2015-04-13T08:00:00');
 -- parent='aac', child='aaca':
 INSERT INTO reporting.role_role (role_role_id, parent_role_id, child_role_id, created_on) VALUES ('b73bd9bc-354d-49f6-a980-98a43cf79e5e', '63c8df84-8eec-4703-944c-a3819accb707', '83f93a4b-473c-4af8-b79a-7796fa04e1f9', '2015-04-13T09:00:00');
 -- parent='aac', child='aacb':
@@ -194,9 +230,9 @@ INSERT INTO reporting.role_role (role_role_id, parent_role_id, child_role_id, cr
 INSERT INTO reporting.role_role (role_role_id, parent_role_id, child_role_id, created_on) VALUES ('68499541-35fc-4c72-a795-42e5ec62caf0', '63c8df84-8eec-4703-944c-a3819accb707', 'b7908014-c7ee-4f34-8073-8e1016d620e7', '2015-04-13T09:00:00');
 
 -- Children of "aba":
-INSERT INTO reporting.role (role_id, username, login_role, encoded_password, full_name, created_on) VALUES ('2449f7e0-65d9-4c4a-b675-ec4cafc061a2', 'abaa', false, '', '', '2015-04-13T08:00:00');
-INSERT INTO reporting.role (role_id, username, login_role, encoded_password, full_name, created_on) VALUES ('cfef7ad6-3952-4832-9213-01e1033239ea', 'abab', false, '', '', '2015-04-13T08:00:00');
-INSERT INTO reporting.role (role_id, username, login_role, encoded_password, full_name, created_on) VALUES ('c93da9e8-ba8d-4ac4-aed0-648955c0a317', 'abac', false, '', '', '2015-04-13T08:00:00');
+INSERT INTO reporting.role (role_id, username, login_role, encoded_password, full_name, enabled, active, created_on) VALUES ('2449f7e0-65d9-4c4a-b675-ec4cafc061a2', 'abaa', false, '', '', true, true, '2015-04-13T08:00:00');
+INSERT INTO reporting.role (role_id, username, login_role, encoded_password, full_name, enabled, active, created_on) VALUES ('cfef7ad6-3952-4832-9213-01e1033239ea', 'abab', false, '', '', true, true, '2015-04-13T08:00:00');
+INSERT INTO reporting.role (role_id, username, login_role, encoded_password, full_name, enabled, active, created_on) VALUES ('c93da9e8-ba8d-4ac4-aed0-648955c0a317', 'abac', false, '', '', true, true, '2015-04-13T08:00:00');
 -- parent='aba', child='abaa':
 INSERT INTO reporting.role_role (role_role_id, parent_role_id, child_role_id, created_on) VALUES ('865c7e98-207b-4068-a007-5bf4f5c81871', '36078747-e2fe-4f2e-9545-df87f8edc2f9', '2449f7e0-65d9-4c4a-b675-ec4cafc061a2', '2015-04-13T09:00:00');
 -- parent='aba', child='abab':
@@ -205,9 +241,9 @@ INSERT INTO reporting.role_role (role_role_id, parent_role_id, child_role_id, cr
 INSERT INTO reporting.role_role (role_role_id, parent_role_id, child_role_id, created_on) VALUES ('e49ab801-ab98-4f37-9917-e12536d3c94c', '36078747-e2fe-4f2e-9545-df87f8edc2f9', 'c93da9e8-ba8d-4ac4-aed0-648955c0a317', '2015-04-13T09:00:00');
 
 -- Children of "abb":
-INSERT INTO reporting.role (role_id, username, login_role, encoded_password, full_name, created_on) VALUES ('c56ec66e-e2e4-4e21-9bb8-5dacd8d4c303', 'abba', false, '', '', '2015-04-13T08:00:00');
-INSERT INTO reporting.role (role_id, username, login_role, encoded_password, full_name, created_on) VALUES ('85f2778d-9c4e-4018-9014-ca02fd558bcb', 'abbb', false, '', '', '2015-04-13T08:00:00');
-INSERT INTO reporting.role (role_id, username, login_role, encoded_password, full_name, created_on) VALUES ('12ff9c46-d3ab-4e5e-a00f-f1acde700256', 'abbc', false, '', '', '2015-04-13T08:00:00');
+INSERT INTO reporting.role (role_id, username, login_role, encoded_password, full_name, enabled, active, created_on) VALUES ('c56ec66e-e2e4-4e21-9bb8-5dacd8d4c303', 'abba', false, '', '', true, true, '2015-04-13T08:00:00');
+INSERT INTO reporting.role (role_id, username, login_role, encoded_password, full_name, enabled, active, created_on) VALUES ('85f2778d-9c4e-4018-9014-ca02fd558bcb', 'abbb', false, '', '', true, true, '2015-04-13T08:00:00');
+INSERT INTO reporting.role (role_id, username, login_role, encoded_password, full_name, enabled, active, created_on) VALUES ('12ff9c46-d3ab-4e5e-a00f-f1acde700256', 'abbc', false, '', '', true, true, '2015-04-13T08:00:00');
 -- parent='abb', child='abba':
 INSERT INTO reporting.role_role (role_role_id, parent_role_id, child_role_id, created_on) VALUES ('34684b2f-0919-4fe8-8e51-1ba7a92c8526', '39adb1d3-098f-4a56-9563-14a65b750c27', 'c56ec66e-e2e4-4e21-9bb8-5dacd8d4c303', '2015-04-13T09:00:00');
 -- parent='abb', child='abbb':
@@ -216,9 +252,9 @@ INSERT INTO reporting.role_role (role_role_id, parent_role_id, child_role_id, cr
 INSERT INTO reporting.role_role (role_role_id, parent_role_id, child_role_id, created_on) VALUES ('2680a894-c2a9-4c13-9689-7fe3263e4fb4', '39adb1d3-098f-4a56-9563-14a65b750c27', '12ff9c46-d3ab-4e5e-a00f-f1acde700256', '2015-04-13T09:00:00');
 
 -- Children of "abc":
-INSERT INTO reporting.role (role_id, username, login_role, encoded_password, full_name, created_on) VALUES ('632079ee-1255-4b35-93b1-aeb30bfab97a', 'abca', false, '', '', '2015-04-13T08:00:00');
-INSERT INTO reporting.role (role_id, username, login_role, encoded_password, full_name, created_on) VALUES ('1163cc14-2edd-4f05-a9d8-f4dbee84ce47', 'abcb', false, '', '', '2015-04-13T08:00:00');
-INSERT INTO reporting.role (role_id, username, login_role, encoded_password, full_name, created_on) VALUES ('ae37d825-09dd-48fa-95d4-eb37d7fd0d5b', 'abcc', false, '', '', '2015-04-13T08:00:00');
+INSERT INTO reporting.role (role_id, username, login_role, encoded_password, full_name, enabled, active, created_on) VALUES ('632079ee-1255-4b35-93b1-aeb30bfab97a', 'abca', false, '', '', true, true, '2015-04-13T08:00:00');
+INSERT INTO reporting.role (role_id, username, login_role, encoded_password, full_name, enabled, active, created_on) VALUES ('1163cc14-2edd-4f05-a9d8-f4dbee84ce47', 'abcb', false, '', '', true, true, '2015-04-13T08:00:00');
+INSERT INTO reporting.role (role_id, username, login_role, encoded_password, full_name, enabled, active, created_on) VALUES ('ae37d825-09dd-48fa-95d4-eb37d7fd0d5b', 'abcc', false, '', '', true, true, '2015-04-13T08:00:00');
 -- parent='abc', child='abca':
 INSERT INTO reporting.role_role (role_role_id, parent_role_id, child_role_id, created_on) VALUES ('d4151504-b5b5-4ae8-b7c5-1837e4ffbc5c', '6acb9991-30ea-4358-9f77-4a06cabefe1f', '632079ee-1255-4b35-93b1-aeb30bfab97a', '2015-04-13T09:00:00');
 -- parent='abc', child='abcb':
@@ -227,9 +263,9 @@ INSERT INTO reporting.role_role (role_role_id, parent_role_id, child_role_id, cr
 INSERT INTO reporting.role_role (role_role_id, parent_role_id, child_role_id, created_on) VALUES ('0c7653c5-90c1-4878-a0e4-3315e2f7429d', '6acb9991-30ea-4358-9f77-4a06cabefe1f', 'ae37d825-09dd-48fa-95d4-eb37d7fd0d5b', '2015-04-13T09:00:00');
 
 -- Children of "aca":
-INSERT INTO reporting.role (role_id, username, login_role, encoded_password, full_name, created_on) VALUES ('a6336c72-9d01-49f8-966d-fbef3822a735', 'acaa', false, '', '', '2015-04-13T08:00:00');
-INSERT INTO reporting.role (role_id, username, login_role, encoded_password, full_name, created_on) VALUES ('7ad44167-6dd9-46eb-a613-69c1e31e51d6', 'acab', false, '', '', '2015-04-13T08:00:00');
-INSERT INTO reporting.role (role_id, username, login_role, encoded_password, full_name, created_on) VALUES ('23a0a9c3-921a-4abd-bd03-7ea85492ec00', 'acac', false, '', '', '2015-04-13T08:00:00');
+INSERT INTO reporting.role (role_id, username, login_role, encoded_password, full_name, enabled, active, created_on) VALUES ('a6336c72-9d01-49f8-966d-fbef3822a735', 'acaa', false, '', '', true, true, '2015-04-13T08:00:00');
+INSERT INTO reporting.role (role_id, username, login_role, encoded_password, full_name, enabled, active, created_on) VALUES ('7ad44167-6dd9-46eb-a613-69c1e31e51d6', 'acab', false, '', '', true, true, '2015-04-13T08:00:00');
+INSERT INTO reporting.role (role_id, username, login_role, encoded_password, full_name, enabled, active, created_on) VALUES ('23a0a9c3-921a-4abd-bd03-7ea85492ec00', 'acac', false, '', '', true, true, '2015-04-13T08:00:00');
 -- parent='aca', child='acaa':
 INSERT INTO reporting.role_role (role_role_id, parent_role_id, child_role_id, created_on) VALUES ('61e4485e-f6b9-47e6-a276-72a6b689a33b', '35b9a821-235a-413f-b76a-d0fa228e122a', 'a6336c72-9d01-49f8-966d-fbef3822a735', '2015-04-13T09:00:00');
 -- parent='aca', child='acab':
@@ -238,9 +274,9 @@ INSERT INTO reporting.role_role (role_role_id, parent_role_id, child_role_id, cr
 INSERT INTO reporting.role_role (role_role_id, parent_role_id, child_role_id, created_on) VALUES ('62cf90fe-1e9c-40f2-8bfb-7d81beccae96', '35b9a821-235a-413f-b76a-d0fa228e122a', '23a0a9c3-921a-4abd-bd03-7ea85492ec00', '2015-04-13T09:00:00');
 
 -- Children of "acb":
-INSERT INTO reporting.role (role_id, username, login_role, encoded_password, full_name, created_on) VALUES ('51c75a7f-ad96-457d-b170-570bb88ccc49', 'acba', false, '', '', '2015-04-13T08:00:00');
-INSERT INTO reporting.role (role_id, username, login_role, encoded_password, full_name, created_on) VALUES ('b165daef-af52-42e5-9f46-48f5190d0130', 'acbb', false, '', '', '2015-04-13T08:00:00');
-INSERT INTO reporting.role (role_id, username, login_role, encoded_password, full_name, created_on) VALUES ('f7be0917-5760-4969-a048-377a02d962e4', 'acbc', false, '', '', '2015-04-13T08:00:00');
+INSERT INTO reporting.role (role_id, username, login_role, encoded_password, full_name, enabled, active, created_on) VALUES ('51c75a7f-ad96-457d-b170-570bb88ccc49', 'acba', false, '', '', true, true, '2015-04-13T08:00:00');
+INSERT INTO reporting.role (role_id, username, login_role, encoded_password, full_name, enabled, active, created_on) VALUES ('b165daef-af52-42e5-9f46-48f5190d0130', 'acbb', false, '', '', true, true, '2015-04-13T08:00:00');
+INSERT INTO reporting.role (role_id, username, login_role, encoded_password, full_name, enabled, active, created_on) VALUES ('f7be0917-5760-4969-a048-377a02d962e4', 'acbc', false, '', '', true, true, '2015-04-13T08:00:00');
 -- parent='acb', child='acba':
 INSERT INTO reporting.role_role (role_role_id, parent_role_id, child_role_id, created_on) VALUES ('abb6bf6c-3136-4185-95f3-d91441b299ab', '475242f1-3377-4ead-ba89-ea5eff04b559', '51c75a7f-ad96-457d-b170-570bb88ccc49', '2015-04-13T09:00:00');
 -- parent='acb', child='acbb':
@@ -249,9 +285,9 @@ INSERT INTO reporting.role_role (role_role_id, parent_role_id, child_role_id, cr
 INSERT INTO reporting.role_role (role_role_id, parent_role_id, child_role_id, created_on) VALUES ('777c3282-a755-4446-a463-9304c69fc873', '475242f1-3377-4ead-ba89-ea5eff04b559', 'f7be0917-5760-4969-a048-377a02d962e4', '2015-04-13T09:00:00');
 
 -- Children of "acc":
-INSERT INTO reporting.role (role_id, username, login_role, encoded_password, full_name, created_on) VALUES ('39bc8737-b9eb-4cb5-9765-1c33dd5ee40c', 'acca', false, '', '', '2015-04-13T08:00:00');
-INSERT INTO reporting.role (role_id, username, login_role, encoded_password, full_name, created_on) VALUES ('8efa8e84-3dbb-4dc1-b6a6-1f97d0b2f9c5', 'accb', false, '', '', '2015-04-13T08:00:00');
-INSERT INTO reporting.role (role_id, username, login_role, encoded_password, full_name, created_on) VALUES ('112bd37f-247a-47b2-a658-e11f652e6051', 'accc', false, '', '', '2015-04-13T08:00:00');
+INSERT INTO reporting.role (role_id, username, login_role, encoded_password, full_name, enabled, active, created_on) VALUES ('39bc8737-b9eb-4cb5-9765-1c33dd5ee40c', 'acca', false, '', '', true, true, '2015-04-13T08:00:00');
+INSERT INTO reporting.role (role_id, username, login_role, encoded_password, full_name, enabled, active, created_on) VALUES ('8efa8e84-3dbb-4dc1-b6a6-1f97d0b2f9c5', 'accb', false, '', '', true, true, '2015-04-13T08:00:00');
+INSERT INTO reporting.role (role_id, username, login_role, encoded_password, full_name, enabled, active, created_on) VALUES ('112bd37f-247a-47b2-a658-e11f652e6051', 'accc', false, '', '', true, true, '2015-04-13T08:00:00');
 -- parent='acc', child='acca':
 INSERT INTO reporting.role_role (role_role_id, parent_role_id, child_role_id, created_on) VALUES ('d8df82c9-f95a-482a-89dc-b94a46728ad6', '4fcf016c-d30a-4d50-b7b1-4bd8d4fdc5ae', '39bc8737-b9eb-4cb5-9765-1c33dd5ee40c', '2015-04-13T09:00:00');
 -- parent='acc', child='accb':
@@ -260,12 +296,12 @@ INSERT INTO reporting.role_role (role_role_id, parent_role_id, child_role_id, cr
 INSERT INTO reporting.role_role (role_role_id, parent_role_id, child_role_id, created_on) VALUES ('cbc9351f-235a-4565-81ac-ba8a6c3e1c2a', '4fcf016c-d30a-4d50-b7b1-4bd8d4fdc5ae', '112bd37f-247a-47b2-a658-e11f652e6051', '2015-04-13T09:00:00');
 
 
-INSERT INTO reporting.role (role_id, username, login_role, encoded_password, full_name, created_on) VALUES ('4503c055-5eb2-4d51-8424-2379843b4492', 'b', false, '', '', '2015-04-13T08:00:00');
+INSERT INTO reporting.role (role_id, username, login_role, encoded_password, full_name, enabled, active, created_on) VALUES ('4503c055-5eb2-4d51-8424-2379843b4492', 'b', false, '', '', true, true, '2015-04-13T08:00:00');
 
 -- Children of "b":
-INSERT INTO reporting.role (role_id, username, login_role, encoded_password, full_name, created_on) VALUES ('c8662604-d446-4b46-bfbf-cd785b43e574', 'ba', false, '', '', '2015-04-13T08:00:00');
-INSERT INTO reporting.role (role_id, username, login_role, encoded_password, full_name, created_on) VALUES ('7ddd187d-d0c8-4554-b379-a870f2731839', 'bb', false, '', '', '2015-04-13T08:00:00');
-INSERT INTO reporting.role (role_id, username, login_role, encoded_password, full_name, created_on) VALUES ('b60449da-db2d-43e4-9d4b-7592895fc666', 'bc', false, '', '', '2015-04-13T08:00:00');
+INSERT INTO reporting.role (role_id, username, login_role, encoded_password, full_name, enabled, active, created_on) VALUES ('c8662604-d446-4b46-bfbf-cd785b43e574', 'ba', false, '', '', true, true, '2015-04-13T08:00:00');
+INSERT INTO reporting.role (role_id, username, login_role, encoded_password, full_name, enabled, active, created_on) VALUES ('7ddd187d-d0c8-4554-b379-a870f2731839', 'bb', false, '', '', true, true, '2015-04-13T08:00:00');
+INSERT INTO reporting.role (role_id, username, login_role, encoded_password, full_name, enabled, active, created_on) VALUES ('b60449da-db2d-43e4-9d4b-7592895fc666', 'bc', false, '', '', true, true, '2015-04-13T08:00:00');
 -- parent='b', child='ba':
 INSERT INTO reporting.role_role (role_role_id, parent_role_id, child_role_id, created_on) VALUES ('d1885b4e-4d94-4875-938a-b54b0a2ac495', '4503c055-5eb2-4d51-8424-2379843b4492', 'c8662604-d446-4b46-bfbf-cd785b43e574', '2015-04-13T09:00:00');
 -- parent='b', child='bb':
@@ -274,9 +310,9 @@ INSERT INTO reporting.role_role (role_role_id, parent_role_id, child_role_id, cr
 INSERT INTO reporting.role_role (role_role_id, parent_role_id, child_role_id, created_on) VALUES ('ad5a44d6-4b38-4f32-9ebd-15ab83eacbef', '4503c055-5eb2-4d51-8424-2379843b4492', 'b60449da-db2d-43e4-9d4b-7592895fc666', '2015-04-13T09:00:00');
 
 -- Children of "ba":
-INSERT INTO reporting.role (role_id, username, login_role, encoded_password, full_name, created_on) VALUES ('038f1b23-8470-44ae-bdd8-ed74653b77ad', 'baa', false, '', '', '2015-04-13T08:00:00');
-INSERT INTO reporting.role (role_id, username, login_role, encoded_password, full_name, created_on) VALUES ('1fd6d260-c504-4a32-acc9-458f78381ae3', 'bab', false, '', '', '2015-04-13T08:00:00');
-INSERT INTO reporting.role (role_id, username, login_role, encoded_password, full_name, created_on) VALUES ('f5287f17-3a73-413b-b91b-76d8d65b6ad9', 'bac', false, '', '', '2015-04-13T08:00:00');
+INSERT INTO reporting.role (role_id, username, login_role, encoded_password, full_name, enabled, active, created_on) VALUES ('038f1b23-8470-44ae-bdd8-ed74653b77ad', 'baa', false, '', '', true, true, '2015-04-13T08:00:00');
+INSERT INTO reporting.role (role_id, username, login_role, encoded_password, full_name, enabled, active, created_on) VALUES ('1fd6d260-c504-4a32-acc9-458f78381ae3', 'bab', false, '', '', true, true, '2015-04-13T08:00:00');
+INSERT INTO reporting.role (role_id, username, login_role, encoded_password, full_name, enabled, active, created_on) VALUES ('f5287f17-3a73-413b-b91b-76d8d65b6ad9', 'bac', false, '', '', true, true, '2015-04-13T08:00:00');
 -- parent='ba', child='baa':
 INSERT INTO reporting.role_role (role_role_id, parent_role_id, child_role_id, created_on) VALUES ('92fb4943-82e5-4114-894a-a422028a8cc7', 'c8662604-d446-4b46-bfbf-cd785b43e574', '038f1b23-8470-44ae-bdd8-ed74653b77ad', '2015-04-13T09:00:00');
 -- parent='ba', child='bab':
@@ -285,9 +321,9 @@ INSERT INTO reporting.role_role (role_role_id, parent_role_id, child_role_id, cr
 INSERT INTO reporting.role_role (role_role_id, parent_role_id, child_role_id, created_on) VALUES ('2120d1da-98ea-4cd8-89e3-ff32ee188426', 'c8662604-d446-4b46-bfbf-cd785b43e574', 'f5287f17-3a73-413b-b91b-76d8d65b6ad9', '2015-04-13T09:00:00');
 
 -- Children of "bb":
-INSERT INTO reporting.role (role_id, username, login_role, encoded_password, full_name, created_on) VALUES ('2d64dc16-dae1-4159-90e1-f90356dc5d76', 'bba', false, '', '', '2015-04-13T08:00:00');
-INSERT INTO reporting.role (role_id, username, login_role, encoded_password, full_name, created_on) VALUES ('984b9a34-411b-4fa3-86f0-d7cc83991c6d', 'bbb', false, '', '', '2015-04-13T08:00:00');
-INSERT INTO reporting.role (role_id, username, login_role, encoded_password, full_name, created_on) VALUES ('f9df30b3-2424-428d-94fc-ae95e4f64e3a', 'bbc', false, '', '', '2015-04-13T08:00:00');
+INSERT INTO reporting.role (role_id, username, login_role, encoded_password, full_name, enabled, active, created_on) VALUES ('2d64dc16-dae1-4159-90e1-f90356dc5d76', 'bba', false, '', '', true, true, '2015-04-13T08:00:00');
+INSERT INTO reporting.role (role_id, username, login_role, encoded_password, full_name, enabled, active, created_on) VALUES ('984b9a34-411b-4fa3-86f0-d7cc83991c6d', 'bbb', false, '', '', true, true, '2015-04-13T08:00:00');
+INSERT INTO reporting.role (role_id, username, login_role, encoded_password, full_name, enabled, active, created_on) VALUES ('f9df30b3-2424-428d-94fc-ae95e4f64e3a', 'bbc', false, '', '', true, true, '2015-04-13T08:00:00');
 -- parent='bb', child='bba':
 INSERT INTO reporting.role_role (role_role_id, parent_role_id, child_role_id, created_on) VALUES ('c53298c4-05a1-4dbb-a448-bce5111523f1', '7ddd187d-d0c8-4554-b379-a870f2731839', '2d64dc16-dae1-4159-90e1-f90356dc5d76', '2015-04-13T09:00:00');
 -- parent='bb', child='bbb':
@@ -296,9 +332,9 @@ INSERT INTO reporting.role_role (role_role_id, parent_role_id, child_role_id, cr
 INSERT INTO reporting.role_role (role_role_id, parent_role_id, child_role_id, created_on) VALUES ('536fc578-d6d8-40b9-adff-65f519cbaa9e', '7ddd187d-d0c8-4554-b379-a870f2731839', 'f9df30b3-2424-428d-94fc-ae95e4f64e3a', '2015-04-13T09:00:00');
 
 -- Children of "bc":
-INSERT INTO reporting.role (role_id, username, login_role, encoded_password, full_name, created_on) VALUES ('ee9767e3-bd6f-4acb-85e0-03b469809be1', 'bca', false, '', '', '2015-04-13T08:00:00');
-INSERT INTO reporting.role (role_id, username, login_role, encoded_password, full_name, created_on) VALUES ('731122e9-0db8-48b3-a70e-fab985b63cf4', 'bcb', false, '', '', '2015-04-13T08:00:00');
-INSERT INTO reporting.role (role_id, username, login_role, encoded_password, full_name, created_on) VALUES ('69f6b032-3989-4b06-be04-0e4bf5536997', 'bcc', false, '', '', '2015-04-13T08:00:00');
+INSERT INTO reporting.role (role_id, username, login_role, encoded_password, full_name, enabled, active, created_on) VALUES ('ee9767e3-bd6f-4acb-85e0-03b469809be1', 'bca', false, '', '', true, true, '2015-04-13T08:00:00');
+INSERT INTO reporting.role (role_id, username, login_role, encoded_password, full_name, enabled, active, created_on) VALUES ('731122e9-0db8-48b3-a70e-fab985b63cf4', 'bcb', false, '', '', true, true, '2015-04-13T08:00:00');
+INSERT INTO reporting.role (role_id, username, login_role, encoded_password, full_name, enabled, active, created_on) VALUES ('69f6b032-3989-4b06-be04-0e4bf5536997', 'bcc', false, '', '', true, true, '2015-04-13T08:00:00');
 -- parent='bc', child='bca':
 INSERT INTO reporting.role_role (role_role_id, parent_role_id, child_role_id, created_on) VALUES ('8b9651b1-c130-418e-84e9-d264025d2020', 'b60449da-db2d-43e4-9d4b-7592895fc666', 'ee9767e3-bd6f-4acb-85e0-03b469809be1', '2015-04-13T09:00:00');
 -- parent='bc', child='bcb':
@@ -307,9 +343,9 @@ INSERT INTO reporting.role_role (role_role_id, parent_role_id, child_role_id, cr
 INSERT INTO reporting.role_role (role_role_id, parent_role_id, child_role_id, created_on) VALUES ('41ac48b6-7cbc-425b-ba39-3434f5eaadc3', 'b60449da-db2d-43e4-9d4b-7592895fc666', '69f6b032-3989-4b06-be04-0e4bf5536997', '2015-04-13T09:00:00');
 
 -- Children of "baa":
-INSERT INTO reporting.role (role_id, username, login_role, encoded_password, full_name, created_on) VALUES ('0db97c2a-fb78-464a-a0e7-8d25f6003c14', 'baaa', false, '', '', '2015-04-13T08:00:00');
-INSERT INTO reporting.role (role_id, username, login_role, encoded_password, full_name, created_on) VALUES ('fb506ceb-f1b9-422f-b41a-646c2f530256', 'baab', false, '', '', '2015-04-13T08:00:00');
-INSERT INTO reporting.role (role_id, username, login_role, encoded_password, full_name, created_on) VALUES ('3774cf4a-4b0c-4576-b9e6-d834696db84c', 'baac', false, '', '', '2015-04-13T08:00:00');
+INSERT INTO reporting.role (role_id, username, login_role, encoded_password, full_name, enabled, active, created_on) VALUES ('0db97c2a-fb78-464a-a0e7-8d25f6003c14', 'baaa', false, '', '', true, true, '2015-04-13T08:00:00');
+INSERT INTO reporting.role (role_id, username, login_role, encoded_password, full_name, enabled, active, created_on) VALUES ('fb506ceb-f1b9-422f-b41a-646c2f530256', 'baab', false, '', '', true, true, '2015-04-13T08:00:00');
+INSERT INTO reporting.role (role_id, username, login_role, encoded_password, full_name, enabled, active, created_on) VALUES ('3774cf4a-4b0c-4576-b9e6-d834696db84c', 'baac', false, '', '', true, true, '2015-04-13T08:00:00');
 -- parent='baa', child='baaa':
 INSERT INTO reporting.role_role (role_role_id, parent_role_id, child_role_id, created_on) VALUES ('230fd828-035d-429c-b245-c0607265f988', '038f1b23-8470-44ae-bdd8-ed74653b77ad', '0db97c2a-fb78-464a-a0e7-8d25f6003c14', '2015-04-13T09:00:00');
 -- parent='baa', child='baab':
@@ -318,9 +354,9 @@ INSERT INTO reporting.role_role (role_role_id, parent_role_id, child_role_id, cr
 INSERT INTO reporting.role_role (role_role_id, parent_role_id, child_role_id, created_on) VALUES ('4e7bd354-7f89-43ce-ba74-f1b349c8d2a3', '038f1b23-8470-44ae-bdd8-ed74653b77ad', '3774cf4a-4b0c-4576-b9e6-d834696db84c', '2015-04-13T09:00:00');
 
 -- Children of "bab":
-INSERT INTO reporting.role (role_id, username, login_role, encoded_password, full_name, created_on) VALUES ('ca3c0eec-2993-47b9-a0a2-5f3b831ac546', 'baba', false, '', '', '2015-04-13T08:00:00');
-INSERT INTO reporting.role (role_id, username, login_role, encoded_password, full_name, created_on) VALUES ('d75593c1-47b9-403a-9e37-a99ba377fb0d', 'babb', false, '', '', '2015-04-13T08:00:00');
-INSERT INTO reporting.role (role_id, username, login_role, encoded_password, full_name, created_on) VALUES ('c75ebd4f-1c39-4fe7-9a20-2789d580079e', 'babc', false, '', '', '2015-04-13T08:00:00');
+INSERT INTO reporting.role (role_id, username, login_role, encoded_password, full_name, enabled, active, created_on) VALUES ('ca3c0eec-2993-47b9-a0a2-5f3b831ac546', 'baba', false, '', '', true, true, '2015-04-13T08:00:00');
+INSERT INTO reporting.role (role_id, username, login_role, encoded_password, full_name, enabled, active, created_on) VALUES ('d75593c1-47b9-403a-9e37-a99ba377fb0d', 'babb', false, '', '', true, true, '2015-04-13T08:00:00');
+INSERT INTO reporting.role (role_id, username, login_role, encoded_password, full_name, enabled, active, created_on) VALUES ('c75ebd4f-1c39-4fe7-9a20-2789d580079e', 'babc', false, '', '', true, true, '2015-04-13T08:00:00');
 -- parent='bab', child='baba':
 INSERT INTO reporting.role_role (role_role_id, parent_role_id, child_role_id, created_on) VALUES ('5ea0444d-a908-4ff8-a320-6561f7f17201', '1fd6d260-c504-4a32-acc9-458f78381ae3', 'ca3c0eec-2993-47b9-a0a2-5f3b831ac546', '2015-04-13T09:00:00');
 -- parent='bab', child='babb':
@@ -329,9 +365,9 @@ INSERT INTO reporting.role_role (role_role_id, parent_role_id, child_role_id, cr
 INSERT INTO reporting.role_role (role_role_id, parent_role_id, child_role_id, created_on) VALUES ('3b139c0c-564c-42ac-a77e-fe2913c55b9f', '1fd6d260-c504-4a32-acc9-458f78381ae3', 'c75ebd4f-1c39-4fe7-9a20-2789d580079e', '2015-04-13T09:00:00');
 
 -- Children of "bac":
-INSERT INTO reporting.role (role_id, username, login_role, encoded_password, full_name, created_on) VALUES ('1db588f6-b0af-4fd5-8394-0ad23480eece', 'baca', false, '', '', '2015-04-13T08:00:00');
-INSERT INTO reporting.role (role_id, username, login_role, encoded_password, full_name, created_on) VALUES ('4ee5d656-34a0-4e81-8d1c-1d615861fb3e', 'bacb', false, '', '', '2015-04-13T08:00:00');
-INSERT INTO reporting.role (role_id, username, login_role, encoded_password, full_name, created_on) VALUES ('0c659cba-53a5-4015-aaf3-473e469ed6ce', 'bacc', false, '', '', '2015-04-13T08:00:00');
+INSERT INTO reporting.role (role_id, username, login_role, encoded_password, full_name, enabled, active, created_on) VALUES ('1db588f6-b0af-4fd5-8394-0ad23480eece', 'baca', false, '', '', true, true, '2015-04-13T08:00:00');
+INSERT INTO reporting.role (role_id, username, login_role, encoded_password, full_name, enabled, active, created_on) VALUES ('4ee5d656-34a0-4e81-8d1c-1d615861fb3e', 'bacb', false, '', '', true, true, '2015-04-13T08:00:00');
+INSERT INTO reporting.role (role_id, username, login_role, encoded_password, full_name, enabled, active, created_on) VALUES ('0c659cba-53a5-4015-aaf3-473e469ed6ce', 'bacc', false, '', '', true, true, '2015-04-13T08:00:00');
 -- parent='bac', child='baca':
 INSERT INTO reporting.role_role (role_role_id, parent_role_id, child_role_id, created_on) VALUES ('e3a1d323-e79e-457b-a3c9-2c3ad4d34166', 'f5287f17-3a73-413b-b91b-76d8d65b6ad9', '1db588f6-b0af-4fd5-8394-0ad23480eece', '2015-04-13T09:00:00');
 -- parent='bac', child='bacb':
@@ -340,9 +376,9 @@ INSERT INTO reporting.role_role (role_role_id, parent_role_id, child_role_id, cr
 INSERT INTO reporting.role_role (role_role_id, parent_role_id, child_role_id, created_on) VALUES ('11f3de93-973c-498d-a465-764906cca882', 'f5287f17-3a73-413b-b91b-76d8d65b6ad9', '0c659cba-53a5-4015-aaf3-473e469ed6ce', '2015-04-13T09:00:00');
 
 -- Children of "bba":
-INSERT INTO reporting.role (role_id, username, login_role, encoded_password, full_name, created_on) VALUES ('82fa32fe-96e9-44ce-961d-0d47c17a26f5', 'bbaa', false, '', '', '2015-04-13T08:00:00');
-INSERT INTO reporting.role (role_id, username, login_role, encoded_password, full_name, created_on) VALUES ('9e873c4e-3cfd-4db0-b443-631781408f83', 'bbab', false, '', '', '2015-04-13T08:00:00');
-INSERT INTO reporting.role (role_id, username, login_role, encoded_password, full_name, created_on) VALUES ('99bac641-9de9-4d5d-8b48-36cd071407b9', 'bbac', false, '', '', '2015-04-13T08:00:00');
+INSERT INTO reporting.role (role_id, username, login_role, encoded_password, full_name, enabled, active, created_on) VALUES ('82fa32fe-96e9-44ce-961d-0d47c17a26f5', 'bbaa', false, '', '', true, true, '2015-04-13T08:00:00');
+INSERT INTO reporting.role (role_id, username, login_role, encoded_password, full_name, enabled, active, created_on) VALUES ('9e873c4e-3cfd-4db0-b443-631781408f83', 'bbab', false, '', '', true, true, '2015-04-13T08:00:00');
+INSERT INTO reporting.role (role_id, username, login_role, encoded_password, full_name, enabled, active, created_on) VALUES ('99bac641-9de9-4d5d-8b48-36cd071407b9', 'bbac', false, '', '', true, true, '2015-04-13T08:00:00');
 -- parent='bba', child='bbaa':
 INSERT INTO reporting.role_role (role_role_id, parent_role_id, child_role_id, created_on) VALUES ('cce554db-1cd8-4182-bb98-c424214854e0', '2d64dc16-dae1-4159-90e1-f90356dc5d76', '82fa32fe-96e9-44ce-961d-0d47c17a26f5', '2015-04-13T09:00:00');
 -- parent='bba', child='bbab':
@@ -351,9 +387,9 @@ INSERT INTO reporting.role_role (role_role_id, parent_role_id, child_role_id, cr
 INSERT INTO reporting.role_role (role_role_id, parent_role_id, child_role_id, created_on) VALUES ('f1e8d631-7a40-4943-ab1a-b60495dc04f0', '2d64dc16-dae1-4159-90e1-f90356dc5d76', '99bac641-9de9-4d5d-8b48-36cd071407b9', '2015-04-13T09:00:00');
 
 -- Children of "bbb":
-INSERT INTO reporting.role (role_id, username, login_role, encoded_password, full_name, created_on) VALUES ('4f126264-e8b8-4a42-9152-52d8d375aa9c', 'bbba', false, '', '', '2015-04-13T08:00:00');
-INSERT INTO reporting.role (role_id, username, login_role, encoded_password, full_name, created_on) VALUES ('e8f94ddf-6b90-43a6-a832-b7c07da02e89', 'bbbb', false, '', '', '2015-04-13T08:00:00');
-INSERT INTO reporting.role (role_id, username, login_role, encoded_password, full_name, created_on) VALUES ('31fdb345-0286-4a6d-9c4d-bae2bd12ce3b', 'bbbc', false, '', '', '2015-04-13T08:00:00');
+INSERT INTO reporting.role (role_id, username, login_role, encoded_password, full_name, enabled, active, created_on) VALUES ('4f126264-e8b8-4a42-9152-52d8d375aa9c', 'bbba', false, '', '', true, true, '2015-04-13T08:00:00');
+INSERT INTO reporting.role (role_id, username, login_role, encoded_password, full_name, enabled, active, created_on) VALUES ('e8f94ddf-6b90-43a6-a832-b7c07da02e89', 'bbbb', false, '', '', true, true, '2015-04-13T08:00:00');
+INSERT INTO reporting.role (role_id, username, login_role, encoded_password, full_name, enabled, active, created_on) VALUES ('31fdb345-0286-4a6d-9c4d-bae2bd12ce3b', 'bbbc', false, '', '', true, true, '2015-04-13T08:00:00');
 -- parent='bbb', child='bbba':
 INSERT INTO reporting.role_role (role_role_id, parent_role_id, child_role_id, created_on) VALUES ('97d4fe98-80cc-4a4e-bc4b-afd2668d2f7b', '984b9a34-411b-4fa3-86f0-d7cc83991c6d', '4f126264-e8b8-4a42-9152-52d8d375aa9c', '2015-04-13T09:00:00');
 -- parent='bbb', child='bbbb':
@@ -362,9 +398,9 @@ INSERT INTO reporting.role_role (role_role_id, parent_role_id, child_role_id, cr
 INSERT INTO reporting.role_role (role_role_id, parent_role_id, child_role_id, created_on) VALUES ('8944fbd2-08d9-4fa7-8da8-6842f57ce52b', '984b9a34-411b-4fa3-86f0-d7cc83991c6d', '31fdb345-0286-4a6d-9c4d-bae2bd12ce3b', '2015-04-13T09:00:00');
 
 -- Children of "bbc":
-INSERT INTO reporting.role (role_id, username, login_role, encoded_password, full_name, created_on) VALUES ('36d53b39-4fcf-4000-b31d-803fb9238236', 'bbca', false, '', '', '2015-04-13T08:00:00');
-INSERT INTO reporting.role (role_id, username, login_role, encoded_password, full_name, created_on) VALUES ('82e145b7-225d-4193-a6a7-284658c1bb69', 'bbcb', false, '', '', '2015-04-13T08:00:00');
-INSERT INTO reporting.role (role_id, username, login_role, encoded_password, full_name, created_on) VALUES ('e103f734-7869-4e7e-a8c4-3d0bc5895c34', 'bbcc', false, '', '', '2015-04-13T08:00:00');
+INSERT INTO reporting.role (role_id, username, login_role, encoded_password, full_name, enabled, active, created_on) VALUES ('36d53b39-4fcf-4000-b31d-803fb9238236', 'bbca', false, '', '', true, true, '2015-04-13T08:00:00');
+INSERT INTO reporting.role (role_id, username, login_role, encoded_password, full_name, enabled, active, created_on) VALUES ('82e145b7-225d-4193-a6a7-284658c1bb69', 'bbcb', false, '', '', true, true, '2015-04-13T08:00:00');
+INSERT INTO reporting.role (role_id, username, login_role, encoded_password, full_name, enabled, active, created_on) VALUES ('e103f734-7869-4e7e-a8c4-3d0bc5895c34', 'bbcc', false, '', '', true, true, '2015-04-13T08:00:00');
 -- parent='bbc', child='bbca':
 INSERT INTO reporting.role_role (role_role_id, parent_role_id, child_role_id, created_on) VALUES ('77bd824e-51c6-43f9-807e-3169aebe8c9a', 'f9df30b3-2424-428d-94fc-ae95e4f64e3a', '36d53b39-4fcf-4000-b31d-803fb9238236', '2015-04-13T09:00:00');
 -- parent='bbc', child='bbcb':
@@ -373,9 +409,9 @@ INSERT INTO reporting.role_role (role_role_id, parent_role_id, child_role_id, cr
 INSERT INTO reporting.role_role (role_role_id, parent_role_id, child_role_id, created_on) VALUES ('eeaa2d49-08f6-4eb1-b949-f71e51236409', 'f9df30b3-2424-428d-94fc-ae95e4f64e3a', 'e103f734-7869-4e7e-a8c4-3d0bc5895c34', '2015-04-13T09:00:00');
 
 -- Children of "bca":
-INSERT INTO reporting.role (role_id, username, login_role, encoded_password, full_name, created_on) VALUES ('ab79b066-1082-46a6-92c2-4454d9241d48', 'bcaa', false, '', '', '2015-04-13T08:00:00');
-INSERT INTO reporting.role (role_id, username, login_role, encoded_password, full_name, created_on) VALUES ('d0c3bbc0-3719-40cf-91f3-c04dc92b43be', 'bcab', false, '', '', '2015-04-13T08:00:00');
-INSERT INTO reporting.role (role_id, username, login_role, encoded_password, full_name, created_on) VALUES ('7f8dab88-c6db-40be-a249-0f7d673a817f', 'bcac', false, '', '', '2015-04-13T08:00:00');
+INSERT INTO reporting.role (role_id, username, login_role, encoded_password, full_name, enabled, active, created_on) VALUES ('ab79b066-1082-46a6-92c2-4454d9241d48', 'bcaa', false, '', '', true, true, '2015-04-13T08:00:00');
+INSERT INTO reporting.role (role_id, username, login_role, encoded_password, full_name, enabled, active, created_on) VALUES ('d0c3bbc0-3719-40cf-91f3-c04dc92b43be', 'bcab', false, '', '', true, true, '2015-04-13T08:00:00');
+INSERT INTO reporting.role (role_id, username, login_role, encoded_password, full_name, enabled, active, created_on) VALUES ('7f8dab88-c6db-40be-a249-0f7d673a817f', 'bcac', false, '', '', true, true, '2015-04-13T08:00:00');
 -- parent='bca', child='bcaa':
 INSERT INTO reporting.role_role (role_role_id, parent_role_id, child_role_id, created_on) VALUES ('09bd5e8a-bb01-4a94-9a32-200704c52d28', 'ee9767e3-bd6f-4acb-85e0-03b469809be1', 'ab79b066-1082-46a6-92c2-4454d9241d48', '2015-04-13T09:00:00');
 -- parent='bca', child='bcab':
@@ -384,9 +420,9 @@ INSERT INTO reporting.role_role (role_role_id, parent_role_id, child_role_id, cr
 INSERT INTO reporting.role_role (role_role_id, parent_role_id, child_role_id, created_on) VALUES ('58b3240c-7663-4fca-bd2e-c91be6bed503', 'ee9767e3-bd6f-4acb-85e0-03b469809be1', '7f8dab88-c6db-40be-a249-0f7d673a817f', '2015-04-13T09:00:00');
 
 -- Children of "bcb":
-INSERT INTO reporting.role (role_id, username, login_role, encoded_password, full_name, created_on) VALUES ('11c0e37f-a623-4838-a8cf-ac35970e1c1d', 'bcba', false, '', '', '2015-04-13T08:00:00');
-INSERT INTO reporting.role (role_id, username, login_role, encoded_password, full_name, created_on) VALUES ('31ed24f4-5d4a-4703-9b62-af877755ce90', 'bcbb', false, '', '', '2015-04-13T08:00:00');
-INSERT INTO reporting.role (role_id, username, login_role, encoded_password, full_name, created_on) VALUES ('e918c8aa-c6d1-462c-9e91-f1db0fb9f346', 'bcbc', false, '', '', '2015-04-13T08:00:00');
+INSERT INTO reporting.role (role_id, username, login_role, encoded_password, full_name, enabled, active, created_on) VALUES ('11c0e37f-a623-4838-a8cf-ac35970e1c1d', 'bcba', false, '', '', true, true, '2015-04-13T08:00:00');
+INSERT INTO reporting.role (role_id, username, login_role, encoded_password, full_name, enabled, active, created_on) VALUES ('31ed24f4-5d4a-4703-9b62-af877755ce90', 'bcbb', false, '', '', true, true, '2015-04-13T08:00:00');
+INSERT INTO reporting.role (role_id, username, login_role, encoded_password, full_name, enabled, active, created_on) VALUES ('e918c8aa-c6d1-462c-9e91-f1db0fb9f346', 'bcbc', false, '', '', true, true, '2015-04-13T08:00:00');
 -- parent='bcb', child='bcba':
 INSERT INTO reporting.role_role (role_role_id, parent_role_id, child_role_id, created_on) VALUES ('7a221f59-10a3-4730-a5a3-e27259f4d65d', '731122e9-0db8-48b3-a70e-fab985b63cf4', '11c0e37f-a623-4838-a8cf-ac35970e1c1d', '2015-04-13T09:00:00');
 -- parent='bcb', child='bcbb':
@@ -395,9 +431,9 @@ INSERT INTO reporting.role_role (role_role_id, parent_role_id, child_role_id, cr
 INSERT INTO reporting.role_role (role_role_id, parent_role_id, child_role_id, created_on) VALUES ('6c266fe3-b3e0-46a4-ae8d-f28e7a71f3bb', '731122e9-0db8-48b3-a70e-fab985b63cf4', 'e918c8aa-c6d1-462c-9e91-f1db0fb9f346', '2015-04-13T09:00:00');
 
 -- Children of "bcc":
-INSERT INTO reporting.role (role_id, username, login_role, encoded_password, full_name, created_on) VALUES ('685fdc29-c30a-40c7-9aac-1553b53a1a10', 'bcca', false, '', '', '2015-04-13T08:00:00');
-INSERT INTO reporting.role (role_id, username, login_role, encoded_password, full_name, created_on) VALUES ('ecf3be61-7bb3-4e05-8491-9dfcbf57493b', 'bccb', false, '', '', '2015-04-13T08:00:00');
-INSERT INTO reporting.role (role_id, username, login_role, encoded_password, full_name, created_on) VALUES ('6b8ec23a-0bde-4d77-98df-0ed0b763ba69', 'bccc', false, '', '', '2015-04-13T08:00:00');
+INSERT INTO reporting.role (role_id, username, login_role, encoded_password, full_name, enabled, active, created_on) VALUES ('685fdc29-c30a-40c7-9aac-1553b53a1a10', 'bcca', false, '', '', true, true, '2015-04-13T08:00:00');
+INSERT INTO reporting.role (role_id, username, login_role, encoded_password, full_name, enabled, active, created_on) VALUES ('ecf3be61-7bb3-4e05-8491-9dfcbf57493b', 'bccb', false, '', '', true, true, '2015-04-13T08:00:00');
+INSERT INTO reporting.role (role_id, username, login_role, encoded_password, full_name, enabled, active, created_on) VALUES ('6b8ec23a-0bde-4d77-98df-0ed0b763ba69', 'bccc', false, '', '', true, true, '2015-04-13T08:00:00');
 -- parent='bcc', child='bcca':
 INSERT INTO reporting.role_role (role_role_id, parent_role_id, child_role_id, created_on) VALUES ('575c1944-45a1-4528-a5ad-241b214a3578', '69f6b032-3989-4b06-be04-0e4bf5536997', '685fdc29-c30a-40c7-9aac-1553b53a1a10', '2015-04-13T09:00:00');
 -- parent='bcc', child='bccb':
@@ -406,9 +442,9 @@ INSERT INTO reporting.role_role (role_role_id, parent_role_id, child_role_id, cr
 INSERT INTO reporting.role_role (role_role_id, parent_role_id, child_role_id, created_on) VALUES ('2f804552-339c-4e72-8c9e-b8feef0099a3', '69f6b032-3989-4b06-be04-0e4bf5536997', '6b8ec23a-0bde-4d77-98df-0ed0b763ba69', '2015-04-13T09:00:00');
 
 -- Children of 'aaa' & 'bbb':
-INSERT INTO reporting.role (role_id, username, login_role, encoded_password, full_name, created_on) VALUES ('e6b92c45-f60f-4ef2-8118-8b2d837d34b0', '[aaa,bbb]-a', true, '', '', '2015-04-13T08:00:00');
-INSERT INTO reporting.role (role_id, username, login_role, encoded_password, full_name, created_on) VALUES ('0380bb2c-4e0e-482f-9cdd-f8ab6564395d', '[aaa,bbb]-b', true, '', '', '2015-04-13T08:00:00');
-INSERT INTO reporting.role (role_id, username, login_role, encoded_password, full_name, created_on) VALUES ('fadc234a-ae7d-4e5d-b78c-d4f7319e6bd1', '[aaa,bbb]-c', true, '', '', '2015-04-13T08:00:00');
+INSERT INTO reporting.role (role_id, username, login_role, encoded_password, full_name, enabled, active, created_on) VALUES ('e6b92c45-f60f-4ef2-8118-8b2d837d34b0', '[aaa,bbb]-a', true, '', '', true, true, '2015-04-13T08:00:00');
+INSERT INTO reporting.role (role_id, username, login_role, encoded_password, full_name, enabled, active, created_on) VALUES ('0380bb2c-4e0e-482f-9cdd-f8ab6564395d', '[aaa,bbb]-b', true, '', '', true, true, '2015-04-13T08:00:00');
+INSERT INTO reporting.role (role_id, username, login_role, encoded_password, full_name, enabled, active, created_on) VALUES ('fadc234a-ae7d-4e5d-b78c-d4f7319e6bd1', '[aaa,bbb]-c', true, '', '', true, true, '2015-04-13T08:00:00');
 -- parents: 'aaa' & 'bbb'. child: '[aaa,bbb]-a'
 INSERT INTO reporting.role_role (role_role_id, parent_role_id, child_role_id, created_on) VALUES ('e6e9b97c-e5c0-484b-9fa8-6622f753d9e6', '1994c086-7d8d-47c0-ab1d-5bfa7e8d0267', 'e6b92c45-f60f-4ef2-8118-8b2d837d34b0', '2015-04-13T09:00:00');
 INSERT INTO reporting.role_role (role_role_id, parent_role_id, child_role_id, created_on) VALUES ('16c84a14-71a6-4d5a-ac04-75aefe7998a5', '984b9a34-411b-4fa3-86f0-d7cc83991c6d', 'e6b92c45-f60f-4ef2-8118-8b2d837d34b0', '2015-04-13T09:00:00');
@@ -420,9 +456,9 @@ INSERT INTO reporting.role_role (role_role_id, parent_role_id, child_role_id, cr
 INSERT INTO reporting.role_role (role_role_id, parent_role_id, child_role_id, created_on) VALUES ('c75c234b-2920-406a-ac46-caa164389c9a', '984b9a34-411b-4fa3-86f0-d7cc83991c6d', 'fadc234a-ae7d-4e5d-b78c-d4f7319e6bd1', '2015-04-13T09:00:00');
 
 -- Children of 'aaa', 'aab':
-INSERT INTO reporting.role (role_id, username, login_role, encoded_password, full_name, created_on) VALUES ('accd81d0-a5a0-4c51-9355-f6e40855a615', '[aaa,aab]-a', true, '', '', '2015-04-13T08:00:00');
-INSERT INTO reporting.role (role_id, username, login_role, encoded_password, full_name, created_on) VALUES ('98550e23-8945-4a8d-894a-12f1466a7b6e', '[aaa,aab]-b', true, '', '', '2015-04-13T08:00:00');
-INSERT INTO reporting.role (role_id, username, login_role, encoded_password, full_name, created_on) VALUES ('2c22e099-32a0-4f23-b7f6-571e7ffa9dc9', '[aaa,aab]-c', true, '', '', '2015-04-13T08:00:00');
+INSERT INTO reporting.role (role_id, username, login_role, encoded_password, full_name, enabled, active, created_on) VALUES ('accd81d0-a5a0-4c51-9355-f6e40855a615', '[aaa,aab]-a', true, '', '', true, true, '2015-04-13T08:00:00');
+INSERT INTO reporting.role (role_id, username, login_role, encoded_password, full_name, enabled, active, created_on) VALUES ('98550e23-8945-4a8d-894a-12f1466a7b6e', '[aaa,aab]-b', true, '', '', true, true, '2015-04-13T08:00:00');
+INSERT INTO reporting.role (role_id, username, login_role, encoded_password, full_name, enabled, active, created_on) VALUES ('2c22e099-32a0-4f23-b7f6-571e7ffa9dc9', '[aaa,aab]-c', true, '', '', true, true, '2015-04-13T08:00:00');
 -- parents: 'aaa' & 'aab'. child: '[aaa,aab]-a'
 INSERT INTO reporting.role_role (role_role_id, parent_role_id, child_role_id, created_on) VALUES ('4e18dbe0-6df7-42b3-b2c2-b385d096d499', '1994c086-7d8d-47c0-ab1d-5bfa7e8d0267', 'accd81d0-a5a0-4c51-9355-f6e40855a615', '2015-04-13T09:00:00');
 INSERT INTO reporting.role_role (role_role_id, parent_role_id, child_role_id, created_on) VALUES ('abf88f99-c4bc-440c-be15-9895349cfcff', '149c594e-9ae6-4c48-b02d-e84659d030ad', 'accd81d0-a5a0-4c51-9355-f6e40855a615', '2015-04-13T09:00:00');
@@ -432,6 +468,58 @@ INSERT INTO reporting.role_role (role_role_id, parent_role_id, child_role_id, cr
 -- parents: 'aaa' & 'aab'. child: '[aaa,aab]-c'
 INSERT INTO reporting.role_role (role_role_id, parent_role_id, child_role_id, created_on) VALUES ('a1f925f6-5922-4cc9-b5bd-e8994b1f2739', '1994c086-7d8d-47c0-ab1d-5bfa7e8d0267', '2c22e099-32a0-4f23-b7f6-571e7ffa9dc9', '2015-04-13T09:00:00');
 INSERT INTO reporting.role_role (role_role_id, parent_role_id, child_role_id, created_on) VALUES ('9d67a2b4-4093-46f9-969b-1133970bf988', '149c594e-9ae6-4c48-b02d-e84659d030ad', '2c22e099-32a0-4f23-b7f6-571e7ffa9dc9', '2015-04-13T09:00:00');
+
+
+-- Give the "Administrator" role most authorities by creating "role_authority" rows:
+--INSERT INTO reporting.role_authority (role_authority_id, role_id, authority_id, created_on) VALUES ('80f98056-85c0-4ed0-989c-7e5354ab8151', '54aa1d35-f67d-47e6-8bea-cadd6085796e', 'e2883c0e-5972-4225-a805-27410a2866f4', current_timestamp AT TIME ZONE 'UTC');
+INSERT INTO reporting.role_authority (role_authority_id, role_id, authority_id, created_on) VALUES ('f812aab5-2390-43f3-add3-a3d673939a73', '54aa1d35-f67d-47e6-8bea-cadd6085796e', '1e4f29b9-3183-4f54-a4ee-96c2347d7e06', current_timestamp AT TIME ZONE 'UTC');
+INSERT INTO reporting.role_authority (role_authority_id, role_id, authority_id, created_on) VALUES ('62c78032-5ec7-440c-8107-386b745b9ab9', '54aa1d35-f67d-47e6-8bea-cadd6085796e', 'dae0f68f-11c6-438c-8312-aca4d95731fc', current_timestamp AT TIME ZONE 'UTC');
+INSERT INTO reporting.role_authority (role_authority_id, role_id, authority_id, created_on) VALUES ('eb8e56c2-7a8e-4dbe-97ca-a0e6166b258a', '54aa1d35-f67d-47e6-8bea-cadd6085796e', 'cd2c5d93-9b57-4a8b-b789-84dd567e0fa2', current_timestamp AT TIME ZONE 'UTC');
+INSERT INTO reporting.role_authority (role_authority_id, role_id, authority_id, created_on) VALUES ('7560ef1c-4acf-43bd-af27-b5ad9f992f57', '54aa1d35-f67d-47e6-8bea-cadd6085796e', '7e1ee8bb-3d5d-481a-b0f9-5c3fae3f4e38', current_timestamp AT TIME ZONE 'UTC');
+INSERT INTO reporting.role_authority (role_authority_id, role_id, authority_id, created_on) VALUES ('44dd6566-a02c-47eb-b889-31016fe1d8ed', '54aa1d35-f67d-47e6-8bea-cadd6085796e', 'e5b569e6-bb2a-4f00-a9ca-f85ef0a3a339', current_timestamp AT TIME ZONE 'UTC');
+INSERT INTO reporting.role_authority (role_authority_id, role_id, authority_id, created_on) VALUES ('222e6e22-f3e3-4631-847f-31896139987a', '54aa1d35-f67d-47e6-8bea-cadd6085796e', '12b1cb22-7686-4c9b-b73b-a25d4cb31663', current_timestamp AT TIME ZONE 'UTC');
+INSERT INTO reporting.role_authority (role_authority_id, role_id, authority_id, created_on) VALUES ('d3a80355-b464-4763-97ab-cd76af70b687', '54aa1d35-f67d-47e6-8bea-cadd6085796e', 'ace1edd3-6a5b-4b40-a802-79616472b893', current_timestamp AT TIME ZONE 'UTC');
+INSERT INTO reporting.role_authority (role_authority_id, role_id, authority_id, created_on) VALUES ('69ee95d1-f6b0-4805-b653-e33ad3955609', '54aa1d35-f67d-47e6-8bea-cadd6085796e', 'bb8f7964-504a-4544-8638-11a62cc9a2ca', current_timestamp AT TIME ZONE 'UTC');
+INSERT INTO reporting.role_authority (role_authority_id, role_id, authority_id, created_on) VALUES ('bbaddcf3-ef9c-49d1-9e5a-d9197a106b9e', '54aa1d35-f67d-47e6-8bea-cadd6085796e', '1bbc9e73-1095-4471-bdb2-726b10e47936', current_timestamp AT TIME ZONE 'UTC');
+INSERT INTO reporting.role_authority (role_authority_id, role_id, authority_id, created_on) VALUES ('8e90d278-a555-4a3a-981a-8e329eac63d4', '54aa1d35-f67d-47e6-8bea-cadd6085796e', '7b758de7-cd54-43fa-baa0-dfbe59e66000', current_timestamp AT TIME ZONE 'UTC');
+INSERT INTO reporting.role_authority (role_authority_id, role_id, authority_id, created_on) VALUES ('659e6aa3-14bf-4ba2-8630-538da94f6ffc', '54aa1d35-f67d-47e6-8bea-cadd6085796e', '2efd4eca-bcb2-4cec-b804-3142c8297d65', current_timestamp AT TIME ZONE 'UTC');
+INSERT INTO reporting.role_authority (role_authority_id, role_id, authority_id, created_on) VALUES ('2ef4aaf6-9ea4-48d0-a5a4-79670a264b79', '54aa1d35-f67d-47e6-8bea-cadd6085796e', '2dac7af0-ba7d-4009-a313-e9a288272e90', current_timestamp AT TIME ZONE 'UTC');
+INSERT INTO reporting.role_authority (role_authority_id, role_id, authority_id, created_on) VALUES ('fb5685ae-2470-449f-bfac-a2a291b863b4', '54aa1d35-f67d-47e6-8bea-cadd6085796e', '608d6156-b155-487d-bdd3-4e00260b7443', current_timestamp AT TIME ZONE 'UTC');
+INSERT INTO reporting.role_authority (role_authority_id, role_id, authority_id, created_on) VALUES ('13e14dbc-d30d-4006-95ed-b8de417a2315', '54aa1d35-f67d-47e6-8bea-cadd6085796e', '94db0a84-e366-4ab8-aeba-171482979f3d', current_timestamp AT TIME ZONE 'UTC');
+--
+-- Give the "Q-Free administrator" role all authorities by creating "role_authority" rows:
+INSERT INTO reporting.role_authority (role_authority_id, role_id, authority_id, created_on) VALUES ('be6a207f-10f7-4e86-a174-392b4934d2a0', '10ab3537-0b12-44fa-a27b-6cf1aac14282', 'e2883c0e-5972-4225-a805-27410a2866f4', current_timestamp AT TIME ZONE 'UTC');
+INSERT INTO reporting.role_authority (role_authority_id, role_id, authority_id, created_on) VALUES ('4cb38206-bd6c-4db1-a596-0944b386c093', '10ab3537-0b12-44fa-a27b-6cf1aac14282', '1e4f29b9-3183-4f54-a4ee-96c2347d7e06', current_timestamp AT TIME ZONE 'UTC');
+INSERT INTO reporting.role_authority (role_authority_id, role_id, authority_id, created_on) VALUES ('e2ef968a-7fd6-4e9e-b74a-58fc6f208a50', '10ab3537-0b12-44fa-a27b-6cf1aac14282', 'dae0f68f-11c6-438c-8312-aca4d95731fc', current_timestamp AT TIME ZONE 'UTC');
+INSERT INTO reporting.role_authority (role_authority_id, role_id, authority_id, created_on) VALUES ('143e65a8-3051-4512-bf02-940455f25744', '10ab3537-0b12-44fa-a27b-6cf1aac14282', 'cd2c5d93-9b57-4a8b-b789-84dd567e0fa2', current_timestamp AT TIME ZONE 'UTC');
+INSERT INTO reporting.role_authority (role_authority_id, role_id, authority_id, created_on) VALUES ('e40a6bc3-3888-49ec-a9f5-6c17df4907a2', '10ab3537-0b12-44fa-a27b-6cf1aac14282', '7e1ee8bb-3d5d-481a-b0f9-5c3fae3f4e38', current_timestamp AT TIME ZONE 'UTC');
+INSERT INTO reporting.role_authority (role_authority_id, role_id, authority_id, created_on) VALUES ('6603e5e2-0b71-4e0c-8983-6c1c50efb0d6', '10ab3537-0b12-44fa-a27b-6cf1aac14282', 'e5b569e6-bb2a-4f00-a9ca-f85ef0a3a339', current_timestamp AT TIME ZONE 'UTC');
+INSERT INTO reporting.role_authority (role_authority_id, role_id, authority_id, created_on) VALUES ('89bc2070-aedf-4959-9492-8f1a051f2c47', '10ab3537-0b12-44fa-a27b-6cf1aac14282', '12b1cb22-7686-4c9b-b73b-a25d4cb31663', current_timestamp AT TIME ZONE 'UTC');
+INSERT INTO reporting.role_authority (role_authority_id, role_id, authority_id, created_on) VALUES ('d806bc73-1744-471c-8f24-14af227f780b', '10ab3537-0b12-44fa-a27b-6cf1aac14282', 'ace1edd3-6a5b-4b40-a802-79616472b893', current_timestamp AT TIME ZONE 'UTC');
+INSERT INTO reporting.role_authority (role_authority_id, role_id, authority_id, created_on) VALUES ('43c97218-f645-47be-ac64-7004e34ee31c', '10ab3537-0b12-44fa-a27b-6cf1aac14282', 'bb8f7964-504a-4544-8638-11a62cc9a2ca', current_timestamp AT TIME ZONE 'UTC');
+INSERT INTO reporting.role_authority (role_authority_id, role_id, authority_id, created_on) VALUES ('bdb0077e-ddd1-4651-8584-7d67f6a5d7e6', '10ab3537-0b12-44fa-a27b-6cf1aac14282', '1bbc9e73-1095-4471-bdb2-726b10e47936', current_timestamp AT TIME ZONE 'UTC');
+INSERT INTO reporting.role_authority (role_authority_id, role_id, authority_id, created_on) VALUES ('f3f5546e-d819-4a4a-92be-c6ee150e02d0', '10ab3537-0b12-44fa-a27b-6cf1aac14282', '7b758de7-cd54-43fa-baa0-dfbe59e66000', current_timestamp AT TIME ZONE 'UTC');
+INSERT INTO reporting.role_authority (role_authority_id, role_id, authority_id, created_on) VALUES ('3d1392ab-b5b8-45b8-96e1-cf7060836924', '10ab3537-0b12-44fa-a27b-6cf1aac14282', '2efd4eca-bcb2-4cec-b804-3142c8297d65', current_timestamp AT TIME ZONE 'UTC');
+INSERT INTO reporting.role_authority (role_authority_id, role_id, authority_id, created_on) VALUES ('ce4ffcfd-7802-4e1b-bdf1-6d2b70062cef', '10ab3537-0b12-44fa-a27b-6cf1aac14282', '2dac7af0-ba7d-4009-a313-e9a288272e90', current_timestamp AT TIME ZONE 'UTC');
+INSERT INTO reporting.role_authority (role_authority_id, role_id, authority_id, created_on) VALUES ('54246034-83ed-488c-b447-05fd0b1e57b4', '10ab3537-0b12-44fa-a27b-6cf1aac14282', '608d6156-b155-487d-bdd3-4e00260b7443', current_timestamp AT TIME ZONE 'UTC');
+INSERT INTO reporting.role_authority (role_authority_id, role_id, authority_id, created_on) VALUES ('0fff6274-a9dc-4262-aa29-5feff9414810', '10ab3537-0b12-44fa-a27b-6cf1aac14282', '94db0a84-e366-4ab8-aeba-171482979f3d', current_timestamp AT TIME ZONE 'UTC');
+--
+-- Give the "ReST Administrator" role all authorities by creating "role_authority" rows:
+INSERT INTO reporting.role_authority (role_authority_id, role_id, authority_id, created_on) VALUES ('ad0fcb0d-6d89-41ad-9ed7-82292757c496', '689833f9-e55c-4eaf-aba6-79f8b1d1a058', 'e2883c0e-5972-4225-a805-27410a2866f4', current_timestamp AT TIME ZONE 'UTC');
+INSERT INTO reporting.role_authority (role_authority_id, role_id, authority_id, created_on) VALUES ('9186ccf4-bfac-43fd-a200-7484f4d7b0b5', '689833f9-e55c-4eaf-aba6-79f8b1d1a058', '1e4f29b9-3183-4f54-a4ee-96c2347d7e06', current_timestamp AT TIME ZONE 'UTC');
+INSERT INTO reporting.role_authority (role_authority_id, role_id, authority_id, created_on) VALUES ('bfeb5c18-545e-4a47-b412-25df077bfc19', '689833f9-e55c-4eaf-aba6-79f8b1d1a058', 'dae0f68f-11c6-438c-8312-aca4d95731fc', current_timestamp AT TIME ZONE 'UTC');
+INSERT INTO reporting.role_authority (role_authority_id, role_id, authority_id, created_on) VALUES ('cc1392c8-bf80-474b-9cb8-e01e9ef067b6', '689833f9-e55c-4eaf-aba6-79f8b1d1a058', 'cd2c5d93-9b57-4a8b-b789-84dd567e0fa2', current_timestamp AT TIME ZONE 'UTC');
+INSERT INTO reporting.role_authority (role_authority_id, role_id, authority_id, created_on) VALUES ('43d33928-08c5-4869-bed0-4e81a3c8e0c3', '689833f9-e55c-4eaf-aba6-79f8b1d1a058', '7e1ee8bb-3d5d-481a-b0f9-5c3fae3f4e38', current_timestamp AT TIME ZONE 'UTC');
+INSERT INTO reporting.role_authority (role_authority_id, role_id, authority_id, created_on) VALUES ('3189a1d0-d7d1-45a5-a002-f34dda0c9916', '689833f9-e55c-4eaf-aba6-79f8b1d1a058', 'e5b569e6-bb2a-4f00-a9ca-f85ef0a3a339', current_timestamp AT TIME ZONE 'UTC');
+INSERT INTO reporting.role_authority (role_authority_id, role_id, authority_id, created_on) VALUES ('619b6650-57bd-4850-a543-9fd0d1a1d3bc', '689833f9-e55c-4eaf-aba6-79f8b1d1a058', '12b1cb22-7686-4c9b-b73b-a25d4cb31663', current_timestamp AT TIME ZONE 'UTC');
+INSERT INTO reporting.role_authority (role_authority_id, role_id, authority_id, created_on) VALUES ('eb257e2f-d6c3-497f-8e0c-614efc068a03', '689833f9-e55c-4eaf-aba6-79f8b1d1a058', 'ace1edd3-6a5b-4b40-a802-79616472b893', current_timestamp AT TIME ZONE 'UTC');
+INSERT INTO reporting.role_authority (role_authority_id, role_id, authority_id, created_on) VALUES ('b0fd8c8b-7d6d-4d4a-a165-b28b06ea3418', '689833f9-e55c-4eaf-aba6-79f8b1d1a058', 'bb8f7964-504a-4544-8638-11a62cc9a2ca', current_timestamp AT TIME ZONE 'UTC');
+INSERT INTO reporting.role_authority (role_authority_id, role_id, authority_id, created_on) VALUES ('25e8ab17-d66a-4de0-b692-dda9ff36c4ee', '689833f9-e55c-4eaf-aba6-79f8b1d1a058', '1bbc9e73-1095-4471-bdb2-726b10e47936', current_timestamp AT TIME ZONE 'UTC');
+INSERT INTO reporting.role_authority (role_authority_id, role_id, authority_id, created_on) VALUES ('dd5a9f19-0a8b-4ea9-885f-dcbda4c7431d', '689833f9-e55c-4eaf-aba6-79f8b1d1a058', '7b758de7-cd54-43fa-baa0-dfbe59e66000', current_timestamp AT TIME ZONE 'UTC');
+INSERT INTO reporting.role_authority (role_authority_id, role_id, authority_id, created_on) VALUES ('534d4b17-1ea6-48eb-8905-6798efe5011e', '689833f9-e55c-4eaf-aba6-79f8b1d1a058', '2efd4eca-bcb2-4cec-b804-3142c8297d65', current_timestamp AT TIME ZONE 'UTC');
+INSERT INTO reporting.role_authority (role_authority_id, role_id, authority_id, created_on) VALUES ('ca324426-78e9-4232-8ef0-46be70757b01', '689833f9-e55c-4eaf-aba6-79f8b1d1a058', '2dac7af0-ba7d-4009-a313-e9a288272e90', current_timestamp AT TIME ZONE 'UTC');
+INSERT INTO reporting.role_authority (role_authority_id, role_id, authority_id, created_on) VALUES ('e3f80441-e8ac-44e3-825a-a4ed0c8118ef', '689833f9-e55c-4eaf-aba6-79f8b1d1a058', '608d6156-b155-487d-bdd3-4e00260b7443', current_timestamp AT TIME ZONE 'UTC');
+INSERT INTO reporting.role_authority (role_authority_id, role_id, authority_id, created_on) VALUES ('6fc151b0-81fb-46d4-a8a4-4cca0ca82e21', '689833f9-e55c-4eaf-aba6-79f8b1d1a058', '94db0a84-e366-4ab8-aeba-171482979f3d', current_timestamp AT TIME ZONE 'UTC');
 
 
 -- Role "a" has access to report "Report name #01":

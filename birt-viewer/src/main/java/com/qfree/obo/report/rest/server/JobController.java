@@ -26,17 +26,22 @@ import org.quartz.SchedulerException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.qfree.obo.report.db.JobRepository;
 import com.qfree.obo.report.db.JobStatusRepository;
+import com.qfree.obo.report.domain.Authority;
 import com.qfree.obo.report.domain.Job;
 import com.qfree.obo.report.domain.JobStatus;
+import com.qfree.obo.report.dto.JobCollectionResource;
 import com.qfree.obo.report.dto.JobParameterCollectionResource;
 import com.qfree.obo.report.dto.JobResource;
 import com.qfree.obo.report.dto.ResourcePath;
 import com.qfree.obo.report.dto.RestErrorResource.RestError;
+import com.qfree.obo.report.exceptions.ResourceFilterExecutionException;
+import com.qfree.obo.report.exceptions.ResourceFilterParseException;
 import com.qfree.obo.report.exceptions.RestApiException;
 import com.qfree.obo.report.util.RestUtils;
 import com.qfree.obo.report.util.RestUtils.RestApiVersion;
@@ -77,46 +82,46 @@ public class JobController extends AbstractBaseController {
 	}
 
 	/*
-	 * This endpoint can possibly be enabled one day, but only for administration
-	 * purposes since it displays all Jobs, regardless of Role.
+	 * This endpoint can be tested with:
 	 * 
-	 * This enpoint also needs to be extended to handle paging, since over time
-	 * the will be many, many Job entities.
+	 *   $ mvn clean spring-boot:run
+	 *   $ curl -X GET -iH "Accept: application/json;v=1" http://localhost:8080/rest/jobs?expand=jobs
+	 * 
+	 * @Transactional is used to avoid org.hibernate.LazyInitializationException
+	 * being thrown.
 	 */
-	//	/*
-	//	 * This endpoint can be tested with:
-	//	 * 
-	//	 *   $ mvn clean spring-boot:run
-	//	 *   $ curl -X GET -iH "Accept: application/json;v=1" http://localhost:8080/rest/jobs?expand=jobs
-	//	 * 
-	//	 * @Transactional is used to avoid org.hibernate.LazyInitializationException
-	//	 * being thrown.
-	//	 */
-	//	@GET
-	//	@Transactional
-	//	@Produces(MediaType.APPLICATION_JSON)
-	//	public JobCollectionResource getList(
-	//			@HeaderParam("Accept") final String acceptHeader,
-	//			@QueryParam(ResourcePath.EXPAND_QP_NAME) final List<String> expand,
-	//			@QueryParam(ResourcePath.SHOWALL_QP_NAME) final List<String> showAll,
-	//			@Context final UriInfo uriInfo) {
-	//		Map<String, List<String>> queryParams = new HashMap<>();
-	//		queryParams.put(ResourcePath.EXPAND_QP_KEY, expand);
-	//		queryParams.put(ResourcePath.SHOWALL_QP_KEY, showAll);
-	//		RestApiVersion apiVersion = RestUtils.extractAPIVersion(acceptHeader, RestApiVersion.v1);
-	//
-	//		List<Job> jobs = null;
-	//		//	if (RestUtils.FILTER_INACTIVE_RECORDS && !ResourcePath.showAll(Job.class, showAll)) {
-	//		//		jobs = jobRepository.findByActiveTrue();
-	//		//	} else {
-	//		jobs = jobRepository.findAll();
-	//		//	}
-	//		List<JobResource> jobResources = new ArrayList<>(jobs.size());
-	//		for (Job job : jobs) {
-	//			jobResources.add(new JobResource(job, uriInfo, queryParams, apiVersion));
-	//		}
-	//		return new JobCollectionResource(jobResources, Job.class, uriInfo, queryParams, apiVersion);
-	//	}
+	@GET
+	@Transactional
+	@Produces(MediaType.APPLICATION_JSON)
+	@PreAuthorize("hasAuthority('" + Authority.AUTHORITY_NAME_USE_RESTAPI + "') and "
+			+ "hasAuthority('" + Authority.AUTHORITY_NAME_MANAGE_JOBS + "')")
+	public JobCollectionResource getList(
+			@HeaderParam("Accept") final String acceptHeader,
+			@QueryParam(ResourcePath.EXPAND_QP_NAME) final List<String> expand,
+			@QueryParam(ResourcePath.SHOWALL_QP_NAME) final List<String> showAll,
+			@QueryParam(ResourcePath.FILTER_QP_NAME) final List<String> filter,
+			@QueryParam(ResourcePath.PAGE_OFFSET_QP_NAME) final List<String> pageOffset,
+			@QueryParam(ResourcePath.PAGE_LIMIT_QP_NAME) final List<String> pageLimit,
+			@Context final UriInfo uriInfo) {
+		Map<String, List<String>> queryParams = new HashMap<>();
+		queryParams.put(ResourcePath.EXPAND_QP_KEY, expand);
+		queryParams.put(ResourcePath.SHOWALL_QP_KEY, showAll);
+		queryParams.put(ResourcePath.FILTER_QP_KEY, filter);
+		RestUtils.checkPaginationQueryParams(pageOffset, pageLimit, queryParams);
+		RestApiVersion apiVersion = RestUtils.extractAPIVersion(acceptHeader, RestApiVersion.v1);
+
+		List<Job> jobs = null;
+		//	if (RestUtils.FILTER_INACTIVE_RECORDS && !ResourcePath.showAll(Job.class, showAll)) {
+		//		jobs = jobRepository.findByActiveTrue();
+		//	} else {
+		jobs = jobRepository.findAll();
+		//	}
+		try {
+			return new JobCollectionResource(jobs, Job.class, uriInfo, queryParams, apiVersion);
+		} catch (ResourceFilterExecutionException | ResourceFilterParseException e) {
+			throw new RestApiException(RestError.FORBIDDEN_RESOURCE_FILTER_PROBLEM, e.getMessage(), e);
+		}
+	}
 
 	/*
 	 * This endpoint can be tested with:
@@ -131,6 +136,9 @@ public class JobController extends AbstractBaseController {
 	@GET
 	@Transactional
 	@Produces(MediaType.APPLICATION_JSON)
+	@PreAuthorize("hasAuthority('" + Authority.AUTHORITY_NAME_USE_RESTAPI + "')"
+			+ " and hasAuthority('" + Authority.AUTHORITY_NAME_MANAGE_JOBS + "')"
+	)
 	public JobResource getById(
 			@PathParam("id") final Long id,
 			@HeaderParam("Accept") final String acceptHeader,
@@ -194,7 +202,9 @@ public class JobController extends AbstractBaseController {
 			"application/vnd.ms-excel",
 			"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
 			MediaType.APPLICATION_JSON })
-	public Response geJobDocumentByJobId(
+	@PreAuthorize("hasAuthority('" + Authority.AUTHORITY_NAME_USE_RESTAPI + "') and "
+			+ "hasAuthority('" + Authority.AUTHORITY_NAME_MANAGE_JOBS + "')")
+	public Response getJobDocumentByJobId(
 			@PathParam("id") final Long id,
 			@HeaderParam("Accept") final String acceptHeader,
 			//	@QueryParam(ResourcePath.EXPAND_QP_NAME) final List<String> expand,
@@ -249,6 +259,8 @@ public class JobController extends AbstractBaseController {
 	@Transactional
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
+	@PreAuthorize("hasAuthority('" + Authority.AUTHORITY_NAME_USE_RESTAPI + "') and "
+			+ "hasAuthority('" + Authority.AUTHORITY_NAME_MANAGE_JOBS + "')")
 	public Response cancelJob(
 			@PathParam("id") final Long id,
 			@HeaderParam("Accept") final String acceptHeader,
@@ -303,6 +315,8 @@ public class JobController extends AbstractBaseController {
 	@Transactional
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
+	@PreAuthorize("hasAuthority('" + Authority.AUTHORITY_NAME_USE_RESTAPI + "') and "
+			+ "hasAuthority('" + Authority.AUTHORITY_NAME_DELETE_JOBS + "')")
 	public JobResource deleteById(
 			//public Response updateById(
 			@PathParam("id") final Long id,
@@ -370,6 +384,8 @@ public class JobController extends AbstractBaseController {
 	@GET
 	@Transactional
 	@Produces(MediaType.APPLICATION_JSON)
+	@PreAuthorize("hasAuthority('" + Authority.AUTHORITY_NAME_USE_RESTAPI + "') and "
+			+ "hasAuthority('" + Authority.AUTHORITY_NAME_MANAGE_JOBS + "')")
 	public JobParameterCollectionResource getJobParametersByJobId(
 			@PathParam("id") final Long id,
 			@HeaderParam("Accept") final String acceptHeader,

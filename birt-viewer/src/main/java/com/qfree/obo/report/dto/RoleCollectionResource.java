@@ -11,6 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.qfree.obo.report.domain.Role;
+import com.qfree.obo.report.service.AuthorityService;
 import com.qfree.obo.report.util.RestUtils.RestApiVersion;
 
 @XmlRootElement
@@ -27,12 +28,14 @@ public class RoleCollectionResource extends AbstractCollectionResource<RoleResou
 	public RoleCollectionResource(
 			List<Role> roles,
 			Class<Role> entityClass,
+			AuthorityService authorityService,
 			UriInfo uriInfo,
 			Map<String, List<String>> queryParams,
 			RestApiVersion apiVersion) {
 		this(
 				roles,
 				entityClass,
+				authorityService,
 				null,
 				null,
 				uriInfo,
@@ -43,6 +46,7 @@ public class RoleCollectionResource extends AbstractCollectionResource<RoleResou
 	public RoleCollectionResource(
 			List<Role> roles,
 			Class<Role> entityClass,
+			AuthorityService authorityService,
 			String baseResourceUri,
 			String collectionPath,
 			UriInfo uriInfo,
@@ -65,7 +69,8 @@ public class RoleCollectionResource extends AbstractCollectionResource<RoleResou
 			 * original request does not necessarily apply here.
 			 */
 			apiVersion = null;
-			this.items = RoleResource.roleResourceListPageFromRoles(roles, uriInfo, queryParams, apiVersion);
+			this.items = RoleResource.roleResourceListPageFromRoles(roles, authorityService,
+					uriInfo, queryParams, apiVersion);
 		}
 	}
 

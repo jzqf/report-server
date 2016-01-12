@@ -1,5 +1,6 @@
 package com.qfree.obo.report.rest.server;
 
+import java.security.Principal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -18,19 +19,24 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.UriInfo;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.qfree.obo.report.db.ReportRepository;
 import com.qfree.obo.report.db.RoleRepository;
+import com.qfree.obo.report.domain.Authority;
 import com.qfree.obo.report.domain.Report;
 import com.qfree.obo.report.domain.Role;
 import com.qfree.obo.report.domain.UuidCustomType;
+import com.qfree.obo.report.dto.AuthorityCollectionResource;
 import com.qfree.obo.report.dto.JobCollectionResource;
 import com.qfree.obo.report.dto.ReportCollectionResource;
 import com.qfree.obo.report.dto.ResourcePath;
@@ -38,9 +44,11 @@ import com.qfree.obo.report.dto.RestErrorResource.RestError;
 import com.qfree.obo.report.dto.RoleCollectionResource;
 import com.qfree.obo.report.dto.RoleResource;
 import com.qfree.obo.report.dto.SubscriptionCollectionResource;
-import com.qfree.obo.report.exceptions.ResourceFilterParseException;
 import com.qfree.obo.report.exceptions.ResourceFilterExecutionException;
+import com.qfree.obo.report.exceptions.ResourceFilterParseException;
 import com.qfree.obo.report.exceptions.RestApiException;
+import com.qfree.obo.report.security.ReportServerUser;
+import com.qfree.obo.report.service.AuthorityService;
 import com.qfree.obo.report.service.RoleService;
 import com.qfree.obo.report.util.RestUtils;
 import com.qfree.obo.report.util.RestUtils.RestApiVersion;
@@ -54,20 +62,23 @@ public class RoleController extends AbstractBaseController {
 	 * This is just for a transition period until we have better/different
 	 * role management implemented.
 	 */
-	public static final boolean returnAllReportsForEachRole = true;
+	public static final boolean ALLOW_ALL_REPORTS_FOR_EACH_ROLE = true;
 
 	private final RoleRepository roleRepository;
 	private final RoleService roleService;
 	private final ReportRepository reportRepository;
+	private final AuthorityService authorityService;
 
 	@Autowired
 	public RoleController(
 			RoleRepository roleRepository,
 			RoleService roleService,
-			ReportRepository reportRepository) {
+			ReportRepository reportRepository,
+			AuthorityService authorityService) {
 		this.roleRepository = roleRepository;
 		this.roleService = roleService;
 		this.reportRepository = reportRepository;
+		this.authorityService = authorityService;
 	}
 
 	/*
@@ -78,6 +89,8 @@ public class RoleController extends AbstractBaseController {
 	 */
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
+	@PreAuthorize("hasAuthority('" + Authority.AUTHORITY_NAME_USE_RESTAPI + "')"
+			+ " and hasAuthority('" + Authority.AUTHORITY_NAME_MANAGE_ROLES + "')")
 	public RoleCollectionResource getList(
 			@HeaderParam("Accept") final String acceptHeader,
 			@QueryParam(ResourcePath.EXPAND_QP_NAME) final List<String> expand,
@@ -88,21 +101,42 @@ public class RoleController extends AbstractBaseController {
 		queryParams.put(ResourcePath.SHOWALL_QP_KEY, showAll);
 		RestApiVersion apiVersion = RestUtils.extractAPIVersion(acceptHeader, RestApiVersion.v1);
 
-		List<Role> roles = roleRepository.findAll();
-		return new RoleCollectionResource(roles, Role.class, uriInfo, queryParams, apiVersion);
+		List<Role> roles = null;
+		if (RestUtils.FILTER_INACTIVE_RECORDS && !ResourcePath.showAll(Role.class, showAll)) {
+			roles = roleRepository.findByActiveTrue();
+		} else {
+			roles = roleRepository.findAll();
+		}
+
+		if (roles != null) {
+			/*
+			 * Remove the built-in (pre-defined) Q-Free admin role if it
+			 * appears in the list.
+			 */
+			for (int i = 0; i < roles.size(); i++) {
+				if (roles.get(i).getRoleId().equals(Role.QFREE_ADMIN_ROLE_ID)
+						|| roles.get(i).getRoleId().equals(Role.QFREE_REST_ADMIN_ROLE_ID)) {
+					roles.remove(i);
+				}
+			}
+		}
+
+		return new RoleCollectionResource(roles, Role.class, authorityService, uriInfo, queryParams, apiVersion);
 	}
 
 	/*
 	 * This endpoint can be tested with:
 	 * 
 	 *   $ mvn clean spring-boot:run
-	 *   $ curl -iH "Accept: application/json;v=1" -H "Content-Type: application/json" -X POST -d \
-	 *   '{"username":"bozoc","fullName":"Bozo the clown","encodedPassword":"asdf=","loginRole":true,\
-	 *   "email_address":"bozo@circus.net","timeZoneId":"CET"}' http://localhost:8080/rest/roles
+	 *   $ curl -X POST -iH "Accept: application/json;v=1" -H "Content-Type: application/json" -d \
+	 *   '{"username":"bozoc","fullName":"Bozo the clown","unencodedPassword":"iambozo","loginRole":true,\
+	 *   "enabled":true,"emailAddress":"bozo@circus.net","timeZoneId":"CET"}' http://localhost:8080/rest/roles
 	 */
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
+	@PreAuthorize("hasAuthority('" + Authority.AUTHORITY_NAME_USE_RESTAPI + "')"
+			+ " and hasAuthority('" + Authority.AUTHORITY_NAME_MANAGE_ROLES + "')")
 	public Response create(
 			RoleResource roleResource,
 			@HeaderParam("Accept") final String acceptHeader,
@@ -118,7 +152,7 @@ public class RoleController extends AbstractBaseController {
 		//	if (RestUtils.AUTO_EXPAND_PRIMARY_RESOURCES) {
 		addToExpandList(expand, Role.class); // Force primary resource to be "expanded"
 		//	}
-		RoleResource resource = new RoleResource(role, uriInfo, queryParams, apiVersion);
+		RoleResource resource = new RoleResource(role, authorityService, uriInfo, queryParams, apiVersion);
 		return created(resource);
 	}
 
@@ -126,14 +160,16 @@ public class RoleController extends AbstractBaseController {
 	 * This endpoint can be tested with:
 	 * 
 	 *   $ mvn clean spring-boot:run
-	 *   $ curl -i -H "Accept: application/json;v=1" -X GET \
-	 *   http://localhost:8080/rest/roles/b85fd129-17d9-40e7-ac11-7541040f8627
+	 *   $ curl -X GET -iH "Accept: application/json;v=1" http://localhost:8080/rest/roles/b85fd129-17d9-40e7-ac11-7541040f8627
 	 */
 	@Path("/{id}")
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
-	public RoleResource getById(
-			@PathParam("id") final UUID id,
+	@PreAuthorize("hasAuthority('" + Authority.AUTHORITY_NAME_USE_RESTAPI + "')"
+			+ " and hasAuthority('" + Authority.AUTHORITY_NAME_MANAGE_ROLES + "')")
+	public RoleResource getByIdOrUsername(
+			@PathParam("id") final String idOrUsername,
+			//@PathParam("id") final UUID id,
 			@HeaderParam("Accept") final String acceptHeader,
 			@QueryParam(ResourcePath.EXPAND_QP_NAME) final List<String> expand,
 			@QueryParam(ResourcePath.SHOWALL_QP_NAME) final List<String> showAll,
@@ -143,12 +179,33 @@ public class RoleController extends AbstractBaseController {
 		queryParams.put(ResourcePath.SHOWALL_QP_KEY, showAll);
 		RestApiVersion apiVersion = RestUtils.extractAPIVersion(acceptHeader, RestApiVersion.v1);
 
+		logger.info("idOrUsername = {}", idOrUsername);
+
+		UUID id = null;
+		String username = null;
+		try {
+			id = UUID.fromString(idOrUsername);
+		} catch (IllegalArgumentException e) {
+			/*
+			 * idOrUsername does not represent a UUID, so we interpret it as a 
+			 * username.
+			 */
+			username = idOrUsername;
+		}
+
+		Role role = null;
+		if (id != null) {
+			role = roleRepository.findOne(id);
+			RestUtils.ifNullThen404(role, Role.class, "roleId", id.toString());
+		} else {
+			role = roleRepository.findByUsername(username);
+			RestUtils.ifNullThen404(role, Role.class, "username", username);
+		}
+
 		if (RestUtils.AUTO_EXPAND_PRIMARY_RESOURCES) {
 			addToExpandList(expand, Role.class);
 		}
-		Role role = roleRepository.findOne(id);
-		RestUtils.ifNullThen404(role, Role.class, "roleId", id.toString());
-		RoleResource roleResource = new RoleResource(role, uriInfo, queryParams, apiVersion);
+		RoleResource roleResource = new RoleResource(role, authorityService, uriInfo, queryParams, apiVersion);
 		return roleResource;
 	}
 
@@ -181,6 +238,9 @@ public class RoleController extends AbstractBaseController {
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	@Transactional
+	@PreAuthorize("hasAuthority('" + Authority.AUTHORITY_NAME_USE_RESTAPI + "')"
+			+ " and hasAuthority('" + Authority.AUTHORITY_NAME_MANAGE_ROLES + "')"
+			+ " and hasAuthority('" + Authority.AUTHORITY_NAME_MANAGE_REPORTS + "')")
 	public ReportCollectionResource getReportsForRole(
 			@PathParam("id") final UUID id,
 			@HeaderParam("Accept") final String acceptHeader,
@@ -199,7 +259,7 @@ public class RoleController extends AbstractBaseController {
 		RestUtils.ifNullThen404(role, Role.class, "roleId", id.toString());
 
 		List<Report> reports = new ArrayList<>(0);
-		if (returnAllReportsForEachRole == true) {
+		if (ALLOW_ALL_REPORTS_FOR_EACH_ROLE) {
 			if (RestUtils.FILTER_INACTIVE_RECORDS && !ResourcePath.showAll(Report.class, showAll)) {
 				reports = reportRepository.findByActiveTrue();
 			} else {
@@ -285,21 +345,74 @@ public class RoleController extends AbstractBaseController {
 	 * This endpoint can be tested with:
 	 * 
 	 *   $ mvn clean spring-boot:run
-	 *   $ curl -iH "Accept: application/json;v=1" -H "Content-Type: application/json" -X PUT -d \
-	 *   '{"username":"baaa (modified)","fullName":"Mr. baaa","encodedPassword":"qwerty=","loginRole":true,\
-	 *   "email_address":"dumbo@circus.net","timeZoneId":"UTC"}' \
-	 *   http://localhost:8080/rest/roles/0db97c2a-fb78-464a-a0e7-8d25f6003c14
+	 *   
+	 *   $ curl -X PUT -iH "Accept: application/json;v=1" -H "Content-Type: application/json" -d \
+	 *   '{"username":"bozoc","fullName":"Bozo the clown","loginRole":true,\
+	 *   "emailAddress":"dumbo@circus.net","timeZoneId":"UTC"}' \
+	 *   http://localhost:8080/rest/roles/f9a94054-c62b-464c-874c-a61d18530c87
+	 * 
+	 * This example updates the password that is used to *locally* authenticate
+	 * the role:
+	 * 
+	 *   $ curl -X PUT -iH "Accept: application/json;v=1" -H "Content-Type: application/json" -d \
+	 *   '{"username":"bozoc","fullName":"Bozo the clown","loginRole":true,\
+	 *   "unencodedPassword":"iambozo2","emailAddress":"dumbo@circus.net","timeZoneId":"UTC"}' \
+	 *   http://localhost:8080/rest/roles/f9a94054-c62b-464c-874c-a61d18530c87
 	 */
 	@Path("/{id}")
 	@PUT
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
+	/*
+	 * The authenticated user must have the authority "USE_RESTAPI" and either:
+	 * 
+	 *   1. Have the authority "MANAGE_ROLES", or
+	 *   
+	 *   2. Have a value of Role.roleId equal to the value of roleId for the
+	 *      Role to be updated, i.e., the user is updating his/her own Role.
+	 */
+	@PreAuthorize("hasAuthority('" + Authority.AUTHORITY_NAME_USE_RESTAPI + "') and "
+			+ "(hasAuthority('" + Authority.AUTHORITY_NAME_MANAGE_ROLES + "')"
+	//      + " or #id == principal.roleId")
+	//		+ " or @dos.role(#id).getRoleId() == principal.roleId")
+			+ " or @dos.ownsRole(#id, principal.roleId))")
 	public Response updateById(
 			RoleResource roleResource,
 			@PathParam("id") final UUID id,
 			@HeaderParam("Accept") final String acceptHeader,
+			@Context SecurityContext securityContext, // javax.ws.rs.core.SecurityContext
 			@Context final UriInfo uriInfo) {
 		RestApiVersion apiVersion = RestUtils.extractAPIVersion(acceptHeader, RestApiVersion.v1);
+
+		logger.debug("securityContext = {}", securityContext);
+		if (securityContext != null) {
+			logger.debug("securityContext.getUserPrincipal() = {}", securityContext.getUserPrincipal());
+			if (securityContext.getUserPrincipal() != null) {
+				Principal principal = securityContext.getUserPrincipal();
+				logger.debug("securityContext.getUserPrincipal().getName() = {}", principal.getName());
+				logger.debug("principal.getClass() = {}", principal.getClass());
+				if (principal instanceof UsernamePasswordAuthenticationToken) {
+					UsernamePasswordAuthenticationToken upat = (UsernamePasswordAuthenticationToken) principal;
+					Object o = upat.getPrincipal();
+					logger.debug("o.getClass() = {}", o.getClass());
+					if (o instanceof ReportServerUser) {
+						ReportServerUser reportServerUser = (ReportServerUser) o;
+						logger.debug("reportServerUser.getRoleId() = {}", reportServerUser.getRoleId());
+						/*
+						 * Only the built-in QFREE_ADMIN_ROLE user, which
+						 * currently has the username "qfree-reportserver-admin"
+						 * can edit the Role entity for this user. No other 
+						 * user, regardless of which authorities have been 
+						 * granted to it, can do this.
+						 */
+						if (id.equals(Role.QFREE_ADMIN_ROLE_ID)
+								&& !reportServerUser.getRoleId().equals(Role.QFREE_ADMIN_ROLE_ID)) {
+							throw new RestApiException(RestError.FORBIDDEN_ROLE_AUTHORITY_VIOLATION_UPDATE_ROLE);
+						}
+					}
+				}
+			}
+		}
 
 		/*
 		 * Retrieve Role entity to be updated.
@@ -311,6 +424,46 @@ public class RoleController extends AbstractBaseController {
 		 */
 		roleResource.setRoleId(role.getRoleId());
 		roleResource.setCreatedOn(role.getCreatedOn());
+		/*
+		 * Treat attributes of roleResource that are effectively required,
+		 * meaning that the corresponding fields of Role cannot be null. These 
+		 * attributes can be omitted in the PUT data, but in that case they are 
+		 * then set here to the CURRENT values from the role entity. 
+		 */
+		if (roleResource.getUsername() == null) {
+			roleResource.setUsername(role.getUsername());
+		}
+		if (roleResource.isLoginRole() == null) {
+			roleResource.setLoginRole(role.isLoginRole());
+		}
+		if (roleResource.getActive() == null) {
+			roleResource.setActive(role.getActive());
+		}
+		if (roleResource.getEnabled() == null) {
+			roleResource.setEnabled(role.getEnabled());
+		}
+		/*
+		 * If no value for "unencodedPassword" is specified in roleResource, we
+		 * take this to mean that the current value for "encodedPassword" for
+		 * corresponding Role should be kept (not cleared). There is no way for
+		 * the caller of this endpoint to set "unencodedPassword" for 
+		 * roleResource to the current value of the password because this is 
+		 * unknown (it is not persisted and it cannot be recovered from its
+		 * hashed value, "encodedPassword").
+		 */
+		if (roleResource.getUnencodedPassword() == null || roleResource.getUnencodedPassword().isEmpty()) {
+			roleResource.setEncodedPassword(role.getEncodedPassword());
+		} else {
+			/*
+			 * For this case, the encoded password for the role will be set in
+			 * call to the "saveExistingFromResource" service method below.
+			 * Nevertheless, to avoid an unlikely security breach, we clear out
+			 * the encode password value here in case the caller is trying to 
+			 * set it directly.
+			 */
+			roleResource.setEncodedPassword(null);
+		}
+
 		/*
 		 * Save updated entity.
 		 */
@@ -335,6 +488,9 @@ public class RoleController extends AbstractBaseController {
 	@GET
 	@Transactional
 	@Produces(MediaType.APPLICATION_JSON)
+	@PreAuthorize("hasAuthority('" + Authority.AUTHORITY_NAME_USE_RESTAPI + "')"
+			+ " and hasAuthority('" + Authority.AUTHORITY_NAME_MANAGE_ROLES + "')"
+			+ " and hasAuthority('" + Authority.AUTHORITY_NAME_MANAGE_JOBS + "')")
 	public JobCollectionResource getJobsByRoleId(
 			@PathParam("id") final UUID id,
 			@HeaderParam("Accept") final String acceptHeader,
@@ -375,6 +531,9 @@ public class RoleController extends AbstractBaseController {
 	@GET
 	@Transactional
 	@Produces(MediaType.APPLICATION_JSON)
+	@PreAuthorize("hasAuthority('" + Authority.AUTHORITY_NAME_USE_RESTAPI + "')"
+			+ " and hasAuthority('" + Authority.AUTHORITY_NAME_MANAGE_ROLES + "')"
+			+ " and hasAuthority('" + Authority.AUTHORITY_NAME_MANAGE_SUBSCRIPTIONS + "')")
 	public SubscriptionCollectionResource getSubscriptionsByRoleId(
 			@PathParam("id") final UUID id,
 			@HeaderParam("Accept") final String acceptHeader,
@@ -394,4 +553,42 @@ public class RoleController extends AbstractBaseController {
 		return new SubscriptionCollectionResource(role, uriInfo, queryParams, apiVersion);
 	}
 
+	/*
+	 * Return the Authority entities associated with a single Role that is 
+	 * specified by its id. This endpoint can be tested with:
+	 * 
+	 *   $ mvn clean spring-boot:run
+	 *   $ curl -X GET -iH "Accept: application/json;v=1" \
+	 *   http://localhost:8080/rest/roles/46e477dc-085f-4714-a24f-742428579fcc/authorities?expand=authorities
+	 * 
+	 * @Transactional is used to avoid org.hibernate.LazyInitializationException
+	 * being thrown.
+	 */
+	@Path("/{id}" + ResourcePath.AUTHORITIES_PATH)
+	@GET
+	@Transactional
+	@Produces(MediaType.APPLICATION_JSON)
+	@PreAuthorize("hasAuthority('" + Authority.AUTHORITY_NAME_USE_RESTAPI + "')"
+			+ " and hasAuthority('" + Authority.AUTHORITY_NAME_MANAGE_ROLES + "')"
+			+ " and hasAuthority('" + Authority.AUTHORITY_NAME_MANAGE_AUTHORITIES + "')")
+	public AuthorityCollectionResource getAuthoritiesByRoleId(
+			@PathParam("id") final UUID id,
+			@HeaderParam("Accept") final String acceptHeader,
+			@QueryParam(ResourcePath.EXPAND_QP_NAME) final List<String> expand,
+			//@QueryParam(ResourcePath.SHOWALL_QP_NAME) final List<String> showAll,
+			//@QueryParam(ResourcePath.PAGE_OFFSET_QP_NAME) final List<String> pageOffset,
+			//@QueryParam(ResourcePath.PAGE_LIMIT_QP_NAME) final List<String> pageLimit,
+			@Context final UriInfo uriInfo) {
+		Map<String, List<String>> queryParams = new HashMap<>();
+		queryParams.put(ResourcePath.EXPAND_QP_KEY, expand);
+		//queryParams.put(ResourcePath.SHOWALL_QP_KEY, showAll);
+		//RestUtils.checkPaginationQueryParams(pageOffset, pageLimit, queryParams);
+		RestApiVersion apiVersion = RestUtils.extractAPIVersion(acceptHeader, RestApiVersion.v1);
+
+		Role role = roleRepository.findOne(id);
+		RestUtils.ifNullThen404(role, Role.class, "roleId", id.toString());
+		boolean includeInheritedAuthorities = true;
+		return new AuthorityCollectionResource(role, includeInheritedAuthorities,
+				authorityService, uriInfo, queryParams, apiVersion);
+	}
 }

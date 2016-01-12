@@ -4,6 +4,8 @@ import java.util.UUID;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import com.qfree.obo.report.domain.Report;
+import com.qfree.obo.report.domain.Role;
 import com.qfree.obo.report.domain.RoleReport;
 
 /**
@@ -15,5 +17,25 @@ import com.qfree.obo.report.domain.RoleReport;
  * @author Jeffrey Zelt
  */
 public interface RoleReportRepository extends JpaRepository<RoleReport, UUID> {
+
+	/**
+	 * Returns {@link RoleReport} entity given a {@link Role} and a
+	 * {@link Report}.
+	 * 
+	 * @param role
+	 * @param report
+	 * @return
+	 */
+	RoleReport findByRoleAndReport(Role role, Report report);
+
+	/**
+	 * Same functionality as {@link #findByRoleAndReport(Role, Report)}, but
+	 * takes {@link UUID}s as arguments instead of entities.
+	 * 
+	 * @param roleId
+	 * @param reportId
+	 * @return
+	 */
+	RoleReport findByRoleRoleIdAndReportReportId(UUID roleId, UUID reportId);
 	  
 }

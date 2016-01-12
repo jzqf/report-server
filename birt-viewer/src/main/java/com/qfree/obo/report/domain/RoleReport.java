@@ -47,7 +47,7 @@ public class RoleReport implements Serializable {
 	@GenericGenerator(name = "uuid2", strategy = "uuid2")
 	@Column(name = "role_report_id", unique = true, nullable = false,
 			columnDefinition = "uuid DEFAULT uuid_generate_v4()")
-	private UUID roleRoleId;
+	private UUID roleReportId;
 
 	@ManyToOne
 	/*
@@ -93,8 +93,8 @@ public class RoleReport implements Serializable {
 		this.createdOn = (createdOn != null) ? createdOn : DateUtils.nowUtc();
 	}
 
-	public UUID getRoleRoleId() {
-		return this.roleRoleId;
+	public UUID getRoleReportId() {
+		return this.roleReportId;
 	}
 
 	public Date getCreatedOn() {
@@ -120,12 +120,15 @@ public class RoleReport implements Serializable {
 	@Override
 	public String toString() {
 		StringBuilder builder = new StringBuilder();
-		builder.append("RoleReport [role=");
+		builder.append("RoleReport [roleReportId=");
+		builder.append(roleReportId);
+		builder.append(", role=");
 		builder.append(role);
 		builder.append(", report=");
 		builder.append(report);
+		builder.append(", createdOn=");
+		builder.append(createdOn);
 		builder.append("]");
 		return builder.toString();
 	}
-
 }

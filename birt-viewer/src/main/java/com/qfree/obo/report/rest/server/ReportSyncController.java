@@ -18,10 +18,12 @@ import javax.ws.rs.core.UriInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.qfree.obo.report.db.ReportRepository;
+import com.qfree.obo.report.domain.Authority;
 import com.qfree.obo.report.dto.ReportSyncResource;
 import com.qfree.obo.report.dto.ResourcePath;
 import com.qfree.obo.report.service.ReportSyncService;
@@ -52,13 +54,15 @@ public class ReportSyncController extends AbstractBaseController {
 	 * This endpoint can be tested with:
 	 * 
 	 *   $ mvn clean spring-boot:run
-	 *   $ curl -i -H "Accept: text/plain;v=1" -X GET http://localhost:8080/rest/reportSyncs/availablePermits
+	 *   $ curl -X GET -iH "Accept: text/plain;v=1" http://localhost:8080/rest/reportSyncs/availablePermits
 	 * 
 	 */
 	@Path("/availablePermits")
 	@GET
 	@Produces(MediaType.TEXT_PLAIN)
-	public int getList(
+	@PreAuthorize("hasAuthority('" + Authority.AUTHORITY_NAME_USE_RESTAPI + "') and "
+			+ "hasAuthority('" + Authority.AUTHORITY_NAME_MANAGE_FILESYNCING + "')")
+	public int getAvailablePermits(
 			@HeaderParam("Accept") final String acceptHeader,
 			@QueryParam(ResourcePath.EXPAND_QP_NAME) final List<String> expand,
 			@QueryParam(ResourcePath.SHOWALL_QP_NAME) final List<String> showAll,
@@ -84,6 +88,8 @@ public class ReportSyncController extends AbstractBaseController {
 	@POST
 	//@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
+	@PreAuthorize("hasAuthority('" + Authority.AUTHORITY_NAME_USE_RESTAPI + "') and "
+			+ "hasAuthority('" + Authority.AUTHORITY_NAME_MANAGE_FILESYNCING + "')")
 	public ReportSyncResource syncReportsWithFileSystem(
 			@HeaderParam("Accept") final String acceptHeader,
 			@QueryParam(ResourcePath.EXPAND_QP_NAME) final List<String> expand,

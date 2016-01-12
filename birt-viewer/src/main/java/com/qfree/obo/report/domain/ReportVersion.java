@@ -44,7 +44,9 @@ import com.qfree.obo.report.util.DateUtils;
 				@UniqueConstraint(columnNames = { "report_id", "version_code" },
 						name = "uc_reportversion_report_versioncode"),
 				@UniqueConstraint(columnNames = { "report_id", "version_name" },
-						name = "uc_reportversion_report_versionname") })
+						name = "uc_reportversion_report_versionname"),
+				@UniqueConstraint(columnNames = { "file_name" },
+						name = "uc_reportversion_filename") })
 @TypeDef(name = "uuid-custom", defaultForType = UUID.class, typeClass = UuidCustomType.class)
 public class ReportVersion implements Serializable {
 
