@@ -303,7 +303,7 @@ if [ -d "$SQL_INIT_DIR" ]; then
 		# user "postgres" must have the permissions to change to the directory  
 		# where "init_db.sql" is stored; otherwise, this command will fail with
 		# some sort of "Permission denied" error message.
-		PGPASSWORD="$USER_PASSWORD" psql -f "$SQL_INIT_DIR/init_db.sql" -h $DBSERVER -p $DBPORT -d $DBNAME -U $DBUSER >> "$LOGFILE" 2>&1
+		PGPASSWORD="$USER_PASSWORD" psql -f "$SQL_INIT_DIR/init_db.sql" -v ON_ERROR_STOP=1 -h $DBSERVER -p $DBPORT -d $DBNAME -U $DBUSER >> "$LOGFILE" 2>&1
 		if [ $? -eq 0 ]; then
 			log_info "Successfully initialized database"
 		else

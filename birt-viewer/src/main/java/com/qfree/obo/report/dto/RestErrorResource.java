@@ -11,14 +11,6 @@ import javax.xml.bind.annotation.XmlTransient;
 @XmlAccessorType(XmlAccessType.FIELD) // so we can annotate fields with @XmlTransient
 public class RestErrorResource {
 
-	//	private static final String STATUS_PROP_NAME = "status";
-	//	private static final String CODE_PROP_NAME = "code";
-	//	private static final String MESSAGE_PROP_NAME = "message";
-	//	private static final String DEVELOPER_MESSAGE_PROP_NAME = "developerMessage";
-	//	private static final String MORE_INFO_PROP_NAME = "moreInfo";
-	//
-	//	private static final String DEFAULT_MORE_INFO_URL = "mailto:support@stormpath.com";
-
 	public enum RestError {
 
 		// 1xx Informational:
