@@ -138,7 +138,12 @@ public class JobResource extends AbstractBaseResource {
 			this.reportVersionResource = new ReportVersionResource(job.getReportVersion(),
 					uriInfo, newQueryParams, apiVersion);
 
-			this.roleResource = new RoleResource(job.getRole(),
+			/*
+			 * We do not have access to an AuthorityService bean here, so we
+			 * just pass null here. As a result, the RoleResource will not
+			 * have an "authorities" attribute.
+			 */
+			this.roleResource = new RoleResource(job.getRole(), null,
 					uriInfo, newQueryParams, apiVersion);
 
 			this.documentFormatResource = new DocumentFormatResource(job.getDocumentFormat(),

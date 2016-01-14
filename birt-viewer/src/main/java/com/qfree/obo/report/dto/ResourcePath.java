@@ -2,6 +2,7 @@ package com.qfree.obo.report.dto;
 
 import java.util.List;
 
+import com.qfree.obo.report.domain.Authority;
 import com.qfree.obo.report.domain.Configuration;
 import com.qfree.obo.report.domain.DocumentFormat;
 import com.qfree.obo.report.domain.Job;
@@ -28,6 +29,11 @@ import com.qfree.obo.report.domain.SubscriptionParameterValue;
  */
 public enum ResourcePath {
 
+	AUTHORITIES(
+			ResourcePath.AUTHORITIES_PATH,
+			ResourcePath.AUTHORITY_EXPAND_PARAM,
+			ResourcePath.AUTHORITY_SHOWALL_PARAM,
+			Authority.class),
 	CONFIGURATIONS(
 			ResourcePath.CONFIGURATIONS_PATH,
 			ResourcePath.CONFIGURATION_EXPAND_PARAM,
@@ -130,6 +136,7 @@ public enum ResourcePath {
 	 * within the ResourcePath enum because that enum is not considered to be a 
 	 * constant expression.
 	 */
+	public static final String AUTHORITIES_PATH = ResourcePath.PATH_SEPARATOR + "authorities";
 	public static final String CONFIGURATIONS_PATH = ResourcePath.PATH_SEPARATOR + "configurations";
 	public static final String DOCUMENTFORMATS_PATH = ResourcePath.PATH_SEPARATOR + "documentFormats";
 	public static final String JOBPROCESSOR_PATH = ResourcePath.PATH_SEPARATOR + "jobProcessor";
@@ -164,6 +171,7 @@ public enum ResourcePath {
 	 * These are the values for each resource class that can be assigned to the
 	 * "expand" query parameter.
 	 */
+	public static final String AUTHORITY_EXPAND_PARAM = "authorities";
 	public static final String CONFIGURATION_EXPAND_PARAM = "configurations";
 	public static final String DOCUMENTFORMAT_EXPAND_PARAM = "documentFormats";
 	public static final String JOBPROCESSOR_EXPAND_PARAM = "jobProcessor";
@@ -199,6 +207,7 @@ public enum ResourcePath {
 	 * These are the values for each resource class that can be assigned to the
 	 * "showall" query parameter.
 	 */
+	public static final String AUTHORITY_SHOWALL_PARAM = AUTHORITY_EXPAND_PARAM;
 	public static final String CONFIGURATION_SHOWALL_PARAM = CONFIGURATION_EXPAND_PARAM;
 	public static final String DOCUMENTFORMAT_SHOWALL_PARAM = DOCUMENTFORMAT_EXPAND_PARAM;
 	public static final String JOBPROCESSOR_SHOWALL_PARAM = JOBPROCESSOR_EXPAND_PARAM;

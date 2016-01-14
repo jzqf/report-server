@@ -106,8 +106,7 @@ public class ReportResource extends AbstractBaseResource {
 			logger.debug("report = {}", report);
 			logger.debug("report.getReportVersions() = {}", report.getReportVersions());
 
-			this.reportVersions = new ReportVersionCollectionResource(report,
-					uriInfo, newQueryParams, apiVersion);
+			this.reportVersions = new ReportVersionCollectionResource(report, uriInfo, newQueryParams, apiVersion);
 
 			//		this.roleReports = report.getRoleReports();
 		}

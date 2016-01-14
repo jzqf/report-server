@@ -17,9 +17,11 @@ import javax.ws.rs.core.UriInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Component;
 
 import com.qfree.obo.report.db.JobParameterValueRepository;
+import com.qfree.obo.report.domain.Authority;
 import com.qfree.obo.report.domain.JobParameterValue;
 import com.qfree.obo.report.dto.JobParameterValueResource;
 import com.qfree.obo.report.dto.ResourcePath;
@@ -50,6 +52,8 @@ public class JobParameterValueController extends AbstractBaseController {
 	@Path("/{id}")
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
+	@PreAuthorize("hasAuthority('" + Authority.AUTHORITY_NAME_USE_RESTAPI + "')"
+			+ " and hasAuthority('" + Authority.AUTHORITY_NAME_MANAGE_JOBS + "')")
 	public JobParameterValueResource getById(
 			@PathParam("id") final Long id,
 			@HeaderParam("Accept") final String acceptHeader,

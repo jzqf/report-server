@@ -18,12 +18,24 @@ public class AbstractBaseController {
 	private static final Logger logger = LoggerFactory.getLogger(AbstractBaseController.class);
 
 	/**
+	 * Returns an HTTP 200 {@link Response}.
+	 * 
+	 * @param resource
+	 *            to return with the response.
+	 * @return HTTP 201 response
+	 */
+	protected Response ok(AbstractBaseResource resource) {
+		return Response.ok().entity(resource).build();
+	}
+
+	/**
 	 * Returns an HTTP 201 {@link Response} appropriate for after a new resource
 	 * has been successfully created (probably via an HTTP POST). This includes
 	 * setting the HTTP "Location" response header with the URI of the created
 	 * resource.
 	 * 
-	 * @param resource resource that was created
+	 * @param resource
+	 *            that was created
 	 * @return HTTP 201 response
 	 */
 	protected Response created(AbstractBaseResource resource) {

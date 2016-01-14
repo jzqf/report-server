@@ -9,10 +9,14 @@
 -- necessary to drop all tables before creating them again.
 
 CREATE SCHEMA IF NOT EXISTS reporting;
+--SET SCHEMA reporting; This did not solve the problem, so this line can be removed
 
 DROP TABLE IF EXISTS reporting.configuration CASCADE;
 DROP TABLE IF EXISTS reporting.role_report CASCADE;
 DROP TABLE IF EXISTS reporting.role_role CASCADE;
+DROP TABLE IF EXISTS reporting.role_authority CASCADE;
+--
+DROP TABLE IF EXISTS reporting.authority CASCADE;
 --
 DROP TABLE IF EXISTS reporting.role_parameter_value CASCADE;
 DROP TABLE IF EXISTS reporting.role_parameter CASCADE;
@@ -42,6 +46,20 @@ DROP TABLE IF EXISTS reporting.job_status CASCADE;
 --
 -- PostgreSQL database dump
 --
+
+--
+-- Name: authority; Type: TABLE; Schema: reporting; Owner: report_server_app; Tablespace: 
+--
+
+CREATE TABLE reporting.authority (
+    authority_id uuid NOT NULL,
+    active boolean NOT NULL,
+    created_on timestamp NOT NULL,
+    name character varying(50) NOT NULL
+);
+
+
+
 
 --
 -- Name: configuration; Type: TABLE; Schema: reporting; Owner: report_server_app; Tablespace: 
@@ -85,6 +103,8 @@ CREATE TABLE reporting.document_format (
 );
 
 
+
+
 --
 -- Name: job; Type: TABLE; Schema: reporting; Owner: report_server_app; Tablespace: 
 --
@@ -109,6 +129,9 @@ CREATE TABLE reporting.job (
 );
 
 
+
+
+
 --
 -- Name: job_parameter; Type: TABLE; Schema: reporting; Owner: report_server_app; Tablespace: 
 --
@@ -119,6 +142,9 @@ CREATE TABLE reporting.job_parameter (
     job_id bigint NOT NULL,
     report_parameter_id uuid NOT NULL
 );
+
+
+
 
 
 --
@@ -139,6 +165,9 @@ CREATE TABLE reporting.job_parameter_value (
 );
 
 
+
+
+
 --
 -- Name: job_status; Type: TABLE; Schema: reporting; Owner: report_server_app; Tablespace: 
 --
@@ -151,6 +180,9 @@ CREATE TABLE reporting.job_status (
     description character varying(32) NOT NULL
 );
 
+
+
+
 --
 -- Name: parameter_group; Type: TABLE; Schema: reporting; Owner: report_server_app; Tablespace: 
 --
@@ -162,6 +194,9 @@ CREATE TABLE reporting.parameter_group (
     name character varying(80) NOT NULL,
     prompt_text character varying(132) NOT NULL
 );
+
+
+
 
 --
 -- Name: report; Type: TABLE; Schema: reporting; Owner: report_server_app; Tablespace: 
@@ -253,13 +288,29 @@ CREATE TABLE reporting.report_version (
 
 CREATE TABLE reporting.role (
     role_id uuid NOT NULL,
+    active boolean NOT NULL,
     created_on timestamp NOT NULL,
     email_address character varying(160),
-    encoded_password character varying(32) NOT NULL,
+    enabled boolean NOT NULL,
+    encoded_password character varying(64),
     full_name character varying(32),
     login_role boolean NOT NULL,
     time_zone_id character varying(80),
     username character varying(32) NOT NULL
+);
+
+
+
+
+--
+-- Name: role_authority; Type: TABLE; Schema: reporting; Owner: report_server_app; Tablespace: 
+--
+
+CREATE TABLE reporting.role_authority (
+    role_authority_id uuid NOT NULL,
+    created_on timestamp NOT NULL,
+    authority_id uuid NOT NULL,
+    role_id uuid NOT NULL
 );
 
 
@@ -416,6 +467,16 @@ CREATE TABLE reporting.subscription_parameter_value (
 
 
 
+
+
+--
+-- Name: authority_pkey; Type: CONSTRAINT; Schema: reporting; Owner: report_server_app; Tablespace: 
+--
+
+ALTER TABLE reporting.authority
+    ADD CONSTRAINT authority_pkey PRIMARY KEY (authority_id);
+
+
 --
 -- Name: configuration_pkey; Type: CONSTRAINT; Schema: reporting; Owner: report_server_app; Tablespace: 
 --
@@ -430,7 +491,6 @@ ALTER TABLE reporting.configuration
 
 ALTER TABLE reporting.document_format
     ADD CONSTRAINT document_format_pkey PRIMARY KEY (document_format_id);
-
 
 
 --
@@ -479,6 +539,14 @@ ALTER TABLE reporting.report
 
 ALTER TABLE reporting.report_version
     ADD CONSTRAINT report_version_pkey PRIMARY KEY (report_version_id);
+
+
+--
+-- Name: role_authority_pkey; Type: CONSTRAINT; Schema: reporting; Owner: report_server_app; Tablespace: 
+--
+
+ALTER TABLE reporting.role_authority
+    ADD CONSTRAINT role_authority_pkey PRIMARY KEY (role_authority_id);
 
 
 --
@@ -554,6 +622,14 @@ ALTER TABLE reporting.subscription
 
 
 --
+-- Name: uc_authority_name; Type: CONSTRAINT; Schema: reporting; Owner: report_server_app; Tablespace: 
+--
+
+ALTER TABLE reporting.authority
+    ADD CONSTRAINT uc_authority_name UNIQUE (name);
+
+
+--
 -- Name: uc_configuration_paramname_role; Type: CONSTRAINT; Schema: reporting; Owner: report_server_app; Tablespace: 
 --
 
@@ -578,6 +654,14 @@ ALTER TABLE reporting.report_parameter
 
 
 --
+-- Name: uc_reportversion_filename; Type: CONSTRAINT; Schema: reporting; Owner: report_server_app; Tablespace: 
+--
+
+ALTER TABLE reporting.report_version
+    ADD CONSTRAINT uc_reportversion_filename UNIQUE (file_name);
+
+
+--
 -- Name: uc_reportversion_report_versioncode; Type: CONSTRAINT; Schema: reporting; Owner: report_server_app; Tablespace: 
 --
 
@@ -599,6 +683,14 @@ ALTER TABLE reporting.report_version
 
 ALTER TABLE reporting.role
     ADD CONSTRAINT uc_role_username UNIQUE (username);
+
+
+--
+-- Name: uc_roleauthority_role_authority; Type: CONSTRAINT; Schema: reporting; Owner: report_server_app; Tablespace: 
+--
+
+ALTER TABLE reporting.role_authority
+    ADD CONSTRAINT uc_roleauthority_role_authority UNIQUE (role_id, authority_id);
 
 
 --
@@ -735,6 +827,22 @@ ALTER TABLE reporting.report_parameter
 
 ALTER TABLE reporting.report_version
     ADD CONSTRAINT fk_reportversion_report FOREIGN KEY (report_id) REFERENCES report(report_id);
+
+
+--
+-- Name: fk_roleauthority_authority; Type: FK CONSTRAINT; Schema: reporting; Owner: report_server_app
+--
+
+ALTER TABLE reporting.role_authority
+    ADD CONSTRAINT fk_roleauthority_authority FOREIGN KEY (authority_id) REFERENCES authority(authority_id);
+
+
+--
+-- Name: fk_roleauthority_role; Type: FK CONSTRAINT; Schema: reporting; Owner: report_server_app
+--
+
+ALTER TABLE reporting.role_authority
+    ADD CONSTRAINT fk_roleauthority_role FOREIGN KEY (role_id) REFERENCES role(role_id);
 
 
 --

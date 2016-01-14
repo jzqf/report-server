@@ -8,8 +8,6 @@ import java.util.Map;
 import java.util.UUID;
 
 import javax.ws.rs.core.UriInfo;
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
@@ -22,7 +20,7 @@ import com.qfree.obo.report.util.RestUtils;
 import com.qfree.obo.report.util.RestUtils.RestApiVersion;
 
 @XmlRootElement
-@XmlAccessorType(XmlAccessType.FIELD)
+//@XmlAccessorType(XmlAccessType.FIELD)
 public class SelectionListValueResource extends AbstractBaseResource {
 
 	private static final Logger logger = LoggerFactory.getLogger(SelectionListValueResource.class);

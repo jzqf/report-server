@@ -24,7 +24,10 @@ import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;
 import org.hibernate.validator.constraints.NotBlank;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
+import com.qfree.obo.report.SecurityConfig;
 import com.qfree.obo.report.dto.RoleResource;
 import com.qfree.obo.report.exceptions.ResourceFilterExecutionException;
 import com.qfree.obo.report.util.DateUtils;
@@ -42,6 +45,34 @@ import com.qfree.obo.report.util.DateUtils;
 public class Role implements Serializable {
 
 	private static final long serialVersionUID = 1L;
+
+	/**
+	 * Primary key of the built-in "reportadmin" Role.
+	 * 
+	 * This Role should never be deleted, but if it does, it should be recreated
+	 * with this id. This role should probably not be made inactive or disabled,
+	 * either, but there might arise special conditions that will perhaps make
+	 * this desirable.
+	 */
+	public static final UUID ADMIN_ROLE_ID = UUID.fromString("54aa1d35-f67d-47e6-8bea-cadd6085796e");
+
+	/**
+	 * Primary key of the built-in "qfree-reportserver-admin" Role.
+	 * 
+	 * This Role should never be deleted, but if it does, it should be recreated
+	 * with this id.
+	 */
+	public static final UUID QFREE_ADMIN_ROLE_ID = UUID.fromString("10ab3537-0b12-44fa-a27b-6cf1aac14282");
+	public static final String QFREE_ADMIN_ROLE_NAME = "qfree-reportserver-admin";
+
+	/**
+	 * Primary key of the built-in "reportserver-restadmin" Role.
+	 * 
+	 * This Role should never be deleted, but if it does, it should be recreated
+	 * with this id.
+	 */
+	public static final UUID QFREE_REST_ADMIN_ROLE_ID = UUID.fromString("689833f9-e55c-4eaf-aba6-79f8b1d1a058");
+	public static final String QFREE_REST_ADMIN_ROLE_NAME = "reportserver-restadmin";
 
 	@Id
 	@NotNull
@@ -65,10 +96,13 @@ public class Role implements Serializable {
 	private String fullName;
 
 	/**
-	 * Base64 encoding of SHA-1 digest of salted password.
+	 * A hashed version of the Role's password. The encoding algorithm is set by
+	 * the {@link PasswordEncoder} bean that can be obtained by Spring
+	 * {@literal @}{@link Autowired} DI. This {@link PasswordEncoder} bean is
+	 * configured in {@link SecurityConfig}.
 	 */
-	@NotBlank
-	@Column(name = "encoded_password", nullable = false, length = 32)
+	//@NotBlank
+	@Column(name = "encoded_password", nullable = true, length = 64)
 	private String encodedPassword;
 
 	/**
@@ -105,6 +139,13 @@ public class Role implements Serializable {
 
 	/*
 	 * cascade = CascadeType.ALL:
+	 *     Deleting a Role will delete all of its RoleAuthority's.
+	 */
+	@OneToMany(mappedBy = "role", cascade = CascadeType.ALL)
+	private List<RoleAuthority> roleAuthorities;
+
+	/*
+	 * cascade = CascadeType.ALL:
 	 *     Deleting a Role will delete all of its Subscription's.
 	 */
 	@OrderBy("createdOn ASC")
@@ -134,43 +175,20 @@ public class Role implements Serializable {
 	private List<Configuration> configurations;
 
 	@NotNull
+	@Column(name = "enabled", nullable = false)
+	private Boolean enabled;
+
+	@NotNull
+	@Column(name = "active", nullable = false)
+	private Boolean active;
+
+	@NotNull
 	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name = "created_on", nullable = false)
 	private Date createdOn;
 
 	private Role() {
 	}
-
-	//	public Role(String encodedPassword, String username, String fullName, Boolean loginRole) {
-	//		this(
-	//				null,
-	//				encodedPassword,
-	//				username,
-	//				fullName,
-	//				loginRole,
-	//				null,
-	//				null,
-	//				DateUtils.nowUtc());
-	//	}
-
-	//	public Role(
-	//			String encodedPassword,
-	//			String username,
-	//			String fullName,
-	//			Boolean loginRole,
-	//			String emailAddress,
-	//			String timeZoneId,
-	//			Date createdOn) {
-	//		this(
-	//				null,
-	//				encodedPassword,
-	//				username,
-	//				fullName,
-	//				loginRole,
-	//				emailAddress,
-	//				timeZoneId,
-	//				createdOn);
-	//	}
 
 	public Role(RoleResource roleResource) {
 		this(
@@ -181,7 +199,23 @@ public class Role implements Serializable {
 				roleResource.isLoginRole(),
 				roleResource.getEmailAddress(),
 				roleResource.getTimeZoneId(),
+				roleResource.getEnabled(),
+				roleResource.getActive(),
 				roleResource.getCreatedOn());
+	}
+
+	public Role(String username) {
+		this(
+				null,
+				null,
+				username,
+				null,
+				true,
+				null,
+				null,
+				true,
+				true,
+				null);
 	}
 
 	public Role(
@@ -192,6 +226,8 @@ public class Role implements Serializable {
 			Boolean loginRole,
 			String emailAddress,
 			String timeZoneId,
+			Boolean enabled,
+			Boolean active,
 			Date createdOn) {
 		this.roleId = roleId;
 		this.loginRole = loginRole;
@@ -200,6 +236,8 @@ public class Role implements Serializable {
 		this.encodedPassword = encodedPassword;
 		this.emailAddress = emailAddress;
 		this.timeZoneId = timeZoneId;
+		this.enabled = (enabled != null) ? enabled : true;
+		this.active = (active != null) ? active : true;
 		this.createdOn = (createdOn != null) ? createdOn : DateUtils.nowUtc();
 	}
 
@@ -255,6 +293,22 @@ public class Role implements Serializable {
 		this.timeZoneId = timeZoneId;
 	}
 
+	public Boolean getEnabled() {
+		return enabled;
+	}
+
+	public void setEnabled(Boolean enabled) {
+		this.enabled = enabled;
+	}
+
+	public Boolean getActive() {
+		return active;
+	}
+
+	public void setActive(Boolean active) {
+		this.active = active;
+	}
+
 	public Date getCreatedOn() {
 		return createdOn;
 	}
@@ -281,6 +335,14 @@ public class Role implements Serializable {
 
 	public void setRoleReports(List<RoleReport> roleReports) {
 		this.roleReports = roleReports;
+	}
+
+	public List<RoleAuthority> getRoleAuthorities() {
+		return roleAuthorities;
+	}
+
+	public void setRoleAuthorities(List<RoleAuthority> roleAuthorities) {
+		this.roleAuthorities = roleAuthorities;
 	}
 
 	/**
@@ -372,10 +434,13 @@ public class Role implements Serializable {
 		builder.append(emailAddress);
 		builder.append(", timeZoneId=");
 		builder.append(timeZoneId);
+		builder.append(", enabled=");
+		builder.append(enabled);
+		builder.append(", active=");
+		builder.append(active);
 		builder.append(", createdOn=");
 		builder.append(createdOn);
 		builder.append("]");
 		return builder.toString();
 	}
-
 }

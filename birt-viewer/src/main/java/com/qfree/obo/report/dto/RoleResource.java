@@ -16,6 +16,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.qfree.obo.report.domain.Role;
+import com.qfree.obo.report.service.AuthorityService;
 import com.qfree.obo.report.util.RestUtils;
 import com.qfree.obo.report.util.RestUtils.RestApiVersion;
 
@@ -37,6 +38,13 @@ public class RoleResource extends AbstractBaseResource {
 	@XmlElement
 	private String encodedPassword;
 
+	/**
+	 * This unencoded password is not persisted. It is used, instead, only to
+	 * set or update {@link Role#encodedPassword}.
+	 */
+	@XmlElement
+	private String unencodedPassword;
+
 	@XmlElement
 	private Boolean loginRole;
 
@@ -45,6 +53,36 @@ public class RoleResource extends AbstractBaseResource {
 
 	@XmlElement
 	private String timeZoneId;
+
+	/**
+	 * If false, the user will not be able to log in with this role, even if
+	 * loginRole=true.
+	 */
+	@XmlElement
+	private Boolean enabled;
+
+	/**
+	 * {@link List}&lt;{@link AuthorityResource}&gt; contains all granted
+	 * directAuthorities <b>directly<b> linked to a {@link Role}. Role
+	 * inheritance is not taken into account.
+	 */
+	@XmlElement
+	private AuthorityCollectionResource directAuthorities;
+
+	/**
+	 * {@link List}&lt;{@link AuthorityResource}&gt; contains all granted
+	 * directAuthorities linked to a {@link Role} either directly or via Role
+	 * inheritance.
+	 */
+	@XmlElement
+	private AuthorityCollectionResource allAuthorities;
+
+	/**
+	 * If false, this role should be hidden from all lists of roles, as if it
+	 * were deleted.
+	 */
+	@XmlElement
+	private Boolean active;
 
 	@XmlElement
 	@XmlJavaTypeAdapter(DatetimeAdapter.class)
@@ -63,6 +101,7 @@ public class RoleResource extends AbstractBaseResource {
 	 */
 	public RoleResource(
 			Role role,
+			AuthorityService authorityService,
 			UriInfo uriInfo,
 			Map<String, List<String>> queryParams,
 			RestApiVersion apiVersion) {
@@ -100,16 +139,40 @@ public class RoleResource extends AbstractBaseResource {
 			this.username = role.getUsername();
 			this.fullName = role.getFullName();
 			this.encodedPassword = role.getEncodedPassword();
+			this.unencodedPassword = "[PROTECTED]";
 			this.loginRole = role.isLoginRole();
 			this.emailAddress = role.getEmailAddress();
 			this.timeZoneId = role.getTimeZoneId();
+			this.enabled = role.getEnabled();
+			this.active = role.getActive();
 			this.createdOn = role.getCreatedOn();
+
+			if (authorityService != null) {
+				boolean includeInheritedAuthorities;
+				/*
+				 * "authorityService" is passed as an argument to the
+				 * AuthorityCollectionResource constructor because we cannot use
+				 * Spring DI with this resource class (it is not a 
+				 * Spring-managed class).
+				 */
+				includeInheritedAuthorities = false;
+				this.directAuthorities = new AuthorityCollectionResource(role, includeInheritedAuthorities,
+						authorityService, uriInfo, newQueryParams, apiVersion);
+				includeInheritedAuthorities = true;
+				this.allAuthorities = new AuthorityCollectionResource(role, includeInheritedAuthorities,
+						authorityService, uriInfo, newQueryParams, apiVersion);
+			} else {
+				this.directAuthorities = null;
+				this.allAuthorities = null;
+			}
+
 		}
 		logger.debug("this = {}", this);
 	}
 
 	public static List<RoleResource> roleResourceListPageFromRoles(
 			List<Role> roles,
+			AuthorityService authorityService,
 			UriInfo uriInfo,
 			Map<String, List<String>> queryParams,
 			RestApiVersion apiVersion) {
@@ -155,7 +218,8 @@ public class RoleResource extends AbstractBaseResource {
 				 * will be variable. Instead, it is necessary to filter out
 				 * entities *before* the page of entities is created above.
 				 */
-				roleResources.add(new RoleResource(role, uriInfo, queryParamsWOPagination, apiVersion));
+				roleResources.add(new RoleResource(role, authorityService,
+						uriInfo, queryParamsWOPagination, apiVersion));
 			}
 			return roleResources;
 		} else {
@@ -195,6 +259,14 @@ public class RoleResource extends AbstractBaseResource {
 		this.encodedPassword = encodedPassword;
 	}
 
+	public String getUnencodedPassword() {
+		return unencodedPassword;
+	}
+
+	public void setUnencodedPassword(String unencodedPassword) {
+		this.unencodedPassword = unencodedPassword;
+	}
+
 	public Boolean isLoginRole() {
 		return loginRole;
 	}
@@ -219,6 +291,22 @@ public class RoleResource extends AbstractBaseResource {
 		this.timeZoneId = timeZoneId;
 	}
 
+	public Boolean getEnabled() {
+		return enabled;
+	}
+
+	public void setEnabled(Boolean enabled) {
+		this.enabled = enabled;
+	}
+
+	public Boolean getActive() {
+		return active;
+	}
+
+	public void setActive(Boolean active) {
+		this.active = active;
+	}
+
 	public Date getCreatedOn() {
 		return createdOn;
 	}
@@ -238,12 +326,18 @@ public class RoleResource extends AbstractBaseResource {
 		builder.append(fullName);
 		builder.append(", encodedPassword=");
 		builder.append(encodedPassword);
+		builder.append(", unencodedPassword=");
+		builder.append(unencodedPassword);
 		builder.append(", loginRole=");
 		builder.append(loginRole);
 		builder.append(", emailAddress=");
 		builder.append(emailAddress);
 		builder.append(", timeZoneId=");
 		builder.append(timeZoneId);
+		builder.append(", enabled=");
+		builder.append(enabled);
+		builder.append(", active=");
+		builder.append(active);
 		builder.append(", createdOn=");
 		builder.append(createdOn);
 		builder.append("]");

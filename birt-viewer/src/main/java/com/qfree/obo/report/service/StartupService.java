@@ -34,7 +34,7 @@ public class StartupService {
 	/*
 	 * The injected "env" object here will contain key/value pairs for each 
 	 * property in the properties files specified above in the @PropertySource
-	 * annotation above.
+	 * annotation.
 	 */
 	@Autowired
 	private Environment env;

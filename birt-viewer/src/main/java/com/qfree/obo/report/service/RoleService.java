@@ -3,6 +3,7 @@ package com.qfree.obo.report.service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,16 +19,28 @@ public class RoleService {
 	private static final Logger logger = LoggerFactory.getLogger(RoleService.class);
 
 	private final RoleRepository roleRepository;
+	private final PasswordEncoder passwordEncoder;
 
 	@Autowired
-	public RoleService(RoleRepository roleRepository) {
+	public RoleService(
+			RoleRepository roleRepository,
+			PasswordEncoder passwordEncoder) {
 		this.roleRepository = roleRepository;
+		this.passwordEncoder = passwordEncoder;
 	}
 
 	@Transactional
 	public Role saveNewFromResource(RoleResource roleResource) {
 		RestUtils.ifNewResourceIdNotNullThen403(roleResource.getRoleId(), Role.class,
 				"roleId", roleResource.getRoleId());
+		/*
+		 * We do not support setting "encodedPassword" directly because we
+		 * need to ensure that the hashing algorithm used by the configured
+		 * "passwordEncoder" bean is used. In order to set "encodedPassword",
+		 * a value must be supplied for "unencodedPassword" and then 
+		 *  "encodedPassword" will be computed from it.
+		 */
+		roleResource.setEncodedPassword(null);
 		return saveOrUpdateFromResource(roleResource);
 	}
 
@@ -41,6 +54,17 @@ public class RoleService {
 		logger.debug("roleResource = {}", roleResource);
 
 		Role role = new Role(roleResource);
+		
+		if (roleResource.getUnencodedPassword() != null && !roleResource.getUnencodedPassword().isEmpty()) {
+			/*
+			 * Either a password as been specified for a new Role being created
+			 * or a new password has been specified to update an existing Role.
+			 * Both cases are treated the same: Create a hash of the raw
+			 * (unencoded) password and store it in "encodedPassword".
+			 */
+			role.setEncodedPassword(passwordEncoder.encode(roleResource.getUnencodedPassword()));
+		}
+		
 		logger.debug("role = {}", role);
 		/*
 		 * This "save" method will persist or merge the given entity using the

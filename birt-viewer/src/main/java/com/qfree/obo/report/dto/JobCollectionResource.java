@@ -31,6 +31,23 @@ public class JobCollectionResource extends AbstractCollectionResource<JobResourc
 	}
 
 	public JobCollectionResource(
+			List<Job> jobs,
+			Class<Job> entityClass,
+			UriInfo uriInfo,
+			Map<String, List<String>> queryParams,
+			RestApiVersion apiVersion) throws ResourceFilterExecutionException, ResourceFilterParseException {
+		this(
+				//jobs,
+				Job.getFilteredJobs(jobs, RestUtils.parseFilterQueryParams(queryParams)),
+				entityClass,
+				null,
+				null,
+				uriInfo,
+				queryParams,
+				apiVersion);
+	}
+
+	public JobCollectionResource(
 			DocumentFormat documentFormat,
 			UriInfo uriInfo,
 			Map<String, List<String>> queryParams,
