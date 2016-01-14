@@ -224,8 +224,25 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
 					/*
 					 * Report server ReST API:
+					 * 
+					 * Granted authorities that are specified here, e.g., 
+					 * "USE_RESTAPI"are checked for FIRST by Spring Security, 
+					 * and then only if that check *succeeds* are any 
+					 * authorities that are specified via a @PreAuthorize
+					 * annotation on the controller method checked for. 
+					 * 
+					 * This ordering influences the type of error message 
+					 * returned for a failed authorization. If a failure occurs
+					 * because the authenticated role does not have the 
+					 * authority(ies) specified here by ".access(...)", then an
+					 * HTML error page is returned. However, if this check 
+					 * succeeds, but the condition specified by the 
+					 * @PreAuthorize annotation on the controller methid fails,
+					 * then a JSON object is returned that describes the 
+					 * authorization failure.
 					 */
-					.antMatchers("/rest/**").authenticated()
+					//.antMatchers("/rest/**").authenticated()
+					.antMatchers("/rest/**").access("hasAuthority('" + Authority.AUTHORITY_NAME_USE_RESTAPI + "')")
 
 					/*
 					 * This pattern matches the URLs used by Q-Free-authored

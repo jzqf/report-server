@@ -117,8 +117,7 @@ public class TestController extends AbstractBaseController {
 	@GET
 	@Path("/api_version")
 	@Produces(MediaType.TEXT_PLAIN)
-	@PreAuthorize("hasAuthority('" + Authority.AUTHORITY_NAME_USE_RESTAPI + "') and "
-			+ "hasAuthority('" + Authority.AUTHORITY_NAME_RUN_DIAGNOSTICS + "')")
+	@PreAuthorize("hasAuthority('" + Authority.AUTHORITY_NAME_RUN_DIAGNOSTICS + "')")
 	public String acceptHeaderApiVersionGet(@HeaderParam("Accept") String acceptHeader) {
 		//		logger.info("acceptHeader = {}", acceptHeader);
 		//		System.out.println("acceptHeaderApiVersionGet: acceptHeader = " + acceptHeader);
@@ -138,8 +137,7 @@ public class TestController extends AbstractBaseController {
 	@POST
 	@Path("/api_version")
 	@Produces(MediaType.TEXT_PLAIN)
-	@PreAuthorize("hasAuthority('" + Authority.AUTHORITY_NAME_USE_RESTAPI + "') and "
-			+ "hasAuthority('" + Authority.AUTHORITY_NAME_RUN_DIAGNOSTICS + "')")
+	@PreAuthorize("hasAuthority('" + Authority.AUTHORITY_NAME_RUN_DIAGNOSTICS + "')")
 	public String acceptHeaderApiVersionPost(@HeaderParam("Accept") String acceptHeader) {
 		//		logger.info("acceptHeader = {}", acceptHeader);
 		//		System.out.println("acceptHeaderApiVersionPost: acceptHeader = " + acceptHeader);
@@ -159,8 +157,7 @@ public class TestController extends AbstractBaseController {
 	@PUT
 	@Path("/api_version")
 	@Produces(MediaType.TEXT_PLAIN)
-	@PreAuthorize("hasAuthority('" + Authority.AUTHORITY_NAME_USE_RESTAPI + "') and "
-			+ "hasAuthority('" + Authority.AUTHORITY_NAME_RUN_DIAGNOSTICS + "')")
+	@PreAuthorize("hasAuthority('" + Authority.AUTHORITY_NAME_RUN_DIAGNOSTICS + "')")
 	public String acceptHeaderApiVersionPut(@HeaderParam("Accept") String acceptHeader) {
 		//		logger.info("acceptHeader = {}", acceptHeader);
 		//		System.out.println("acceptHeaderApiVersionPost: acceptHeader = " + acceptHeader);
