@@ -21,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.qfree.obo.report.ApplicationConfig;
 import com.qfree.obo.report.domain.Authority;
 import com.qfree.obo.report.domain.Role;
+import com.qfree.obo.report.domain.UuidCustomType;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = ApplicationConfig.class)
@@ -43,6 +44,15 @@ public class AuthorityServiceTests {
 
 	@Test
 	@Transactional
+	public void findActiveAuthorityNamesForReportAdmin() {
+		List<String> authorityNames = authorityService.findActiveAuthorityNamesByRoleId(Role.ADMIN_ROLE_ID);
+		logger.info("authorityNames = {}", authorityNames);
+		assertThat(authorityNames, is(not(nullValue())));
+		assertThat(authorityNames, hasSize(14));
+	}
+
+	@Test
+	@Transactional
 	/**
 	 * Role "aa" has no authorities of its own, but it is a direct child of the
 	 * "reportadmin" Role. Hence, it should inherit all of the authorities of
@@ -53,7 +63,16 @@ public class AuthorityServiceTests {
 		List<Authority> authorities = authorityService.getActiveAuthoritiesByRoleId(uuidOfRole_aa);
 		logger.info("authorities = {}", authorities);
 		assertThat(authorities, is(not(nullValue())));
-		assertThat(authorities, hasSize(14));
+		if (UuidCustomType.DB_VENDOR.equals(UuidCustomType.POSTGRESQL_VENDOR)) {
+			assertThat(authorities, hasSize(14));
+		} else {
+			/*
+			 * authorityService.getActiveAuthoritiesByRoleId(...) does not take
+			 * into account role inheritance in we are using H2 (because it does
+			 * not support recursive CTEs).
+			 */
+			assertThat(authorities, hasSize(0));
+		}
 	}
 
 	@Test
@@ -68,7 +87,16 @@ public class AuthorityServiceTests {
 		List<Authority> authorities = authorityService.getActiveAuthoritiesByRoleId(uuidOfRole_aabc);
 		logger.info("authorities = {}", authorities);
 		assertThat(authorities, is(not(nullValue())));
-		assertThat(authorities, hasSize(14));
+		if (UuidCustomType.DB_VENDOR.equals(UuidCustomType.POSTGRESQL_VENDOR)) {
+			assertThat(authorities, hasSize(14));
+		} else {
+			/*
+			 * authorityService.getActiveAuthoritiesByRoleId(...) does not take
+			 * into account role inheritance in we are using H2 (because it does
+			 * not support recursive CTEs).
+			 */
+			assertThat(authorities, hasSize(0));
+		}
 	}
 
 	@Test

@@ -24,24 +24,51 @@ public interface AuthorityRepository extends JpaRepository<Authority, UUID> {
 
 	List<Authority> findByActiveTrue();
 
+	// Not tested:
+	//
+	//	/**
+	//	 * Returns a {@link List}&lt;{@link Authority}&gt; of {@link Authority}
+	//	 * entities that have been granted <b>directly</b> to a {@link Role} with a
+	//	 * specified value of roleId.
+	//	 * 
+	//	 * @param roleId
+	//	 *            id of the {@link Role} for which {@link Authority} id values
+	//	 *            will be returned.
+	//	 * @return
+	//	 */
+	//	@Query("SELECT a FROM RoleAuthority ra INNER JOIN ra.authority a WHERE ra.role.roleId = :roleId AND a.active=true")
+	//	public List<Authority> findActiveAuthorityIdsByRoleId(@Param("roleId") UUID roleId);
+
 	/**
 	 * Returns a {@link List}&lt;{@link String}&gt; that contains the ids (as
 	 * strings) of {@link Authority} entities that have been granted
 	 * <b>directly</b> to a {@link Role} with a specified value of roleId.
+	 * 
+	 * <p>
+	 * It is necessary to specify the schema (reporting.) for each table in
+	 * order for the integration tests to run using the H2 database engine.
+	 * 
+	 * <p>
+	 * This method does not work with the H2 RDBMS! It always seems to return an
+	 * empty list.
 	 * 
 	 * @param roleId
 	 *            String representation of the id of the {@link Role} for which
 	 *            {@link Authority} id values will be returned.
 	 * @return
 	 */
-	@Query(value = "SELECT CAST(a.authority_id AS varchar) AS authority_id FROM authority a " +
-			"INNER JOIN role_authority ra ON ra.authority_id=a.authority_id " +
-			"INNER JOIN role r ON r.role_id=ra.role_id " +
-			"WHERE r.role_id=CAST(:roleId AS uuid) AND a.active=true " +
+	//@Query(value = "SELECT CAST(a.authority_id AS varchar) FROM reporting.authority a " +
+	//		"INNER JOIN reporting.role_authority ra ON ra.authority_id=a.authority_id " +
+	//		"INNER JOIN reporting.role r ON r.role_id=ra.role_id " +
+	//		"WHERE r.role_id=CAST(:roleId AS uuid) AND a.active=true " +
+	//		"ORDER BY a.name",
+	//		nativeQuery = true)
+	@Query(value = "SELECT CAST(a.authority_id AS varchar) FROM reporting.authority a " +
+			"INNER JOIN reporting.role_authority ra ON ra.authority_id=a.authority_id " +
+			"WHERE ra.role_id=CAST(:roleId AS uuid) AND a.active=true " +
 			"ORDER BY a.name",
 			nativeQuery = true)
-	public List<String> findActiveAuthorityIdsByRoleId(
-			@Param("roleId") String roleId);
+	public List<String> findActiveAuthorityIdsByRoleId(@Param("roleId") String roleId);
 
 	/**
 	 * Returns a {@link List}&lt;{@link String}&gt; that contains the ids (as
@@ -105,15 +132,23 @@ public interface AuthorityRepository extends JpaRepository<Authority, UUID> {
 	 * strings) of {@link Authority} entities that have been granted
 	 * <b>directly</b> to a {@link Role} with a specified value of roleId.
 	 * 
+	 * It is necessary to specify the schema (reporting.) for each table in
+	 * order for the integration tests to run using the H2 database engine.
+	 * 
 	 * @param roleId
 	 *            String representation of the id of the {@link Role} for which
 	 *            {@link Authority} id values will be returned.
 	 * @return
 	 */
-	@Query(value = "SELECT a.name FROM authority a " +
-			"INNER JOIN role_authority ra ON ra.authority_id=a.authority_id " +
-			"INNER JOIN role r ON r.role_id=ra.role_id " +
-			"WHERE r.role_id=CAST(:roleId AS uuid) AND a.active=true " +
+	//@Query(value = "SELECT a.name FROM reporting.authority a " +
+	//		"INNER JOIN reporting.role_authority ra ON ra.authority_id=a.authority_id " +
+	//		"INNER JOIN reporting.role r ON r.role_id=ra.role_id " +
+	//		"WHERE r.role_id=CAST(:roleId AS uuid) AND a.active=true " +
+	//		"ORDER BY a.name",
+	//		nativeQuery = true)
+	@Query(value = "SELECT a.name FROM reporting.authority a " +
+			"INNER JOIN reporting.role_authority ra ON ra.authority_id=a.authority_id " +
+			"WHERE ra.role_id=CAST(:roleId AS uuid) AND a.active=true " +
 			"ORDER BY a.name",
 			nativeQuery = true)
 	public List<String> findActiveAuthorityNamesByRoleId(
