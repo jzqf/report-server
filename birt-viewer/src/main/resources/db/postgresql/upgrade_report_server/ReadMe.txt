@@ -64,10 +64,12 @@ II.	===== Upgrading the report server application =====
 
 	where <host> identifies the server hosting the report server application, 
 	the protocol for accessing it, as well as the port number if a non-standard 
-	port number is used. This can be done using a web browser or in a bash shell
-	by executing:
+	port number is used. You will need to authenticate with a username and 
+	password for a role that has the authority "USE_RESTAPI" granted, e.g., the
+	roel with username = "reportserver-restadmin". This can be done using a web
+	browser or it can be done in a bash shell by executing:
 
-		curl -X GET <host>/report-server/rest/appversion
+		curl -X GET -u <username>:<password> <host>/report-server/rest/appversion
 
 	Either way, a string should be returned that represents the version number 
 	for the running report server application.

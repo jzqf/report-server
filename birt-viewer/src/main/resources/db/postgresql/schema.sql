@@ -39,6 +39,20 @@ DROP TABLE IF EXISTS job_status CASCADE;
 --
 
 --
+-- Name: authority; Type: TABLE; Schema: reporting; Owner: report_server_app; Tablespace: 
+--
+
+CREATE TABLE authority (
+    authority_id uuid DEFAULT uuid_generate_v4() NOT NULL,
+    active boolean NOT NULL,
+    created_on timestamp without time zone NOT NULL,
+    name character varying(50) NOT NULL
+);
+
+
+
+
+--
 -- Name: configuration; Type: TABLE; Schema: reporting; Owner: report_server_app; Tablespace: 
 --
 
@@ -80,6 +94,8 @@ CREATE TABLE document_format (
 );
 
 
+
+
 --
 -- Name: job; Type: TABLE; Schema: reporting; Owner: report_server_app; Tablespace: 
 --
@@ -103,6 +119,9 @@ CREATE TABLE job (
     subscription_id uuid
 );
 
+
+
+
 --
 -- Name: job_job_id_seq; Type: SEQUENCE; Schema: reporting; Owner: report_server_app
 --
@@ -113,6 +132,9 @@ CREATE SEQUENCE job_job_id_seq
     NO MINVALUE
     NO MAXVALUE
     CACHE 1;
+
+
+
 
 --
 -- Name: job_job_id_seq; Type: SEQUENCE OWNED BY; Schema: reporting; Owner: report_server_app
@@ -132,6 +154,9 @@ CREATE TABLE job_parameter (
     report_parameter_id uuid NOT NULL
 );
 
+
+
+
 --
 -- Name: job_parameter_job_parameter_id_seq; Type: SEQUENCE; Schema: reporting; Owner: report_server_app
 --
@@ -142,6 +167,9 @@ CREATE SEQUENCE job_parameter_job_parameter_id_seq
     NO MINVALUE
     NO MAXVALUE
     CACHE 1;
+
+
+
 
 --
 -- Name: job_parameter_job_parameter_id_seq; Type: SEQUENCE OWNED BY; Schema: reporting; Owner: report_server_app
@@ -167,6 +195,9 @@ CREATE TABLE job_parameter_value (
     job_parameter_id bigint NOT NULL
 );
 
+
+
+
 --
 -- Name: job_parameter_value_job_parameter_value_id_seq; Type: SEQUENCE; Schema: reporting; Owner: report_server_app
 --
@@ -177,6 +208,9 @@ CREATE SEQUENCE job_parameter_value_job_parameter_value_id_seq
     NO MINVALUE
     NO MAXVALUE
     CACHE 1;
+
+
+
 
 --
 -- Name: job_parameter_value_job_parameter_value_id_seq; Type: SEQUENCE OWNED BY; Schema: reporting; Owner: report_server_app
@@ -197,6 +231,9 @@ CREATE TABLE job_status (
     description character varying(32) NOT NULL
 );
 
+
+
+
 --
 -- Name: parameter_group; Type: TABLE; Schema: reporting; Owner: report_server_app; Tablespace: 
 --
@@ -208,6 +245,9 @@ CREATE TABLE parameter_group (
     name character varying(80) NOT NULL,
     prompt_text character varying(132) NOT NULL
 );
+
+
+
 
 --
 -- Name: report; Type: TABLE; Schema: reporting; Owner: report_server_app; Tablespace: 
@@ -299,13 +339,29 @@ CREATE TABLE report_version (
 
 CREATE TABLE role (
     role_id uuid DEFAULT uuid_generate_v4() NOT NULL,
+    active boolean NOT NULL,
     created_on timestamp without time zone NOT NULL,
     email_address character varying(160),
-    encoded_password character varying(32) NOT NULL,
+    enabled boolean NOT NULL,
+    encoded_password character varying(64),
     full_name character varying(32),
     login_role boolean NOT NULL,
     time_zone_id character varying(80),
     username character varying(32) NOT NULL
+);
+
+
+
+
+--
+-- Name: role_authority; Type: TABLE; Schema: reporting; Owner: report_server_app; Tablespace: 
+--
+
+CREATE TABLE role_authority (
+    role_authority_id uuid DEFAULT uuid_generate_v4() NOT NULL,
+    created_on timestamp without time zone NOT NULL,
+    authority_id uuid NOT NULL,
+    role_id uuid NOT NULL
 );
 
 
@@ -484,13 +540,11 @@ ALTER TABLE ONLY job_parameter ALTER COLUMN job_parameter_id SET DEFAULT nextval
 ALTER TABLE ONLY job_parameter_value ALTER COLUMN job_parameter_value_id SET DEFAULT nextval('job_parameter_value_job_parameter_value_id_seq'::regclass);
 
 
-
 --
 -- Name: job_job_id_seq; Type: SEQUENCE SET; Schema: reporting; Owner: report_server_app
 --
 
 SELECT pg_catalog.setval('job_job_id_seq', 1, false);
-
 
 
 --
@@ -505,6 +559,14 @@ SELECT pg_catalog.setval('job_parameter_job_parameter_id_seq', 1, false);
 --
 
 SELECT pg_catalog.setval('job_parameter_value_job_parameter_value_id_seq', 1, false);
+
+
+--
+-- Name: authority_pkey; Type: CONSTRAINT; Schema: reporting; Owner: report_server_app; Tablespace: 
+--
+
+ALTER TABLE ONLY authority
+    ADD CONSTRAINT authority_pkey PRIMARY KEY (authority_id);
 
 
 --
@@ -596,6 +658,14 @@ ALTER TABLE ONLY report_version
 
 
 --
+-- Name: role_authority_pkey; Type: CONSTRAINT; Schema: reporting; Owner: report_server_app; Tablespace: 
+--
+
+ALTER TABLE ONLY role_authority
+    ADD CONSTRAINT role_authority_pkey PRIMARY KEY (role_authority_id);
+
+
+--
 -- Name: role_parameter_pkey; Type: CONSTRAINT; Schema: reporting; Owner: report_server_app; Tablespace: 
 --
 
@@ -668,6 +738,14 @@ ALTER TABLE ONLY subscription
 
 
 --
+-- Name: uc_authority_name; Type: CONSTRAINT; Schema: reporting; Owner: report_server_app; Tablespace: 
+--
+
+ALTER TABLE ONLY authority
+    ADD CONSTRAINT uc_authority_name UNIQUE (name);
+
+
+--
 -- Name: uc_configuration_paramname_role; Type: CONSTRAINT; Schema: reporting; Owner: report_server_app; Tablespace: 
 --
 
@@ -692,6 +770,14 @@ ALTER TABLE ONLY report_parameter
 
 
 --
+-- Name: uc_reportversion_filename; Type: CONSTRAINT; Schema: reporting; Owner: report_server_app; Tablespace: 
+--
+
+ALTER TABLE ONLY report_version
+    ADD CONSTRAINT uc_reportversion_filename UNIQUE (file_name);
+
+
+--
 -- Name: uc_reportversion_report_versioncode; Type: CONSTRAINT; Schema: reporting; Owner: report_server_app; Tablespace: 
 --
 
@@ -713,6 +799,14 @@ ALTER TABLE ONLY report_version
 
 ALTER TABLE ONLY role
     ADD CONSTRAINT uc_role_username UNIQUE (username);
+
+
+--
+-- Name: uc_roleauthority_role_authority; Type: CONSTRAINT; Schema: reporting; Owner: report_server_app; Tablespace: 
+--
+
+ALTER TABLE ONLY role_authority
+    ADD CONSTRAINT uc_roleauthority_role_authority UNIQUE (role_id, authority_id);
 
 
 --
@@ -849,6 +943,22 @@ ALTER TABLE ONLY report_parameter
 
 ALTER TABLE ONLY report_version
     ADD CONSTRAINT fk_reportversion_report FOREIGN KEY (report_id) REFERENCES report(report_id);
+
+
+--
+-- Name: fk_roleauthority_authority; Type: FK CONSTRAINT; Schema: reporting; Owner: report_server_app
+--
+
+ALTER TABLE ONLY role_authority
+    ADD CONSTRAINT fk_roleauthority_authority FOREIGN KEY (authority_id) REFERENCES authority(authority_id);
+
+
+--
+-- Name: fk_roleauthority_role; Type: FK CONSTRAINT; Schema: reporting; Owner: report_server_app
+--
+
+ALTER TABLE ONLY role_authority
+    ADD CONSTRAINT fk_roleauthority_role FOREIGN KEY (role_id) REFERENCES role(role_id);
 
 
 --
