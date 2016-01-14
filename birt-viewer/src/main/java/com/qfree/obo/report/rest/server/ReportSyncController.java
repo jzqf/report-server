@@ -60,8 +60,7 @@ public class ReportSyncController extends AbstractBaseController {
 	@Path("/availablePermits")
 	@GET
 	@Produces(MediaType.TEXT_PLAIN)
-	@PreAuthorize("hasAuthority('" + Authority.AUTHORITY_NAME_USE_RESTAPI + "') and "
-			+ "hasAuthority('" + Authority.AUTHORITY_NAME_MANAGE_FILESYNCING + "')")
+	@PreAuthorize("hasAuthority('" + Authority.AUTHORITY_NAME_MANAGE_FILESYNCING + "')")
 	public int getAvailablePermits(
 			@HeaderParam("Accept") final String acceptHeader,
 			@QueryParam(ResourcePath.EXPAND_QP_NAME) final List<String> expand,
@@ -88,8 +87,7 @@ public class ReportSyncController extends AbstractBaseController {
 	@POST
 	//@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	@PreAuthorize("hasAuthority('" + Authority.AUTHORITY_NAME_USE_RESTAPI + "') and "
-			+ "hasAuthority('" + Authority.AUTHORITY_NAME_MANAGE_FILESYNCING + "')")
+	@PreAuthorize("hasAuthority('" + Authority.AUTHORITY_NAME_MANAGE_FILESYNCING + "')")
 	public ReportSyncResource syncReportsWithFileSystem(
 			@HeaderParam("Accept") final String acceptHeader,
 			@QueryParam(ResourcePath.EXPAND_QP_NAME) final List<String> expand,

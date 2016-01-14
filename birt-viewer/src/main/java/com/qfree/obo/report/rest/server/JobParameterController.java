@@ -58,8 +58,7 @@ public class JobParameterController extends AbstractBaseController {
 	@Path("/{id}")
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
-	@PreAuthorize("hasAuthority('" + Authority.AUTHORITY_NAME_USE_RESTAPI + "')"
-			+ " and hasAuthority('" + Authority.AUTHORITY_NAME_MANAGE_JOBS + "')")
+	@PreAuthorize("hasAuthority('" + Authority.AUTHORITY_NAME_MANAGE_JOBS + "')")
 	public JobParameterResource getById(
 			@PathParam("id") final Long id,
 			@HeaderParam("Accept") final String acceptHeader,
@@ -101,8 +100,7 @@ public class JobParameterController extends AbstractBaseController {
 	@Path("/{id}" + ResourcePath.JOBPARAMETERVALUES_PATH)
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
-	@PreAuthorize("hasAuthority('" + Authority.AUTHORITY_NAME_USE_RESTAPI + "')"
-			+ " and hasAuthority('" + Authority.AUTHORITY_NAME_MANAGE_JOBS + "')")
+	@PreAuthorize("hasAuthority('" + Authority.AUTHORITY_NAME_MANAGE_JOBS + "')")
 	public JobParameterValueCollectionResource getJobParameterValuesByJobParameterId(
 			@PathParam("id") final Long id,
 			@HeaderParam("Accept") final String acceptHeader,

@@ -17,11 +17,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Component;
 
 import com.qfree.obo.report.db.ConfigurationRepository;
-import com.qfree.obo.report.domain.Authority;
 import com.qfree.obo.report.domain.Configuration;
 import com.qfree.obo.report.service.ConfigurationService;
 import com.qfree.obo.report.util.RestUtils;
@@ -56,9 +54,6 @@ public class RootController extends AbstractBaseController {
 	@GET
 	@Path("/appversion")
 	@Produces(MediaType.TEXT_PLAIN)
-	@PreAuthorize("hasAuthority('" + Authority.AUTHORITY_NAME_USE_RESTAPI + "')"
-	//		+ " and hasAuthority('" + Authority.AUTHORITY_NAME_XXXXXXXXX + "')"
-	)
 	public String getAppversion(
 			@HeaderParam("Accept") final String acceptHeader,
 			@Context final UriInfo uriInfo) {
@@ -69,9 +64,6 @@ public class RootController extends AbstractBaseController {
 	@GET
 	@Path("/dbversion")
 	@Produces(MediaType.TEXT_PLAIN)
-	@PreAuthorize("hasAuthority('" + Authority.AUTHORITY_NAME_USE_RESTAPI + "')"
-	//		+ " and hasAuthority('" + Authority.AUTHORITY_NAME_XXXXXXXXX + "')"
-	)
 	public Integer getDbversion(
 			@HeaderParam("Accept") final String acceptHeader,
 			@Context final UriInfo uriInfo) {
@@ -90,9 +82,6 @@ public class RootController extends AbstractBaseController {
 	@Path("/subscriptionTimeZones")
 	@Produces(MediaType.TEXT_PLAIN)
 	//	@Produces(MediaType.APPLICATION_JSON)
-	@PreAuthorize("hasAuthority('" + Authority.AUTHORITY_NAME_USE_RESTAPI + "')"
-	//		+ " and hasAuthority('" + Authority.AUTHORITY_NAME_XXXXXXXXX + "')"
-	)
 	public String getSubscriptionTimeZones(
 			@HeaderParam("Accept") final String acceptHeader,
 			@Context final UriInfo uriInfo) {
