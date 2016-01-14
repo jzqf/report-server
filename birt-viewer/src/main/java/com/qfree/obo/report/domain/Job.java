@@ -23,6 +23,9 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.validation.constraints.NotNull;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.qfree.obo.report.dto.JobResource;
 import com.qfree.obo.report.exceptions.ResourceFilterExecutionException;
 import com.qfree.obo.report.util.DateUtils;
@@ -42,6 +45,8 @@ import com.qfree.obo.report.util.RestUtils;
 public class Job implements Serializable {
 
 	private static final long serialVersionUID = 1L;
+
+	private static final Logger logger = LoggerFactory.getLogger(Job.class);
 
 	@Id
 	//@NotNull <-- No, this should not be used
@@ -499,9 +504,28 @@ public class Job implements Serializable {
 	 */
 	public static List<Job> getFilteredJobs(List<Job> unfilteredJobs, List<List<Map<String, String>>> filterConditions)
 			throws ResourceFilterExecutionException {
+
+		/*
+		 * The returned list must be ordered in case pagination is used for the 
+		 * collection resource created from list of filtered entities. Even if
+		 * it is not necessary to paginate the list (because there are too few
+		 * list elements), we still sort the list for consistency. The only
+		 * sensible order is chronological order. Since the Job entities has a 
+		 * Long primary key, we could also sort by id.
+		 */
+		//Comparator<Job> chronological = (Job job1, Job job2) -> job1.getCreatedOn().compareTo(job2.getCreatedOn());
+		Comparator<Job> chronologicalReversed = (Job job1, Job job2) -> job2.getCreatedOn()
+				.compareTo(job1.getCreatedOn());
+		Comparator<Job> comparator = chronologicalReversed;
+
 		if (filterConditions == null || filterConditions.size() == 0) {
-			return unfilteredJobs; // no filtering
+			/*
+			 * No filtering is required, but we still need to sort.
+			 */
+			unfilteredJobs.sort(comparator);
+			return unfilteredJobs; // sorted, but not filtered
 		}
+
 		List<Object> jobStatusIds = new ArrayList<>(unfilteredJobs.size());
 		List<Object> jobStatusAbbreviations = new ArrayList<>(unfilteredJobs.size());
 		List<Object> jobCreatedOns = new ArrayList<>(unfilteredJobs.size());
@@ -522,15 +546,8 @@ public class Job implements Serializable {
 		filterableAttributes.put("jobStatusAbbreviation", jobStatusAbbreviations);
 		filterableAttributes.put("createdOn", jobCreatedOns);
 		filterableAttributes.put("jobId", jobIds);
-		/*
-		 * The list must be ordered in case pagination is used for the 
-		 * collection resource created from list of filtered entities. The only
-		 * sensible order is chronological order. Since the Job entities has a 
-		 * Long primary key, we could also sort by id.
-		 */
-		Comparator<Job> chronological = (Job job1, Job job2) -> job1.getCreatedOn().compareTo(job2.getCreatedOn());
 
-		return RestUtils.filterEntities(unfilteredJobs, filterConditions, filterableAttributes, chronological,
+		return RestUtils.filterEntities(unfilteredJobs, filterConditions, filterableAttributes, comparator,
 				Job.class);
 	}
 
