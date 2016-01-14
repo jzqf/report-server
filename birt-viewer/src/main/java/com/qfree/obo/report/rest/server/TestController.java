@@ -77,8 +77,7 @@ public class TestController extends AbstractBaseController {
 
 	@GET
 	@Produces(MediaType.TEXT_PLAIN)
-	@PreAuthorize("hasAuthority('" + Authority.AUTHORITY_NAME_USE_RESTAPI + "') and "
-			+ "hasAuthority('" + Authority.AUTHORITY_NAME_RUN_DIAGNOSTICS + "')")
+	@PreAuthorize("hasAuthority('" + Authority.AUTHORITY_NAME_RUN_DIAGNOSTICS + "')")
 	public String test(@HeaderParam("Accept") String acceptHeader) {
 		RestApiVersion apiVersion = RestUtils.extractAPIVersion(acceptHeader, RestApiVersion.v2);
 		switch (apiVersion) {
@@ -117,8 +116,7 @@ public class TestController extends AbstractBaseController {
 	@GET
 	@Path("/api_version")
 	@Produces(MediaType.TEXT_PLAIN)
-	@PreAuthorize("hasAuthority('" + Authority.AUTHORITY_NAME_USE_RESTAPI + "') and "
-			+ "hasAuthority('" + Authority.AUTHORITY_NAME_RUN_DIAGNOSTICS + "')")
+	@PreAuthorize("hasAuthority('" + Authority.AUTHORITY_NAME_RUN_DIAGNOSTICS + "')")
 	public String acceptHeaderApiVersionGet(@HeaderParam("Accept") String acceptHeader) {
 		//		logger.info("acceptHeader = {}", acceptHeader);
 		//		System.out.println("acceptHeaderApiVersionGet: acceptHeader = " + acceptHeader);
@@ -138,8 +136,7 @@ public class TestController extends AbstractBaseController {
 	@POST
 	@Path("/api_version")
 	@Produces(MediaType.TEXT_PLAIN)
-	@PreAuthorize("hasAuthority('" + Authority.AUTHORITY_NAME_USE_RESTAPI + "') and "
-			+ "hasAuthority('" + Authority.AUTHORITY_NAME_RUN_DIAGNOSTICS + "')")
+	@PreAuthorize("hasAuthority('" + Authority.AUTHORITY_NAME_RUN_DIAGNOSTICS + "')")
 	public String acceptHeaderApiVersionPost(@HeaderParam("Accept") String acceptHeader) {
 		//		logger.info("acceptHeader = {}", acceptHeader);
 		//		System.out.println("acceptHeaderApiVersionPost: acceptHeader = " + acceptHeader);
@@ -159,8 +156,7 @@ public class TestController extends AbstractBaseController {
 	@PUT
 	@Path("/api_version")
 	@Produces(MediaType.TEXT_PLAIN)
-	@PreAuthorize("hasAuthority('" + Authority.AUTHORITY_NAME_USE_RESTAPI + "') and "
-			+ "hasAuthority('" + Authority.AUTHORITY_NAME_RUN_DIAGNOSTICS + "')")
+	@PreAuthorize("hasAuthority('" + Authority.AUTHORITY_NAME_RUN_DIAGNOSTICS + "')")
 	public String acceptHeaderApiVersionPut(@HeaderParam("Accept") String acceptHeader) {
 		//		logger.info("acceptHeader = {}", acceptHeader);
 		//		System.out.println("acceptHeaderApiVersionPost: acceptHeader = " + acceptHeader);
@@ -175,8 +171,7 @@ public class TestController extends AbstractBaseController {
 	@Path("/form")
 	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
 	@Produces(MediaType.TEXT_PLAIN)
-	@PreAuthorize("hasAuthority('" + Authority.AUTHORITY_NAME_USE_RESTAPI + "') and "
-			+ "hasAuthority('" + Authority.AUTHORITY_NAME_RUN_DIAGNOSTICS + "')")
+	@PreAuthorize("hasAuthority('" + Authority.AUTHORITY_NAME_RUN_DIAGNOSTICS + "')")
 	public String formPostProduceText(
 			@HeaderParam("Accept") String acceptHeader,
 			@FormParam("param1") String param1,
@@ -188,8 +183,7 @@ public class TestController extends AbstractBaseController {
 	@GET
 	@Path("/string_param_default")
 	@Produces(MediaType.TEXT_PLAIN)
-	@PreAuthorize("hasAuthority('" + Authority.AUTHORITY_NAME_USE_RESTAPI + "') and "
-			+ "hasAuthority('" + Authority.AUTHORITY_NAME_RUN_DIAGNOSTICS + "')")
+	@PreAuthorize("hasAuthority('" + Authority.AUTHORITY_NAME_RUN_DIAGNOSTICS + "')")
 	public String getTestStringParamDefault(@HeaderParam("Accept") String acceptHeader) {
 		//		RestApiVersion apiVersion = RestUtils.extractAPIVersion(acceptHeader, RestApiVersion.v2);
 		//		Object stringValueDefaultObject = configurationService.get(ParamName.TEST_STRING);
@@ -204,8 +198,7 @@ public class TestController extends AbstractBaseController {
 	@GET
 	@Path("/string_param_default")
 	@Produces(MediaType.APPLICATION_JSON)
-	@PreAuthorize("hasAuthority('" + Authority.AUTHORITY_NAME_USE_RESTAPI + "') and "
-			+ "hasAuthority('" + Authority.AUTHORITY_NAME_RUN_DIAGNOSTICS + "')")
+	@PreAuthorize("hasAuthority('" + Authority.AUTHORITY_NAME_RUN_DIAGNOSTICS + "')")
 	public String getTestStringParamDefaultAsJson(@HeaderParam("Accept") String acceptHeader) {
 		//		RestApiVersion apiVersion = RestUtils.extractAPIVersion(acceptHeader, RestApiVersion.v2);
 		String stringValue = configurationService.get(ParamName.TEST_STRING, null, String.class);
@@ -223,8 +216,7 @@ public class TestController extends AbstractBaseController {
 	@Path("/string_param_default")
 	@Consumes(MediaType.APPLICATION_FORM_URLENCODED)
 	@Produces(MediaType.TEXT_PLAIN)
-	@PreAuthorize("hasAuthority('" + Authority.AUTHORITY_NAME_USE_RESTAPI + "') and "
-			+ "hasAuthority('" + Authority.AUTHORITY_NAME_RUN_DIAGNOSTICS + "')")
+	@PreAuthorize("hasAuthority('" + Authority.AUTHORITY_NAME_RUN_DIAGNOSTICS + "')")
 	public String postTestStringParamDefault(
 			@HeaderParam("Accept") String acceptHeader,
 			@FormParam("paramValue") String newParamValue) {
@@ -243,8 +235,7 @@ public class TestController extends AbstractBaseController {
 	@Path("/string_param_default")
 	@Consumes(MediaType.TEXT_PLAIN)
 	@Produces(MediaType.TEXT_PLAIN)
-	@PreAuthorize("hasAuthority('" + Authority.AUTHORITY_NAME_USE_RESTAPI + "') and "
-			+ "hasAuthority('" + Authority.AUTHORITY_NAME_RUN_DIAGNOSTICS + "')")
+	@PreAuthorize("hasAuthority('" + Authority.AUTHORITY_NAME_RUN_DIAGNOSTICS + "')")
 	public String putTestStringParamDefault(
 			@HeaderParam("Accept") String acceptHeader,
 			String newParamValue) {
@@ -267,8 +258,7 @@ public class TestController extends AbstractBaseController {
 	@GET
 	@Path("/parse_report_params")
 	@Produces(MediaType.TEXT_PLAIN)
-	@PreAuthorize("hasAuthority('" + Authority.AUTHORITY_NAME_USE_RESTAPI + "') and "
-			+ "hasAuthority('" + Authority.AUTHORITY_NAME_RUN_DIAGNOSTICS + "')")
+	@PreAuthorize("hasAuthority('" + Authority.AUTHORITY_NAME_RUN_DIAGNOSTICS + "')")
 	public String parseReportParamsTest(
 			@HeaderParam("Accept") final String acceptHeader,
 			@Context final UriInfo uriInfo) {
@@ -306,8 +296,7 @@ public class TestController extends AbstractBaseController {
 	@GET
 	@Path("/scheduleTask")
 	@Produces(MediaType.TEXT_PLAIN)
-	@PreAuthorize("hasAuthority('" + Authority.AUTHORITY_NAME_USE_RESTAPI + "') and "
-			+ "hasAuthority('" + Authority.AUTHORITY_NAME_RUN_DIAGNOSTICS + "')")
+	@PreAuthorize("hasAuthority('" + Authority.AUTHORITY_NAME_RUN_DIAGNOSTICS + "')")
 	public String scheduleTask(
 			@HeaderParam("Accept") final String acceptHeader,
 			@Context final UriInfo uriInfo) {
@@ -493,8 +482,7 @@ public class TestController extends AbstractBaseController {
 	@GET
 	@Path("/scheduleAllJobs")
 	@Produces(MediaType.TEXT_PLAIN)
-	@PreAuthorize("hasAuthority('" + Authority.AUTHORITY_NAME_USE_RESTAPI + "') and "
-			+ "hasAuthority('" + Authority.AUTHORITY_NAME_RUN_DIAGNOSTICS + "')")
+	@PreAuthorize("hasAuthority('" + Authority.AUTHORITY_NAME_RUN_DIAGNOSTICS + "')")
 	public String scheduleAllJobs(
 			@HeaderParam("Accept") final String acceptHeader,
 			@Context final UriInfo uriInfo) throws SchedulerException {
@@ -518,9 +506,8 @@ public class TestController extends AbstractBaseController {
 	@GET
 	@Path("/nop")
 	@Produces(MediaType.TEXT_PLAIN)
+	@PreAuthorize("hasAuthority('" + Authority.AUTHORITY_NAME_RUN_DIAGNOSTICS + "')")
 	//	public String requestTimerTest() {
-	@PreAuthorize("hasAuthority('" + Authority.AUTHORITY_NAME_USE_RESTAPI + "') and "
-			+ "hasAuthority('" + Authority.AUTHORITY_NAME_RUN_DIAGNOSTICS + "')")
 	public String requestTimerTest(@HeaderParam("Accept") String acceptHeader) {
 		//	RestApiVersion apiVersion = RestUtils.extractAPIVersion(acceptHeader, RestApiVersion.v1);
 		//	return apiVersion.getVersion();

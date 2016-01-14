@@ -54,8 +54,7 @@ public class SubscriptionParameterValueController extends AbstractBaseController
 	@Path("/{id}")
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
-	@PreAuthorize("hasAuthority('" + Authority.AUTHORITY_NAME_USE_RESTAPI + "')"
-			+ " and hasAuthority('" + Authority.AUTHORITY_NAME_MANAGE_SUBSCRIPTIONS + "')")
+	@PreAuthorize("hasAuthority('" + Authority.AUTHORITY_NAME_MANAGE_SUBSCRIPTIONS + "')")
 	public SubscriptionParameterValueResource getById(
 			@PathParam("id") final UUID id,
 			@HeaderParam("Accept") final String acceptHeader,

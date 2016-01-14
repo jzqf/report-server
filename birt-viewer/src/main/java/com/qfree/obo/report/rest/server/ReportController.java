@@ -72,8 +72,7 @@ public class ReportController extends AbstractBaseController {
 	@Transactional
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
-	@PreAuthorize("hasAuthority('" + Authority.AUTHORITY_NAME_USE_RESTAPI + "') and "
-			+ "hasAuthority('" + Authority.AUTHORITY_NAME_MANAGE_REPORTS + "')")
+	@PreAuthorize("hasAuthority('" + Authority.AUTHORITY_NAME_MANAGE_REPORTS + "')")
 	public ReportCollectionResource getList(
 			@HeaderParam("Accept") final String acceptHeader,
 			//@Context SecurityContext sc, // javax.ws.rs.core.SecurityContext
@@ -114,9 +113,8 @@ public class ReportController extends AbstractBaseController {
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	@PreAuthorize("hasAuthority('" + Authority.AUTHORITY_NAME_USE_RESTAPI + "') and ("
-			+ "hasAuthority('" + Authority.AUTHORITY_NAME_MANAGE_REPORTS + "')" +
-			" or hasAuthority('" + Authority.AUTHORITY_NAME_UPLOAD_REPORTS + "'))")
+	@PreAuthorize("hasAuthority('" + Authority.AUTHORITY_NAME_MANAGE_REPORTS + "')" +
+			" or hasAuthority('" + Authority.AUTHORITY_NAME_UPLOAD_REPORTS + "')")
 	public Response create(
 			ReportResource reportResource,
 			@HeaderParam("Accept") final String acceptHeader,
@@ -150,8 +148,7 @@ public class ReportController extends AbstractBaseController {
 	@Path("/{id}")
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
-	@PreAuthorize("hasAuthority('" + Authority.AUTHORITY_NAME_USE_RESTAPI + "') and "
-			+ "hasAuthority('" + Authority.AUTHORITY_NAME_MANAGE_REPORTS + "')")
+	@PreAuthorize("hasAuthority('" + Authority.AUTHORITY_NAME_MANAGE_REPORTS + "')")
 	public ReportResource getById(
 			@PathParam("id") final UUID id,
 			@HeaderParam("Accept") final String acceptHeader,
@@ -194,8 +191,7 @@ public class ReportController extends AbstractBaseController {
 	@PUT
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	@PreAuthorize("hasAuthority('" + Authority.AUTHORITY_NAME_USE_RESTAPI + "') and "
-			+ "hasAuthority('" + Authority.AUTHORITY_NAME_MANAGE_REPORTS + "')")
+	@PreAuthorize("hasAuthority('" + Authority.AUTHORITY_NAME_MANAGE_REPORTS + "')")
 	public Response updateById(
 			ReportResource reportResource,
 			@PathParam("id") final UUID id,
@@ -261,8 +257,7 @@ public class ReportController extends AbstractBaseController {
 	@Path("/{id}" + ResourcePath.REPORTVERSIONS_PATH)
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
-	@PreAuthorize("hasAuthority('" + Authority.AUTHORITY_NAME_USE_RESTAPI + "') and "
-			+ "hasAuthority('" + Authority.AUTHORITY_NAME_MANAGE_REPORTS + "')")
+	@PreAuthorize("hasAuthority('" + Authority.AUTHORITY_NAME_MANAGE_REPORTS + "')")
 	public ReportVersionCollectionResource getReportVersionsByReportId(
 			@PathParam("id") final UUID id,
 			@HeaderParam("Accept") final String acceptHeader,
