@@ -2,6 +2,8 @@ BEGIN TRANSACTION;
 
 -- Update the DB schema from v6 to v7:
 
+-- Create table [file], plus its associated constraints:
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 
 
 -- Update the DB content from v6 to v7:

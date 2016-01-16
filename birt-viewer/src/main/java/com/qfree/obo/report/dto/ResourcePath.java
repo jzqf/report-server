@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.qfree.obo.report.domain.Authority;
 import com.qfree.obo.report.domain.Configuration;
+import com.qfree.obo.report.domain.Document;
 import com.qfree.obo.report.domain.DocumentFormat;
 import com.qfree.obo.report.domain.Job;
 import com.qfree.obo.report.domain.JobParameter;
@@ -39,6 +40,11 @@ public enum ResourcePath {
 			ResourcePath.CONFIGURATION_EXPAND_PARAM,
 			ResourcePath.CONFIGURATION_SHOWALL_PARAM,
 			Configuration.class),
+	DOCUMENTS(
+			ResourcePath.DOCUMENTS_PATH,
+			ResourcePath.DOCUMENT_EXPAND_PARAM,
+			ResourcePath.DOCUMENT_SHOWALL_PARAM,
+			Document.class),
 	DOCUMENTFORMATS(
 			ResourcePath.DOCUMENTFORMATS_PATH,
 			ResourcePath.DOCUMENTFORMAT_EXPAND_PARAM,
@@ -138,6 +144,7 @@ public enum ResourcePath {
 	 */
 	public static final String AUTHORITIES_PATH = ResourcePath.PATH_SEPARATOR + "authorities";
 	public static final String CONFIGURATIONS_PATH = ResourcePath.PATH_SEPARATOR + "configurations";
+	public static final String DOCUMENTS_PATH = ResourcePath.PATH_SEPARATOR + "documents";
 	public static final String DOCUMENTFORMATS_PATH = ResourcePath.PATH_SEPARATOR + "documentFormats";
 	public static final String JOBPROCESSOR_PATH = ResourcePath.PATH_SEPARATOR + "jobProcessor";
 	public static final String JOBS_PATH = ResourcePath.PATH_SEPARATOR + "jobs";
@@ -173,6 +180,7 @@ public enum ResourcePath {
 	 */
 	public static final String AUTHORITY_EXPAND_PARAM = "authorities";
 	public static final String CONFIGURATION_EXPAND_PARAM = "configurations";
+	public static final String DOCUMENT_EXPAND_PARAM = "documents";
 	public static final String DOCUMENTFORMAT_EXPAND_PARAM = "documentFormats";
 	public static final String JOBPROCESSOR_EXPAND_PARAM = "jobProcessor";
 	public static final String JOB_EXPAND_PARAM = "jobs";
@@ -209,6 +217,7 @@ public enum ResourcePath {
 	 */
 	public static final String AUTHORITY_SHOWALL_PARAM = AUTHORITY_EXPAND_PARAM;
 	public static final String CONFIGURATION_SHOWALL_PARAM = CONFIGURATION_EXPAND_PARAM;
+	public static final String DOCUMENT_SHOWALL_PARAM = DOCUMENT_EXPAND_PARAM;
 	public static final String DOCUMENTFORMAT_SHOWALL_PARAM = DOCUMENTFORMAT_EXPAND_PARAM;
 	public static final String JOBPROCESSOR_SHOWALL_PARAM = JOBPROCESSOR_EXPAND_PARAM;
 	public static final String JOB_SHOWALL_PARAM = JOB_EXPAND_PARAM;

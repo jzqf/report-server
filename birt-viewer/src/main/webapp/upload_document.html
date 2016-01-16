@@ -1,0 +1,33 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Report Upload</title>
+</head>
+<body>
+
+<h2>Document Upload</h2>  
+<form action="rest/documents" method="post" enctype="multipart/form-data">  
+<table style="width:500px;">
+<!-- <tr>
+	<td colspan="2" style="text-align: center;color: gray;">
+		You can upload *any* type of document:
+	</td>
+<tr> -->
+ <td valign="top">
+		<label for="documentfile">Select a document to upload</label>
+	</td>
+	<td valign="top">
+		<input type="file" name="documentfile" size="45" />
+	</td>
+</tr>
+<tr style="height: 60px;">
+	<td colspan="2" style="text-align:center">
+		<input type="submit" value="Upload" />
+	</td>
+</tr>
+</table>
+</form>  
+
+</body>
+</html>
