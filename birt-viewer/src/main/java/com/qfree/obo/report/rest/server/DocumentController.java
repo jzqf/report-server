@@ -271,7 +271,7 @@ public class DocumentController extends AbstractBaseController {
 			logger.debug("documentResource = {}", documentResource);
 
 		} catch (IOException e) {
-			throw new RestApiException(RestError.INTERNAL_SERVER_ERROR_RPTDESIGN_SYNC, e);
+			throw new RestApiException(RestError.INTERNAL_SERVER_ERROR_FILE_UPLOAD, e);
 		}
 
 		return created(documentResource);

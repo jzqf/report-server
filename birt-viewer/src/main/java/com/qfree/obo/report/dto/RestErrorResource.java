@@ -379,19 +379,18 @@ public class RestErrorResource {
 				"500.3",
 				"Unable to acquire semaphore permit for synchronizing rptdesign files between file system and database",
 				null),
-		INTERNAL_SERVER_ERROR_RPTDESIGN_SYNC_INTERRUPT(
-				Response.Status.INTERNAL_SERVER_ERROR,
-				"500.4",
-				"InterruptedException thrown while waiting to acquire semaphore permit.",
-				null),
+		INTERNAL_SERVER_ERROR_RPTDESIGN_SYNC_INTERRUPT(Response.Status.INTERNAL_SERVER_ERROR, "500.4",
+				"InterruptedException thrown while waiting to acquire semaphore permit", null),
 		INTERNAL_SERVER_ERROR_UNTREATED_CASE(Response.Status.INTERNAL_SERVER_ERROR, "500.5",
 				"Untreated case", null),
 		INTERNAL_SERVER_ERROR_DATA_TYPE_ANY(Response.Status.INTERNAL_SERVER_ERROR, "500.6",
 				"Report parameter encountered with data type = IParameterDefn.TYPE_ANY", null),
 		INTERNAL_SERVER_ERROR_SCHEDULER(Response.Status.INTERNAL_SERVER_ERROR, "500.7",
-				"The Quartz scheduler threw an exception.", null),
+				"The Quartz scheduler threw an exception", null),
 		INTERNAL_SERVER_ERROR_DOCUMENT_STREAM(Response.Status.INTERNAL_SERVER_ERROR, "500.8",
-				"Error streaming document to client.", null),
+				"Error streaming document to client", null),
+		INTERNAL_SERVER_ERROR_FILE_UPLOAD(Response.Status.INTERNAL_SERVER_ERROR, "500.9",
+				"Error uploading file", null),
 		/**
 		 * {@code 501 Not Implemented}.
 		 * @see <a href="http://tools.ietf.org/html/rfc2616#section-10.5.2">HTTP/1.1</a>
