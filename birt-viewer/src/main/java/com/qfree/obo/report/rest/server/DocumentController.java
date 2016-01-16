@@ -7,13 +7,16 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.GET;
 import javax.ws.rs.HeaderParam;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
@@ -35,6 +38,7 @@ import com.qfree.obo.report.db.DocumentRepository;
 import com.qfree.obo.report.db.ReportRepository;
 import com.qfree.obo.report.domain.Authority;
 import com.qfree.obo.report.domain.Document;
+import com.qfree.obo.report.dto.DocumentCollectionResource;
 import com.qfree.obo.report.dto.DocumentResource;
 import com.qfree.obo.report.dto.ResourcePath;
 import com.qfree.obo.report.dto.RestErrorResource.RestError;
@@ -71,40 +75,40 @@ public class DocumentController extends AbstractBaseController {
 		this.reportParameterService = reportParameterService;
 	}
 
-	//	/*
-	//	 * This endpoint can be tested with:
-	//	 * 
-	//	 *   $ mvn clean spring-boot:run
-	//	 *   $ curl -X -iH "Accept: application/json;v=1" GET http://localhost:8080/rest/documents
-	//	 * 
-	//	 * @Transactional is used to avoid org.hibernate.LazyInitializationException
-	//	 * being thrown when evaluating Document.getReportParameters().
-	//	 */
-	//	@GET
-	//	@Produces(MediaType.APPLICATION_JSON)
-	//	@Transactional
-	//	@PreAuthorize("hasAuthority('" + Authority.AUTHORITY_NAME_MANAGE_REPORTS + "')")
-	//	public DocumentCollectionResource getList(
-	//			@HeaderParam("Accept") final String acceptHeader,
-	//			@QueryParam(ResourcePath.EXPAND_QP_NAME) final List<String> expand,
-	//			@QueryParam(ResourcePath.SHOWALL_QP_NAME) final List<String> showAll,
-	//			@Context final UriInfo uriInfo) {
-	//		Map<String, List<String>> queryParams = new HashMap<>();
-	//		queryParams.put(ResourcePath.EXPAND_QP_KEY, expand);
-	//		queryParams.put(ResourcePath.SHOWALL_QP_KEY, showAll);
-	//		RestApiVersion apiVersion = RestUtils.extractAPIVersion(acceptHeader, RestApiVersion.v1);
-	//
-	//		List<Document> documents = null;
-	//		documents = documentRepository.findAll();
-	//		return new DocumentCollectionResource(documents, Document.class,
-	//				uriInfo, queryParams, apiVersion);
-	//	}
+	/*
+	 * This endpoint can be tested with:
+	 * 
+	 *   $ mvn clean spring-boot:run
+	 *   $ curl -X -iH "Accept: application/json;v=1" GET http://localhost:8080/rest/documents
+	 * 
+	 * @Transactional is used to avoid org.hibernate.LazyInitializationException
+	 * being thrown when evaluating Document.getReportParameters().
+	 */
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	@Transactional
+	@PreAuthorize("hasAuthority('" + Authority.AUTHORITY_NAME_MANAGE_REPORTS + "')")
+	public DocumentCollectionResource getList(
+			@HeaderParam("Accept") final String acceptHeader,
+			@QueryParam(ResourcePath.EXPAND_QP_NAME) final List<String> expand,
+			@QueryParam(ResourcePath.SHOWALL_QP_NAME) final List<String> showAll,
+			@Context final UriInfo uriInfo) {
+		Map<String, List<String>> queryParams = new HashMap<>();
+		queryParams.put(ResourcePath.EXPAND_QP_KEY, expand);
+		queryParams.put(ResourcePath.SHOWALL_QP_KEY, showAll);
+		RestApiVersion apiVersion = RestUtils.extractAPIVersion(acceptHeader, RestApiVersion.v1);
+
+		List<Document> documents = null;
+		documents = documentRepository.findAll();
+		return new DocumentCollectionResource(documents, Document.class,
+				uriInfo, queryParams, apiVersion);
+	}
 
 	//	/*
 	//	 * This endpoint can be tested with:
 	//	 * 
 	//	 *   $ mvn clean spring-boot:run
-	//	 *   $ curl -iH "Accept: application/json;v=1" -H "Content-Type: application/json" -X POST -d \
+	//	 *   $ curl -X POST -iH "Accept: application/json;v=1" -H "Content-Type: application/json" -d \
 	//	 *   '{"report":{"reportId":"702d5daa-e23d-4f00-b32b-67b44c06d8f6"},\
 	//	 *   "fileName":"400-SomeReport_v3.9.rptdesign",\
 	//	 *   "rptdesign":"<?xml version=\"1.0\" encoding=\"UTF-8\"?><report></report>",\
@@ -271,5 +275,41 @@ public class DocumentController extends AbstractBaseController {
 		}
 
 		return created(documentResource);
+	}
+
+	/*
+	 * This endpoint can be tested with:
+	 * 
+	 *   $ mvn clean spring-boot:run
+	 *   $ curl -X GET -iH "Accept: application/json;v=1" \
+	 *   http://localhost:8080/rest/documents/2d01c072-5d9e-44f9-bfe3-b785d9a6bb0d?expand=documents
+	 * 
+	 * @Transactional is used to avoid org.hibernate.LazyInitializationException
+	 * being thrown.
+	 */
+	@Path("/{id}")
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	@Transactional
+	@PreAuthorize("hasAuthority('" + Authority.AUTHORITY_NAME_MANAGE_REPORTS + "')")
+	public DocumentResource getById(
+			@PathParam("id") final UUID id,
+			@HeaderParam("Accept") final String acceptHeader,
+			@QueryParam(ResourcePath.EXPAND_QP_NAME) final List<String> expand,
+			@QueryParam(ResourcePath.SHOWALL_QP_NAME) final List<String> showAll,
+			@Context final UriInfo uriInfo) {
+		Map<String, List<String>> queryParams = new HashMap<>();
+		queryParams.put(ResourcePath.EXPAND_QP_KEY, expand);
+		queryParams.put(ResourcePath.SHOWALL_QP_KEY, showAll);
+		RestApiVersion apiVersion = RestUtils.extractAPIVersion(acceptHeader, RestApiVersion.v1);
+
+		if (RestUtils.AUTO_EXPAND_PRIMARY_RESOURCES) {
+			addToExpandList(expand, Document.class);
+		}
+		Document document = documentRepository.findOne(id);
+		RestUtils.ifNullThen404(document, Document.class, "documentId", id.toString());
+		DocumentResource documentResource = new DocumentResource(document,
+				uriInfo, queryParams, apiVersion);
+		return documentResource;
 	}
 }
