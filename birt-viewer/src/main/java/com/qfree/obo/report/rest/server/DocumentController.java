@@ -312,4 +312,62 @@ public class DocumentController extends AbstractBaseController {
 				uriInfo, queryParams, apiVersion);
 		return documentResource;
 	}
+
+	/**
+	 * This endpoint returns the file content for a specified {@link Document}
+	 * entity.
+	 * 
+	 * <p>
+	 * A representation of this document is stored in the
+	 * {@link Document#content} field.
+	 * <p>
+	 * This endpoint can be tested with:
+	 * 
+	 * <pre>
+	 * <code>$ mvn clean spring-boot:run
+	 * $ curl -X GET -iH "Accept: application/pdf;v=1" \
+	 * http://localhost:8080/rest/documents/2d01c072-5d9e-44f9-bfe3-b785d9a6bb0d/content</code>
+	 * </pre>
+	 * 
+	 * @param id
+	 * @param acceptHeader
+	 * @param uriInfo
+	 * @return
+	 */
+	@Path("/{id}/content")
+	@GET
+	@Transactional
+	/*
+	 * MediaType.APPLICATION_JSON seems to be needed here in order to be able
+	 * to return a RestErrorResource from DocumentContentOutputStream if a problem
+	 * is encountered.
+	 */
+	//@Produces({ MediaType.APPLICATION_JSON })
+	@PreAuthorize("hasAuthority('" + Authority.AUTHORITY_NAME_MANAGE_REPORTS + "')")
+	public Response getDocumentContentByDocumentId(
+			@PathParam("id") final UUID id,
+			@HeaderParam("Accept") final String acceptHeader,
+			//	@QueryParam(ResourcePath.EXPAND_QP_NAME) final List<String> expand,
+			//	@QueryParam(ResourcePath.SHOWALL_QP_NAME) final List<String> showAll,
+			@Context final UriInfo uriInfo) {
+		//	Map<String, List<String>> queryParams = new HashMap<>();
+		//	queryParams.put(ResourcePath.EXPAND_QP_KEY, expand);
+		//	queryParams.put(ResourcePath.SHOWALL_QP_KEY, showAll);
+		RestApiVersion apiVersion = RestUtils.extractAPIVersion(acceptHeader, RestApiVersion.v1);
+
+		Document document = documentRepository.findOne(id);
+		RestUtils.ifNullThen404(document, Document.class, "documentId", id.toString());
+
+		return Response.status(Response.Status.OK)
+				.entity(new DocumentContentOutputStream(document))
+				//.type(document.getDocumentFormat().getInternetMediaType())
+				//.header("content-disposition", String.format("attachment; filename = \"%s\"", document.getFileName()))
+				/*
+				 * No filename is specified here. Chrome will open a "Save File"
+				 * dialog with a filename of "content.html" filled in. This can
+				 * be overridden with whichever name you like.
+				 */
+				.header("content-disposition", "attachment")
+				.build();
+	}
 }
