@@ -8,7 +8,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.qfree.obo.report.db.AssetTreeRepository;
 import com.qfree.obo.report.domain.AssetTree;
-import com.qfree.obo.report.domain.ParameterGroup;
 import com.qfree.obo.report.dto.AssetTreeResource;
 import com.qfree.obo.report.util.RestUtils;
 
@@ -30,9 +29,9 @@ public class AssetTreeService {
 		RestUtils.ifNewResourceIdNotNullThen403(assetTreeResource.getAssetTreeId(), AssetTree.class,
 				"assetTreeId", assetTreeResource.getAssetTreeId());
 
-		RestUtils.ifAttrNullThen403(assetTreeResource.getName(), ParameterGroup.class, "name");
-		RestUtils.ifAttrNullThen403(assetTreeResource.getAbbreviation(), ParameterGroup.class, "abbreviation");
-		RestUtils.ifAttrNullThen403(assetTreeResource.getDirectory(), ParameterGroup.class, "directory");
+		RestUtils.ifAttrNullThen403(assetTreeResource.getName(), AssetTree.class, "name");
+		RestUtils.ifAttrNullThen403(assetTreeResource.getAbbreviation(), AssetTree.class, "abbreviation");
+		RestUtils.ifAttrNullThen403(assetTreeResource.getDirectory(), AssetTree.class, "directory");
 
 		return saveOrUpdateFromResource(assetTreeResource);
 	}

@@ -28,6 +28,11 @@ public class AssetTypeService {
 	public AssetType saveNewFromResource(AssetTypeResource assetTypeResource) {
 		RestUtils.ifNewResourceIdNotNullThen403(assetTypeResource.getAssetTypeId(), AssetType.class,
 				"assetTypeId", assetTypeResource.getAssetTypeId());
+
+		RestUtils.ifAttrNullThen403(assetTypeResource.getName(), AssetType.class, "name");
+		RestUtils.ifAttrNullThen403(assetTypeResource.getAbbreviation(), AssetType.class, "abbreviation");
+		RestUtils.ifAttrNullThen403(assetTypeResource.getDirectory(), AssetType.class, "directory");
+
 		return saveOrUpdateFromResource(assetTypeResource);
 	}
 
