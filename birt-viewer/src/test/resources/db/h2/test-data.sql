@@ -31,6 +31,21 @@ insert into reporting.job_status (job_status_id, description, abbreviation, acti
 insert into reporting.job_status (job_status_id, description, abbreviation, active, created_on) values ('5125c537-e178-42de-b4dd-e538fa3da802', 'Canceled'  , 'CANCELED'  , true, '2015-10-14T12:00:05');
 
 
+-- Create [asset_tree] rows:
+--
+-- "qfree" directory for assets used by Q-Free-written reports.
+insert into reporting.asset_tree (asset_tree_id, name, abbreviation, directory, active, created_on) values ('7f9d0216-48d7-49ba-b043-ec48db03c938', 'Q-Free'  , 'QFREE', 'qfree' , true, '2016-01-31T08:00:00');
+-- "assets" directory for assets used by customer-written reports.
+insert into reporting.asset_tree (asset_tree_id, name, abbreviation, directory, active, created_on) values ('272199f9-d407-492f-a147-41a2b7d0cd02', 'Customer', 'CUST' , 'assets', true, '2016-01-31T08:00:00');
+ 
+
+-- Create [asset_type] rows:
+insert into reporting.asset_type (asset_type_id, name, abbreviation, directory, active, created_on) values ('f2f4b13f-9c45-4515-bb4b-62e8ccc3d95c', 'CSS file'        , 'CSS'     , 'css'       , true, '2016-01-31T09:00:00');
+insert into reporting.asset_type (asset_type_id, name, abbreviation, directory, active, created_on) values ('1e7ddbbc-8b40-4373-bfc5-6e6d3d5964d8', 'Image file'      , 'IMAGE'   , 'images'    , true, '2016-01-31T09:00:00');
+insert into reporting.asset_type (asset_type_id, name, abbreviation, directory, active, created_on) values ('1c488bcf-15ab-4fcb-8ab8-23cda9342a77', 'JavaScript file' , 'JS'      , 'js'        , true, '2016-01-31T09:00:00');
+insert into reporting.asset_type (asset_type_id, name, abbreviation, directory, active, created_on) values ('26835616-00e2-475d-89ce-11c12e659605', 'BIRT Library'    , 'BIRT LIB', 'libraries' , true, '2016-01-31T09:00:00');
+
+
 insert into reporting.report (report_id, report_category_id, name, number, sort_order, active, created_on) values ('d65f3d9c-f67d-4beb-9936-9dfa19aa1407', '7a482694-51d2-42d0-b0e2-19dd13bbbc64', 'Report name #01', 100, 100, true , '2014-06-09T22:00:00'); --, (SELECT rptdesign FROM tmp_rptdesign));
 insert into reporting.report (report_id, report_category_id, name, number, sort_order, active, created_on) values ('c7f1d394-9814-4ede-bb01-2700187d79ca', '7a482694-51d2-42d0-b0e2-19dd13bbbc64', 'Report name #02', 200, 200, true , '2014-06-09T22:10:00'); --, (SELECT rptdesign FROM tmp_rptdesign));
 insert into reporting.report (report_id, report_category_id, name, number, sort_order, active, created_on) values ('fe718314-5b39-40e7-aed2-279354c04a9d', '7a482694-51d2-42d0-b0e2-19dd13bbbc64', 'Report name #03', 300, 300, false, '2014-07-04T23:30:00'); --, (SELECT rptdesign FROM tmp_rptdesign));

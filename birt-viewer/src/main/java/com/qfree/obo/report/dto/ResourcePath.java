@@ -2,6 +2,8 @@ package com.qfree.obo.report.dto;
 
 import java.util.List;
 
+import com.qfree.obo.report.domain.AssetTree;
+import com.qfree.obo.report.domain.AssetType;
 import com.qfree.obo.report.domain.Authority;
 import com.qfree.obo.report.domain.Configuration;
 import com.qfree.obo.report.domain.Document;
@@ -30,6 +32,21 @@ import com.qfree.obo.report.domain.SubscriptionParameterValue;
  */
 public enum ResourcePath {
 
+	//	ASSETS(
+	//			ResourcePath.ASSETS_PATH,
+	//			ResourcePath.ASSET_EXPAND_PARAM,
+	//			ResourcePath.ASSET_SHOWALL_PARAM,
+	//			Asset.class),
+	ASSETTREES(
+			ResourcePath.ASSETTREES_PATH,
+			ResourcePath.ASSETTREE_EXPAND_PARAM,
+			ResourcePath.ASSETTREE_SHOWALL_PARAM,
+			AssetTree.class),
+	ASSETTYPES(
+			ResourcePath.ASSETTYPES_PATH,
+			ResourcePath.ASSETTYPE_EXPAND_PARAM,
+			ResourcePath.ASSETTYPE_SHOWALL_PARAM,
+			AssetType.class),
 	AUTHORITIES(
 			ResourcePath.AUTHORITIES_PATH,
 			ResourcePath.AUTHORITY_EXPAND_PARAM,
@@ -142,6 +159,9 @@ public enum ResourcePath {
 	 * within the ResourcePath enum because that enum is not considered to be a 
 	 * constant expression.
 	 */
+	public static final String ASSETS_PATH = ResourcePath.PATH_SEPARATOR + "assets";
+	public static final String ASSETTREES_PATH = ResourcePath.PATH_SEPARATOR + "assetTrees";
+	public static final String ASSETTYPES_PATH = ResourcePath.PATH_SEPARATOR + "assetTypes";
 	public static final String AUTHORITIES_PATH = ResourcePath.PATH_SEPARATOR + "authorities";
 	public static final String CONFIGURATIONS_PATH = ResourcePath.PATH_SEPARATOR + "configurations";
 	public static final String DOCUMENTS_PATH = ResourcePath.PATH_SEPARATOR + "documents";
@@ -178,6 +198,9 @@ public enum ResourcePath {
 	 * These are the values for each resource class that can be assigned to the
 	 * "expand" query parameter.
 	 */
+	public static final String ASSET_EXPAND_PARAM = "assets";
+	public static final String ASSETTREE_EXPAND_PARAM = "assetTrees";
+	public static final String ASSETTYPE_EXPAND_PARAM = "assetTypes";
 	public static final String AUTHORITY_EXPAND_PARAM = "authorities";
 	public static final String CONFIGURATION_EXPAND_PARAM = "configurations";
 	public static final String DOCUMENT_EXPAND_PARAM = "documents";
@@ -215,6 +238,9 @@ public enum ResourcePath {
 	 * These are the values for each resource class that can be assigned to the
 	 * "showall" query parameter.
 	 */
+	public static final String ASSET_SHOWALL_PARAM = ASSET_EXPAND_PARAM;
+	public static final String ASSETTREE_SHOWALL_PARAM = ASSETTREE_EXPAND_PARAM;
+	public static final String ASSETTYPE_SHOWALL_PARAM = ASSETTYPE_EXPAND_PARAM;
 	public static final String AUTHORITY_SHOWALL_PARAM = AUTHORITY_EXPAND_PARAM;
 	public static final String CONFIGURATION_SHOWALL_PARAM = CONFIGURATION_EXPAND_PARAM;
 	public static final String DOCUMENT_SHOWALL_PARAM = DOCUMENT_EXPAND_PARAM;

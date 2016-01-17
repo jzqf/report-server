@@ -28,6 +28,21 @@ insert into reporting.job_status (job_status_id, description, abbreviation, acti
 insert into reporting.job_status (job_status_id, description, abbreviation, active, created_on) values ('5125c537-e178-42de-b4dd-e538fa3da802', 'Canceled'  , 'CANCELED'  , true, current_timestamp AT TIME ZONE 'UTC');
 
 
+-- Create [asset_tree] rows:
+--
+-- "qfree" directory for assets used by Q-Free-written reports.
+insert into reporting.asset_tree (asset_tree_id, name, abbreviation, directory, active, created_on) values ('7f9d0216-48d7-49ba-b043-ec48db03c938', 'Q-Free'  , 'QFREE', 'qfree' , true, current_timestamp AT TIME ZONE 'UTC');
+-- "assets" directory for assets used by customer-written reports.
+insert into reporting.asset_tree (asset_tree_id, name, abbreviation, directory, active, created_on) values ('272199f9-d407-492f-a147-41a2b7d0cd02', 'Customer', 'CUST' , 'assets', true, current_timestamp AT TIME ZONE 'UTC');
+ 
+
+-- Create [asset_type] rows:
+insert into reporting.asset_type (asset_type_id, name, abbreviation, directory, active, created_on) values ('f2f4b13f-9c45-4515-bb4b-62e8ccc3d95c', 'CSS file'        , 'CSS'     , 'css'       , true, current_timestamp AT TIME ZONE 'UTC');
+insert into reporting.asset_type (asset_type_id, name, abbreviation, directory, active, created_on) values ('1e7ddbbc-8b40-4373-bfc5-6e6d3d5964d8', 'Image file'      , 'IMAGE'   , 'images'    , true, current_timestamp AT TIME ZONE 'UTC');
+insert into reporting.asset_type (asset_type_id, name, abbreviation, directory, active, created_on) values ('1c488bcf-15ab-4fcb-8ab8-23cda9342a77', 'JavaScript file' , 'JS'      , 'js'        , true, current_timestamp AT TIME ZONE 'UTC');
+insert into reporting.asset_type (asset_type_id, name, abbreviation, directory, active, created_on) values ('26835616-00e2-475d-89ce-11c12e659605', 'BIRT Library'    , 'BIRT LIB', 'libraries' , true, current_timestamp AT TIME ZONE 'UTC');
+
+
 -- Create "authority" rows:
 INSERT INTO reporting.authority (authority_id, name, active, created_on) VALUES ('e2883c0e-5972-4225-a805-27410a2866f4', 'USE_RESTAPI'         , true, current_timestamp AT TIME ZONE 'UTC');
 INSERT INTO reporting.authority (authority_id, name, active, created_on) VALUES ('1e4f29b9-3183-4f54-a4ee-96c2347d7e06', 'MANAGE_AUTHORITIES'  , true, current_timestamp AT TIME ZONE 'UTC');
