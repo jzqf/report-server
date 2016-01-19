@@ -30,6 +30,7 @@ import com.qfree.obo.report.domain.Asset;
 import com.qfree.obo.report.domain.Authority;
 import com.qfree.obo.report.dto.AssetCollectionResource;
 import com.qfree.obo.report.dto.AssetResource;
+import com.qfree.obo.report.dto.DocumentResource;
 import com.qfree.obo.report.dto.ResourcePath;
 import com.qfree.obo.report.service.AssetService;
 import com.qfree.obo.report.util.RestUtils;
@@ -162,8 +163,7 @@ public class AssetController extends AbstractBaseController {
 	 *   -iH "Accept: application/json;v=1" -H "Content-Type: application/json" -d \
 	 *   '{"filename":"new file name.png",\
 	 *   "assetTree":{"assetTreeId": "7f9d0216-48d7-49ba-b043-ec48db03c938"},\
-	 *   "assetType": {"assetTypeId": "1e7ddbbc-8b40-4373-bfc5-6e6d3d5964d8"},\
-	 *   "document": {"documentId": "fbed70fe-c9b9-4b80-b827-f9e2f05ba91f"}}' \
+	 *   "assetType": {"assetTypeId": "1e7ddbbc-8b40-4373-bfc5-6e6d3d5964d8"}}' \
 	 *   http://localhost:8080/rest/assets/1c72d7d7-87a7-4980-89f4-4590b1fe7a09
 	 */
 	@Path("/{id}")
@@ -211,6 +211,14 @@ public class AssetController extends AbstractBaseController {
 		 */
 		assetResource.setAssetId(asset.getAssetId());
 		assetResource.setCreatedOn(asset.getCreatedOn());
+		/*
+		 * Construct a DocumentResource to specify the CURRENTLY
+		 * selected Document.
+		 */
+		UUID currentDocumentId = asset.getDocument().getDocumentId();
+		DocumentResource documentResource = new DocumentResource();
+		documentResource.setDocumentId(currentDocumentId);
+		assetResource.setDocumentResource(documentResource);
 
 		/*
 		 * Save updated entity.
