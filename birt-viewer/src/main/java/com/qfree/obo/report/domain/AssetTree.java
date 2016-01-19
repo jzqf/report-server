@@ -2,12 +2,14 @@ package com.qfree.obo.report.domain;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -67,8 +69,8 @@ public class AssetTree implements Serializable {
 	@Column(name = "active", nullable = false)
 	private Boolean active;
 
-	//	@OneToMany(targetEntity = Asset.class, mappedBy = "assetTree")
-	//	private List<Asset> assets;
+	@OneToMany(targetEntity = Asset.class, mappedBy = "assetTree")
+	private List<Asset> assets;
 
 	@NotNull
 	@Temporal(TemporalType.TIMESTAMP)
@@ -146,13 +148,13 @@ public class AssetTree implements Serializable {
 		this.active = active;
 	}
 
-	//	public List<Asset> getAssets() {
-	//		return assets;
-	//	}
-	//
-	//	public void setAssets(List<Asset> assets) {
-	//		this.assets = assets;
-	//	}
+	public List<Asset> getAssets() {
+		return assets;
+	}
+
+	public void setAssets(List<Asset> assets) {
+		this.assets = assets;
+	}
 
 	public Date getCreatedOn() {
 		return createdOn;

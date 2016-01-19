@@ -2,12 +2,14 @@ package com.qfree.obo.report.domain;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -50,15 +52,28 @@ public class Document implements Serializable {
 	@Column(name = "content", nullable = true)
 	private byte[] content;
 
-	//	@OneToMany(targetEntity = Asset.class, mappedBy = "document")
-	//	private List<Asset> assets;
+	@OneToMany(targetEntity = Asset.class, mappedBy = "document")
+	private List<Asset> assets;
 
 	@NotNull
 	@Temporal(TemporalType.TIMESTAMP)
 	@Column(name = "created_on", nullable = false)
 	private Date createdOn;
 
-	private Document() {
+	/*
+	 * The "document" field of Asset is configured for lazy loading. In order 
+	 * for this to work, it is necessary for Document to have  a NON-PRIVATE 
+	 * no-argument constructor. If Document's no-arg constructor is private, an
+	 * org.springframework.orm.jpa.JpaSystemException will be thrown that will
+	 * report something like:
+	 * 
+	 *   Javassist Enhancement failed: com.qfree.obo.report.domain.Document; 
+	 *   nested exception is org.hibernate.HibernateException: Javassist 
+	 *   Enhancement failed: com.qfree.obo.report.domain.Document
+	 * 
+	 * Must have non-private visibility:
+	 */
+	Document() {
 	}
 
 	public Document(byte[] content) {
@@ -97,13 +112,13 @@ public class Document implements Serializable {
 		this.content = content;
 	}
 
-	//	public List<Asset> getAssets() {
-	//		return assets;
-	//	}
-	//
-	//	public void setAssets(List<Asset> assets) {
-	//		this.assets = assets;
-	//	}
+	public List<Asset> getAssets() {
+		return assets;
+	}
+
+	public void setAssets(List<Asset> assets) {
+		this.assets = assets;
+	}
 
 	public Date getCreatedOn() {
 		return createdOn;

@@ -248,6 +248,12 @@ public class RestErrorResource {
 		FORBIDDEN_ROLE_AUTHORITY_VIOLATION_UPDATE_ROLE(
 				Response.Status.FORBIDDEN, "403.31",
 				"The authenticated role does not have the authority to update the selected Role resource.", null),
+		FORBIDDEN_ASSET_ASSETTREE_NULL(Response.Status.FORBIDDEN, "403.32",
+				"assetTreeId is null for an asset being saved", null),
+		FORBIDDEN_ASSET_ASSETTYPE_NULL(Response.Status.FORBIDDEN, "403.33",
+				"assetTypeId is null for an asset being saved", null),
+		FORBIDDEN_ASSET_DOCUMENT_NULL(Response.Status.FORBIDDEN, "403.34",
+				"documentId is null for an asset being saved", null),
 		//FORBIDDEN_RESOURCE_ROLE_REPORT_ACCESS_VIOLATION(
 		//		Response.Status.FORBIDDEN, "403.XX",
 		//		"The authenticated role does not have permission to view the requested report.", null),

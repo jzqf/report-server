@@ -2,6 +2,7 @@ package com.qfree.obo.report.dto;
 
 import java.util.List;
 
+import com.qfree.obo.report.domain.Asset;
 import com.qfree.obo.report.domain.AssetTree;
 import com.qfree.obo.report.domain.AssetType;
 import com.qfree.obo.report.domain.Authority;
@@ -32,11 +33,11 @@ import com.qfree.obo.report.domain.SubscriptionParameterValue;
  */
 public enum ResourcePath {
 
-	//	ASSETS(
-	//			ResourcePath.ASSETS_PATH,
-	//			ResourcePath.ASSET_EXPAND_PARAM,
-	//			ResourcePath.ASSET_SHOWALL_PARAM,
-	//			Asset.class),
+	ASSETS(
+			ResourcePath.ASSETS_PATH,
+			ResourcePath.ASSET_EXPAND_PARAM,
+			ResourcePath.ASSET_SHOWALL_PARAM,
+			Asset.class),
 	ASSETTREES(
 			ResourcePath.ASSETTREES_PATH,
 			ResourcePath.ASSETTREE_EXPAND_PARAM,
