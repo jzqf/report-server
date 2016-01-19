@@ -5,14 +5,17 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.HeaderParam;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
 import org.slf4j.Logger;
@@ -151,73 +154,70 @@ public class AssetController extends AbstractBaseController {
 		return assetResource;
 	}
 
-	//	/*
-	//	 * This endpoint can be tested with:
-	//	 * 
-	//	 *   $ mvn clean spring-boot:run
-	//	 *   $ curl -X PUT -u reportserver-restadmin:ReportServer*RESTADMIN \
-	//	 *   -iH "Accept: application/json;v=1" -H "Content-Type: application/json" -d \
-	//	 *   '{"name":"Q-Free (modified)","abbreviation":"QFREE-MOD","directory":"qfree-mod","active":true}' \
-	//	 *   http://localhost:8080/rest/assets/7f9d0216-48d7-49ba-b043-ec48db03c938
-	//	 */
-	//	@Path("/{id}")
-	//	@PUT
-	//	@Consumes(MediaType.APPLICATION_JSON)
-	//	@Produces(MediaType.APPLICATION_JSON)
-	//	@Transactional
-	//	@PreAuthorize("hasAuthority('" + Authority.AUTHORITY_NAME_UPLOAD_REPORTS + "')")
-	//	public Response updateById(
-	//			AssetResource assetResource,
-	//			@PathParam("id") final UUID id,
-	//			@HeaderParam("Accept") final String acceptHeader,
-	//			@QueryParam(ResourcePath.EXPAND_QP_NAME) final List<String> expand,
-	//			@QueryParam(ResourcePath.SHOWALL_QP_NAME) final List<String> showAll,
-	//			@Context final UriInfo uriInfo) {
-	//		Map<String, List<String>> queryParams = new HashMap<>();
-	//		queryParams.put(ResourcePath.EXPAND_QP_KEY, expand);
-	//		queryParams.put(ResourcePath.SHOWALL_QP_KEY, showAll);
-	//		RestApiVersion apiVersion = RestUtils.extractAPIVersion(acceptHeader, RestApiVersion.v1);
-	//
-	//		/*
-	//		 * Retrieve Asset entity to be updated.
-	//		 */
-	//		Asset asset = assetRepository.findOne(id);
-	//		RestUtils.ifNullThen404(asset, Asset.class, "assetId", id.toString());
-	//
-	//		/*
-	//		 * Treat attributes of parameterGroupResource that are effectively
-	//		 * required. These attributes can be omitted in the PUT data, but in
-	//		 * that case they are then set here to the CURRENT values from the
-	//		 * parameterGroup entity. These are that attributes that are required,
-	//		 * but if their value does not need to be changed, they do not need to 
-	//		 * be included in the PUT data.
-	//		 */
-	//		if (assetResource.getName() == null) {
-	//			assetResource.setName(asset.getName());
-	//		}
-	//		if (assetResource.getAbbreviation() == null) {
-	//			assetResource.setAbbreviation(asset.getAbbreviation());
-	//		}
-	//		if (assetResource.getDirectory() == null) {
-	//			assetResource.setDirectory(asset.getDirectory());
-	//		}
-	//
-	//		/*
-	//		 * The values for the following attributes cannot be changed. These
-	//		 * attributes should not appear in the PUT data, but if any do, their
-	//		 * values will not be used because they will be overridden here by
-	//		 * forcing their values to be the same as the current value stored for
-	//		 * the Asset entity.
-	//		 */
-	//		assetResource.setAssetId(asset.getAssetId());
-	//		assetResource.setCreatedOn(asset.getCreatedOn());
-	//
-	//		/*
-	//		 * Save updated entity.
-	//		 */
-	//		asset = assetService.saveExistingFromResource(assetResource);
-	//
-	//		return Response.status(Response.Status.OK).build();
-	//	}
+	/*
+	 * This endpoint can be tested with:
+	 * 
+	 *   $ mvn clean spring-boot:run
+	 *   $ curl -X PUT -u reportserver-restadmin:ReportServer*RESTADMIN \
+	 *   -iH "Accept: application/json;v=1" -H "Content-Type: application/json" -d \
+	 *   '{"filename":"new file name.png",\
+	 *   "assetTree":{"assetTreeId": "7f9d0216-48d7-49ba-b043-ec48db03c938"},\
+	 *   "assetType": {"assetTypeId": "1e7ddbbc-8b40-4373-bfc5-6e6d3d5964d8"},\
+	 *   "document": {"documentId": "fbed70fe-c9b9-4b80-b827-f9e2f05ba91f"}}' \
+	 *   http://localhost:8080/rest/assets/1c72d7d7-87a7-4980-89f4-4590b1fe7a09
+	 */
+	@Path("/{id}")
+	@PUT
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	@Transactional
+	@PreAuthorize("hasAuthority('" + Authority.AUTHORITY_NAME_UPLOAD_REPORTS + "')")
+	public Response updateById(
+			AssetResource assetResource,
+			@PathParam("id") final UUID id,
+			@HeaderParam("Accept") final String acceptHeader,
+			@QueryParam(ResourcePath.EXPAND_QP_NAME) final List<String> expand,
+			@QueryParam(ResourcePath.SHOWALL_QP_NAME) final List<String> showAll,
+			@Context final UriInfo uriInfo) {
+		Map<String, List<String>> queryParams = new HashMap<>();
+		queryParams.put(ResourcePath.EXPAND_QP_KEY, expand);
+		queryParams.put(ResourcePath.SHOWALL_QP_KEY, showAll);
+		RestApiVersion apiVersion = RestUtils.extractAPIVersion(acceptHeader, RestApiVersion.v1);
+
+		/*
+		 * Retrieve Asset entity to be updated.
+		 */
+		Asset asset = assetRepository.findOne(id);
+		RestUtils.ifNullThen404(asset, Asset.class, "assetId", id.toString());
+
+		/*
+		 * Treat attributes of parameterGroupResource that are effectively
+		 * required. These attributes can be omitted in the PUT data, but in
+		 * that case they are then set here to the CURRENT values from the
+		 * parameterGroup entity. These are that attributes that are required,
+		 * but if their value does not need to be changed, they do not need to 
+		 * be included in the PUT data.
+		 */
+		if (assetResource.getFilename() == null) {
+			assetResource.setFilename(asset.getFilename());
+		}
+
+		/*
+		 * The values for the following attributes cannot be changed. These
+		 * attributes should not appear in the PUT data, but if any do, their
+		 * values will not be used because they will be overridden here by
+		 * forcing their values to be the same as the current value stored for
+		 * the Asset entity.
+		 */
+		assetResource.setAssetId(asset.getAssetId());
+		assetResource.setCreatedOn(asset.getCreatedOn());
+
+		/*
+		 * Save updated entity.
+		 */
+		asset = assetService.saveExistingFromResource(assetResource);
+
+		return Response.status(Response.Status.OK).build();
+	}
 
 }
