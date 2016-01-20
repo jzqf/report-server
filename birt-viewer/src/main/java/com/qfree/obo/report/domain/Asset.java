@@ -35,7 +35,7 @@ import com.qfree.obo.report.util.DateUtils;
 @Entity
 @Table(name = "asset", schema = "reporting",
 		uniqueConstraints = {
-				@UniqueConstraint(columnNames = { "filename", "assettree_id", "assettype_id" },
+				@UniqueConstraint(columnNames = { "filename", "asset_tree_id", "asset_type_id" },
 						name = "uq_asset_name_tree_type") })
 @TypeDef(name = "uuid-custom", defaultForType = UUID.class, typeClass = UuidCustomType.class)
 public class Asset implements Serializable {
@@ -71,7 +71,7 @@ public class Asset implements Serializable {
 	 * is not what is wanted.
 	 */
 	@NotNull
-	@JoinColumn(name = "assettree_id", nullable = false,
+	@JoinColumn(name = "asset_tree_id", nullable = false,
 			foreignKey = @ForeignKey(name = "fk_asset_assettree") ,
 			columnDefinition = "uuid")
 	private AssetTree assetTree;
@@ -84,7 +84,7 @@ public class Asset implements Serializable {
 	 * is not what is wanted.
 	 */
 	@NotNull
-	@JoinColumn(name = "assettype_id", nullable = false,
+	@JoinColumn(name = "asset_type_id", nullable = false,
 			foreignKey = @ForeignKey(name = "fk_asset_assettype") ,
 			columnDefinition = "uuid")
 	private AssetType assetType;
