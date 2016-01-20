@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.UUID;
 
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.HeaderParam;
 import javax.ws.rs.POST;
@@ -455,6 +456,94 @@ public class AssetController extends AbstractBaseController {
 		asset = assetService.saveExistingFromResource(assetResource);
 
 		return Response.status(Response.Status.OK).build();
+	}
+
+	/*
+	 * This endpoint can be tested with:
+	 * 
+	 *   $ mvn clean spring-boot:run
+	 *   $ curl -X DELETE -u reportserver-restadmin:ReportServer*RESTADMIN \
+	 *   -iH "Accept: application/json;v=1" -H "Content-Type: application/json" \
+	 *   http://localhost:8080/rest/assets/9e3ad41a-e026-43b6-89e1-5201deeee7f0
+	 */
+	@Path("/{id}")
+	@DELETE
+	@Transactional
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	@PreAuthorize("hasAuthority('" + Authority.AUTHORITY_NAME_UPLOAD_REPORTS + "')")
+	public AssetResource deleteById(
+			//public Response updateById(
+			@PathParam("id") final UUID id,
+			@HeaderParam("Accept") final String acceptHeader,
+			@QueryParam(ResourcePath.EXPAND_QP_NAME) final List<String> expand,
+			@QueryParam(ResourcePath.SHOWALL_QP_NAME) final List<String> showAll,
+			@Context final UriInfo uriInfo) {
+		Map<String, List<String>> queryParams = new HashMap<>();
+		queryParams.put(ResourcePath.EXPAND_QP_KEY, expand);
+		queryParams.put(ResourcePath.SHOWALL_QP_KEY, showAll);
+		RestApiVersion apiVersion = RestUtils.extractAPIVersion(acceptHeader, RestApiVersion.v1);
+
+		/*
+		 * Retrieve Asset entity to be deleted.
+		 */
+		Asset asset = assetRepository.findOne(id);
+		logger.debug("asset to be deleted = {}", asset);
+		RestUtils.ifNullThen404(asset, Asset.class, "assetId", id.toString());
+
+		/*
+		 * Retrieve Asset entity's Document entity to be deleted.
+		 */
+		Document document = asset.getDocument();
+		logger.debug("document to be deleted = {}", document);
+		if (document == null) {
+			throw new RestApiException(RestError.NOT_FOUND_RESOUCE, Document.class, "asset.getDocument()", null);
+		}
+
+		/*
+		 * If the Asset entity is successfully deleted, it is 
+		 * returned as the entity body so it is clear to the caller precisely
+		 * which entity was deleted. Here, the resource to be returned is 
+		 * created before the entity is deleted.
+		 */
+		addToExpandList(expand, Asset.class);
+		addToExpandList(expand, AssetTree.class);
+		addToExpandList(expand, AssetType.class);
+		addToExpandList(expand, Document.class);
+		AssetResource assetResource = new AssetResource(asset, uriInfo, queryParams, apiVersion);
+		logger.debug("assetResource = {}", assetResource);
+
+		/*
+		 * Delete Asset entity.
+		 */
+		assetRepository.delete(asset);
+		logger.info("asset (after deletion) = {}", asset);
+
+		/*
+		 * Delete Asset entity's Document entity.
+		 */
+		documentRepository.delete(document);
+		logger.info("document (after deletion) = {}", document);
+
+		/*
+		 * Delete the asset from the file system.
+		 */
+		// XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+
+		//	/*
+		//	 * Confirm that the entity was, indeed, deleted. asset here
+		//	 * should be null. Currently, I don't do anything based on this check.
+		//	 * I assume that the delete call above with throw some sort of 
+		//	 * RuntimeException if that happens, or some other exception will be
+		//	 * thrown by the back-end database (PostgreSQL) code when the 
+		//	 * transaction is eventually committed. I don't have the time to look 
+		//	 * into this at the moment.
+		//	 */
+		//	asset = assetRepository.findOne(assetResource.getAssetId());
+		//	logger.info("asset (after find()) = {}", asset); // asset is null here
+
+		//return Response.status(Response.Status.OK).build();
+		return assetResource;
 	}
 
 }
