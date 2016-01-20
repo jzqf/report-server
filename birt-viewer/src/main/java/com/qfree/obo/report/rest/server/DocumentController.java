@@ -3,14 +3,11 @@ package com.qfree.obo.report.rest.server;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import javax.servlet.ServletConfig;
-import javax.servlet.ServletContext;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.HeaderParam;
@@ -174,10 +171,6 @@ public class DocumentController extends AbstractBaseController {
 	 *   
 	 *   3: Select a document from the file system and then click the button
 	 *      labeled "Upload".
-	 * 
-	 * Only *one* of reportId and reportName need be defined, as long as a 
-	 * they can be used to locate a parent Report. If both are defined, reportId
-	 * will be used.
 	 */
 	@POST
 	@Consumes(MediaType.MULTIPART_FORM_DATA)
@@ -190,42 +183,16 @@ public class DocumentController extends AbstractBaseController {
 			@HeaderParam("Accept") final String acceptHeader,
 			@QueryParam(ResourcePath.EXPAND_QP_NAME) final List<String> expand,
 			@QueryParam(ResourcePath.SHOWALL_QP_NAME) final List<String> showAll,
-			@Context final ServletContext servletContext,
-			@Context final ServletConfig servletConfig,
 			@Context final UriInfo uriInfo) throws BirtException, RptdesignOpenFromStreamException {
 		Map<String, List<String>> queryParams = new HashMap<>();
 		queryParams.put(ResourcePath.EXPAND_QP_KEY, expand);
 		queryParams.put(ResourcePath.SHOWALL_QP_KEY, showAll);
 		RestApiVersion apiVersion = RestUtils.extractAPIVersion(acceptHeader, RestApiVersion.v1);
 
-		logger.debug("servletContext.getContextPath() = {}", servletContext.getContextPath());
-		logger.debug("servletContext.getRealPath(\"\") = {}", servletContext.getRealPath(""));
-		logger.debug("servletContext.getRealPath(\"/\") = {}", servletContext.getRealPath("/"));
-
-		Enumeration<String> servletContextinitParamEnum = servletContext.getInitParameterNames();
-		while (servletContextinitParamEnum.hasMoreElements()) {
-			String servletContextInitParamName = servletContextinitParamEnum.nextElement();
-			logger.debug("servletContextInitParamName = {}", servletContextInitParamName);
-		}
-		/*
-		 * This returns null if this application is run via:
-		 *  
-		 *     mvn clean spring-boot:run
-		 */
-		logger.debug("BIRT_VIEWER_WORKING_FOLDER = {}", servletContext.getInitParameter("BIRT_VIEWER_WORKING_FOLDER"));
-
-		Enumeration<String> servletConfigInitParamEnum = servletConfig.getInitParameterNames();
-		while (servletConfigInitParamEnum.hasMoreElements()) {
-			String servletConfigInitParamName = servletConfigInitParamEnum.nextElement();
-			logger.debug("servletConfigInitParamName = {}", servletConfigInitParamName);
-		}
-		logger.debug("javax.ws.rs.Application = {}", servletConfig.getInitParameter("javax.ws.rs.Application"));
-
-		RestUtils.ifAttrNullOrBlankThen403(uploadedInputStream, Document.class, "documentfile");
+		RestUtils.ifAttrNullThen403(uploadedInputStream, null, "uploadedInputStream");
 
 		DocumentResource documentResource = null;
 		try {
-
 			/*
 			 * Read from the InputStream that represents the uploaded file to
 			 * a ByteArrayOutputStream that is used to create a byte[] object
@@ -241,31 +208,12 @@ public class DocumentController extends AbstractBaseController {
 			byte[] documentContent = baos.toByteArray();
 			logger.info("documentContent.length = {}", documentContent.length);
 
-			//	StringBuilder stringBuilder = new StringBuilder();
-			//	try (BufferedReader reader = new BufferedReader(new InputStreamReader(uploadedInputStream))) {
-			//		String line;
-			//		while ((line = reader.readLine()) != null) {
-			//			stringBuilder.append(line);
-			//		}
-			//	}
-			//	String contentHexEncoded = stringBuilder.toString();
-
-			//	RestUtils.ifAttrNullOrBlankThen403(content, Document.class, "content");
-
 			Document document = new Document(documentContent);
 			document = documentRepository.save(document);
 			logger.info("document = {}", document);
 			if (RestUtils.AUTO_EXPAND_PRIMARY_RESOURCES) {
 				addToExpandList(expand, Document.class);
 			}
-
-			//			/*
-			//			 * Write uploaded rptdesign file to the file system of the report 
-			//			 * server, overwriting a file with the same name if one exists.
-			//			 */
-			//			//			ReportUtils.writeRptdesignFile(document, servletContext.getRealPath(""));
-			//			java.nio.file.Path rptdesignFilePath = reportSyncService.writeRptdesignFile(document,
-			//					servletContext.getRealPath(""));
 
 			documentResource = new DocumentResource(document, uriInfo, queryParams, apiVersion);
 			logger.debug("documentResource = {}", documentResource);
