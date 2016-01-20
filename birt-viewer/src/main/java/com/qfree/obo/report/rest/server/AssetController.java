@@ -3,6 +3,7 @@ package com.qfree.obo.report.rest.server;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Base64;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -112,39 +113,116 @@ public class AssetController extends AbstractBaseController {
 				uriInfo, queryParams, apiVersion);
 	}
 
-	//	/*
-	//	 * This endpoint can be tested with:
-	//	 * 
-	//	 *   $ mvn clean spring-boot:run
-	//	 *   $ curl -X POST -u reportserver-restadmin:ReportServer*RESTADMIN \
-	//	 *   -iH "Accept: application/json;v=1" \-H "Content-Type: application/json" -d \
-	//	 *   '{"name":"New Asset name","abbreviation":"NEWASSET","directory":"somedir",\"active":true}'\
-	//	 *    http://localhost:8080/rest/assets
-	//	 */
-	//	@POST
-	//	@Consumes(MediaType.APPLICATION_JSON)
-	//	@Produces(MediaType.APPLICATION_JSON)
-	//	@Transactional
-	//	@PreAuthorize("hasAuthority('" + Authority.AUTHORITY_NAME_UPLOAD_REPORTS + "')")
-	//	public Response create(
-	//			AssetResource assetResource,
-	//			@HeaderParam("Accept") final String acceptHeader,
-	//			@QueryParam(ResourcePath.EXPAND_QP_NAME) final List<String> expand,
-	//			@QueryParam(ResourcePath.SHOWALL_QP_NAME) final List<String> showAll,
-	//			@Context final UriInfo uriInfo) {
-	//		Map<String, List<String>> queryParams = new HashMap<>();
-	//		queryParams.put(ResourcePath.EXPAND_QP_KEY, expand);
-	//		queryParams.put(ResourcePath.SHOWALL_QP_KEY, showAll);
-	//		RestApiVersion apiVersion = RestUtils.extractAPIVersion(acceptHeader, RestApiVersion.v1);
-	//
-	//		Asset asset = assetService.saveNewFromResource(assetResource);
-	//		//	if (RestUtils.AUTO_EXPAND_PRIMARY_RESOURCES) {
-	//		addToExpandList(expand, Asset.class); // Force primary resource to be "expanded"
-	//		//	}
-	//		AssetResource resource = new AssetResource(asset, uriInfo, queryParams, apiVersion);
-	//		return created(resource);
-	//	}
+	/**
+	 * This endpoint creates a new {@link Asset}.
+	 * 
+	 * It accepts a JSON object that represents an {@link AssetResource} that
+	 * has been POSTed to this enbdpoint's URI.
+	 * 
+	 * @param assetResource
+	 * @param acceptHeader
+	 * @param expand
+	 * @param showAll
+	 * @param uriInfo
+	 * @return
+	 */
+	/*
+	 * This endpoint can be tested with:
+	 * 
+	 *   $ mvn clean spring-boot:run
+	 *   $ curl -X POST -u reportserver-restadmin:ReportServer*RESTADMIN \
+	 *   -iH "Accept: application/json;v=1" \-H "Content-Type: application/json" -d \
+	 *   '{"filename":"success.gif",\
+	 *   "assetTree":{"assetTreeId":"7f9d0216-48d7-49ba-b043-ec48db03c938"},\
+	 *   "assetType":{"assetTypeId":"1e7ddbbc-8b40-4373-bfc5-6e6d3d5964d8"},\
+	 *   "document":{"content":"R0lGODlhEAAQAKIAAAAA/z9/v3+fv6bK8J+/v////wAAAAAAACH5BAEAAAUALAAAAAAQABAAAAMpWLrc/jASEFkAo6pLdLmZJmDeAAjQgBZmkALYAEbjeWow7NUhvnrAYAIAOw=="}}' \
+	 *   http://localhost:8080/rest/assets
+	 */
+	@POST
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	@Transactional
+	@PreAuthorize("hasAuthority('" + Authority.AUTHORITY_NAME_UPLOAD_REPORTS + "')")
+	public Response createByPostJson(
+			AssetResource assetResource,
+			@HeaderParam("Accept") final String acceptHeader,
+			@QueryParam(ResourcePath.EXPAND_QP_NAME) final List<String> expand,
+			@QueryParam(ResourcePath.SHOWALL_QP_NAME) final List<String> showAll,
+			@Context final UriInfo uriInfo) {
+		Map<String, List<String>> queryParams = new HashMap<>();
+		queryParams.put(ResourcePath.EXPAND_QP_KEY, expand);
+		queryParams.put(ResourcePath.SHOWALL_QP_KEY, showAll);
+		RestApiVersion apiVersion = RestUtils.extractAPIVersion(acceptHeader, RestApiVersion.v1);
+		
+		RestUtils.ifAttrNullOrBlankThen403(assetResource.getFilename(), Asset.class, "filename");
+		RestUtils.ifAttrNullThen403(assetResource.getAssetTreeResource(), Asset.class, "assetTree");
+		RestUtils.ifAttrNullThen403(assetResource.getAssetTypeResource(), Asset.class, "assetType");
 
+		/*
+		 * Extract the Base64-encoded document content from assetResource and
+		 * decode it into a byte[] that can be used to create a new Document
+		 * entity. 
+		 */
+		DocumentResource documentResource = assetResource.getDocumentResource();
+		byte[] documentContent = null;
+		if (documentResource != null) {
+			if (documentResource.getContent() != null) {
+				documentContent = Base64.getDecoder().decode(documentResource.getContent());
+			} else {
+				throw new RestApiException(RestError.FORBIDDEN_CREATE_ASSET_NO_DOCUMENT_CONTENT);
+			}
+		} else {
+			throw new RestApiException(RestError.FORBIDDEN_CREATE_ASSET_NO_DOCUMENT_CONTENT);
+		}
+
+		/*
+		 * Create new Document entity.
+		 */
+		Document document = new Document(documentContent);
+		document = documentRepository.save(document);
+
+		/*
+		 * documentResource is used below to set a value for documentId in 
+		 * assetResource. It is only necessary for the DocumentResource to have
+		 * a value for its documentId attribute.
+		 */
+		documentResource = new DocumentResource();
+		documentResource.setDocumentId(document.getDocumentId());
+
+		/*
+		 * Create a new Asset entity that is linked to the new Document that was
+		 * just created.
+		 */
+		assetResource.setDocumentResource(documentResource);
+		Asset asset = assetService.saveNewFromResource(assetResource);
+
+		//	if (RestUtils.AUTO_EXPAND_PRIMARY_RESOURCES) {
+		addToExpandList(expand, Asset.class); // Force primary resource to be "expanded"
+		//	}
+		AssetResource resource = new AssetResource(asset, uriInfo, queryParams, apiVersion);
+		return created(resource);
+	}
+
+	/**
+	 * This endpoint creates a new {@link Asset} entity using
+	 * multipart/form-data.
+	 * 
+	 * It can be used as the "action" for an HTML form that performs a file
+	 * upload of the asset document.
+	 * 
+	 * @param filename
+	 * @param assetTreeId
+	 * @param assetTypeId
+	 * @param uploadedInputStream
+	 * @param fileDetail
+	 * @param acceptHeader
+	 * @param expand
+	 * @param showAll
+	 * @param uriInfo
+	 * @return
+	 * @throws BirtException
+	 * @throws RptdesignOpenFromStreamException
+	 */
 	/*
 	 * This endpoint can be tested with:
 	 * 
@@ -231,11 +309,9 @@ public class AssetController extends AbstractBaseController {
 			}
 			baos.flush();
 			byte[] documentContent = baos.toByteArray();
-			logger.info("documentContent.length = {}", documentContent.length);
 
 			Document document = new Document(documentContent);
 			document = documentRepository.save(document);
-			logger.info("document = {}", document);
 			if (RestUtils.AUTO_EXPAND_PRIMARY_RESOURCES) {
 				addToExpandList(expand, Document.class);
 			}
@@ -252,7 +328,6 @@ public class AssetController extends AbstractBaseController {
 
 			Asset asset = new Asset(assetTree, assetType, document, filename, true);
 			asset = assetRepository.save(asset);
-			logger.info("asset = {}", asset);
 			if (RestUtils.AUTO_EXPAND_PRIMARY_RESOURCES) {
 				addToExpandList(expand, Asset.class);
 			}
@@ -266,7 +341,6 @@ public class AssetController extends AbstractBaseController {
 			//					servletContext.getRealPath(""));
 
 			assetResource = new AssetResource(asset, uriInfo, queryParams, apiVersion);
-			logger.info("assetResource = {}", assetResource);
 
 		} catch (IOException e) {
 			throw new RestApiException(RestError.INTERNAL_SERVER_ERROR_FILE_UPLOAD, e);

@@ -254,6 +254,8 @@ public class RestErrorResource {
 				"assetTypeId is null for an asset being saved", null),
 		FORBIDDEN_ASSET_DOCUMENT_NULL(Response.Status.FORBIDDEN, "403.34",
 				"documentId is null for an asset being saved", null),
+		FORBIDDEN_CREATE_ASSET_NO_DOCUMENT_CONTENT(Response.Status.FORBIDDEN, "403.35",
+				"No document content specified for an asset being created", null),
 		//FORBIDDEN_RESOURCE_ROLE_REPORT_ACCESS_VIOLATION(
 		//		Response.Status.FORBIDDEN, "403.XX",
 		//		"The authenticated role does not have permission to view the requested report.", null),

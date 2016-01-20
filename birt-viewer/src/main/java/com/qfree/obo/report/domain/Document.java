@@ -1,6 +1,7 @@
 package com.qfree.obo.report.domain;
 
 import java.io.Serializable;
+import java.util.Base64;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
@@ -14,7 +15,6 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.validation.constraints.NotNull;
-import javax.xml.bind.DatatypeConverter;
 
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Type;
@@ -88,9 +88,10 @@ public class Document implements Serializable {
 		this(
 				documentResource.getDocumentId(),
 				/*
-				 * This converts the hex-encoded string to a byte array.
+				 * This decodes the Base64-encoded string representing the file
+				 * content to a byte array.
 				 */
-				DatatypeConverter.parseHexBinary(documentResource.getContent()),
+				Base64.getDecoder().decode(documentResource.getContent()),
 				documentResource.getCreatedOn());
 	}
 

@@ -29,6 +29,13 @@ public class DocumentResource extends AbstractBaseResource {
 	@XmlJavaTypeAdapter(UuidAdapter.class)
 	private UUID documentId;
 
+	/**
+	 * The document's content, Base64-encoded.
+	 * 
+	 * The content must be encoded because the document may represent a binary
+	 * file, e.g., a JPEG file. JSON attributes must be expressed as text
+	 * values.
+	 */
 	@XmlElement
 	//	private byte[] content;
 	private String content;
