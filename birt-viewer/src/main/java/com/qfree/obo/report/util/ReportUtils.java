@@ -11,6 +11,7 @@ import java.util.concurrent.Semaphore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.qfree.obo.report.domain.Asset;
 import com.qfree.obo.report.domain.ReportVersion;
 
 public class ReportUtils {
@@ -26,10 +27,24 @@ public class ReportUtils {
 	public static final Semaphore reportSyncSemaphore = new Semaphore(1);
 
 	/*
+	 * This counting semaphore is used to ensure that only one thread is 
+	 * performing some sort of synchronization action between the asset
+	 * files in the report server application server's file system and the
+	 * asset iles stored in the report server's database.
+	 */
+	public static final Semaphore assetSyncSemaphore = new Semaphore(1);
+
+	/*
 	 * Threads will wait this many seconds to wait for a permit to become
 	 * available for the reportSyncSemaphore semaphore.
 	 */
 	public static final long MAX_WAIT_ACQUIRE_REPORTSYNCSEMAPHORE = 5;
+
+	/*
+	 * Threads will wait this many seconds to wait for a permit to become
+	 * available for the assetSyncSemaphore semaphore.
+	 */
+	public static final long MAX_WAIT_ACQUIRE_ASSETSYNCSEMAPHORE = 5;
 
 	/*
 	 * Directory in /webapp where reports are stored. This must be set to the 
@@ -42,29 +57,37 @@ public class ReportUtils {
 	 */
 	public static final String BIRT_VIEWER_WORKING_FOLDER = "reports";
 
+	/*
+	 * Directory in /webapp where assets (CSS files, image files, ...) are 
+	 * stored. Be careful changing it because the BIRT Viewer servlets expect
+	 * this name. If the BIRT "viewservlets" are eliminated from this 
+	 * application, then we are free to rename this.
+	 */
+	public static final String ASSET_FILES_PARENT_FOLDER = "webcontent";
+
 	/**
 	 * Returns a {@link Path} corresponding to a file to which a BIRT report
 	 * definition will be written. This file contains XML and by convention has
-	 * the extension "rptdesign". 
+	 * the extension "rptdesign".
 	 * 
 	 * @param reportVersion
 	 * @param absoluteAppContextPath
 	 * @return
 	 */
-	public static Path rptdesignFilePath(ReportVersion reportVersion, String absoluteAppContextPath) {
+	private static Path rptdesignFilePath(ReportVersion reportVersion, String absoluteAppContextPath) {
 		return Paths.get(absoluteAppContextPath, ReportUtils.BIRT_VIEWER_WORKING_FOLDER,
 				reportVersion.getFileName());
-				//reportVersion.getReportVersionId().toString() + ".rptdesign");
+		//reportVersion.getReportVersionId().toString() + ".rptdesign");
 	}
 
 	/**
-	 * Write BIRT rptdesign file to the file system of the report 
-	 * server, overwriting a file with the same name if one exists.
+	 * Write BIRT rptdesign file to the file system of the report server,
+	 * overwriting a file with the same name if one exists.
 	 * 
 	 * @param reportVersion
 	 * @param absoluteAppContextPath
-	 * @throws IOException 
-	 * @throws UnsupportedEncodingException 
+	 * @throws IOException
+	 * @throws UnsupportedEncodingException
 	 */
 	public static Path writeRptdesignFile(ReportVersion reportVersion, String absoluteAppContextPath)
 			throws UnsupportedEncodingException, IOException {
@@ -77,6 +100,46 @@ public class ReportUtils {
 				StandardOpenOption.WRITE,
 				StandardOpenOption.TRUNCATE_EXISTING);
 		return rptdesignFilePath;
+	}
+
+	/**
+	 * Write an asset file to the file system of the report server, overwriting
+	 * a file with the same name if one exists.
+	 * 
+	 * @param asset
+	 * @param absoluteAppContextPath
+	 * @throws IOException
+	 * @throws UnsupportedEncodingException
+	 */
+	public static Path writeAssetFile(Asset asset, String absoluteAppContextPath)
+			throws IOException {
+		/*
+		 * Create directory to contain the asset, if necessary.
+		 */
+		//Path assetDirectoryPath = assetFilePath(asset, absoluteAppContextPath);
+		Path assetDirectoryPath = Paths.get(absoluteAppContextPath)
+				.resolve(ReportUtils.ASSET_FILES_PARENT_FOLDER)
+				.resolve(asset.getAssetTree().getDirectory())
+				.resolve(asset.getAssetType().getDirectory());
+		if (!assetDirectoryPath.toFile().isDirectory()) {
+			logger.info("Creating directory {}", assetDirectoryPath.toString());
+			assetDirectoryPath = Files.createDirectories(assetDirectoryPath);
+		}
+		/*
+		 * Write the asset to the file system. In case a containing directory
+		 * was just created, we check again here that it exists.
+		 */
+		Path assetFilePath = assetDirectoryPath.resolve(asset.getFilename());
+		if (assetDirectoryPath.toFile().isDirectory()) {
+			logger.info("Writing file \"{}\"...", assetFilePath);
+			Files.write(
+					assetFilePath,
+					asset.getDocument().getContent(),
+					StandardOpenOption.CREATE,
+					StandardOpenOption.WRITE,
+					StandardOpenOption.TRUNCATE_EXISTING);
+		}
+		return assetFilePath;
 	}
 
 	//	public static Map<String, Map<String, Serializable>> parseReportParams(String rptdesignXml)

@@ -382,9 +382,7 @@ public class RestErrorResource {
 				"BIRT Viewer working folder cannot be accessed", null),
 		INTERNAL_SERVER_ERROR_RPTDESIGN_SYNC(Response.Status.INTERNAL_SERVER_ERROR, "500.2",
 				"Error syncing rptdesign files between file system and database", null),
-		INTERNAL_SERVER_ERROR_RPTDESIGN_SYNC_NO_PERMIT(
-				Response.Status.INTERNAL_SERVER_ERROR,
-				"500.3",
+		INTERNAL_SERVER_ERROR_RPTDESIGN_SYNC_NO_PERMIT(Response.Status.INTERNAL_SERVER_ERROR, "500.3",
 				"Unable to acquire semaphore permit for synchronizing rptdesign files between file system and database",
 				null),
 		INTERNAL_SERVER_ERROR_RPTDESIGN_SYNC_INTERRUPT(Response.Status.INTERNAL_SERVER_ERROR, "500.4",
@@ -399,6 +397,13 @@ public class RestErrorResource {
 				"Error streaming document to client", null),
 		INTERNAL_SERVER_ERROR_FILE_UPLOAD(Response.Status.INTERNAL_SERVER_ERROR, "500.9",
 				"Error uploading file", null),
+		INTERNAL_SERVER_ERROR_ASSET_SYNC(Response.Status.INTERNAL_SERVER_ERROR, "500.10",
+				"Error syncing asset files between file system and database", null),
+		INTERNAL_SERVER_ERROR_ASSET_SYNC_NO_PERMIT(Response.Status.INTERNAL_SERVER_ERROR, "500.11",
+				"Unable to acquire semaphore permit for synchronizing asset files between file system and database",
+				null),
+		INTERNAL_SERVER_ERROR_ASSET_SYNC_INTERRUPT(Response.Status.INTERNAL_SERVER_ERROR, "500.12",
+				"InterruptedException thrown while waiting to acquire semaphore permit", null),
 		/**
 		 * {@code 501 Not Implemented}.
 		 * @see <a href="http://tools.ietf.org/html/rfc2616#section-10.5.2">HTTP/1.1</a>

@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
 
+import com.qfree.obo.report.dto.AssetSyncResource;
 import com.qfree.obo.report.dto.ReportSyncResource;
 
 //@Component  <- not needed because bean is explicitly created in ApplicationConfig.java
@@ -24,6 +25,9 @@ public class StartupService {
 
 	@Autowired
 	private ReportSyncService reportSyncService;
+
+	@Autowired
+	private AssetSyncService assetSyncService;
 
 	//	@Autowired
 	//	private BirtService birtService;
@@ -41,72 +45,103 @@ public class StartupService {
 
 	@PostConstruct
 	public void initialize() {
-		//logger.info("Synchronizing reports in the file system with the database...");
-		//		logger.info("servletContext = {}", servletContext);
 
-		logger.info("startup.syncreports = {}", env.getProperty("startup.syncreports"));
-		if (env.getProperty("startup.syncreports").equals("true")) {
+		//try {
+		//	String path1 = new File(".").getCanonicalPath();
+		//	logger.info("path1 = {}", path1);  // /home/jeffreyz/Applications/java/apache-tomcat/apache-tomcat-8.0.17/bin
+		//} catch (IOException e) {
+		//	// TODO Auto-generated catch block
+		//	e.printStackTrace();
+		//}
+		//String path2 = System.getProperty("user.dir");
+		//logger.info("path2 = {}", path2);  // /home/jeffreyz/Applications/java/apache-tomcat/apache-tomcat-8.0.17/bin
 
-			//try {
-			//	String path1 = new File(".").getCanonicalPath();
-			//	logger.info("path1 = {}", path1);  // /home/jeffreyz/Applications/java/apache-tomcat/apache-tomcat-8.0.17/bin
-			//} catch (IOException e) {
-			//	// TODO Auto-generated catch block
-			//	e.printStackTrace();
-			//}
-			//String path2 = System.getProperty("user.dir");
-			//logger.info("path2 = {}", path2);  // /home/jeffreyz/Applications/java/apache-tomcat/apache-tomcat-8.0.17/bin
+		/*
+		 * Synchronizing the reports or assets stored in the database with
+		 * the file system only makes sense if there is a context where the
+		 * files can be written. 
+		 * 
+		 * If this application is started via:
+		 * 
+		 *     $ mvn clean spring-boot:run
+		 * 
+		 * there will not be such a context. In this case, 
+		 * "absoluteContextPath" will be the 
+		 * ".../obo-birt-viewer/birt-viewer/src" directory of the Maven
+		 * project from which "mvn clean spring-boot:run" is executed.
+		 * 
+		 * If, however, we are running in a non-embedded servlet container
+		 * such as Tomcat, "absoluteContextPath" will refer to the servlet
+		 * context path of the web application.
+		 * 
+		 * We test which environment we are in by testing if the JNDI
+		 * initial context "java:comp/env" is available:
+		 */
+		try {
+			new InitialContext().lookup("java:comp/env");
 
+			/*
+			 * If no exception is thrown, we are probably running in a servlet
+			 * container environment, e.g., Tomcat. Therefore, it is safe to
+			 * synchronize the reports and assets stored in the database with
+			 * the file system. For that, we need to determine the context path
+			 * for the application.
+			 * 
+			 * On my PC, this currently evaluates to:
+			 * 
+			 * /home/jeffreyz/Applications/java/apache-tomcat/apache-tomcat-8.0.17/webapps/report-server/WEB-INF/classes/
+			 */
 			String classesPath = this.getClass().getClassLoader().getResource("").getPath();
-			logger.info("classesPath = {}", classesPath);// /home/jeffreyz/Applications/java/apache-tomcat/apache-tomcat-8.0.17/webapps/report-server/WEB-INF/classes/
-			Path absoluteContextPath;
+			logger.info("classesPath = {}", classesPath);
+			Path absoluteContextPath = null;
 			try {
+
+				/*
+				 * On my PC, this currently evaluates to:
+				 * 
+				 * /home/jeffreyz/Applications/java/apache-tomcat/apache-tomcat-8.0.17/webapps/report-server
+				 */
 				absoluteContextPath = Paths.get(classesPath).resolve("..").resolve("..").toRealPath();
 				logger.info("absoluteContextPath = {}", absoluteContextPath);
+
 				/*
-				 * Synchronize the reports stored in the database with the file
-				 * system. However, we must not do this if this application is
-				 * started via:
-				 * 
-				 *     $ mvn clean spring-boot:run
-				 * 
-				 * because in that case there will not be a context where the 
-				 * files can be written because "absoluteContextPath" will not
-				 * refer to the servlet context path of the web application 
-				 * running in Tomcat; instead, "absoluteContextPath" will be the
-				 * ".../obo-birt-viewer/birt-viewer/src" directory of the Maven
-				 * project from which "mvn clean spring-boot:run" is executed.
-				 * 
-				 * We test when environment we are in by testing if the JNDI
-				 * initial context "java:comp/env" is available:
+				 * If configured, synchronize reports stored in the database
+				 * with the file system.
 				 */
-				try {
-					new InitialContext().lookup("java:comp/env");
-					/*
-					 * If no exception is thrown, we are probably running in a
-					 * servlet container environment, e.g., Tomcat. Therefore,
-					 * it is safe to synchronize the reports stored in the 
-					 * database with the file system.
-					 */
+				logger.info("startup.sync.reports = {}", env.getProperty("startup.sync.reports"));
+				if (env.getProperty("startup.sync.reports").equals("true")) {
 					Boolean showInactiveReports = false;
 					ReportSyncResource reportSyncResource = reportSyncService.syncReportsWithFileSystem(
 							absoluteContextPath, showInactiveReports);
-				} catch (NamingException ex) {
-					/*
-					 * We are probably running via:
-					 * 
-					 *     $ mvn clean spring-boot:run
-					 * 
-					 * so we do not attempt to synchronize the reports stored in 
-					 * the database with the file system.
-					 */
+					logger.debug("reportSyncResource = {}", reportSyncResource);
 				}
+
+				/*
+				 * If configured, synchronize assets stored in the database
+				 * with the file system.
+				 */
+				logger.info("startup.sync.assets = {}", env.getProperty("startup.sync.assets"));
+				if (env.getProperty("startup.sync.assets").equals("true")) {
+					Boolean syncInactiveAssets = false;
+					AssetSyncResource assetSyncResource = assetSyncService.syncAssetsWithFileSystem(
+							absoluteContextPath, syncInactiveAssets);
+					logger.debug("assetSyncResource = {}", assetSyncResource);
+				}
+
 			} catch (IOException e) {
-				logger.error(
-						"Exception thrown during startup. To avoid this, set startup.syncreports=false in config.properties",
-						e);
+				logger.error("Exception thrown during startup while obtaining application context directory", e);
 			}
+		} catch (NamingException ex) {
+			/*
+			 * We are probably running via:
+			 * 
+			 *     $ mvn clean spring-boot:run
+			 * 
+			 * so we do not attempt to synchronize the reports or assets
+			 * stored in the database with the file system.
+			 */
 		}
+
 		//		/* 
 		//		 * This is the default version for the endpoint to which the request is
 		//		 * sent.

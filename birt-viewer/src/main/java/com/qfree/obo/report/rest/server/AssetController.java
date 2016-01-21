@@ -154,7 +154,7 @@ public class AssetController extends AbstractBaseController {
 		queryParams.put(ResourcePath.EXPAND_QP_KEY, expand);
 		queryParams.put(ResourcePath.SHOWALL_QP_KEY, showAll);
 		RestApiVersion apiVersion = RestUtils.extractAPIVersion(acceptHeader, RestApiVersion.v1);
-		
+
 		RestUtils.ifAttrNullOrBlankThen403(assetResource.getFilename(), Asset.class, "filename");
 		RestUtils.ifAttrNullThen403(assetResource.getAssetTreeResource(), Asset.class, "assetTree");
 		RestUtils.ifAttrNullThen403(assetResource.getAssetTypeResource(), Asset.class, "assetType");
@@ -496,9 +496,6 @@ public class AssetController extends AbstractBaseController {
 		 */
 		Document document = asset.getDocument();
 		logger.debug("document to be deleted = {}", document);
-		if (document == null) {
-			throw new RestApiException(RestError.NOT_FOUND_RESOUCE, Document.class, "asset.getDocument()", null);
-		}
 
 		/*
 		 * If the Asset entity is successfully deleted, it is 
@@ -514,10 +511,17 @@ public class AssetController extends AbstractBaseController {
 		logger.debug("assetResource = {}", assetResource);
 
 		/*
-		 * Delete Asset entity.
+		 * Delete Asset entity. "document" should always be non-null. It should
+		 * only be null of something went wrong somewhere at some point. But we
+		 * do not want to throw an exception or it will be impossible to delete
+		 * the asset.
 		 */
-		assetRepository.delete(asset);
-		logger.info("asset (after deletion) = {}", asset);
+		if (document != null) {
+			assetRepository.delete(asset);
+			logger.info("asset (after deletion) = {}", asset);
+		} else {
+			logger.warn("document is null. This should not be possible.");
+		}
 
 		/*
 		 * Delete Asset entity's Document entity.
