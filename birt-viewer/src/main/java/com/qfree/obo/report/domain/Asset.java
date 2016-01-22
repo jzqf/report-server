@@ -140,6 +140,22 @@ public class Asset implements Serializable {
 				assetResource.getCreatedOn());
 	}
 
+	/**
+	 * Constructor to create a shallow copy of an existing {@link Asset}.
+	 * 
+	 * @param asset
+	 */
+	public Asset(Asset asset) {
+		this(
+				asset.getAssetId(),
+				asset.getAssetTree(),
+				asset.getAssetType(),
+				asset.getDocument(),
+				asset.getFilename(),
+				asset.isActive(),
+				asset.getCreatedOn());
+	}
+
 	public Asset(UUID assetId, AssetTree assetTree, AssetType assetType, Document document, String filename,
 			Boolean active, Date createdOn) {
 		this.assetId = assetId;

@@ -157,7 +157,9 @@ public class ReportUtils {
 			throws IOException {
 		/*
 		 * Delete the asset from from the file system. We check first that the
-		 * file exists and that it is a file, i.e., not a directory.
+		 * file exists and that it is a file, i.e., not a directory. The file
+		 * may not exist if the corresponding Asset is inactive; hence, we do
+		 * not flag that as an error here.
 		 */
 		Path assetFilePath = Paths.get(absoluteAppContextPath)
 				.resolve(ReportUtils.ASSET_FILES_PARENT_FOLDER)

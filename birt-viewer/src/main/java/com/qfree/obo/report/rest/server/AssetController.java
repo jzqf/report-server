@@ -203,11 +203,13 @@ public class AssetController extends AbstractBaseController {
 		assetResource.setDocumentResource(documentResource);
 		Asset asset = assetService.saveNewFromResource(assetResource);
 
-		/*
-		 * Write uploaded asset file to the file system of the report 
-		 * server, overwriting a file with the same name if one exists.
-		 */
-		java.nio.file.Path assetFilePath = assetSyncService.writeAssetFile(asset, servletContext.getRealPath(""));
+		if (asset.isActive()) {
+			/*
+			 * Write uploaded asset file to the file system of the report 
+			 * server, overwriting a file with the same name if one exists.
+			 */
+			java.nio.file.Path assetFilePath = assetSyncService.writeAssetFile(asset, servletContext.getRealPath(""));
+		}
 
 		//	if (RestUtils.AUTO_EXPAND_PRIMARY_RESOURCES) {
 		addToExpandList(expand, Asset.class); // Force primary resource to be "expanded"
@@ -342,11 +344,14 @@ public class AssetController extends AbstractBaseController {
 			Asset asset = new Asset(assetTree, assetType, document, filename, true);
 			asset = assetRepository.save(asset);
 
-			/*
-			 * Write uploaded asset file to the file system of the report 
-			 * server, overwriting a file with the same name if one exists.
-			 */
-			java.nio.file.Path assetFilePath = assetSyncService.writeAssetFile(asset, servletContext.getRealPath(""));
+			if (asset.isActive()) {
+				/*
+				 * Write uploaded asset file to the file system of the report 
+				 * server, overwriting a file with the same name if one exists.
+				 */
+				java.nio.file.Path assetFilePath = assetSyncService.writeAssetFile(asset,
+						servletContext.getRealPath(""));
+			}
 
 			if (RestUtils.AUTO_EXPAND_PRIMARY_RESOURCES) {
 				addToExpandList(expand, Asset.class);
@@ -404,7 +409,7 @@ public class AssetController extends AbstractBaseController {
 	 *   '{"filename":"new file name.png",\
 	 *   "assetTree":{"assetTreeId": "7f9d0216-48d7-49ba-b043-ec48db03c938"},\
 	 *   "assetType": {"assetTypeId": "1e7ddbbc-8b40-4373-bfc5-6e6d3d5964d8"}}' \
-	 *   http://localhost:8080/rest/assets/1c72d7d7-87a7-4980-89f4-4590b1fe7a09
+	 *   http://localhost:8080/report-server/rest/assets/1c72d7d7-87a7-4980-89f4-4590b1fe7a09
 	 */
 	@Path("/{id}")
 	@PUT
@@ -418,6 +423,7 @@ public class AssetController extends AbstractBaseController {
 			@HeaderParam("Accept") final String acceptHeader,
 			@QueryParam(ResourcePath.EXPAND_QP_NAME) final List<String> expand,
 			@QueryParam(ResourcePath.SHOWALL_QP_NAME) final List<String> showAll,
+			@Context final ServletContext servletContext,
 			@Context final UriInfo uriInfo) {
 		Map<String, List<String>> queryParams = new HashMap<>();
 		queryParams.put(ResourcePath.EXPAND_QP_KEY, expand);
@@ -429,6 +435,11 @@ public class AssetController extends AbstractBaseController {
 		 */
 		Asset asset = assetRepository.findOne(id);
 		RestUtils.ifNullThen404(asset, Asset.class, "assetId", id.toString());
+
+		/*
+		 * Create a shallow copy of the Asset before it is modified.
+		 */
+		Asset assetBeforeUpdate = new Asset(asset);
 
 		/*
 		 * Treat attributes of parameterGroupResource that are effectively
@@ -465,6 +476,68 @@ public class AssetController extends AbstractBaseController {
 		 */
 		asset = assetService.saveExistingFromResource(assetResource);
 
+		/*
+		 * If an field of the Asset was modified that affects the 
+		 * synchronization of the Asset with the file system of the report
+		 * server, the file system must be updated appropriately. The fields
+		 * of Asset that require this treatment are:
+		 * 
+		 *   filename
+		 *   active
+		 *   assetTree
+		 *   assetType
+		 * 
+		 * We do not allow the "document" field of an Asset to be modified, so
+		 * this is not checked for here.
+		 * 
+		 * We must treat the modification of "active" specially, because it
+		 * determines whether the asset file is written to the file system or
+		 * not.
+		 */
+		java.nio.file.Path assetFilePath = null;
+		if (asset.isActive() != assetBeforeUpdate.isActive()) {
+
+			if (asset.isActive()) {
+				/*
+				 * Write uploaded asset file to the file system of the report 
+				 * server, overwriting a file with the same name if one exists.
+				 */
+				assetFilePath = assetSyncService.writeAssetFile(asset, servletContext.getRealPath(""));
+			} else {
+				/*
+				 * Delete uploaded asset file from the file system of the report 
+				 * server. assetBeforeUpdate is specified here because it is
+				 * possible that the "assetTree" or "assetType" fields of the
+				 * Asset have been modified. These values specify in which
+				 * directory the asset file is stored. 
+				 */
+				assetFilePath = assetSyncService.deleteAssetFile(assetBeforeUpdate, servletContext.getRealPath(""));
+			}
+
+		} else if (asset.isActive()) {
+
+			/*
+			 * The asset is active and also *was* active before it was modified.
+			 * This means that the file system must be updated if any of the
+			 * fields tested here have been modified.
+			 */
+			if ((asset.getFilename() != assetBeforeUpdate.getFilename())
+					|| (asset.getAssetTree() != assetBeforeUpdate.getAssetTree())
+					|| (asset.getAssetType() != assetBeforeUpdate.getAssetType())) {
+				/*
+				 * Delete asset file that was synchronized to the Asset 
+				 * *before* the asset was modified above.
+				 */
+				assetFilePath = assetSyncService.deleteAssetFile(assetBeforeUpdate, servletContext.getRealPath(""));
+				/*
+				 * Write the asset file that that corresponds to the Asset 
+				 * *after* it was modified above.
+				 */
+				assetFilePath = assetSyncService.writeAssetFile(asset, servletContext.getRealPath(""));
+			}
+
+		}
+
 		return Response.status(Response.Status.OK).build();
 	}
 
@@ -474,7 +547,7 @@ public class AssetController extends AbstractBaseController {
 	 *   $ mvn clean spring-boot:run
 	 *   $ curl -X DELETE -u reportserver-restadmin:ReportServer*RESTADMIN \
 	 *   -iH "Accept: application/json;v=1" -H "Content-Type: application/json" \
-	 *   http://localhost:8080/rest/assets/9e3ad41a-e026-43b6-89e1-5201deeee7f0
+	 *   http://localhost:8080/report-server/rest/assets/9e3ad41a-e026-43b6-89e1-5201deeee7f0
 	 */
 	@Path("/{id}")
 	@DELETE
