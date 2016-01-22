@@ -163,7 +163,9 @@ public class AssetSyncService {
 	 * overwriting a file with the same name if one exists.
 	 * 
 	 * This method simply calls ReportUtils.writeAssetFile(Asset, String), but
-	 * it wraps it in a mutual exclusion lock with a semaphore.
+	 * it wraps it in a mutual exclusion lock with a semaphore. It also checks
+	 * that this application has a directory tree to which the file can be
+	 * written.
 	 * 
 	 * @param asset
 	 * @param absoluteAppContextPath
@@ -171,31 +173,36 @@ public class AssetSyncService {
 	 */
 	public Path writeAssetFile(Asset asset, String absoluteAppContextPath) {
 		Path assetFilePath = null;
-		try {
-			if (ReportUtils.assetSyncSemaphore.tryAcquire(ReportUtils.MAX_WAIT_ACQUIRE_ASSETSYNCSEMAPHORE,
-					TimeUnit.SECONDS)) {
-				try {
-					/*
-					 * Write uploaded asset file to the file system of the
-					 * report server, overwriting a file with the same name, if
-					 * one exists.
-					 */
-					assetFilePath = ReportUtils.writeAssetFile(asset, absoluteAppContextPath);
-				} catch (IOException e) {
-					throw new RestApiException(RestError.INTERNAL_SERVER_ERROR_ASSET_SYNC, e);
-				} finally {
-					ReportUtils.assetSyncSemaphore.release();
+		/*
+		 * We only write the file if we detect that there is an appropriate
+		 * directory tree in which is can be written.
+		 */
+		if (ReportUtils.applicationPackagedAsWar()) {
+			try {
+				if (ReportUtils.assetSyncSemaphore.tryAcquire(ReportUtils.MAX_WAIT_ACQUIRE_ASSETSYNCSEMAPHORE,
+						TimeUnit.SECONDS)) {
+					try {
+						/*
+						 * Write uploaded asset file to the file system of the
+						 * report server, overwriting a file with the same name, if
+						 * one exists.
+						 */
+						assetFilePath = ReportUtils.writeAssetFile(asset, absoluteAppContextPath);
+					} catch (IOException e) {
+						throw new RestApiException(RestError.INTERNAL_SERVER_ERROR_ASSET_SYNC, e);
+					} finally {
+						ReportUtils.assetSyncSemaphore.release();
+					}
+				} else {
+					throw new RestApiException(RestError.INTERNAL_SERVER_ERROR_ASSET_SYNC_NO_PERMIT);
 				}
-			} else {
-				throw new RestApiException(RestError.INTERNAL_SERVER_ERROR_ASSET_SYNC_NO_PERMIT);
+			} catch (InterruptedException e) {
+				/*
+				 * Can be thrown by:  ReportUtils.assetSyncSemaphore.tryAcquire(...)
+				 */
+				throw new RestApiException(RestError.INTERNAL_SERVER_ERROR_ASSET_SYNC_INTERRUPT, e);
 			}
-		} catch (InterruptedException e) {
-			/*
-			 * Can be thrown by:  ReportUtils.assetSyncSemaphore.tryAcquire(...)
-			 */
-			throw new RestApiException(RestError.INTERNAL_SERVER_ERROR_ASSET_SYNC_INTERRUPT, e);
 		}
-
 		return assetFilePath;
 	}
 

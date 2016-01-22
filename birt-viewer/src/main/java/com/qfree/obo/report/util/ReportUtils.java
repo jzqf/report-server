@@ -8,6 +8,9 @@ import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.concurrent.Semaphore;
 
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -140,6 +143,65 @@ public class ReportUtils {
 					StandardOpenOption.TRUNCATE_EXISTING);
 		}
 		return assetFilePath;
+	}
+
+	/**
+	 * Checks if the application has been packaged as a WAR file and is running
+	 * in a full servlet container environment.
+	 * 
+	 * <p>
+	 * If the application is <i>not</i> running in a full servlet container,
+	 * e.g., if the application is started via:
+	 * 
+	 * <p>
+	 * <code>$ mvn clean spring-boot:run</code>
+	 * 
+	 * <p>
+	 * then not all the features of a full servlet environment will be
+	 * available.
+	 * 
+	 * <p>
+	 * One feature in particular that is important for this application is that
+	 * in order to synchronize reports or report assets (CSS files, images, ...)
+	 * between the database and file system, there needs to be a directory tree
+	 * in the file system where these files should be stored. If this
+	 * application is being run from an embedded Tomcat container, such a
+	 * directory tree will exist but it will be within the current Eclipse
+	 * project, i.e., in my local Git repository for this project. On my machine
+	 * (Jeffrey Zelt), this will be within:
+	 * 
+	 * <p>
+	 * <code>/home/jeffreyz/git/obo-birt-viewer/birt-viewer/src/main/webapp</code>
+	 * 
+	 * <p>
+	 * I do not want to write files to this directory tree because any files
+	 * that exist in this tree will be deployed when the application is packaged
+	 * as a WAR file.
+	 * 
+	 * @return
+	 */
+	public static boolean applicationPackagedAsWar() {
+		boolean isWar = false;
+		/*
+		 * We test which environment we are in by testing if the JNDI
+		 * initial context "java:comp/env" is available. It is, in fact, 
+		 * possible to configure Spring Boot's embedded Tomcat environment to
+		 * support a JNDI initial context, but I have not configured this. If
+		 * this is configured one day, then we will need to detect whether this 
+		 * application has been deployed in a full servlet container or not by
+		 * a different test. 
+		 */
+		try {
+			new InitialContext().lookup("java:comp/env");
+			isWar = true;
+		} catch (NamingException ex) {
+			/*
+			 * We are probably running via:
+			 * 
+			 *   $ mvn clean spring-boot:run
+			 */
+		}
+		return isWar;
 	}
 
 	//	public static Map<String, Map<String, Serializable>> parseReportParams(String rptdesignXml)

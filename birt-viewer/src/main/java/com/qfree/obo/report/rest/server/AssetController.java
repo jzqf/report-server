@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import javax.servlet.ServletContext;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -51,6 +52,7 @@ import com.qfree.obo.report.dto.RestErrorResource.RestError;
 import com.qfree.obo.report.exceptions.RestApiException;
 import com.qfree.obo.report.exceptions.RptdesignOpenFromStreamException;
 import com.qfree.obo.report.service.AssetService;
+import com.qfree.obo.report.service.AssetSyncService;
 import com.qfree.obo.report.util.RestUtils;
 import com.qfree.obo.report.util.RestUtils.RestApiVersion;
 
@@ -62,6 +64,7 @@ public class AssetController extends AbstractBaseController {
 
 	private final AssetRepository assetRepository;
 	private final AssetService assetService;
+	private final AssetSyncService assetSyncService;
 	private final AssetTreeRepository assetTreeRepository;
 	private final AssetTypeRepository assetTypeRepository;
 	private final DocumentRepository documentRepository;
@@ -70,11 +73,13 @@ public class AssetController extends AbstractBaseController {
 	public AssetController(
 			AssetRepository assetRepository,
 			AssetService assetService,
+			AssetSyncService assetSyncService,
 			AssetTreeRepository assetTreeRepository,
 			AssetTypeRepository assetTypeRepository,
 			DocumentRepository documentRepository) {
 		this.assetRepository = assetRepository;
 		this.assetService = assetService;
+		this.assetSyncService = assetSyncService;
 		this.assetTreeRepository = assetTreeRepository;
 		this.assetTypeRepository = assetTypeRepository;
 		this.documentRepository = documentRepository;
@@ -149,6 +154,7 @@ public class AssetController extends AbstractBaseController {
 			@HeaderParam("Accept") final String acceptHeader,
 			@QueryParam(ResourcePath.EXPAND_QP_NAME) final List<String> expand,
 			@QueryParam(ResourcePath.SHOWALL_QP_NAME) final List<String> showAll,
+			@Context final ServletContext servletContext,
 			@Context final UriInfo uriInfo) {
 		Map<String, List<String>> queryParams = new HashMap<>();
 		queryParams.put(ResourcePath.EXPAND_QP_KEY, expand);
@@ -196,6 +202,12 @@ public class AssetController extends AbstractBaseController {
 		 */
 		assetResource.setDocumentResource(documentResource);
 		Asset asset = assetService.saveNewFromResource(assetResource);
+
+		/*
+		 * Write uploaded asset file to the file system of the report 
+		 * server, overwriting a file with the same name if one exists.
+		 */
+		java.nio.file.Path assetFilePath = assetSyncService.writeAssetFile(asset, servletContext.getRealPath(""));
 
 		//	if (RestUtils.AUTO_EXPAND_PRIMARY_RESOURCES) {
 		addToExpandList(expand, Asset.class); // Force primary resource to be "expanded"
@@ -257,7 +269,7 @@ public class AssetController extends AbstractBaseController {
 			@HeaderParam("Accept") final String acceptHeader,
 			@QueryParam(ResourcePath.EXPAND_QP_NAME) final List<String> expand,
 			@QueryParam(ResourcePath.SHOWALL_QP_NAME) final List<String> showAll,
-			//@Context final ServletContext servletContext,
+			@Context final ServletContext servletContext,
 			//@Context final ServletConfig servletConfig,
 			@Context final UriInfo uriInfo) throws BirtException, RptdesignOpenFromStreamException {
 		Map<String, List<String>> queryParams = new HashMap<>();
@@ -329,18 +341,16 @@ public class AssetController extends AbstractBaseController {
 
 			Asset asset = new Asset(assetTree, assetType, document, filename, true);
 			asset = assetRepository.save(asset);
+
+			/*
+			 * Write uploaded asset file to the file system of the report 
+			 * server, overwriting a file with the same name if one exists.
+			 */
+			java.nio.file.Path assetFilePath = assetSyncService.writeAssetFile(asset, servletContext.getRealPath(""));
+
 			if (RestUtils.AUTO_EXPAND_PRIMARY_RESOURCES) {
 				addToExpandList(expand, Asset.class);
 			}
-
-			//			/*
-			//			 * Write uploaded rptdesign file to the file system of the report 
-			//			 * server, overwriting a file with the same name if one exists.
-			//			 */
-			//			//			ReportUtils.writeRptdesignFile(document, servletContext.getRealPath(""));
-			//			java.nio.file.Path rptdesignFilePath = reportSyncService.writeRptdesignFile(document,
-			//					servletContext.getRealPath(""));
-
 			assetResource = new AssetResource(asset, uriInfo, queryParams, apiVersion);
 
 		} catch (IOException e) {

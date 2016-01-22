@@ -46,7 +46,12 @@ abstract class ControllerTestUtils {
 		 * cannot go in @BeforeClass method of the test class because that is a
 		 * static method and "port" will be an instance variable in the test 
 		 * class.
+		 * 
+		 * The string "/report-server" here should match exactly the application
+		 * context that is set by the "server.contextPath" property in the file:
+		 * 
+		 *   /src/main/resources/application.properties
 		 */
-		return client.target("http://localhost:" + port + "/rest");
+		return client.target("http://localhost:" + port + "/report-server/rest");
 	}
 }
