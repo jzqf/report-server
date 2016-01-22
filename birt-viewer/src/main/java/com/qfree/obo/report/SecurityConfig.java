@@ -354,12 +354,19 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 			 */
 			http.csrf().disable();
 
+			/*
+			 * Prevents the "X-Frame-Options" header from being added to the 
+			 * response. This is to allow the BIRT reports to be displayed in
+			 * an iFrame.
+			 */
+			http.headers().frameOptions().disable();
+
 		} else {
 
 			/*
 			 * Turn off security. 
 			 */
-			http
+			http //.headers().frameOptions().disable().and()
 					.authorizeRequests()
 					//	.anyRequest().authenticated()
 					//	.and().httpBasic().realmName("Q-Free Report Server")
@@ -385,6 +392,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 							"MANAGE_ROLES",
 							"MANAGE_SUBSCRIPTIONS",
 							"DELETE_SUBSCRIPTIONS")
+					.and().headers().frameOptions().disable()
 					.and().csrf().disable();
 		}
 	}

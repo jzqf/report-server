@@ -102,6 +102,21 @@ public class AssetTree implements Serializable {
 				assetTreeResource.getCreatedOn());
 	}
 
+	/**
+	 * Constructor to create a shallow copy of an existing {@link AssetTree}.
+	 * 
+	 * @param assetTree
+	 */
+	public AssetTree(AssetTree assetTree) {
+		this(
+				assetTree.getAssetTreeId(),
+				assetTree.getName(),
+				assetTree.getAbbreviation(),
+				assetTree.getDirectory(),
+				assetTree.isActive(),
+				assetTree.getCreatedOn());
+	}
+
 	public AssetTree(UUID assetTreeId, String name, String abbreviation, String directory, Boolean active,
 			Date createdOn) {
 		this.assetTreeId = assetTreeId;

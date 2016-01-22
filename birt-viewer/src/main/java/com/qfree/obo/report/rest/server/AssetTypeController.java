@@ -181,6 +181,11 @@ public class AssetTypeController extends AbstractBaseController {
 		RestUtils.ifNullThen404(assetType, AssetType.class, "assetTypeId", id.toString());
 
 		/*
+		 * Create a shallow copy of the AssetType before it is modified.
+		 */
+		AssetType assetTypeBeforeUpdate = new AssetType(assetType);
+
+		/*
 		 * Treat attributes of parameterGroupResource that are effectively
 		 * required. These attributes can be omitted in the PUT data, but in
 		 * that case they are then set here to the CURRENT values from the
@@ -196,6 +201,9 @@ public class AssetTypeController extends AbstractBaseController {
 		}
 		if (assetTypeResource.getDirectory() == null) {
 			assetTypeResource.setDirectory(assetType.getDirectory());
+		}
+		if (assetTypeResource.isActive() == null) {
+			assetTypeResource.setActive(assetType.isActive());
 		}
 
 		/*

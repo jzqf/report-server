@@ -98,6 +98,8 @@ public class Asset implements Serializable {
 	 *   Javassist Enhancement failed: com.qfree.obo.report.domain.Document; 
 	 *   nested exception is org.hibernate.HibernateException: Javassist 
 	 *   Enhancement failed: com.qfree.obo.report.domain.Document
+	 * 
+	 * Should this relation be made @OnetoOne?
 	 */
 	@ManyToOne(fetch = FetchType.LAZY)
 	@NotNull

@@ -102,6 +102,21 @@ public class AssetType implements Serializable {
 				assetTypeResource.getCreatedOn());
 	}
 
+	/**
+	 * Constructor to create a shallow copy of an existing {@link AssetType}.
+	 * 
+	 * @param assetType
+	 */
+	public AssetType(AssetType assetType) {
+		this(
+				assetType.getAssetTypeId(),
+				assetType.getName(),
+				assetType.getAbbreviation(),
+				assetType.getDirectory(),
+				assetType.isActive(),
+				assetType.getCreatedOn());
+	}
+
 	public AssetType(UUID assetTypeId, String name, String abbreviation, String directory, Boolean active,
 			Date createdOn) {
 		this.assetTypeId = assetTypeId;

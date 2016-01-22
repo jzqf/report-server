@@ -5,6 +5,7 @@ import java.io.UnsupportedEncodingException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.nio.file.StandardOpenOption;
 import java.util.concurrent.Semaphore;
 
@@ -15,6 +16,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.qfree.obo.report.domain.Asset;
+import com.qfree.obo.report.domain.AssetTree;
 import com.qfree.obo.report.domain.ReportVersion;
 
 public class ReportUtils {
@@ -173,6 +175,38 @@ public class ReportUtils {
 			logger.error("Asset file {} is a directory. It cannot be deleted.", assetFilePath.toString());
 		}
 		return assetFilePath;
+	}
+
+	/**
+	 * Move a BIRT asset "tree" directory in the file system of the report
+	 * server.
+	 * 
+	 * @param asset
+	 * @param absoluteAppContextPath
+	 * @throws IOException
+	 * @throws UnsupportedEncodingException
+	 */
+	public static Path moveAssetTree(AssetTree fromAssetTree, AssetTree toAssetTree, String absoluteAppContextPath)
+			throws IOException {
+		Path movedAssetTreePath = null;
+		Path fromAssetTreePath = Paths.get(absoluteAppContextPath)
+				.resolve(ReportUtils.ASSET_FILES_PARENT_FOLDER)
+				.resolve(fromAssetTree.getDirectory());
+		Path toAssetTreePath = Paths.get(absoluteAppContextPath)
+				.resolve(ReportUtils.ASSET_FILES_PARENT_FOLDER)
+				.resolve(toAssetTree.getDirectory());
+		if (fromAssetTreePath.toFile().exists()) {
+			if (fromAssetTreePath.toFile().isDirectory()) {
+				logger.info("Moving directory {} to {} ...", fromAssetTreePath, toAssetTreePath);
+				movedAssetTreePath = Files.move(fromAssetTreePath, toAssetTreePath,
+						StandardCopyOption.REPLACE_EXISTING);
+			} else {
+				logger.error("{} is not a directory. It cannot be renamed.", fromAssetTreePath);
+			}
+		} else {
+			logger.info("{} does not exist. This is OK. It may not be assigned to an active asset.", fromAssetTreePath);
+		}
+		return movedAssetTreePath;
 	}
 
 	/**

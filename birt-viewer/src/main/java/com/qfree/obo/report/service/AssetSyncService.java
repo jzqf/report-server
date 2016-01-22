@@ -254,4 +254,52 @@ public class AssetSyncService {
 		return assetFilePath;
 	}
 
+	/**
+	 * Move a BIRT asset "tree" directory in the file system of the report
+	 * server.
+	 * 
+	 * This method simply calls
+	 * {@link ReportUtils#moveAssetTree(AssetTree, AssetTree, String)}, but it
+	 * wraps it in a mutual exclusion lock with a semaphore. It also checks that
+	 * this application has a directory tree from which the file can be deleted.
+	 * 
+	 * @param fromAssetTree
+	 * @param toAssetTree
+	 * @param absoluteAppContextPath
+	 * @return
+	 */
+	public Path moveAssetTree(AssetTree fromAssetTree, AssetTree toAssetTree, String absoluteAppContextPath) {
+		Path assetFilePath = null;
+		/*
+		 * We only attempt to delete the file if we detect that there is an 
+		 * appropriate directory tree from which it can be deleted.
+		 */
+		if (ReportUtils.applicationPackagedAsWar()) {
+			try {
+				if (ReportUtils.assetSyncSemaphore.tryAcquire(ReportUtils.MAX_WAIT_ACQUIRE_ASSETSYNCSEMAPHORE,
+						TimeUnit.SECONDS)) {
+					try {
+						/*
+						 * Delete the uploaded asset file from the file system 
+						 * of the report server.
+						 */
+						assetFilePath = ReportUtils.moveAssetTree(fromAssetTree, toAssetTree, absoluteAppContextPath);
+					} catch (IOException e) {
+						throw new RestApiException(RestError.INTERNAL_SERVER_ERROR_ASSET_SYNC, e);
+					} finally {
+						ReportUtils.assetSyncSemaphore.release();
+					}
+				} else {
+					throw new RestApiException(RestError.INTERNAL_SERVER_ERROR_ASSET_SYNC_NO_PERMIT);
+				}
+			} catch (InterruptedException e) {
+				/*
+				 * Can be thrown by:  ReportUtils.assetSyncSemaphore.tryAcquire(...)
+				 */
+				throw new RestApiException(RestError.INTERNAL_SERVER_ERROR_ASSET_SYNC_INTERRUPT, e);
+			}
+		}
+		return assetFilePath;
+	}
+
 }

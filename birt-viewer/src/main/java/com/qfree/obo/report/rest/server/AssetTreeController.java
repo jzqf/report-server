@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import javax.servlet.ServletContext;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.HeaderParam;
@@ -32,6 +33,9 @@ import com.qfree.obo.report.domain.Authority;
 import com.qfree.obo.report.dto.AssetTreeCollectionResource;
 import com.qfree.obo.report.dto.AssetTreeResource;
 import com.qfree.obo.report.dto.ResourcePath;
+import com.qfree.obo.report.dto.RestErrorResource.RestError;
+import com.qfree.obo.report.exceptions.RestApiException;
+import com.qfree.obo.report.service.AssetSyncService;
 import com.qfree.obo.report.service.AssetTreeService;
 import com.qfree.obo.report.util.RestUtils;
 import com.qfree.obo.report.util.RestUtils.RestApiVersion;
@@ -44,13 +48,16 @@ public class AssetTreeController extends AbstractBaseController {
 
 	private final AssetTreeRepository assetTreeRepository;
 	private final AssetTreeService assetTreeService;
+	private final AssetSyncService assetSyncService;
 
 	@Autowired
 	public AssetTreeController(
 			AssetTreeRepository assetTreeRepository,
-			AssetTreeService assetTreeService) {
+			AssetTreeService assetTreeService,
+			AssetSyncService assetSyncService) {
 		this.assetTreeRepository = assetTreeRepository;
 		this.assetTreeService = assetTreeService;
+		this.assetSyncService = assetSyncService;
 	}
 
 	/*
@@ -58,7 +65,7 @@ public class AssetTreeController extends AbstractBaseController {
 	 * 
 	 *   $ mvn clean spring-boot:run
 	 *   $ curl -X GET -u reportserver-restadmin:ReportServer*RESTADMIN -iH "Accept: application/json;v=1" \
-	 *   http://localhost:8080/rest/assetTrees?expand=assetTrees
+	 *   http://localhost:8080/report-server/rest/assetTrees?expand=assetTrees
 	 */
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
@@ -90,7 +97,7 @@ public class AssetTreeController extends AbstractBaseController {
 	 *   $ curl -X POST -u reportserver-restadmin:ReportServer*RESTADMIN \
 	 *   -iH "Accept: application/json;v=1" \-H "Content-Type: application/json" -d \
 	 *   '{"name":"New AssetTree name","abbreviation":"NEWASSETTREE","directory":"somedir",\"active":true}'\
-	 *    http://localhost:8080/rest/assetTrees
+	 *    http://localhost:8080/report-server/rest/assetTrees
 	 */
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
@@ -108,6 +115,25 @@ public class AssetTreeController extends AbstractBaseController {
 		queryParams.put(ResourcePath.SHOWALL_QP_KEY, showAll);
 		RestApiVersion apiVersion = RestUtils.extractAPIVersion(acceptHeader, RestApiVersion.v1);
 
+		/*
+		 * The code below for renaming/moving the asset tree directory in the
+		 * report server's file system does not work if the new directory name
+		 * contains a directory separator ("/" in Linux/Unix) and all of the 
+		 * parent directories do not already exists, i.e., it will not create 
+		 * new intermediate directories.
+		 * 
+		 * To avoid unexpected results and to keep things as simple as possible,
+		 * this endpoint does not allow a directory separator at all in the
+		 * directory name.
+		 */
+		String directorySeparator = System.getProperty("file.separator");
+		logger.info("directorySeparator = {}", directorySeparator);
+		if (assetTreeResource.getDirectory().indexOf(directorySeparator) != -1) {
+			throw new RestApiException(RestError.FORBIDDEN_MULTIPLE_DIRECTORY_LEVELS,
+					RestError.FORBIDDEN_MULTIPLE_DIRECTORY_LEVELS.getErrorMessage(),
+					AssetTree.class, "directory", assetTreeResource.getDirectory());
+		}
+
 		AssetTree assetTree = assetTreeService.saveNewFromResource(assetTreeResource);
 		//	if (RestUtils.AUTO_EXPAND_PRIMARY_RESOURCES) {
 		addToExpandList(expand, AssetTree.class); // Force primary resource to be "expanded"
@@ -121,7 +147,7 @@ public class AssetTreeController extends AbstractBaseController {
 	 * 
 	 *   $ mvn clean spring-boot:run
 	 *   $ curl -X GET -u reportserver-restadmin:ReportServer*RESTADMIN -iH "Accept: application/json;v=1" \
-	 *   http://localhost:8080/rest/assetTrees/272199f9-d407-492f-a147-41a2b7d0cd02?expand=assetTrees
+	 *   http://localhost:8080/report-server/rest/assetTrees/272199f9-d407-492f-a147-41a2b7d0cd02?expand=assetTrees
 	 */
 	@Path("/{id}")
 	@GET
@@ -154,7 +180,7 @@ public class AssetTreeController extends AbstractBaseController {
 	 *   $ curl -X PUT -u reportserver-restadmin:ReportServer*RESTADMIN \
 	 *   -iH "Accept: application/json;v=1" -H "Content-Type: application/json" -d \
 	 *   '{"name":"Q-Free (modified)","abbreviation":"QFREE-MOD","directory":"qfree-mod","active":true}' \
-	 *   http://localhost:8080/rest/assetTrees/7f9d0216-48d7-49ba-b043-ec48db03c938
+	 *   http://localhost:8080/report-server/rest/assetTrees/7f9d0216-48d7-49ba-b043-ec48db03c938
 	 */
 	@Path("/{id}")
 	@PUT
@@ -168,6 +194,7 @@ public class AssetTreeController extends AbstractBaseController {
 			@HeaderParam("Accept") final String acceptHeader,
 			@QueryParam(ResourcePath.EXPAND_QP_NAME) final List<String> expand,
 			@QueryParam(ResourcePath.SHOWALL_QP_NAME) final List<String> showAll,
+			@Context final ServletContext servletContext,
 			@Context final UriInfo uriInfo) {
 		Map<String, List<String>> queryParams = new HashMap<>();
 		queryParams.put(ResourcePath.EXPAND_QP_KEY, expand);
@@ -179,6 +206,11 @@ public class AssetTreeController extends AbstractBaseController {
 		 */
 		AssetTree assetTree = assetTreeRepository.findOne(id);
 		RestUtils.ifNullThen404(assetTree, AssetTree.class, "assetTreeId", id.toString());
+
+		/*
+		 * Create a shallow copy of the AssetTree before it is modified.
+		 */
+		AssetTree assetTreeBeforeUpdate = new AssetTree(assetTree);
 
 		/*
 		 * Treat attributes of parameterGroupResource that are effectively
@@ -197,6 +229,9 @@ public class AssetTreeController extends AbstractBaseController {
 		if (assetTreeResource.getDirectory() == null) {
 			assetTreeResource.setDirectory(assetTree.getDirectory());
 		}
+		if (assetTreeResource.isActive() == null) {
+			assetTreeResource.setActive(assetTree.isActive());
+		}
 
 		/*
 		 * The values for the following attributes cannot be changed. These
@@ -209,9 +244,48 @@ public class AssetTreeController extends AbstractBaseController {
 		assetTreeResource.setCreatedOn(assetTree.getCreatedOn());
 
 		/*
+		 * The code below for renaming/moving the asset tree directory in the
+		 * report server's file system does not work if the new directory name
+		 * contains a directory separator ("/" in Linux/Unix) and all of the 
+		 * parent directories do not already exists, i.e., it will not create 
+		 * new intermediate directories.
+		 * 
+		 * To avoid unexpected results and to keep things as simple as possible,
+		 * this endpoint does not allow a directory separator at all in the
+		 * directory name.
+		 */
+		String directorySeparator = System.getProperty("file.separator");
+		logger.info("directorySeparator = {}", directorySeparator);
+		if (assetTreeResource.getDirectory().indexOf(directorySeparator) != -1) {
+			throw new RestApiException(RestError.FORBIDDEN_MULTIPLE_DIRECTORY_LEVELS,
+					RestError.FORBIDDEN_MULTIPLE_DIRECTORY_LEVELS.getErrorMessage(),
+					AssetTree.class, "directory", assetTreeResource.getDirectory());
+		}
+
+		/*
 		 * Save updated entity.
 		 */
 		assetTree = assetTreeService.saveExistingFromResource(assetTreeResource);
+		
+		/*
+		 * If the "directory" field of the AssetTree has been modified, it is
+		 * necessary to rename the directory in the file system, if it exists. 
+		 * 
+		 * This code will *NOT* work if the new directory name contains a 
+		 * directory separator ("/") and all of the parent directories do not 
+		 * already exists, i.e., it will not create new intermediate 
+		 * directories.
+		 * 
+		 * To avoid this, the condition that "directory" does not contain
+		 * multiple directory levels is inforced above.
+		 * 
+		 * It is best to use this endpoint for simply renaming an existing
+		 * directory name.
+		 */
+		if (!assetTree.getDirectory().equals(assetTreeBeforeUpdate.getDirectory())) {
+			java.nio.file.Path assetFilePath = assetSyncService.moveAssetTree(assetTreeBeforeUpdate, assetTree,
+					servletContext.getRealPath(""));
+		}
 
 		return Response.status(Response.Status.OK).build();
 	}
