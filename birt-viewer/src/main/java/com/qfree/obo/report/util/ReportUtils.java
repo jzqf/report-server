@@ -146,6 +146,34 @@ public class ReportUtils {
 	}
 
 	/**
+	 * Delete an asset file from the file system of the report server.
+	 * 
+	 * @param asset
+	 * @param absoluteAppContextPath
+	 * @throws IOException
+	 * @throws UnsupportedEncodingException
+	 */
+	public static Path deleteAssetFile(Asset asset, String absoluteAppContextPath)
+			throws IOException {
+		/*
+		 * Delete the asset from from the file system. We check first that the
+		 * file exists and that it is a file, i.e., not a directory.
+		 */
+		Path assetFilePath = Paths.get(absoluteAppContextPath)
+				.resolve(ReportUtils.ASSET_FILES_PARENT_FOLDER)
+				.resolve(asset.getAssetTree().getDirectory())
+				.resolve(asset.getAssetType().getDirectory())
+				.resolve(asset.getFilename());
+		if (assetFilePath.toFile().isFile()) {
+			logger.info("Deleting file \"{}\"...", assetFilePath);
+			Files.delete(assetFilePath);
+		} else if (assetFilePath.toFile().isDirectory()) {
+			logger.error("Asset file {} is a directory. It cannot be deleted.", assetFilePath.toString());
+		}
+		return assetFilePath;
+	}
+
+	/**
 	 * Checks if the application has been packaged as a WAR file and is running
 	 * in a full servlet container environment.
 	 * 

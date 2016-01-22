@@ -488,6 +488,7 @@ public class AssetController extends AbstractBaseController {
 			@HeaderParam("Accept") final String acceptHeader,
 			@QueryParam(ResourcePath.EXPAND_QP_NAME) final List<String> expand,
 			@QueryParam(ResourcePath.SHOWALL_QP_NAME) final List<String> showAll,
+			@Context final ServletContext servletContext,
 			@Context final UriInfo uriInfo) {
 		Map<String, List<String>> queryParams = new HashMap<>();
 		queryParams.put(ResourcePath.EXPAND_QP_KEY, expand);
@@ -540,9 +541,11 @@ public class AssetController extends AbstractBaseController {
 		logger.info("document (after deletion) = {}", document);
 
 		/*
-		 * Delete the asset from the file system.
+		 * Delete the asset from the file system of the report server. This 
+		 * assumes that the Asset entity "asset" is not cleared or set to null
+		 * when it is deleted above.
 		 */
-		// XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+		java.nio.file.Path assetFilePath = assetSyncService.deleteAssetFile(asset, servletContext.getRealPath(""));
 
 		//	/*
 		//	 * Confirm that the entity was, indeed, deleted. asset here
