@@ -112,7 +112,9 @@ public class AssetSyncService {
 									}
 								}
 							} else {
-								logger.info("Directory {} does not exist. This is OK.", assetDirectory.toString());
+								logger.info(
+										"Directory {} does not exist. This is OK. The directory will be created, if necessary.",
+										assetDirectory.toString());
 							}
 						}
 					}
@@ -162,10 +164,10 @@ public class AssetSyncService {
 	 * Write BIRT asset file to the file system of the report server,
 	 * overwriting a file with the same name if one exists.
 	 * 
-	 * This method simply calls ReportUtils.writeAssetFile(Asset, String), but
-	 * it wraps it in a mutual exclusion lock with a semaphore. It also checks
-	 * that this application has a directory tree to which the file can be
-	 * written.
+	 * This method simply calls
+	 * {@link ReportUtils#writeAssetFile(Asset, String)}, but it wraps it in a
+	 * mutual exclusion lock with a semaphore. It also checks that this
+	 * application has a directory tree to which the file can be written.
 	 * 
 	 * @param asset
 	 * @param absoluteAppContextPath

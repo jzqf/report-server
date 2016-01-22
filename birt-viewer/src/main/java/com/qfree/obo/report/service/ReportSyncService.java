@@ -156,37 +156,47 @@ public class ReportSyncService {
 	 * Write BIRT rptdesign file to the file system of the report server,
 	 * overwriting a file with the same name if one exists.
 	 * 
+	 * This method simply calls
+	 * {@link ReportUtils#writeRptdesignFile(ReportVersion, String)}, but it
+	 * wraps it in a mutual exclusion lock with a semaphore. It also checks that
+	 * this application has a directory tree to which the file can be written.
+	 * 
 	 * @param reportVersion
 	 * @param absoluteAppContextPath
 	 * @return
 	 */
 	public Path writeRptdesignFile(ReportVersion reportVersion, String absoluteAppContextPath) {
 		Path rptdesignFilePath = null;
-		try {
-			if (ReportUtils.reportSyncSemaphore.tryAcquire(ReportUtils.MAX_WAIT_ACQUIRE_REPORTSYNCSEMAPHORE,
-					TimeUnit.SECONDS)) {
-				try {
+		/*
+		 * We only write the file if we detect that there is an appropriate
+		 * directory tree in which is can be written.
+		 */
+		if (ReportUtils.applicationPackagedAsWar()) {
+			try {
+				if (ReportUtils.reportSyncSemaphore.tryAcquire(ReportUtils.MAX_WAIT_ACQUIRE_REPORTSYNCSEMAPHORE,
+						TimeUnit.SECONDS)) {
+					try {
 
-					/*
-					 * Write uploaded rptdesign file to the file system of the report 
-					 * server, overwriting a file with the same name, if one exists.
-					 */
-					rptdesignFilePath = ReportUtils.writeRptdesignFile(reportVersion, absoluteAppContextPath);
+						/*
+						 * Write uploaded rptdesign file to the file system of the report 
+						 * server, overwriting a file with the same name, if one exists.
+						 */
+						rptdesignFilePath = ReportUtils.writeRptdesignFile(reportVersion, absoluteAppContextPath);
 
-				} catch (InvalidPathException e) {
-					throw new RestApiException(RestError.INTERNAL_SERVER_ERROR_REPORT_FOLDER_MISSING, e);
-				} catch (IOException e) {
-					throw new RestApiException(RestError.INTERNAL_SERVER_ERROR_RPTDESIGN_SYNC, e);
-				} finally {
-					ReportUtils.reportSyncSemaphore.release();
+					} catch (InvalidPathException e) {
+						throw new RestApiException(RestError.INTERNAL_SERVER_ERROR_REPORT_FOLDER_MISSING, e);
+					} catch (IOException e) {
+						throw new RestApiException(RestError.INTERNAL_SERVER_ERROR_RPTDESIGN_SYNC, e);
+					} finally {
+						ReportUtils.reportSyncSemaphore.release();
+					}
+				} else {
+					throw new RestApiException(RestError.INTERNAL_SERVER_ERROR_RPTDESIGN_SYNC_NO_PERMIT);
 				}
-			} else {
-				throw new RestApiException(RestError.INTERNAL_SERVER_ERROR_RPTDESIGN_SYNC_NO_PERMIT);
+			} catch (InterruptedException e) {
+				throw new RestApiException(RestError.INTERNAL_SERVER_ERROR_RPTDESIGN_SYNC_INTERRUPT, e);
 			}
-		} catch (InterruptedException e) {
-			throw new RestApiException(RestError.INTERNAL_SERVER_ERROR_RPTDESIGN_SYNC_INTERRUPT, e);
 		}
-
 		return rptdesignFilePath;
 	}
 

@@ -5,8 +5,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 import javax.annotation.PostConstruct;
-import javax.naming.InitialContext;
-import javax.naming.NamingException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,6 +14,7 @@ import org.springframework.core.env.Environment;
 
 import com.qfree.obo.report.dto.AssetSyncResource;
 import com.qfree.obo.report.dto.ReportSyncResource;
+import com.qfree.obo.report.util.ReportUtils;
 
 //@Component  <- not needed because bean is explicitly created in ApplicationConfig.java
 @PropertySource("classpath:config.properties")
@@ -57,36 +56,13 @@ public class StartupService {
 		//logger.info("path2 = {}", path2);  // /home/jeffreyz/Applications/java/apache-tomcat/apache-tomcat-8.0.17/bin
 
 		/*
-		 * Synchronizing the reports or assets stored in the database with
-		 * the file system only makes sense if there is a context where the
-		 * files can be written. 
-		 * 
-		 * If this application is started via:
-		 * 
-		 *     $ mvn clean spring-boot:run
-		 * 
-		 * there will not be such a context. In this case, 
-		 * "absoluteContextPath" will be the 
-		 * ".../obo-birt-viewer/birt-viewer/src" directory of the Maven
-		 * project from which "mvn clean spring-boot:run" is executed.
-		 * 
-		 * If, however, we are running in a non-embedded servlet container
-		 * such as Tomcat, "absoluteContextPath" will refer to the servlet
-		 * context path of the web application.
-		 * 
-		 * We test which environment we are in by testing if the JNDI
-		 * initial context "java:comp/env" is available:
+		 * We only synchronize files between the database and file system if we
+		 * detect that there is an appropriate directory tree in which the files
+		 * can be written.
 		 */
-		try {
-			new InitialContext().lookup("java:comp/env");
+		if (ReportUtils.applicationPackagedAsWar()) {
 
 			/*
-			 * If no exception is thrown, we are probably running in a servlet
-			 * container environment, e.g., Tomcat. Therefore, it is safe to
-			 * synchronize the reports and assets stored in the database with
-			 * the file system. For that, we need to determine the context path
-			 * for the application.
-			 * 
 			 * On my PC, this currently evaluates to:
 			 * 
 			 * /home/jeffreyz/Applications/java/apache-tomcat/apache-tomcat-8.0.17/webapps/report-server/WEB-INF/classes/
@@ -131,17 +107,7 @@ public class StartupService {
 			} catch (IOException e) {
 				logger.error("Exception thrown during startup while obtaining application context directory", e);
 			}
-		} catch (NamingException ex) {
-			/*
-			 * We are probably running via:
-			 * 
-			 *     $ mvn clean spring-boot:run
-			 * 
-			 * so we do not attempt to synchronize the reports or assets
-			 * stored in the database with the file system.
-			 */
 		}
-
 		//		/* 
 		//		 * This is the default version for the endpoint to which the request is
 		//		 * sent.

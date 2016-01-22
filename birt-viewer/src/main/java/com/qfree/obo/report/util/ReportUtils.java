@@ -41,13 +41,13 @@ public class ReportUtils {
 	 * Threads will wait this many seconds to wait for a permit to become
 	 * available for the reportSyncSemaphore semaphore.
 	 */
-	public static final long MAX_WAIT_ACQUIRE_REPORTSYNCSEMAPHORE = 5;
+	public static final long MAX_WAIT_ACQUIRE_REPORTSYNCSEMAPHORE = 10;
 
 	/*
 	 * Threads will wait this many seconds to wait for a permit to become
 	 * available for the assetSyncSemaphore semaphore.
 	 */
-	public static final long MAX_WAIT_ACQUIRE_ASSETSYNCSEMAPHORE = 5;
+	public static final long MAX_WAIT_ACQUIRE_ASSETSYNCSEMAPHORE = 10;
 
 	/*
 	 * Directory in /webapp where reports are stored. This must be set to the 
@@ -192,7 +192,7 @@ public class ReportUtils {
 		 * a different test. 
 		 */
 		try {
-			new InitialContext().lookup("java:comp/env");
+			Object object = new InitialContext().lookup("java:comp/env");
 			isWar = true;
 		} catch (NamingException ex) {
 			/*
