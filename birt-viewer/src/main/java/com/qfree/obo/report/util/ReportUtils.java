@@ -17,6 +17,7 @@ import org.slf4j.LoggerFactory;
 
 import com.qfree.obo.report.domain.Asset;
 import com.qfree.obo.report.domain.AssetTree;
+import com.qfree.obo.report.domain.AssetType;
 import com.qfree.obo.report.domain.ReportVersion;
 
 public class ReportUtils {
@@ -178,8 +179,8 @@ public class ReportUtils {
 	}
 
 	/**
-	 * Move a BIRT asset "tree" directory in the file system of the report
-	 * server.
+	 * Move/Rename a BIRT asset "tree" directory in the file system of the
+	 * report server.
 	 * 
 	 * @param asset
 	 * @param absoluteAppContextPath
@@ -207,6 +208,49 @@ public class ReportUtils {
 			logger.info("{} does not exist. This is OK. It may not be assigned to an active asset.", fromAssetTreePath);
 		}
 		return movedAssetTreePath;
+	}
+
+	/**
+	 * Move/Rename a BIRT asset "type" directory in the file system of the
+	 * report server.
+	 * 
+	 * @param assetTree
+	 * @param fromAssetType
+	 * @param toAssetType
+	 * @param absoluteAppContextPath
+	 * @return
+	 * @throws IOException
+	 */
+	public static Path moveAssetType(
+			AssetTree assetTree,
+			AssetType fromAssetType,
+			AssetType toAssetType,
+			String absoluteAppContextPath) throws IOException {
+		Path movedAssetTypePath = null;
+
+		Path fromAssetTypePath = Paths.get(absoluteAppContextPath)
+				.resolve(ReportUtils.ASSET_FILES_PARENT_FOLDER)
+				.resolve(assetTree.getDirectory())
+				.resolve(fromAssetType.getDirectory());
+
+		Path toAssetTypePath = Paths.get(absoluteAppContextPath)
+				.resolve(ReportUtils.ASSET_FILES_PARENT_FOLDER)
+				.resolve(assetTree.getDirectory())
+				.resolve(toAssetType.getDirectory());
+
+		if (fromAssetTypePath.toFile().exists()) {
+			if (fromAssetTypePath.toFile().isDirectory()) {
+				logger.info("Moving directory {} to {} ...", fromAssetTypePath, toAssetTypePath);
+				movedAssetTypePath = Files.move(fromAssetTypePath, toAssetTypePath,
+						StandardCopyOption.REPLACE_EXISTING);
+			} else {
+				logger.error("{} is not a directory. It cannot be renamed.", fromAssetTypePath);
+			}
+		} else {
+			logger.info("{} does not exist. This is OK. It may not be assigned to an active asset.", fromAssetTypePath);
+		}
+
+		return movedAssetTypePath;
 	}
 
 	/**

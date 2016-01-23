@@ -268,6 +268,18 @@ public class AssetTreeController extends AbstractBaseController {
 		assetTree = assetTreeService.saveExistingFromResource(assetTreeResource);
 		
 		/*
+		 * If the AssetTree has just been made active/inactive, we do *not* 
+		 * write/delete any assets to/from the file system. This is because we
+		 * do *not* currently use the "active" field of AsetTree entities to 
+		 * control whether Assets linked to it are synchronized with the file
+		 * system or not.
+		 * 
+		 * The "active" field should only be used to show or hide the AssetTree
+		 * in a UI where an AssetTree can be selected to associate with an
+		 * Asset.
+		 */
+
+		/*
 		 * If the "directory" field of the AssetTree has been modified, it is
 		 * necessary to rename the directory in the file system, if it exists. 
 		 * 
@@ -277,7 +289,7 @@ public class AssetTreeController extends AbstractBaseController {
 		 * directories.
 		 * 
 		 * To avoid this, the condition that "directory" does not contain
-		 * multiple directory levels is inforced above.
+		 * multiple directory levels is enforced above.
 		 * 
 		 * It is best to use this endpoint for simply renaming an existing
 		 * directory name.

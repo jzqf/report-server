@@ -261,7 +261,8 @@ public class AssetSyncService {
 	 * This method simply calls
 	 * {@link ReportUtils#moveAssetTree(AssetTree, AssetTree, String)}, but it
 	 * wraps it in a mutual exclusion lock with a semaphore. It also checks that
-	 * this application has a directory tree from which the file can be deleted.
+	 * this application has a directory tree in which the directory can be
+	 * moved.
 	 * 
 	 * @param fromAssetTree
 	 * @param toAssetTree
@@ -271,8 +272,8 @@ public class AssetSyncService {
 	public Path moveAssetTree(AssetTree fromAssetTree, AssetTree toAssetTree, String absoluteAppContextPath) {
 		Path assetFilePath = null;
 		/*
-		 * We only attempt to delete the file if we detect that there is an 
-		 * appropriate directory tree from which it can be deleted.
+		 * We only attempt to move the directory if we detect that there exists
+		 * an appropriate directory tree in which it can be moved.
 		 */
 		if (ReportUtils.applicationPackagedAsWar()) {
 			try {
@@ -280,10 +281,83 @@ public class AssetSyncService {
 						TimeUnit.SECONDS)) {
 					try {
 						/*
-						 * Delete the uploaded asset file from the file system 
-						 * of the report server.
+						 * Move/Rename the directory in the file system of the
+						 * report server.
 						 */
 						assetFilePath = ReportUtils.moveAssetTree(fromAssetTree, toAssetTree, absoluteAppContextPath);
+					} catch (IOException e) {
+						throw new RestApiException(RestError.INTERNAL_SERVER_ERROR_ASSET_SYNC, e);
+					} finally {
+						ReportUtils.assetSyncSemaphore.release();
+					}
+				} else {
+					throw new RestApiException(RestError.INTERNAL_SERVER_ERROR_ASSET_SYNC_NO_PERMIT);
+				}
+			} catch (InterruptedException e) {
+				/*
+				 * Can be thrown by:  ReportUtils.assetSyncSemaphore.tryAcquire(...)
+				 */
+				throw new RestApiException(RestError.INTERNAL_SERVER_ERROR_ASSET_SYNC_INTERRUPT, e);
+			}
+		}
+		return assetFilePath;
+	}
+
+	/**
+	 * Move/Rename a BIRT asset "type" directory in the file system of the
+	 * report server.
+	 * 
+	 * <p>
+	 * This must a move/rename the asset type directory in <i>each</i> asset
+	 * tree, i.e., for each AssetTree. For this reason, this endpoint will not
+	 * often be useful because it will rename the directory in the "qfree" asset
+	 * tree as well as directories in all other asset trees. But if there are
+	 * existing Q-Free reports that make use of assets within the "qfree" asset
+	 * tree, those assets will no longer be available to the reports if their
+	 * containing directory is renamed. Nevertheless, there could be cases where
+	 * this endpoint can correct the name of an AssetType directory that was
+	 * created with an incorrect value, especially if no asset files have yet
+	 * been uploaded that are linked to the AssetType.
+	 * 
+	 * <p>
+	 * This complication would not exist if each AssetTree entity had its own
+	 * set of AssetType entities, but the chosen data model does not support
+	 * this.
+	 * 
+	 * <p>
+	 * This method simply calls
+	 * {@link ReportUtils#moveAssetType(AssetTree, AssetType, AssetType, String)}
+	 * , but it also wraps it in a mutual exclusion lock with a semaphore. It
+	 * also checks that this application has a directory tree in which the
+	 * directory can be moved.
+	 * 
+	 * @param fromAssetType
+	 * @param toAssetType
+	 * @param absoluteAppContextPath
+	 * @return
+	 */
+	public Path moveAssetType(AssetType fromAssetType, AssetType toAssetType, String absoluteAppContextPath) {
+		Path assetFilePath = null;
+		/*
+		 * We only attempt to move the directory if we detect that there exists
+		 * an appropriate directory tree in which it can be moved.
+		 */
+		if (ReportUtils.applicationPackagedAsWar()) {
+			try {
+				if (ReportUtils.assetSyncSemaphore.tryAcquire(ReportUtils.MAX_WAIT_ACQUIRE_ASSETSYNCSEMAPHORE,
+						TimeUnit.SECONDS)) {
+					try {
+
+						List<AssetTree> assetTrees = assetTreeRepository.findAll();
+						for (AssetTree assetTree : assetTrees) {
+							/*
+							 * Move/Rename the AssetType directory for "assetTree"
+							 * in the file system of the report server.
+							 */
+							assetFilePath = ReportUtils.moveAssetType(assetTree, fromAssetType, toAssetType,
+									absoluteAppContextPath);
+						}
+
 					} catch (IOException e) {
 						throw new RestApiException(RestError.INTERNAL_SERVER_ERROR_ASSET_SYNC, e);
 					} finally {

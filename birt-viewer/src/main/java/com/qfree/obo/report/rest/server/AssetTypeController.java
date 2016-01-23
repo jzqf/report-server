@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import javax.servlet.ServletContext;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.HeaderParam;
@@ -32,6 +33,9 @@ import com.qfree.obo.report.domain.Authority;
 import com.qfree.obo.report.dto.AssetTypeCollectionResource;
 import com.qfree.obo.report.dto.AssetTypeResource;
 import com.qfree.obo.report.dto.ResourcePath;
+import com.qfree.obo.report.dto.RestErrorResource.RestError;
+import com.qfree.obo.report.exceptions.RestApiException;
+import com.qfree.obo.report.service.AssetSyncService;
 import com.qfree.obo.report.service.AssetTypeService;
 import com.qfree.obo.report.util.RestUtils;
 import com.qfree.obo.report.util.RestUtils.RestApiVersion;
@@ -44,13 +48,16 @@ public class AssetTypeController extends AbstractBaseController {
 
 	private final AssetTypeRepository assetTypeRepository;
 	private final AssetTypeService assetTypeService;
+	private final AssetSyncService assetSyncService;
 
 	@Autowired
 	public AssetTypeController(
 			AssetTypeRepository assetTypeRepository,
-			AssetTypeService assetTypeService) {
+			AssetTypeService assetTypeService,
+			AssetSyncService assetSyncService) {
 		this.assetTypeRepository = assetTypeRepository;
 		this.assetTypeService = assetTypeService;
+		this.assetSyncService = assetSyncService;
 	}
 
 	/*
@@ -58,7 +65,7 @@ public class AssetTypeController extends AbstractBaseController {
 	 * 
 	 *   $ mvn clean spring-boot:run
 	 *   $ curl -X GET -u reportserver-restadmin:ReportServer*RESTADMIN -iH "Accept: application/json;v=1" \
-	 *   http://localhost:8080/rest/assetTypes?expand=assetTypes
+	 *   http://localhost:8080/report-server/rest/assetTypes?expand=assetTypes
 	 */
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
@@ -90,7 +97,7 @@ public class AssetTypeController extends AbstractBaseController {
 	 *   $ curl -X POST -u reportserver-restadmin:ReportServer*RESTADMIN \
 	 *   -iH "Accept: application/json;v=1" -H "Content-Type: application/json" -d \
 	 *   '{"name":"New AssetType name","abbreviation":"NEWASSETTYPE","directory":"somedir","active":true}' \
-	 *   http://localhost:8080/rest/assetTypes
+	 *   http://localhost:8080/report-server/rest/assetTypes
 	 */
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
@@ -108,6 +115,25 @@ public class AssetTypeController extends AbstractBaseController {
 		queryParams.put(ResourcePath.SHOWALL_QP_KEY, showAll);
 		RestApiVersion apiVersion = RestUtils.extractAPIVersion(acceptHeader, RestApiVersion.v1);
 
+		/*
+		 * The code below for renaming/moving the asset type directory in the
+		 * report server's file system does not work if the new directory name
+		 * contains a directory separator ("/" in Linux/Unix) and all of the 
+		 * parent directories do not already exists, i.e., it will not create 
+		 * new intermediate directories.
+		 * 
+		 * To avoid unexpected results and to keep things as simple as possible,
+		 * this endpoint does not allow a directory separator at all in the
+		 * directory name.
+		 */
+		String directorySeparator = System.getProperty("file.separator");
+		logger.info("directorySeparator = {}", directorySeparator);
+		if (assetTypeResource.getDirectory().indexOf(directorySeparator) != -1) {
+			throw new RestApiException(RestError.FORBIDDEN_MULTIPLE_DIRECTORY_LEVELS,
+					RestError.FORBIDDEN_MULTIPLE_DIRECTORY_LEVELS.getErrorMessage(),
+					AssetType.class, "directory", assetTypeResource.getDirectory());
+		}
+
 		AssetType assetType = assetTypeService.saveNewFromResource(assetTypeResource);
 		//	if (RestUtils.AUTO_EXPAND_PRIMARY_RESOURCES) {
 		addToExpandList(expand, AssetType.class); // Force primary resource to be "expanded"
@@ -121,7 +147,7 @@ public class AssetTypeController extends AbstractBaseController {
 	 * 
 	 *   $ mvn clean spring-boot:run
 	 *   $ curl -X GET -u reportserver-restadmin:ReportServer*RESTADMIN -iH "Accept: application/json;v=1" \
-	 *   http://localhost:8080/rest/assetTypes/1e7ddbbc-8b40-4373-bfc5-6e6d3d5964d8?expand=assetTypes
+	 *   http://localhost:8080/report-server/rest/assetTypes/1e7ddbbc-8b40-4373-bfc5-6e6d3d5964d8?expand=assetTypes
 	 */
 	@Path("/{id}")
 	@GET
@@ -154,7 +180,7 @@ public class AssetTypeController extends AbstractBaseController {
 	 *   $ curl -X PUT -u reportserver-restadmin:ReportServer*RESTADMIN \
 	 *   -iH "Accept: application/json;v=1" -H "Content-Type: application/json" -d \
 	 *   '{"name":"Image file (modified)","abbreviation":"IMAGE-MOD","directory":"images-mod","active":true}' \
-	 *   http://localhost:8080/rest/assetTypes/1e7ddbbc-8b40-4373-bfc5-6e6d3d5964d8
+	 *   http://localhost:8080/report-server/rest/assetTypes/1e7ddbbc-8b40-4373-bfc5-6e6d3d5964d8
 	 */
 	@Path("/{id}")
 	@PUT
@@ -168,6 +194,7 @@ public class AssetTypeController extends AbstractBaseController {
 			@HeaderParam("Accept") final String acceptHeader,
 			@QueryParam(ResourcePath.EXPAND_QP_NAME) final List<String> expand,
 			@QueryParam(ResourcePath.SHOWALL_QP_NAME) final List<String> showAll,
+			@Context final ServletContext servletContext,
 			@Context final UriInfo uriInfo) {
 		Map<String, List<String>> queryParams = new HashMap<>();
 		queryParams.put(ResourcePath.EXPAND_QP_KEY, expand);
@@ -217,9 +244,60 @@ public class AssetTypeController extends AbstractBaseController {
 		assetTypeResource.setCreatedOn(assetType.getCreatedOn());
 
 		/*
+		 * The code below for renaming/moving the asset type directory in the
+		 * report server's file system does not work if the new directory name
+		 * contains a directory separator ("/" in Linux/Unix) and all of the 
+		 * parent directories do not already exists, i.e., it will not create 
+		 * new intermediate directories.
+		 * 
+		 * To avoid unexpected results and to keep things as simple as possible,
+		 * this endpoint does not allow a directory separator at all in the
+		 * directory name.
+		 */
+		String directorySeparator = System.getProperty("file.separator");
+		logger.info("directorySeparator = {}", directorySeparator);
+		if (assetTypeResource.getDirectory().indexOf(directorySeparator) != -1) {
+			throw new RestApiException(RestError.FORBIDDEN_MULTIPLE_DIRECTORY_LEVELS,
+					RestError.FORBIDDEN_MULTIPLE_DIRECTORY_LEVELS.getErrorMessage(),
+					AssetType.class, "directory", assetTypeResource.getDirectory());
+		}
+
+		/*
 		 * Save updated entity.
 		 */
 		assetType = assetTypeService.saveExistingFromResource(assetTypeResource);
+
+		/*
+		 * If the AssetType has just been made active/inactive, we do *not* 
+		 * write/delete any assets to/from the file system. This is because we
+		 * do *not* currently use the "active" field of AsetType entities to 
+		 * control whether Assets linked to it are synchronized with the file
+		 * system or not.
+		 * 
+		 * The "active" field should only be used to show or hide the AssetType
+		 * in a UI where an AssetType can be selected to associate with an
+		 * Asset.
+		 */
+
+		/*
+		 * If the "directory" field of the AssetType has been modified, it is
+		 * necessary to rename the directory in the file system, if it exists. 
+		 * 
+		 * This code will *NOT* work if the new directory name contains a 
+		 * directory separator ("/") and all of the parent directories do not 
+		 * already exists, i.e., it will not create new intermediate 
+		 * directories.
+		 * 
+		 * To avoid this, the condition that "directory" does not contain
+		 * multiple directory levels is enforced above.
+		 * 
+		 * It is best to use this endpoint for simply renaming an existing
+		 * directory name.
+		 */
+		if (!assetType.getDirectory().equals(assetTypeBeforeUpdate.getDirectory())) {
+			java.nio.file.Path assetFilePath = assetSyncService.moveAssetType(assetTypeBeforeUpdate, assetType,
+					servletContext.getRealPath(""));
+		}
 
 		return Response.status(Response.Status.OK).build();
 	}
