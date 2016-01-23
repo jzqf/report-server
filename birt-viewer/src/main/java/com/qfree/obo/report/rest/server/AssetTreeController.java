@@ -46,6 +46,15 @@ public class AssetTreeController extends AbstractBaseController {
 
 	private static final Logger logger = LoggerFactory.getLogger(AssetTreeController.class);
 
+	/*
+	 * This is the name of the direcotry within the "webcontent" directory 
+	 * where the BIRT WebViewer stores its assets. We cannot create or modify
+	 * an AssetTree entity with directory="birt"; otherwise, we can end up
+	 * messing up the functionality needed for displaying reports with the BIRT
+	 * "viewservlets".
+	 */
+	private static final String BIRT_VIEWER_ASSET_TREE = "birt";
+
 	private final AssetTreeRepository assetTreeRepository;
 	private final AssetTreeService assetTreeService;
 	private final AssetSyncService assetSyncService;
@@ -114,6 +123,18 @@ public class AssetTreeController extends AbstractBaseController {
 		queryParams.put(ResourcePath.EXPAND_QP_KEY, expand);
 		queryParams.put(ResourcePath.SHOWALL_QP_KEY, showAll);
 		RestApiVersion apiVersion = RestUtils.extractAPIVersion(acceptHeader, RestApiVersion.v1);
+
+		if (BIRT_VIEWER_ASSET_TREE.equals(assetTreeResource.getDirectory())) {
+			/*
+			 * We cannot create or modify an AssetTree entity with a directory
+			 * that conflicts with the directory used by the BIRT WebViewer;
+			 * otherwise, we can end up messing up the functionality needed for
+			 * displaying reports with the BIRT "viewservlets".
+			 */
+			throw new RestApiException(RestError.FORBIDDEN_RESERVED_VALUE,
+					RestError.FORBIDDEN_RESERVED_VALUE.getErrorMessage(),
+					AssetTree.class, "directory", assetTreeResource.getDirectory());
+		}
 
 		/*
 		 * The code below for renaming/moving the asset tree directory in the
@@ -242,6 +263,18 @@ public class AssetTreeController extends AbstractBaseController {
 		 */
 		assetTreeResource.setAssetTreeId(assetTree.getAssetTreeId());
 		assetTreeResource.setCreatedOn(assetTree.getCreatedOn());
+
+		if (BIRT_VIEWER_ASSET_TREE.equals(assetTreeResource.getDirectory())) {
+			/*
+			 * We cannot create or modify an AssetTree entity with a directory
+			 * that conflicts with the directory used by the BIRT WebViewer;
+			 * otherwise, we can end up messing up the functionality needed for
+			 * displaying reports with the BIRT "viewservlets".
+			 */
+			throw new RestApiException(RestError.FORBIDDEN_RESERVED_VALUE,
+					RestError.FORBIDDEN_RESERVED_VALUE.getErrorMessage(),
+					AssetTree.class, "directory", assetTreeResource.getDirectory());
+		}
 
 		/*
 		 * The code below for renaming/moving the asset tree directory in the

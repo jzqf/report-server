@@ -259,6 +259,8 @@ public class RestErrorResource {
 		FORBIDDEN_MULTIPLE_DIRECTORY_LEVELS(Response.Status.FORBIDDEN, "403.36",
 				"Multiple directory levels are not allowed. Directory separator should not appear in directory name.",
 				null),
+		FORBIDDEN_RESERVED_VALUE(Response.Status.FORBIDDEN, "403.37",
+				"The value specified is reserved and cannot be used.", null),
 		//FORBIDDEN_RESOURCE_ROLE_REPORT_ACCESS_VIOLATION(
 		//		Response.Status.FORBIDDEN, "403.XX",
 		//		"The authenticated role does not have permission to view the requested report.", null),
