@@ -22,36 +22,37 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.qfree.obo.report.db.ReportRepository;
+import com.qfree.obo.report.db.AssetRepository;
 import com.qfree.obo.report.domain.Authority;
-import com.qfree.obo.report.dto.ReportSyncResource;
+import com.qfree.obo.report.dto.AssetSyncResource;
 import com.qfree.obo.report.dto.ResourcePath;
-import com.qfree.obo.report.service.ReportSyncService;
+import com.qfree.obo.report.service.AssetSyncService;
 import com.qfree.obo.report.util.ReportUtils;
 import com.qfree.obo.report.util.RestUtils;
 import com.qfree.obo.report.util.RestUtils.RestApiVersion;
 
 @Component
-@Path("reportSyncs")
-public class ReportSyncController extends AbstractBaseController {
+@Path("assetSyncs")
+public class AssetSyncController extends AbstractBaseController {
 
-	private static final Logger logger = LoggerFactory.getLogger(ReportSyncController.class);
+	private static final Logger logger = LoggerFactory.getLogger(AssetSyncController.class);
 
-	private final ReportRepository reportRepository;
-	private final ReportSyncService reportSyncService;
+	private final AssetRepository assetRepository;
+	private final AssetSyncService assetSyncService;
 
 	@Autowired
-	public ReportSyncController(
-			ReportRepository reportRepository, ReportSyncService reportSyncService) {
-		this.reportRepository = reportRepository;
-		this.reportSyncService = reportSyncService;
+	public AssetSyncController(
+			AssetRepository assetRepository, AssetSyncService assetSyncService) {
+		this.assetRepository = assetRepository;
+		this.assetSyncService = assetSyncService;
 	}
 
 	/*
 	 * This endpoint can be tested with:
 	 * 
 	 *   $ mvn clean spring-boot:run
-	 *   $ curl -X GET -iH "Accept: text/plain;v=1" http://localhost:8080/rest/reportSyncs/availablePermits
+	 *   $ curl -X GET -u reportserver-restadmin:ReportServer*RESTADMIN -iH "Accept: text/plain;v=1" \
+	 *   http://localhost:8080/report-server/rest/assetSyncs/availablePermits
 	 * 
 	 */
 	@Path("/availablePermits")
@@ -68,7 +69,7 @@ public class ReportSyncController extends AbstractBaseController {
 		queryParams.put(ResourcePath.SHOWALL_QP_KEY, showAll);
 		RestApiVersion apiVersion = RestUtils.extractAPIVersion(acceptHeader, RestApiVersion.v1);
 
-		return ReportUtils.reportSyncSemaphore.availablePermits();
+		return ReportUtils.assetSyncSemaphore.availablePermits();
 	}
 
 	/*
@@ -76,17 +77,17 @@ public class ReportSyncController extends AbstractBaseController {
 	 * 
 	 *   $ mvn clean spring-boot:run
 	 *   $ curl -X POST -u reportserver-restadmin:ReportServer*RESTADMIN \
-	 *   -iH "Accept: application/json;v=1" http://localhost:8080/report-server/rest/reportSyncs
+	 *   -iH "Accept: application/json;v=1" http://localhost:8080/report-server/rest/assetSyncs
 	 * 
 	 * @Transactional is used to avoid org.hibernate.LazyInitializationException
-	 * being thrown when evaluating report.getReportVersions().
+	 * being thrown.
 	 */
 	@Transactional
 	@POST
 	//@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	@PreAuthorize("hasAuthority('" + Authority.AUTHORITY_NAME_MANAGE_FILESYNCING + "')")
-	public ReportSyncResource syncReportsWithFileSystem(
+	public AssetSyncResource syncAssetsWithFileSystem(
 			@HeaderParam("Accept") final String acceptHeader,
 			@QueryParam(ResourcePath.EXPAND_QP_NAME) final List<String> expand,
 			@QueryParam(ResourcePath.SHOWALL_QP_NAME) final List<String> showAll,
@@ -97,6 +98,6 @@ public class ReportSyncController extends AbstractBaseController {
 		queryParams.put(ResourcePath.SHOWALL_QP_KEY, showAll);
 		RestApiVersion apiVersion = RestUtils.extractAPIVersion(acceptHeader, RestApiVersion.v1);
 
-		return reportSyncService.syncReportsWithFileSystem(servletContext, uriInfo, queryParams, apiVersion);
+		return assetSyncService.syncAssetsWithFileSystem(servletContext, uriInfo, queryParams, apiVersion);
 	}
 }
