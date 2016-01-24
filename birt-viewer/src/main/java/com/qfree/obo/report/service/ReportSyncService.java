@@ -60,7 +60,12 @@ public class ReportSyncService {
 		List<String> reportsDeleted = new ArrayList<>();
 		List<String> reportsNotDeleted = new ArrayList<>();
 		List<String> reportsCreated = new ArrayList<>();
-		List<String> reportsNotCreated = new ArrayList<>(); // not currently used
+		/*
+		 * This is not currently used. If an error occurs while writing a
+		 * report, an exception is thrown instead of inserting the report into 
+		 * this list and returning a ReportSyncResource.
+		 */
+		List<String> reportsNotCreated = new ArrayList<>();
 
 		try {
 			if (ReportUtils.reportSyncSemaphore.tryAcquire(ReportUtils.MAX_WAIT_ACQUIRE_REPORTSYNCSEMAPHORE,

@@ -67,7 +67,12 @@ public class AssetSyncService {
 		List<String> assetsDeleted = new ArrayList<>();
 		List<String> assetsNotDeleted = new ArrayList<>();
 		List<String> assetsCreated = new ArrayList<>();
-		List<String> assetsNotCreated = new ArrayList<>(); // not currently used
+		/*
+		 * This is not currently used. If an error occurs while writing an
+		 * asset, an exception is thrown instead of inserting the asset into 
+		 * this list and returning an AssetSyncResource.
+		 */
+		List<String> assetsNotCreated = new ArrayList<>();
 
 		try {
 			if (ReportUtils.assetSyncSemaphore.tryAcquire(ReportUtils.MAX_WAIT_ACQUIRE_ASSETSYNCSEMAPHORE,
