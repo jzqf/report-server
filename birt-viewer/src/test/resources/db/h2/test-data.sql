@@ -40,10 +40,12 @@ insert into reporting.asset_tree (asset_tree_id, name, abbreviation, directory, 
  
 
 -- Create [asset_type] rows:
-insert into reporting.asset_type (asset_type_id, name, abbreviation, directory, active, created_on) values ('f2f4b13f-9c45-4515-bb4b-62e8ccc3d95c', 'CSS file'        , 'CSS'     , 'css'       , true, '2016-01-31T09:00:00');
-insert into reporting.asset_type (asset_type_id, name, abbreviation, directory, active, created_on) values ('1e7ddbbc-8b40-4373-bfc5-6e6d3d5964d8', 'Image file'      , 'IMAGE'   , 'images'    , true, '2016-01-31T09:00:00');
-insert into reporting.asset_type (asset_type_id, name, abbreviation, directory, active, created_on) values ('1c488bcf-15ab-4fcb-8ab8-23cda9342a77', 'JavaScript file' , 'JS'      , 'js'        , true, '2016-01-31T09:00:00');
-insert into reporting.asset_type (asset_type_id, name, abbreviation, directory, active, created_on) values ('26835616-00e2-475d-89ce-11c12e659605', 'BIRT Library'    , 'BIRT LIB', 'libraries' , true, '2016-01-31T09:00:00');
+insert into reporting.asset_type (asset_type_id, name, abbreviation, directory, active, created_on) values ('f2f4b13f-9c45-4515-bb4b-62e8ccc3d95c', 'CSS file'        , 'CSS'       , 'css'        , true, '2016-01-31T09:00:00');
+insert into reporting.asset_type (asset_type_id, name, abbreviation, directory, active, created_on) values ('2603ed74-94b5-4c39-ad36-a7e16a374237', 'HTML page'       , 'HTML'      , 'html'       , true, '2016-01-31T09:00:00');
+insert into reporting.asset_type (asset_type_id, name, abbreviation, directory, active, created_on) values ('1e7ddbbc-8b40-4373-bfc5-6e6d3d5964d8', 'Image file'      , 'IMAGE'     , 'images'     , true, '2016-01-31T09:00:00');
+insert into reporting.asset_type (asset_type_id, name, abbreviation, directory, active, created_on) values ('1c488bcf-15ab-4fcb-8ab8-23cda9342a77', 'JavaScript file' , 'JS'        , 'js'         , true, '2016-01-31T09:00:00');
+insert into reporting.asset_type (asset_type_id, name, abbreviation, directory, active, created_on) values ('26835616-00e2-475d-89ce-11c12e659605', 'BIRT Library'    , 'BIRT LIB'  , 'libraries'  , true, '2016-01-31T09:00:00');
+insert into reporting.asset_type (asset_type_id, name, abbreviation, directory, active, created_on) values ('4b811357-d664-4e44-bc75-197e6946abcd', 'Properties file' , 'PROPERTIES', 'properties' , true, '2016-01-31T09:00:00');
 
 
 insert into reporting.report (report_id, report_category_id, name, number, sort_order, active, created_on) values ('d65f3d9c-f67d-4beb-9936-9dfa19aa1407', '7a482694-51d2-42d0-b0e2-19dd13bbbc64', 'Report name #01', 100, 100, true , '2014-06-09T22:00:00'); --, (SELECT rptdesign FROM tmp_rptdesign));

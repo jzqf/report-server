@@ -302,11 +302,11 @@ public class AssetController extends AbstractBaseController {
 		//	}
 		//	logger.debug("javax.ws.rs.Application = {}", servletConfig.getInitParameter("javax.ws.rs.Application"));
 
-		RestUtils.ifAttrNullOrBlankThen403(filename, null, "filename");
-		RestUtils.ifAttrNullThen403(assetTreeId, null, "assetTreeId");
-		RestUtils.ifAttrNullThen403(assetTypeId, null, "assetTypeId");
+		RestUtils.ifAttrNullOrBlankThen403(filename, Asset.class, "filename");
+		RestUtils.ifAttrNullThen403(assetTreeId, Asset.class, "assetTreeId");
+		RestUtils.ifAttrNullThen403(assetTypeId, Asset.class, "assetTypeId");
 
-		RestUtils.ifAttrNullThen403(uploadedInputStream, null, "uploadedInputStream");
+		RestUtils.ifAttrNullThen403(uploadedInputStream, Asset.class, "uploadedInputStream");
 
 		AssetResource assetResource = null;
 		try {
