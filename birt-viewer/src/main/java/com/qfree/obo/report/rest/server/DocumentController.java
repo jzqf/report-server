@@ -84,7 +84,7 @@ public class DocumentController extends AbstractBaseController {
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	@Transactional
-	@PreAuthorize("hasAuthority('" + Authority.AUTHORITY_NAME_MANAGE_REPORTS + "')")
+	@PreAuthorize("hasAuthority('" + Authority.AUTHORITY_NAME_MANAGE_DOCUMENTS + "')")
 	public DocumentCollectionResource getList(
 			@HeaderParam("Accept") final String acceptHeader,
 			@QueryParam(ResourcePath.EXPAND_QP_NAME) final List<String> expand,
@@ -176,7 +176,7 @@ public class DocumentController extends AbstractBaseController {
 	@Consumes(MediaType.MULTIPART_FORM_DATA)
 	@Produces(MediaType.APPLICATION_JSON)
 	@Transactional
-	@PreAuthorize("hasAuthority('" + Authority.AUTHORITY_NAME_UPLOAD_REPORTS + "')")
+	@PreAuthorize("hasAuthority('" + Authority.AUTHORITY_NAME_MANAGE_DOCUMENTS + "')")
 	public Response createByUpload(
 			@FormDataParam("documentfile") InputStream uploadedInputStream,
 			@FormDataParam("documentfile") FormDataContentDisposition fileDetail,
@@ -239,7 +239,7 @@ public class DocumentController extends AbstractBaseController {
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	@Transactional
-	@PreAuthorize("hasAuthority('" + Authority.AUTHORITY_NAME_MANAGE_REPORTS + "')")
+	@PreAuthorize("hasAuthority('" + Authority.AUTHORITY_NAME_MANAGE_DOCUMENTS + "')")
 	public DocumentResource getById(
 			@PathParam("id") final UUID id,
 			@HeaderParam("Accept") final String acceptHeader,
@@ -291,7 +291,7 @@ public class DocumentController extends AbstractBaseController {
 	 * is encountered.
 	 */
 	//@Produces({ MediaType.APPLICATION_JSON })
-	@PreAuthorize("hasAuthority('" + Authority.AUTHORITY_NAME_MANAGE_REPORTS + "')")
+	@PreAuthorize("hasAuthority('" + Authority.AUTHORITY_NAME_MANAGE_DOCUMENTS + "')")
 	public Response getDocumentContentByDocumentId(
 			@PathParam("id") final UUID id,
 			@HeaderParam("Accept") final String acceptHeader,

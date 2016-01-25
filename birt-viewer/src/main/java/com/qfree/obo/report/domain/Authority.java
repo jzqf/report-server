@@ -64,6 +64,10 @@ public class Authority implements Serializable {
 			.fromString("608d6156-b155-487d-bdd3-4e00260b7443");
 	public static final UUID AUTHORITY_UUID_DELETE_SUBSCRIPTIONS = UUID
 			.fromString("94db0a84-e366-4ab8-aeba-171482979f3d");
+	public static final UUID AUTHORITY_UUID_MANAGE_ASSETS = UUID.fromString("b33f1d5c-170a-4737-ae20-eb9e7aa42d04");
+	public static final UUID AUTHORITY_UUID_MANAGE_ASSETTREES = UUID.fromString("e5d86ab9-c660-4bb6-8b96-4b75bd59a5d8");
+	public static final UUID AUTHORITY_UUID_MANAGE_ASSETTYPES = UUID.fromString("2c68aeeb-af3b-4f7a-8ecf-6ed11252ec23");
+	public static final UUID AUTHORITY_UUID_MANAGE_DOCUMENTS = UUID.fromString("d2717c9b-b7ab-4085-a169-b95ede048c4c");
 
 	public static final UUID AUTHORITY_UUID_USE_RESTAPI = UUID.fromString("e2883c0e-5972-4225-a805-27410a2866f4");
 
@@ -88,6 +92,10 @@ public class Authority implements Serializable {
 	public static final String AUTHORITY_NAME_MANAGE_ROLES = "MANAGE_ROLES";
 	public static final String AUTHORITY_NAME_MANAGE_SUBSCRIPTIONS = "MANAGE_SUBSCRIPTIONS";
 	public static final String AUTHORITY_NAME_DELETE_SUBSCRIPTIONS = "DELETE_SUBSCRIPTIONS";
+	public static final String AUTHORITY_NAME_MANAGE_ASSETS = "MANAGE_ASSETS";
+	public static final String AUTHORITY_NAME_MANAGE_ASSETTREES = "MANAGE_ASSETTREES";
+	public static final String AUTHORITY_NAME_MANAGE_ASSETTYPES = "MANAGE_ASSETTYPES";
+	public static final String AUTHORITY_NAME_MANAGE_DOCUMENTS = "MANAGE_DOCUMENTS";
 
 	public static final String AUTHORITY_NAME_USE_RESTAPI = "USE_RESTAPI";
 
