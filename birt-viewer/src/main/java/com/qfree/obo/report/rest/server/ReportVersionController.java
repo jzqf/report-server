@@ -356,7 +356,7 @@ public class ReportVersionController extends AbstractBaseController {
 			 * createParametersForReport in such a way that I can report a
 			 * more detailed description of the error?
 			 */
-			throw new RestApiException(RestError.INTERNAL_SERVER_ERROR_RPTDESIGN_SYNC, e);
+			throw new RestApiException(RestError.INTERNAL_SERVER_ERROR_FILE_UPLOAD, e);
 		}
 
 		return created(reportVersionResource);

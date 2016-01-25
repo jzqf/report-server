@@ -8,6 +8,10 @@ DROP TABLE IF EXISTS role_role CASCADE;
 DROP TABLE IF EXISTS role_authority CASCADE;
 --
 DROP TABLE IF EXISTS authority CASCADE;
+---
+DROP TABLE IF EXISTS asset CASCADE;
+DROP TABLE IF EXISTS asset_tree CASCADE;
+DROP TABLE IF EXISTS asset_type CASCADE;
 --
 DROP TABLE IF EXISTS role_parameter_value CASCADE;
 DROP TABLE IF EXISTS role_parameter CASCADE;
@@ -32,6 +36,8 @@ DROP TABLE IF EXISTS document_format CASCADE;
 DROP TABLE IF EXISTS report_category CASCADE;
 DROP TABLE IF EXISTS parameter_group CASCADE;
 DROP TABLE IF EXISTS job_status CASCADE;
+--
+DROP TABLE IF EXISTS document CASCADE;
 --------------------------------------------------------------------------------
 
 --

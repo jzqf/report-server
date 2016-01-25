@@ -65,8 +65,13 @@ public class JAXRSConfiguration extends ResourceConfig {
 		/*
 		 * ReST controllers (to manage ReST resources):
 		 */
+		register(AssetController.class);
+		register(AssetSyncController.class);
+		register(AssetTreeController.class);
+		register(AssetTypeController.class);
 		register(AuthorityController.class);
 		register(ConfigurationController.class);
+		register(DocumentController.class);
 		register(DocumentFormatController.class);
 		register(JobController.class);
 		register(JobParameterController.class);

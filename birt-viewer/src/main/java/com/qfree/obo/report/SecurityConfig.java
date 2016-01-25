@@ -216,6 +216,15 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 					.access("hasAuthority('" + Authority.AUTHORITY_NAME_RUN_DIAGNOSTICS + "')")
 					//         .access("isAuthenticated() or hasIpAddress('127.0.0.1') or hasIpAddress('0:0:0:0:0:0:0:1')")
 
+					.antMatchers("/upload_asset.html")
+					.access("hasAuthority('" + Authority.AUTHORITY_NAME_RUN_DIAGNOSTICS + "')")
+
+					.antMatchers("/upload_asset_2.html")
+					.access("hasAuthority('" + Authority.AUTHORITY_NAME_RUN_DIAGNOSTICS + "')")
+
+					.antMatchers("/upload_document.html")
+					.access("hasAuthority('" + Authority.AUTHORITY_NAME_RUN_DIAGNOSTICS + "')")
+
 					.antMatchers("/RequestHeaders")
 					//.access("hasAuthority('" + Authority.AUTHORITY_NAME_RUN_DIAGNOSTICS
 					//		+ "') or hasIpAddress('127.0.0.1') or hasIpAddress('0:0:0:0:0:0:0:1')")
@@ -345,12 +354,19 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 			 */
 			http.csrf().disable();
 
+			/*
+			 * Prevents the "X-Frame-Options" header from being added to the 
+			 * response. This is to allow the BIRT reports to be displayed in
+			 * an iFrame.
+			 */
+			http.headers().frameOptions().disable();
+
 		} else {
 
 			/*
 			 * Turn off security. 
 			 */
-			http
+			http //.headers().frameOptions().disable().and()
 					.authorizeRequests()
 					//	.anyRequest().authenticated()
 					//	.and().httpBasic().realmName("Q-Free Report Server")
@@ -376,6 +392,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 							"MANAGE_ROLES",
 							"MANAGE_SUBSCRIPTIONS",
 							"DELETE_SUBSCRIPTIONS")
+					.and().headers().frameOptions().disable()
 					.and().csrf().disable();
 		}
 	}

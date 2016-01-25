@@ -17,6 +17,10 @@ DROP TABLE IF EXISTS reporting.role_role CASCADE;
 DROP TABLE IF EXISTS reporting.role_authority CASCADE;
 --
 DROP TABLE IF EXISTS reporting.authority CASCADE;
+---
+DROP TABLE IF EXISTS reporting.asset CASCADE;
+DROP TABLE IF EXISTS reporting.asset_tree CASCADE;
+DROP TABLE IF EXISTS reporting.asset_type CASCADE;
 --
 DROP TABLE IF EXISTS reporting.role_parameter_value CASCADE;
 DROP TABLE IF EXISTS reporting.role_parameter CASCADE;
@@ -41,6 +45,8 @@ DROP TABLE IF EXISTS reporting.document_format CASCADE;
 DROP TABLE IF EXISTS reporting.report_category CASCADE;
 DROP TABLE IF EXISTS reporting.parameter_group CASCADE;
 DROP TABLE IF EXISTS reporting.job_status CASCADE;
+-
+DROP TABLE IF EXISTS reporting.document CASCADE;
 --------------------------------------------------------------------------------
 
 --

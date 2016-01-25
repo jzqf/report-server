@@ -1119,6 +1119,10 @@ INSERT INTO reporting.authority (authority_id, name, active, created_on) VALUES 
 INSERT INTO reporting.authority (authority_id, name, active, created_on) VALUES ('2dac7af0-ba7d-4009-a313-e9a288272e90', 'MANAGE_ROLES'        , true, current_timestamp AT TIME ZONE 'UTC');
 INSERT INTO reporting.authority (authority_id, name, active, created_on) VALUES ('608d6156-b155-487d-bdd3-4e00260b7443', 'MANAGE_SUBSCRIPTIONS', true, current_timestamp AT TIME ZONE 'UTC');
 INSERT INTO reporting.authority (authority_id, name, active, created_on) VALUES ('94db0a84-e366-4ab8-aeba-171482979f3d', 'DELETE_SUBSCRIPTIONS', true, current_timestamp AT TIME ZONE 'UTC');
+INSERT INTO reporting.authority (authority_id, name, active, created_on) VALUES ('b33f1d5c-170a-4737-ae20-eb9e7aa42d04', 'MANAGE_ASSETS'       , true, current_timestamp AT TIME ZONE 'UTC');
+INSERT INTO reporting.authority (authority_id, name, active, created_on) VALUES ('e5d86ab9-c660-4bb6-8b96-4b75bd59a5d8', 'MANAGE_ASSETTREES'   , false, current_timestamp AT TIME ZONE 'UTC');
+INSERT INTO reporting.authority (authority_id, name, active, created_on) VALUES ('2c68aeeb-af3b-4f7a-8ecf-6ed11252ec23', 'MANAGE_ASSETTYPES'   , false, current_timestamp AT TIME ZONE 'UTC');
+INSERT INTO reporting.authority (authority_id, name, active, created_on) VALUES ('d2717c9b-b7ab-4085-a169-b95ede048c4c', 'MANAGE_DOCUMENTS'    , false, current_timestamp AT TIME ZONE 'UTC');
 
 
 -- Insert  tree of [role] records:
@@ -1155,6 +1159,10 @@ INSERT INTO reporting.role_authority (role_authority_id, role_id, authority_id, 
 INSERT INTO reporting.role_authority (role_authority_id, role_id, authority_id, created_on) VALUES ('2ef4aaf6-9ea4-48d0-a5a4-79670a264b79', '54aa1d35-f67d-47e6-8bea-cadd6085796e', '2dac7af0-ba7d-4009-a313-e9a288272e90', current_timestamp AT TIME ZONE 'UTC');
 INSERT INTO reporting.role_authority (role_authority_id, role_id, authority_id, created_on) VALUES ('fb5685ae-2470-449f-bfac-a2a291b863b4', '54aa1d35-f67d-47e6-8bea-cadd6085796e', '608d6156-b155-487d-bdd3-4e00260b7443', current_timestamp AT TIME ZONE 'UTC');
 INSERT INTO reporting.role_authority (role_authority_id, role_id, authority_id, created_on) VALUES ('13e14dbc-d30d-4006-95ed-b8de417a2315', '54aa1d35-f67d-47e6-8bea-cadd6085796e', '94db0a84-e366-4ab8-aeba-171482979f3d', current_timestamp AT TIME ZONE 'UTC');
+INSERT INTO reporting.role_authority (role_authority_id, role_id, authority_id, created_on) VALUES ('71ead393-41d2-4dec-b983-aef26ef62827', '54aa1d35-f67d-47e6-8bea-cadd6085796e', 'b33f1d5c-170a-4737-ae20-eb9e7aa42d04', current_timestamp AT TIME ZONE 'UTC');
+--INSERT INTO reporting.role_authority (role_authority_id, role_id, authority_id, created_on) VALUES ('5c3f8ac9-0dd1-4ffd-b840-63146e469b78', '54aa1d35-f67d-47e6-8bea-cadd6085796e', 'e5d86ab9-c660-4bb6-8b96-4b75bd59a5d8', current_timestamp AT TIME ZONE 'UTC');
+--INSERT INTO reporting.role_authority (role_authority_id, role_id, authority_id, created_on) VALUES ('13680bc1-19c3-4dff-9a9e-720f0ab65ff9', '54aa1d35-f67d-47e6-8bea-cadd6085796e', '2c68aeeb-af3b-4f7a-8ecf-6ed11252ec23', current_timestamp AT TIME ZONE 'UTC');
+--INSERT INTO reporting.role_authority (role_authority_id, role_id, authority_id, created_on) VALUES ('5099855c-4ea5-4203-b9c7-972995b72c66', '54aa1d35-f67d-47e6-8bea-cadd6085796e', 'd2717c9b-b7ab-4085-a169-b95ede048c4c', current_timestamp AT TIME ZONE 'UTC');
 --
 --
 -- Create a "Q-Free administrator" role that can be used to bypass external
@@ -1178,6 +1186,10 @@ INSERT INTO reporting.role_authority (role_authority_id, role_id, authority_id, 
 INSERT INTO reporting.role_authority (role_authority_id, role_id, authority_id, created_on) VALUES ('ce4ffcfd-7802-4e1b-bdf1-6d2b70062cef', '10ab3537-0b12-44fa-a27b-6cf1aac14282', '2dac7af0-ba7d-4009-a313-e9a288272e90', current_timestamp AT TIME ZONE 'UTC');
 INSERT INTO reporting.role_authority (role_authority_id, role_id, authority_id, created_on) VALUES ('54246034-83ed-488c-b447-05fd0b1e57b4', '10ab3537-0b12-44fa-a27b-6cf1aac14282', '608d6156-b155-487d-bdd3-4e00260b7443', current_timestamp AT TIME ZONE 'UTC');
 INSERT INTO reporting.role_authority (role_authority_id, role_id, authority_id, created_on) VALUES ('0fff6274-a9dc-4262-aa29-5feff9414810', '10ab3537-0b12-44fa-a27b-6cf1aac14282', '94db0a84-e366-4ab8-aeba-171482979f3d', current_timestamp AT TIME ZONE 'UTC');
+INSERT INTO reporting.role_authority (role_authority_id, role_id, authority_id, created_on) VALUES ('ef7b2b61-8bfc-4a14-8b41-718a12b115c6', '10ab3537-0b12-44fa-a27b-6cf1aac14282', 'b33f1d5c-170a-4737-ae20-eb9e7aa42d04', current_timestamp AT TIME ZONE 'UTC');
+INSERT INTO reporting.role_authority (role_authority_id, role_id, authority_id, created_on) VALUES ('faac077d-af19-4e00-97da-7c0bf71f07e8', '10ab3537-0b12-44fa-a27b-6cf1aac14282', 'e5d86ab9-c660-4bb6-8b96-4b75bd59a5d8', current_timestamp AT TIME ZONE 'UTC');
+INSERT INTO reporting.role_authority (role_authority_id, role_id, authority_id, created_on) VALUES ('37aaf7d3-1a9f-4e1b-8707-1aaf3ac5bd87', '10ab3537-0b12-44fa-a27b-6cf1aac14282', '2c68aeeb-af3b-4f7a-8ecf-6ed11252ec23', current_timestamp AT TIME ZONE 'UTC');
+INSERT INTO reporting.role_authority (role_authority_id, role_id, authority_id, created_on) VALUES ('7bcdf522-dac7-4e2a-bc42-6d6872a8391d', '10ab3537-0b12-44fa-a27b-6cf1aac14282', 'd2717c9b-b7ab-4085-a169-b95ede048c4c', current_timestamp AT TIME ZONE 'UTC');
 --
 --
 -- Create a role has full access to a ReST API endpoints. It will bypass 
@@ -1201,6 +1213,10 @@ INSERT INTO reporting.role_authority (role_authority_id, role_id, authority_id, 
 INSERT INTO reporting.role_authority (role_authority_id, role_id, authority_id, created_on) VALUES ('ca324426-78e9-4232-8ef0-46be70757b01', '689833f9-e55c-4eaf-aba6-79f8b1d1a058', '2dac7af0-ba7d-4009-a313-e9a288272e90', current_timestamp AT TIME ZONE 'UTC');
 INSERT INTO reporting.role_authority (role_authority_id, role_id, authority_id, created_on) VALUES ('e3f80441-e8ac-44e3-825a-a4ed0c8118ef', '689833f9-e55c-4eaf-aba6-79f8b1d1a058', '608d6156-b155-487d-bdd3-4e00260b7443', current_timestamp AT TIME ZONE 'UTC');
 INSERT INTO reporting.role_authority (role_authority_id, role_id, authority_id, created_on) VALUES ('6fc151b0-81fb-46d4-a8a4-4cca0ca82e21', '689833f9-e55c-4eaf-aba6-79f8b1d1a058', '94db0a84-e366-4ab8-aeba-171482979f3d', current_timestamp AT TIME ZONE 'UTC');
+INSERT INTO reporting.role_authority (role_authority_id, role_id, authority_id, created_on) VALUES ('aec93434-b0b4-432a-b760-57ff6641564a', '689833f9-e55c-4eaf-aba6-79f8b1d1a058', 'b33f1d5c-170a-4737-ae20-eb9e7aa42d04', current_timestamp AT TIME ZONE 'UTC');
+INSERT INTO reporting.role_authority (role_authority_id, role_id, authority_id, created_on) VALUES ('62ebb315-0fcb-49ad-84ac-469adc36f2ef', '689833f9-e55c-4eaf-aba6-79f8b1d1a058', 'e5d86ab9-c660-4bb6-8b96-4b75bd59a5d8', current_timestamp AT TIME ZONE 'UTC');
+INSERT INTO reporting.role_authority (role_authority_id, role_id, authority_id, created_on) VALUES ('2f74ad0b-a447-4012-8816-d1e234b5b3ee', '689833f9-e55c-4eaf-aba6-79f8b1d1a058', '2c68aeeb-af3b-4f7a-8ecf-6ed11252ec23', current_timestamp AT TIME ZONE 'UTC');
+INSERT INTO reporting.role_authority (role_authority_id, role_id, authority_id, created_on) VALUES ('f1416e42-5aff-4696-9e90-146a0a548b8b', '689833f9-e55c-4eaf-aba6-79f8b1d1a058', 'd2717c9b-b7ab-4085-a169-b95ede048c4c', current_timestamp AT TIME ZONE 'UTC');
 
 
 -- Create a global configuration record that contains the current database 
