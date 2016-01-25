@@ -36,7 +36,7 @@ DROP TABLE IF EXISTS document_format CASCADE;
 DROP TABLE IF EXISTS report_category CASCADE;
 DROP TABLE IF EXISTS parameter_group CASCADE;
 DROP TABLE IF EXISTS job_status CASCADE;
--
+--
 DROP TABLE IF EXISTS document CASCADE;
 --------------------------------------------------------------------------------
 
