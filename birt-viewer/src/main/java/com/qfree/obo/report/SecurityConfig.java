@@ -216,6 +216,15 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 					.access("hasAuthority('" + Authority.AUTHORITY_NAME_RUN_DIAGNOSTICS + "')")
 					//         .access("isAuthenticated() or hasIpAddress('127.0.0.1') or hasIpAddress('0:0:0:0:0:0:0:1')")
 
+					.antMatchers("/upload_asset.html")
+					.access("hasAuthority('" + Authority.AUTHORITY_NAME_RUN_DIAGNOSTICS + "')")
+
+					.antMatchers("/upload_asset_2.html")
+					.access("hasAuthority('" + Authority.AUTHORITY_NAME_RUN_DIAGNOSTICS + "')")
+
+					.antMatchers("/upload_document.html")
+					.access("hasAuthority('" + Authority.AUTHORITY_NAME_RUN_DIAGNOSTICS + "')")
+
 					.antMatchers("/RequestHeaders")
 					//.access("hasAuthority('" + Authority.AUTHORITY_NAME_RUN_DIAGNOSTICS
 					//		+ "') or hasIpAddress('127.0.0.1') or hasIpAddress('0:0:0:0:0:0:0:1')")
@@ -224,8 +233,25 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
 					/*
 					 * Report server ReST API:
+					 * 
+					 * Granted authorities that are specified here, e.g., 
+					 * "USE_RESTAPI"are checked for FIRST by Spring Security, 
+					 * and then only if that check *succeeds* are any 
+					 * authorities that are specified via a @PreAuthorize
+					 * annotation on the controller method checked for. 
+					 * 
+					 * This ordering influences the type of error message 
+					 * returned for a failed authorization. If a failure occurs
+					 * because the authenticated role does not have the 
+					 * authority(ies) specified here by ".access(...)", then an
+					 * HTML error page is returned. However, if this check 
+					 * succeeds, but the condition specified by the 
+					 * @PreAuthorize annotation on the controller methid fails,
+					 * then a JSON object is returned that describes the 
+					 * authorization failure.
 					 */
-					.antMatchers("/rest/**").authenticated()
+					//.antMatchers("/rest/**").authenticated()
+					.antMatchers("/rest/**").access("hasAuthority('" + Authority.AUTHORITY_NAME_USE_RESTAPI + "')")
 
 					/*
 					 * This pattern matches the URLs used by Q-Free-authored
@@ -328,12 +354,19 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 			 */
 			http.csrf().disable();
 
+			/*
+			 * Prevents the "X-Frame-Options" header from being added to the 
+			 * response. This is to allow the BIRT reports to be displayed in
+			 * an iFrame.
+			 */
+			http.headers().frameOptions().disable();
+
 		} else {
 
 			/*
 			 * Turn off security. 
 			 */
-			http
+			http //.headers().frameOptions().disable().and()
 					.authorizeRequests()
 					//	.anyRequest().authenticated()
 					//	.and().httpBasic().realmName("Q-Free Report Server")
@@ -359,6 +392,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 							"MANAGE_ROLES",
 							"MANAGE_SUBSCRIPTIONS",
 							"DELETE_SUBSCRIPTIONS")
+					.and().headers().frameOptions().disable()
 					.and().csrf().disable();
 		}
 	}

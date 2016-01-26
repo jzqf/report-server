@@ -65,8 +65,7 @@ public class DocumentFormatController extends AbstractBaseController {
 	@Transactional
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
-	@PreAuthorize("hasAuthority('" + Authority.AUTHORITY_NAME_USE_RESTAPI + "')"
-			+ " and hasAuthority('" + Authority.AUTHORITY_NAME_MANAGE_FILEFORMATS + "')"
+	@PreAuthorize("hasAuthority('" + Authority.AUTHORITY_NAME_MANAGE_FILEFORMATS + "')"
 	)
 	public DocumentFormatCollectionResource getList(
 			@HeaderParam("Accept") final String acceptHeader,
@@ -139,8 +138,7 @@ public class DocumentFormatController extends AbstractBaseController {
 	@Path("/{id}")
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
-	@PreAuthorize("hasAuthority('" + Authority.AUTHORITY_NAME_USE_RESTAPI + "')"
-			+ " and hasAuthority('" + Authority.AUTHORITY_NAME_MANAGE_FILEFORMATS + "')"
+	@PreAuthorize("hasAuthority('" + Authority.AUTHORITY_NAME_MANAGE_FILEFORMATS + "')"
 	)
 	public DocumentFormatResource getById(
 			@PathParam("id") final UUID id,
@@ -176,8 +174,7 @@ public class DocumentFormatController extends AbstractBaseController {
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	@Transactional
-	@PreAuthorize("hasAuthority('" + Authority.AUTHORITY_NAME_USE_RESTAPI + "') and "
-			+ "hasAuthority('" + Authority.AUTHORITY_NAME_MANAGE_FILEFORMATS + "')")
+	@PreAuthorize("hasAuthority('" + Authority.AUTHORITY_NAME_MANAGE_FILEFORMATS + "')")
 	public Response updateById(
 			DocumentFormatResource documentFormatResource,
 			@PathParam("id") final UUID id,

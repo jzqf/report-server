@@ -31,6 +31,23 @@ insert into reporting.job_status (job_status_id, description, abbreviation, acti
 insert into reporting.job_status (job_status_id, description, abbreviation, active, created_on) values ('5125c537-e178-42de-b4dd-e538fa3da802', 'Canceled'  , 'CANCELED'  , true, '2015-10-14T12:00:05');
 
 
+-- Create [asset_tree] rows:
+--
+-- "qfree" directory for assets used by Q-Free-written reports.
+insert into reporting.asset_tree (asset_tree_id, name, abbreviation, directory, active, created_on) values ('7f9d0216-48d7-49ba-b043-ec48db03c938', 'Q-Free'  , 'QFREE', 'qfree' , true, '2016-01-31T08:00:00');
+-- "assets" directory for assets used by customer-written reports.
+insert into reporting.asset_tree (asset_tree_id, name, abbreviation, directory, active, created_on) values ('272199f9-d407-492f-a147-41a2b7d0cd02', 'Customer', 'CUST' , 'assets', true, '2016-01-31T08:00:00');
+ 
+
+-- Create [asset_type] rows:
+insert into reporting.asset_type (asset_type_id, name, abbreviation, directory, active, created_on) values ('f2f4b13f-9c45-4515-bb4b-62e8ccc3d95c', 'CSS file'        , 'CSS'       , 'css'        , true, '2016-01-31T09:00:00');
+insert into reporting.asset_type (asset_type_id, name, abbreviation, directory, active, created_on) values ('2603ed74-94b5-4c39-ad36-a7e16a374237', 'HTML page'       , 'HTML'      , 'html'       , true, '2016-01-31T09:00:00');
+insert into reporting.asset_type (asset_type_id, name, abbreviation, directory, active, created_on) values ('1e7ddbbc-8b40-4373-bfc5-6e6d3d5964d8', 'Image file'      , 'IMAGE'     , 'images'     , true, '2016-01-31T09:00:00');
+insert into reporting.asset_type (asset_type_id, name, abbreviation, directory, active, created_on) values ('1c488bcf-15ab-4fcb-8ab8-23cda9342a77', 'JavaScript file' , 'JS'        , 'js'         , true, '2016-01-31T09:00:00');
+insert into reporting.asset_type (asset_type_id, name, abbreviation, directory, active, created_on) values ('26835616-00e2-475d-89ce-11c12e659605', 'BIRT Library'    , 'BIRT LIB'  , 'libraries'  , true, '2016-01-31T09:00:00');
+insert into reporting.asset_type (asset_type_id, name, abbreviation, directory, active, created_on) values ('4b811357-d664-4e44-bc75-197e6946abcd', 'Properties file' , 'PROPERTIES', 'properties' , true, '2016-01-31T09:00:00');
+
+
 insert into reporting.report (report_id, report_category_id, name, number, sort_order, active, created_on) values ('d65f3d9c-f67d-4beb-9936-9dfa19aa1407', '7a482694-51d2-42d0-b0e2-19dd13bbbc64', 'Report name #01', 100, 100, true , '2014-06-09T22:00:00'); --, (SELECT rptdesign FROM tmp_rptdesign));
 insert into reporting.report (report_id, report_category_id, name, number, sort_order, active, created_on) values ('c7f1d394-9814-4ede-bb01-2700187d79ca', '7a482694-51d2-42d0-b0e2-19dd13bbbc64', 'Report name #02', 200, 200, true , '2014-06-09T22:10:00'); --, (SELECT rptdesign FROM tmp_rptdesign));
 insert into reporting.report (report_id, report_category_id, name, number, sort_order, active, created_on) values ('fe718314-5b39-40e7-aed2-279354c04a9d', '7a482694-51d2-42d0-b0e2-19dd13bbbc64', 'Report name #03', 300, 300, false, '2014-07-04T23:30:00'); --, (SELECT rptdesign FROM tmp_rptdesign));
@@ -131,6 +148,10 @@ INSERT INTO reporting.authority (authority_id, name, active, created_on) VALUES 
 INSERT INTO reporting.authority (authority_id, name, active, created_on) VALUES ('2dac7af0-ba7d-4009-a313-e9a288272e90', 'MANAGE_ROLES'        , true, '2016-01-31T15:00:00');
 INSERT INTO reporting.authority (authority_id, name, active, created_on) VALUES ('608d6156-b155-487d-bdd3-4e00260b7443', 'MANAGE_SUBSCRIPTIONS', true, '2016-01-31T15:00:00');
 INSERT INTO reporting.authority (authority_id, name, active, created_on) VALUES ('94db0a84-e366-4ab8-aeba-171482979f3d', 'DELETE_SUBSCRIPTIONS', true, '2016-01-31T15:00:00');
+INSERT INTO reporting.authority (authority_id, name, active, created_on) VALUES ('b33f1d5c-170a-4737-ae20-eb9e7aa42d04', 'MANAGE_ASSETS'       , true, '2016-01-31T15:00:00');
+INSERT INTO reporting.authority (authority_id, name, active, created_on) VALUES ('e5d86ab9-c660-4bb6-8b96-4b75bd59a5d8', 'MANAGE_ASSETTREES'   , false, '2016-01-31T15:00:00');
+INSERT INTO reporting.authority (authority_id, name, active, created_on) VALUES ('2c68aeeb-af3b-4f7a-8ecf-6ed11252ec23', 'MANAGE_ASSETTYPES'   , false, '2016-01-31T15:00:00');
+INSERT INTO reporting.authority (authority_id, name, active, created_on) VALUES ('d2717c9b-b7ab-4085-a169-b95ede048c4c', 'MANAGE_DOCUMENTS'    , false, '2016-01-31T15:00:00');
 
 
 -- Insert  tree of [role] records:
@@ -489,6 +510,10 @@ INSERT INTO reporting.role_authority (role_authority_id, role_id, authority_id, 
 INSERT INTO reporting.role_authority (role_authority_id, role_id, authority_id, created_on) VALUES ('2ef4aaf6-9ea4-48d0-a5a4-79670a264b79', '54aa1d35-f67d-47e6-8bea-cadd6085796e', '2dac7af0-ba7d-4009-a313-e9a288272e90', '2016-01-31T15:00:00');
 INSERT INTO reporting.role_authority (role_authority_id, role_id, authority_id, created_on) VALUES ('fb5685ae-2470-449f-bfac-a2a291b863b4', '54aa1d35-f67d-47e6-8bea-cadd6085796e', '608d6156-b155-487d-bdd3-4e00260b7443', '2016-01-31T15:00:00');
 INSERT INTO reporting.role_authority (role_authority_id, role_id, authority_id, created_on) VALUES ('13e14dbc-d30d-4006-95ed-b8de417a2315', '54aa1d35-f67d-47e6-8bea-cadd6085796e', '94db0a84-e366-4ab8-aeba-171482979f3d', '2016-01-31T15:00:00');
+INSERT INTO reporting.role_authority (role_authority_id, role_id, authority_id, created_on) VALUES ('71ead393-41d2-4dec-b983-aef26ef62827', '54aa1d35-f67d-47e6-8bea-cadd6085796e', 'b33f1d5c-170a-4737-ae20-eb9e7aa42d04', '2016-01-31T15:00:00');
+--INSERT INTO reporting.role_authority (role_authority_id, role_id, authority_id, created_on) VALUES ('5c3f8ac9-0dd1-4ffd-b840-63146e469b78', '54aa1d35-f67d-47e6-8bea-cadd6085796e', 'e5d86ab9-c660-4bb6-8b96-4b75bd59a5d8', '2016-01-31T15:00:00');
+--INSERT INTO reporting.role_authority (role_authority_id, role_id, authority_id, created_on) VALUES ('13680bc1-19c3-4dff-9a9e-720f0ab65ff9', '54aa1d35-f67d-47e6-8bea-cadd6085796e', '2c68aeeb-af3b-4f7a-8ecf-6ed11252ec23', '2016-01-31T15:00:00');
+--INSERT INTO reporting.role_authority (role_authority_id, role_id, authority_id, created_on) VALUES ('5099855c-4ea5-4203-b9c7-972995b72c66', '54aa1d35-f67d-47e6-8bea-cadd6085796e', 'd2717c9b-b7ab-4085-a169-b95ede048c4c', '2016-01-31T15:00:00');
 --
 -- Give the "Q-Free administrator" role all authorities by creating "role_authority" rows:
 INSERT INTO reporting.role_authority (role_authority_id, role_id, authority_id, created_on) VALUES ('be6a207f-10f7-4e86-a174-392b4934d2a0', '10ab3537-0b12-44fa-a27b-6cf1aac14282', 'e2883c0e-5972-4225-a805-27410a2866f4', '2016-01-31T15:00:00');
@@ -506,6 +531,10 @@ INSERT INTO reporting.role_authority (role_authority_id, role_id, authority_id, 
 INSERT INTO reporting.role_authority (role_authority_id, role_id, authority_id, created_on) VALUES ('ce4ffcfd-7802-4e1b-bdf1-6d2b70062cef', '10ab3537-0b12-44fa-a27b-6cf1aac14282', '2dac7af0-ba7d-4009-a313-e9a288272e90', '2016-01-31T15:00:00');
 INSERT INTO reporting.role_authority (role_authority_id, role_id, authority_id, created_on) VALUES ('54246034-83ed-488c-b447-05fd0b1e57b4', '10ab3537-0b12-44fa-a27b-6cf1aac14282', '608d6156-b155-487d-bdd3-4e00260b7443', '2016-01-31T15:00:00');
 INSERT INTO reporting.role_authority (role_authority_id, role_id, authority_id, created_on) VALUES ('0fff6274-a9dc-4262-aa29-5feff9414810', '10ab3537-0b12-44fa-a27b-6cf1aac14282', '94db0a84-e366-4ab8-aeba-171482979f3d', '2016-01-31T15:00:00');
+INSERT INTO reporting.role_authority (role_authority_id, role_id, authority_id, created_on) VALUES ('ef7b2b61-8bfc-4a14-8b41-718a12b115c6', '10ab3537-0b12-44fa-a27b-6cf1aac14282', 'b33f1d5c-170a-4737-ae20-eb9e7aa42d04', '2016-01-31T15:00:00');
+INSERT INTO reporting.role_authority (role_authority_id, role_id, authority_id, created_on) VALUES ('faac077d-af19-4e00-97da-7c0bf71f07e8', '10ab3537-0b12-44fa-a27b-6cf1aac14282', 'e5d86ab9-c660-4bb6-8b96-4b75bd59a5d8', '2016-01-31T15:00:00');
+INSERT INTO reporting.role_authority (role_authority_id, role_id, authority_id, created_on) VALUES ('37aaf7d3-1a9f-4e1b-8707-1aaf3ac5bd87', '10ab3537-0b12-44fa-a27b-6cf1aac14282', '2c68aeeb-af3b-4f7a-8ecf-6ed11252ec23', '2016-01-31T15:00:00');
+INSERT INTO reporting.role_authority (role_authority_id, role_id, authority_id, created_on) VALUES ('7bcdf522-dac7-4e2a-bc42-6d6872a8391d', '10ab3537-0b12-44fa-a27b-6cf1aac14282', 'd2717c9b-b7ab-4085-a169-b95ede048c4c', '2016-01-31T15:00:00');
 --
 -- Give the "ReST Administrator" role all authorities by creating "role_authority" rows:
 INSERT INTO reporting.role_authority (role_authority_id, role_id, authority_id, created_on) VALUES ('ad0fcb0d-6d89-41ad-9ed7-82292757c496', '689833f9-e55c-4eaf-aba6-79f8b1d1a058', 'e2883c0e-5972-4225-a805-27410a2866f4', '2016-01-31T15:00:00');
@@ -523,6 +552,10 @@ INSERT INTO reporting.role_authority (role_authority_id, role_id, authority_id, 
 INSERT INTO reporting.role_authority (role_authority_id, role_id, authority_id, created_on) VALUES ('ca324426-78e9-4232-8ef0-46be70757b01', '689833f9-e55c-4eaf-aba6-79f8b1d1a058', '2dac7af0-ba7d-4009-a313-e9a288272e90', '2016-01-31T15:00:00');
 INSERT INTO reporting.role_authority (role_authority_id, role_id, authority_id, created_on) VALUES ('e3f80441-e8ac-44e3-825a-a4ed0c8118ef', '689833f9-e55c-4eaf-aba6-79f8b1d1a058', '608d6156-b155-487d-bdd3-4e00260b7443', '2016-01-31T15:00:00');
 INSERT INTO reporting.role_authority (role_authority_id, role_id, authority_id, created_on) VALUES ('6fc151b0-81fb-46d4-a8a4-4cca0ca82e21', '689833f9-e55c-4eaf-aba6-79f8b1d1a058', '94db0a84-e366-4ab8-aeba-171482979f3d', '2016-01-31T15:00:00');
+INSERT INTO reporting.role_authority (role_authority_id, role_id, authority_id, created_on) VALUES ('aec93434-b0b4-432a-b760-57ff6641564a', '689833f9-e55c-4eaf-aba6-79f8b1d1a058', 'b33f1d5c-170a-4737-ae20-eb9e7aa42d04', '2016-01-31T15:00:00');
+INSERT INTO reporting.role_authority (role_authority_id, role_id, authority_id, created_on) VALUES ('62ebb315-0fcb-49ad-84ac-469adc36f2ef', '689833f9-e55c-4eaf-aba6-79f8b1d1a058', 'e5d86ab9-c660-4bb6-8b96-4b75bd59a5d8', '2016-01-31T15:00:00');
+INSERT INTO reporting.role_authority (role_authority_id, role_id, authority_id, created_on) VALUES ('2f74ad0b-a447-4012-8816-d1e234b5b3ee', '689833f9-e55c-4eaf-aba6-79f8b1d1a058', '2c68aeeb-af3b-4f7a-8ecf-6ed11252ec23', '2016-01-31T15:00:00');
+INSERT INTO reporting.role_authority (role_authority_id, role_id, authority_id, created_on) VALUES ('f1416e42-5aff-4696-9e90-146a0a548b8b', '689833f9-e55c-4eaf-aba6-79f8b1d1a058', 'd2717c9b-b7ab-4085-a169-b95ede048c4c', '2016-01-31T15:00:00');
 
 
 -- Role "a" has access to report "Report name #01":

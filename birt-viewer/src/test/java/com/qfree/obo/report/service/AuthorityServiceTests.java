@@ -39,7 +39,7 @@ public class AuthorityServiceTests {
 		List<Authority> authorities = authorityService.getActiveAuthoritiesByRoleId(Role.ADMIN_ROLE_ID);
 		logger.info("authorities = {}", authorities);
 		assertThat(authorities, is(not(nullValue())));
-		assertThat(authorities, hasSize(14));
+		assertThat(authorities, hasSize(15));
 	}
 
 	@Test
@@ -48,7 +48,7 @@ public class AuthorityServiceTests {
 		List<String> authorityNames = authorityService.findActiveAuthorityNamesByRoleId(Role.ADMIN_ROLE_ID);
 		logger.info("authorityNames = {}", authorityNames);
 		assertThat(authorityNames, is(not(nullValue())));
-		assertThat(authorityNames, hasSize(14));
+		assertThat(authorityNames, hasSize(15));
 	}
 
 	@Test
@@ -64,7 +64,7 @@ public class AuthorityServiceTests {
 		logger.info("authorities = {}", authorities);
 		assertThat(authorities, is(not(nullValue())));
 		if (UuidCustomType.DB_VENDOR.equals(UuidCustomType.POSTGRESQL_VENDOR)) {
-			assertThat(authorities, hasSize(14));
+			assertThat(authorities, hasSize(15));
 		} else {
 			/*
 			 * authorityService.getActiveAuthoritiesByRoleId(...) does not take
@@ -88,7 +88,7 @@ public class AuthorityServiceTests {
 		logger.info("authorities = {}", authorities);
 		assertThat(authorities, is(not(nullValue())));
 		if (UuidCustomType.DB_VENDOR.equals(UuidCustomType.POSTGRESQL_VENDOR)) {
-			assertThat(authorities, hasSize(14));
+			assertThat(authorities, hasSize(15));
 		} else {
 			/*
 			 * authorityService.getActiveAuthoritiesByRoleId(...) does not take

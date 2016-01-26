@@ -2,8 +2,12 @@ package com.qfree.obo.report.dto;
 
 import java.util.List;
 
+import com.qfree.obo.report.domain.Asset;
+import com.qfree.obo.report.domain.AssetTree;
+import com.qfree.obo.report.domain.AssetType;
 import com.qfree.obo.report.domain.Authority;
 import com.qfree.obo.report.domain.Configuration;
+import com.qfree.obo.report.domain.Document;
 import com.qfree.obo.report.domain.DocumentFormat;
 import com.qfree.obo.report.domain.Job;
 import com.qfree.obo.report.domain.JobParameter;
@@ -29,6 +33,21 @@ import com.qfree.obo.report.domain.SubscriptionParameterValue;
  */
 public enum ResourcePath {
 
+	ASSETS(
+			ResourcePath.ASSETS_PATH,
+			ResourcePath.ASSET_EXPAND_PARAM,
+			ResourcePath.ASSET_SHOWALL_PARAM,
+			Asset.class),
+	ASSETTREES(
+			ResourcePath.ASSETTREES_PATH,
+			ResourcePath.ASSETTREE_EXPAND_PARAM,
+			ResourcePath.ASSETTREE_SHOWALL_PARAM,
+			AssetTree.class),
+	ASSETTYPES(
+			ResourcePath.ASSETTYPES_PATH,
+			ResourcePath.ASSETTYPE_EXPAND_PARAM,
+			ResourcePath.ASSETTYPE_SHOWALL_PARAM,
+			AssetType.class),
 	AUTHORITIES(
 			ResourcePath.AUTHORITIES_PATH,
 			ResourcePath.AUTHORITY_EXPAND_PARAM,
@@ -39,6 +58,11 @@ public enum ResourcePath {
 			ResourcePath.CONFIGURATION_EXPAND_PARAM,
 			ResourcePath.CONFIGURATION_SHOWALL_PARAM,
 			Configuration.class),
+	DOCUMENTS(
+			ResourcePath.DOCUMENTS_PATH,
+			ResourcePath.DOCUMENT_EXPAND_PARAM,
+			ResourcePath.DOCUMENT_SHOWALL_PARAM,
+			Document.class),
 	DOCUMENTFORMATS(
 			ResourcePath.DOCUMENTFORMATS_PATH,
 			ResourcePath.DOCUMENTFORMAT_EXPAND_PARAM,
@@ -136,8 +160,12 @@ public enum ResourcePath {
 	 * within the ResourcePath enum because that enum is not considered to be a 
 	 * constant expression.
 	 */
+	public static final String ASSETS_PATH = ResourcePath.PATH_SEPARATOR + "assets";
+	public static final String ASSETTREES_PATH = ResourcePath.PATH_SEPARATOR + "assetTrees";
+	public static final String ASSETTYPES_PATH = ResourcePath.PATH_SEPARATOR + "assetTypes";
 	public static final String AUTHORITIES_PATH = ResourcePath.PATH_SEPARATOR + "authorities";
 	public static final String CONFIGURATIONS_PATH = ResourcePath.PATH_SEPARATOR + "configurations";
+	public static final String DOCUMENTS_PATH = ResourcePath.PATH_SEPARATOR + "documents";
 	public static final String DOCUMENTFORMATS_PATH = ResourcePath.PATH_SEPARATOR + "documentFormats";
 	public static final String JOBPROCESSOR_PATH = ResourcePath.PATH_SEPARATOR + "jobProcessor";
 	public static final String JOBS_PATH = ResourcePath.PATH_SEPARATOR + "jobs";
@@ -171,8 +199,12 @@ public enum ResourcePath {
 	 * These are the values for each resource class that can be assigned to the
 	 * "expand" query parameter.
 	 */
+	public static final String ASSET_EXPAND_PARAM = "assets";
+	public static final String ASSETTREE_EXPAND_PARAM = "assetTrees";
+	public static final String ASSETTYPE_EXPAND_PARAM = "assetTypes";
 	public static final String AUTHORITY_EXPAND_PARAM = "authorities";
 	public static final String CONFIGURATION_EXPAND_PARAM = "configurations";
+	public static final String DOCUMENT_EXPAND_PARAM = "documents";
 	public static final String DOCUMENTFORMAT_EXPAND_PARAM = "documentFormats";
 	public static final String JOBPROCESSOR_EXPAND_PARAM = "jobProcessor";
 	public static final String JOB_EXPAND_PARAM = "jobs";
@@ -207,8 +239,12 @@ public enum ResourcePath {
 	 * These are the values for each resource class that can be assigned to the
 	 * "showall" query parameter.
 	 */
+	public static final String ASSET_SHOWALL_PARAM = ASSET_EXPAND_PARAM;
+	public static final String ASSETTREE_SHOWALL_PARAM = ASSETTREE_EXPAND_PARAM;
+	public static final String ASSETTYPE_SHOWALL_PARAM = ASSETTYPE_EXPAND_PARAM;
 	public static final String AUTHORITY_SHOWALL_PARAM = AUTHORITY_EXPAND_PARAM;
 	public static final String CONFIGURATION_SHOWALL_PARAM = CONFIGURATION_EXPAND_PARAM;
+	public static final String DOCUMENT_SHOWALL_PARAM = DOCUMENT_EXPAND_PARAM;
 	public static final String DOCUMENTFORMAT_SHOWALL_PARAM = DOCUMENTFORMAT_EXPAND_PARAM;
 	public static final String JOBPROCESSOR_SHOWALL_PARAM = JOBPROCESSOR_EXPAND_PARAM;
 	public static final String JOB_SHOWALL_PARAM = JOB_EXPAND_PARAM;

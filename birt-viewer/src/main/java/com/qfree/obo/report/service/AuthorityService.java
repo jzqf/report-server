@@ -102,4 +102,18 @@ public class AuthorityService {
 		}
 	}
 
+	public List<String> findAuthorityNamesByRoleId(UUID roleId) {
+		/*
+		 * The H2 database does not support recursive CTE expressions, so it is 
+		 * necessary to run different code if the database is not PostgreSQL.
+		 * This only affects integration tests, because only PostreSQL is used
+		 * in production. 
+		 */
+		if (UuidCustomType.DB_VENDOR.equals(UuidCustomType.POSTGRESQL_VENDOR)) {
+			return authorityRepository.findAuthorityNamesByRoleIdRecursive(roleId.toString());
+		} else {
+			return authorityRepository.findAuthorityNamesByRoleId(roleId.toString());
+		}
+	}
+
 }

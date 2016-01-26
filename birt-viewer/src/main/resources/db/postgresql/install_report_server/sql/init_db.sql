@@ -10,6 +10,10 @@ DROP TABLE IF EXISTS role_role CASCADE;
 DROP TABLE IF EXISTS role_authority CASCADE;
 --
 DROP TABLE IF EXISTS authority CASCADE;
+---
+DROP TABLE IF EXISTS asset CASCADE;
+DROP TABLE IF EXISTS asset_tree CASCADE;
+DROP TABLE IF EXISTS asset_type CASCADE;
 --
 DROP TABLE IF EXISTS role_parameter_value CASCADE;
 DROP TABLE IF EXISTS role_parameter CASCADE;
@@ -34,11 +38,62 @@ DROP TABLE IF EXISTS document_format CASCADE;
 DROP TABLE IF EXISTS report_category CASCADE;
 DROP TABLE IF EXISTS parameter_group CASCADE;
 DROP TABLE IF EXISTS job_status CASCADE;
+--
+DROP TABLE IF EXISTS document CASCADE;
 --------------------------------------------------------------------------------
 
 --
 -- PostgreSQL database dump
 --
+
+--
+-- Name: asset; Type: TABLE; Schema: reporting; Owner: report_server_app; Tablespace: 
+--
+
+CREATE TABLE asset (
+    asset_id uuid DEFAULT uuid_generate_v4() NOT NULL,
+    active boolean NOT NULL,
+    created_on timestamp without time zone NOT NULL,
+    filename character varying(256) NOT NULL,
+    asset_tree_id uuid NOT NULL,
+    asset_type_id uuid NOT NULL,
+    document_id uuid NOT NULL
+);
+
+
+
+
+--
+-- Name: asset_tree; Type: TABLE; Schema: reporting; Owner: report_server_app; Tablespace: 
+--
+
+CREATE TABLE asset_tree (
+    asset_tree_id uuid DEFAULT uuid_generate_v4() NOT NULL,
+    abbreviation character varying(32) NOT NULL,
+    active boolean NOT NULL,
+    created_on timestamp without time zone NOT NULL,
+    directory character varying(256) NOT NULL,
+    name character varying(32) NOT NULL
+);
+
+
+
+
+--
+-- Name: asset_type; Type: TABLE; Schema: reporting; Owner: report_server_app; Tablespace: 
+--
+
+CREATE TABLE asset_type (
+    asset_type_id uuid DEFAULT uuid_generate_v4() NOT NULL,
+    abbreviation character varying(32) NOT NULL,
+    active boolean NOT NULL,
+    created_on timestamp without time zone NOT NULL,
+    directory character varying(256) NOT NULL,
+    name character varying(32) NOT NULL
+);
+
+
+
 
 --
 -- Name: authority; Type: TABLE; Schema: reporting; Owner: report_server_app; Tablespace: 
@@ -75,6 +130,19 @@ CREATE TABLE configuration (
     text_value text,
     time_value time without time zone,
     role_id uuid
+);
+
+
+
+
+--
+-- Name: document; Type: TABLE; Schema: reporting; Owner: report_server_app; Tablespace: 
+--
+
+CREATE TABLE document (
+    document_id uuid DEFAULT uuid_generate_v4() NOT NULL,
+    content bytea,
+    created_on timestamp without time zone NOT NULL
 );
 
 
@@ -564,6 +632,30 @@ SELECT pg_catalog.setval('job_parameter_value_job_parameter_value_id_seq', 1, fa
 
 
 --
+-- Name: asset_pkey; Type: CONSTRAINT; Schema: reporting; Owner: report_server_app; Tablespace: 
+--
+
+ALTER TABLE ONLY asset
+    ADD CONSTRAINT asset_pkey PRIMARY KEY (asset_id);
+
+
+--
+-- Name: asset_tree_pkey; Type: CONSTRAINT; Schema: reporting; Owner: report_server_app; Tablespace: 
+--
+
+ALTER TABLE ONLY asset_tree
+    ADD CONSTRAINT asset_tree_pkey PRIMARY KEY (asset_tree_id);
+
+
+--
+-- Name: asset_type_pkey; Type: CONSTRAINT; Schema: reporting; Owner: report_server_app; Tablespace: 
+--
+
+ALTER TABLE ONLY asset_type
+    ADD CONSTRAINT asset_type_pkey PRIMARY KEY (asset_type_id);
+
+
+--
 -- Name: authority_pkey; Type: CONSTRAINT; Schema: reporting; Owner: report_server_app; Tablespace: 
 --
 
@@ -585,6 +677,14 @@ ALTER TABLE ONLY configuration
 
 ALTER TABLE ONLY document_format
     ADD CONSTRAINT document_format_pkey PRIMARY KEY (document_format_id);
+
+
+--
+-- Name: document_pkey; Type: CONSTRAINT; Schema: reporting; Owner: report_server_app; Tablespace: 
+--
+
+ALTER TABLE ONLY document
+    ADD CONSTRAINT document_pkey PRIMARY KEY (document_id);
 
 
 --
@@ -841,6 +941,86 @@ ALTER TABLE ONLY role_role
 
 ALTER TABLE ONLY subscription_parameter
     ADD CONSTRAINT uc_subscriptionparameter_subscription_parameter UNIQUE (subscription_id, report_parameter_id);
+
+
+--
+-- Name: uq_asset_name_tree_type; Type: CONSTRAINT; Schema: reporting; Owner: report_server_app; Tablespace: 
+--
+
+ALTER TABLE ONLY asset
+    ADD CONSTRAINT uq_asset_name_tree_type UNIQUE (filename, asset_tree_id, asset_type_id);
+
+
+--
+-- Name: uq_assettree_abbreviation; Type: CONSTRAINT; Schema: reporting; Owner: report_server_app; Tablespace: 
+--
+
+ALTER TABLE ONLY asset_tree
+    ADD CONSTRAINT uq_assettree_abbreviation UNIQUE (abbreviation);
+
+
+--
+-- Name: uq_assettree_directory; Type: CONSTRAINT; Schema: reporting; Owner: report_server_app; Tablespace: 
+--
+
+ALTER TABLE ONLY asset_tree
+    ADD CONSTRAINT uq_assettree_directory UNIQUE (directory);
+
+
+--
+-- Name: uq_assettree_name; Type: CONSTRAINT; Schema: reporting; Owner: report_server_app; Tablespace: 
+--
+
+ALTER TABLE ONLY asset_tree
+    ADD CONSTRAINT uq_assettree_name UNIQUE (name);
+
+
+--
+-- Name: uq_assettype_abbreviation; Type: CONSTRAINT; Schema: reporting; Owner: report_server_app; Tablespace: 
+--
+
+ALTER TABLE ONLY asset_type
+    ADD CONSTRAINT uq_assettype_abbreviation UNIQUE (abbreviation);
+
+
+--
+-- Name: uq_assettype_directory; Type: CONSTRAINT; Schema: reporting; Owner: report_server_app; Tablespace: 
+--
+
+ALTER TABLE ONLY asset_type
+    ADD CONSTRAINT uq_assettype_directory UNIQUE (directory);
+
+
+--
+-- Name: uq_assettype_name; Type: CONSTRAINT; Schema: reporting; Owner: report_server_app; Tablespace: 
+--
+
+ALTER TABLE ONLY asset_type
+    ADD CONSTRAINT uq_assettype_name UNIQUE (name);
+
+
+--
+-- Name: fk_asset_assettree; Type: FK CONSTRAINT; Schema: reporting; Owner: report_server_app
+--
+
+ALTER TABLE ONLY asset
+    ADD CONSTRAINT fk_asset_assettree FOREIGN KEY (asset_tree_id) REFERENCES asset_tree(asset_tree_id);
+
+
+--
+-- Name: fk_asset_assettype; Type: FK CONSTRAINT; Schema: reporting; Owner: report_server_app
+--
+
+ALTER TABLE ONLY asset
+    ADD CONSTRAINT fk_asset_assettype FOREIGN KEY (asset_type_id) REFERENCES asset_type(asset_type_id);
+
+
+--
+-- Name: fk_asset_document; Type: FK CONSTRAINT; Schema: reporting; Owner: report_server_app
+--
+
+ALTER TABLE ONLY asset
+    ADD CONSTRAINT fk_asset_document FOREIGN KEY (document_id) REFERENCES document(document_id);
 
 
 --
@@ -1103,6 +1283,23 @@ insert into reporting.job_status (job_status_id, description, abbreviation, acti
 insert into reporting.job_status (job_status_id, description, abbreviation, active, created_on) values ('5125c537-e178-42de-b4dd-e538fa3da802', 'Canceled'  , 'CANCELED'  , true, current_timestamp AT TIME ZONE 'UTC');
 
 
+-- Create [asset_tree] rows:
+--
+-- "qfree" directory for assets used by Q-Free-written reports.
+insert into reporting.asset_tree (asset_tree_id, name, abbreviation, directory, active, created_on) values ('7f9d0216-48d7-49ba-b043-ec48db03c938', 'Q-Free'  , 'QFREE', 'qfree' , true, current_timestamp AT TIME ZONE 'UTC');
+-- "assets" directory for assets used by customer-written reports.
+insert into reporting.asset_tree (asset_tree_id, name, abbreviation, directory, active, created_on) values ('272199f9-d407-492f-a147-41a2b7d0cd02', 'Customer', 'CUST' , 'assets', true, current_timestamp AT TIME ZONE 'UTC');
+ 
+
+-- Create [asset_type] rows:
+insert into reporting.asset_type (asset_type_id, name, abbreviation, directory, active, created_on) values ('f2f4b13f-9c45-4515-bb4b-62e8ccc3d95c', 'CSS file'        , 'CSS'       , 'css'        , true, current_timestamp AT TIME ZONE 'UTC');
+insert into reporting.asset_type (asset_type_id, name, abbreviation, directory, active, created_on) values ('2603ed74-94b5-4c39-ad36-a7e16a374237', 'HTML page'       , 'HTML'      , 'html'       , true, current_timestamp AT TIME ZONE 'UTC');
+insert into reporting.asset_type (asset_type_id, name, abbreviation, directory, active, created_on) values ('1e7ddbbc-8b40-4373-bfc5-6e6d3d5964d8', 'Image file'      , 'IMAGE'     , 'images'     , true, current_timestamp AT TIME ZONE 'UTC');
+insert into reporting.asset_type (asset_type_id, name, abbreviation, directory, active, created_on) values ('1c488bcf-15ab-4fcb-8ab8-23cda9342a77', 'JavaScript file' , 'JS'        , 'js'         , true, current_timestamp AT TIME ZONE 'UTC');
+insert into reporting.asset_type (asset_type_id, name, abbreviation, directory, active, created_on) values ('26835616-00e2-475d-89ce-11c12e659605', 'BIRT Library'    , 'BIRT LIB'  , 'libraries'  , true, current_timestamp AT TIME ZONE 'UTC');
+insert into reporting.asset_type (asset_type_id, name, abbreviation, directory, active, created_on) values ('4b811357-d664-4e44-bc75-197e6946abcd', 'Properties file' , 'PROPERTIES', 'properties' , true, current_timestamp AT TIME ZONE 'UTC');
+
+
 -- Create "authority" rows:
 INSERT INTO reporting.authority (authority_id, name, active, created_on) VALUES ('e2883c0e-5972-4225-a805-27410a2866f4', 'USE_RESTAPI'         , true, current_timestamp AT TIME ZONE 'UTC');
 INSERT INTO reporting.authority (authority_id, name, active, created_on) VALUES ('1e4f29b9-3183-4f54-a4ee-96c2347d7e06', 'MANAGE_AUTHORITIES'  , true, current_timestamp AT TIME ZONE 'UTC');
@@ -1119,6 +1316,10 @@ INSERT INTO reporting.authority (authority_id, name, active, created_on) VALUES 
 INSERT INTO reporting.authority (authority_id, name, active, created_on) VALUES ('2dac7af0-ba7d-4009-a313-e9a288272e90', 'MANAGE_ROLES'        , true, current_timestamp AT TIME ZONE 'UTC');
 INSERT INTO reporting.authority (authority_id, name, active, created_on) VALUES ('608d6156-b155-487d-bdd3-4e00260b7443', 'MANAGE_SUBSCRIPTIONS', true, current_timestamp AT TIME ZONE 'UTC');
 INSERT INTO reporting.authority (authority_id, name, active, created_on) VALUES ('94db0a84-e366-4ab8-aeba-171482979f3d', 'DELETE_SUBSCRIPTIONS', true, current_timestamp AT TIME ZONE 'UTC');
+INSERT INTO reporting.authority (authority_id, name, active, created_on) VALUES ('b33f1d5c-170a-4737-ae20-eb9e7aa42d04', 'MANAGE_ASSETS'       , true, current_timestamp AT TIME ZONE 'UTC');
+INSERT INTO reporting.authority (authority_id, name, active, created_on) VALUES ('e5d86ab9-c660-4bb6-8b96-4b75bd59a5d8', 'MANAGE_ASSETTREES'   , false, current_timestamp AT TIME ZONE 'UTC');
+INSERT INTO reporting.authority (authority_id, name, active, created_on) VALUES ('2c68aeeb-af3b-4f7a-8ecf-6ed11252ec23', 'MANAGE_ASSETTYPES'   , false, current_timestamp AT TIME ZONE 'UTC');
+INSERT INTO reporting.authority (authority_id, name, active, created_on) VALUES ('d2717c9b-b7ab-4085-a169-b95ede048c4c', 'MANAGE_DOCUMENTS'    , false, current_timestamp AT TIME ZONE 'UTC');
 
 
 -- Insert  tree of [role] records:
@@ -1155,6 +1356,10 @@ INSERT INTO reporting.role_authority (role_authority_id, role_id, authority_id, 
 INSERT INTO reporting.role_authority (role_authority_id, role_id, authority_id, created_on) VALUES ('2ef4aaf6-9ea4-48d0-a5a4-79670a264b79', '54aa1d35-f67d-47e6-8bea-cadd6085796e', '2dac7af0-ba7d-4009-a313-e9a288272e90', current_timestamp AT TIME ZONE 'UTC');
 INSERT INTO reporting.role_authority (role_authority_id, role_id, authority_id, created_on) VALUES ('fb5685ae-2470-449f-bfac-a2a291b863b4', '54aa1d35-f67d-47e6-8bea-cadd6085796e', '608d6156-b155-487d-bdd3-4e00260b7443', current_timestamp AT TIME ZONE 'UTC');
 INSERT INTO reporting.role_authority (role_authority_id, role_id, authority_id, created_on) VALUES ('13e14dbc-d30d-4006-95ed-b8de417a2315', '54aa1d35-f67d-47e6-8bea-cadd6085796e', '94db0a84-e366-4ab8-aeba-171482979f3d', current_timestamp AT TIME ZONE 'UTC');
+INSERT INTO reporting.role_authority (role_authority_id, role_id, authority_id, created_on) VALUES ('71ead393-41d2-4dec-b983-aef26ef62827', '54aa1d35-f67d-47e6-8bea-cadd6085796e', 'b33f1d5c-170a-4737-ae20-eb9e7aa42d04', current_timestamp AT TIME ZONE 'UTC');
+--INSERT INTO reporting.role_authority (role_authority_id, role_id, authority_id, created_on) VALUES ('5c3f8ac9-0dd1-4ffd-b840-63146e469b78', '54aa1d35-f67d-47e6-8bea-cadd6085796e', 'e5d86ab9-c660-4bb6-8b96-4b75bd59a5d8', current_timestamp AT TIME ZONE 'UTC');
+--INSERT INTO reporting.role_authority (role_authority_id, role_id, authority_id, created_on) VALUES ('13680bc1-19c3-4dff-9a9e-720f0ab65ff9', '54aa1d35-f67d-47e6-8bea-cadd6085796e', '2c68aeeb-af3b-4f7a-8ecf-6ed11252ec23', current_timestamp AT TIME ZONE 'UTC');
+--INSERT INTO reporting.role_authority (role_authority_id, role_id, authority_id, created_on) VALUES ('5099855c-4ea5-4203-b9c7-972995b72c66', '54aa1d35-f67d-47e6-8bea-cadd6085796e', 'd2717c9b-b7ab-4085-a169-b95ede048c4c', current_timestamp AT TIME ZONE 'UTC');
 --
 --
 -- Create a "Q-Free administrator" role that can be used to bypass external
@@ -1178,6 +1383,10 @@ INSERT INTO reporting.role_authority (role_authority_id, role_id, authority_id, 
 INSERT INTO reporting.role_authority (role_authority_id, role_id, authority_id, created_on) VALUES ('ce4ffcfd-7802-4e1b-bdf1-6d2b70062cef', '10ab3537-0b12-44fa-a27b-6cf1aac14282', '2dac7af0-ba7d-4009-a313-e9a288272e90', current_timestamp AT TIME ZONE 'UTC');
 INSERT INTO reporting.role_authority (role_authority_id, role_id, authority_id, created_on) VALUES ('54246034-83ed-488c-b447-05fd0b1e57b4', '10ab3537-0b12-44fa-a27b-6cf1aac14282', '608d6156-b155-487d-bdd3-4e00260b7443', current_timestamp AT TIME ZONE 'UTC');
 INSERT INTO reporting.role_authority (role_authority_id, role_id, authority_id, created_on) VALUES ('0fff6274-a9dc-4262-aa29-5feff9414810', '10ab3537-0b12-44fa-a27b-6cf1aac14282', '94db0a84-e366-4ab8-aeba-171482979f3d', current_timestamp AT TIME ZONE 'UTC');
+INSERT INTO reporting.role_authority (role_authority_id, role_id, authority_id, created_on) VALUES ('ef7b2b61-8bfc-4a14-8b41-718a12b115c6', '10ab3537-0b12-44fa-a27b-6cf1aac14282', 'b33f1d5c-170a-4737-ae20-eb9e7aa42d04', current_timestamp AT TIME ZONE 'UTC');
+INSERT INTO reporting.role_authority (role_authority_id, role_id, authority_id, created_on) VALUES ('faac077d-af19-4e00-97da-7c0bf71f07e8', '10ab3537-0b12-44fa-a27b-6cf1aac14282', 'e5d86ab9-c660-4bb6-8b96-4b75bd59a5d8', current_timestamp AT TIME ZONE 'UTC');
+INSERT INTO reporting.role_authority (role_authority_id, role_id, authority_id, created_on) VALUES ('37aaf7d3-1a9f-4e1b-8707-1aaf3ac5bd87', '10ab3537-0b12-44fa-a27b-6cf1aac14282', '2c68aeeb-af3b-4f7a-8ecf-6ed11252ec23', current_timestamp AT TIME ZONE 'UTC');
+INSERT INTO reporting.role_authority (role_authority_id, role_id, authority_id, created_on) VALUES ('7bcdf522-dac7-4e2a-bc42-6d6872a8391d', '10ab3537-0b12-44fa-a27b-6cf1aac14282', 'd2717c9b-b7ab-4085-a169-b95ede048c4c', current_timestamp AT TIME ZONE 'UTC');
 --
 --
 -- Create a role has full access to a ReST API endpoints. It will bypass 
@@ -1201,13 +1410,17 @@ INSERT INTO reporting.role_authority (role_authority_id, role_id, authority_id, 
 INSERT INTO reporting.role_authority (role_authority_id, role_id, authority_id, created_on) VALUES ('ca324426-78e9-4232-8ef0-46be70757b01', '689833f9-e55c-4eaf-aba6-79f8b1d1a058', '2dac7af0-ba7d-4009-a313-e9a288272e90', current_timestamp AT TIME ZONE 'UTC');
 INSERT INTO reporting.role_authority (role_authority_id, role_id, authority_id, created_on) VALUES ('e3f80441-e8ac-44e3-825a-a4ed0c8118ef', '689833f9-e55c-4eaf-aba6-79f8b1d1a058', '608d6156-b155-487d-bdd3-4e00260b7443', current_timestamp AT TIME ZONE 'UTC');
 INSERT INTO reporting.role_authority (role_authority_id, role_id, authority_id, created_on) VALUES ('6fc151b0-81fb-46d4-a8a4-4cca0ca82e21', '689833f9-e55c-4eaf-aba6-79f8b1d1a058', '94db0a84-e366-4ab8-aeba-171482979f3d', current_timestamp AT TIME ZONE 'UTC');
+INSERT INTO reporting.role_authority (role_authority_id, role_id, authority_id, created_on) VALUES ('aec93434-b0b4-432a-b760-57ff6641564a', '689833f9-e55c-4eaf-aba6-79f8b1d1a058', 'b33f1d5c-170a-4737-ae20-eb9e7aa42d04', current_timestamp AT TIME ZONE 'UTC');
+INSERT INTO reporting.role_authority (role_authority_id, role_id, authority_id, created_on) VALUES ('62ebb315-0fcb-49ad-84ac-469adc36f2ef', '689833f9-e55c-4eaf-aba6-79f8b1d1a058', 'e5d86ab9-c660-4bb6-8b96-4b75bd59a5d8', current_timestamp AT TIME ZONE 'UTC');
+INSERT INTO reporting.role_authority (role_authority_id, role_id, authority_id, created_on) VALUES ('2f74ad0b-a447-4012-8816-d1e234b5b3ee', '689833f9-e55c-4eaf-aba6-79f8b1d1a058', '2c68aeeb-af3b-4f7a-8ecf-6ed11252ec23', current_timestamp AT TIME ZONE 'UTC');
+INSERT INTO reporting.role_authority (role_authority_id, role_id, authority_id, created_on) VALUES ('f1416e42-5aff-4696-9e90-146a0a548b8b', '689833f9-e55c-4eaf-aba6-79f8b1d1a058', 'd2717c9b-b7ab-4085-a169-b95ede048c4c', current_timestamp AT TIME ZONE 'UTC');
 
 
 -- Create a global configuration record that contains the current database 
 -- version. This will get updated at the database is upgraded over time. This
 -- version number will be updated whenever the data model changes *or* Q-Free
 -- supplied content changes (records are created, updated or deleted).
-INSERT INTO reporting.configuration (param_name, role_id, param_type, integer_value, string_value , created_on) VALUES ('DB_VERSION', null, 'INTEGER', 6, '6', current_timestamp AT TIME ZONE 'UTC');
+INSERT INTO reporting.configuration (param_name, role_id, param_type, integer_value, string_value , created_on) VALUES ('DB_VERSION', null, 'INTEGER', 7, '7', current_timestamp AT TIME ZONE 'UTC');
 
 --ROLLBACK;
 COMMIT;

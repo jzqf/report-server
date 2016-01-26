@@ -253,7 +253,18 @@ public class ReportServerAuthenticationProvider implements AuthenticationProvide
 						 * principal.
 						 */
 
-						List<String> authorities = authorityService.findActiveAuthorityNamesByRoleId(role.getRoleId());
+						List<String> authorities = null;
+						if (username.equals(Role.QFREE_ADMIN_ROLE_NAME)) {
+							authorities = authorityService.findAuthorityNamesByRoleId(role.getRoleId());
+						} else {
+							/*
+							 * Note that only names of *active* Authority entities 
+							 * are returned here. This means that inactive Authority
+							 * entities that are already linked to a Role will not
+							 * be made available to the Role here.
+							 */
+							authorities = authorityService.findActiveAuthorityNamesByRoleId(role.getRoleId());
+						}
 						logger.info("authorities = {}", authorities);
 
 						final List<GrantedAuthority> grantedAuths = new ArrayList<>(authorities.size());

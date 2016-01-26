@@ -27,6 +27,8 @@ import javax.validation.constraints.NotNull;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.qfree.obo.report.dto.SubscriptionResource;
 import com.qfree.obo.report.exceptions.ResourceFilterExecutionException;
@@ -47,6 +49,8 @@ import com.qfree.obo.report.util.RestUtils;
 public class Subscription implements Serializable {
 
 	private static final long serialVersionUID = 1L;
+
+	private static final Logger logger = LoggerFactory.getLogger(Subscription.class);
 
 	@Id
 	@Type(type = "uuid-custom")
@@ -422,9 +426,29 @@ public class Subscription implements Serializable {
 			List<Subscription> unfilteredSubscriptions,
 			List<List<Map<String, String>>> filterConditions)
 					throws ResourceFilterExecutionException {
+
+		/*
+		 * The returned list must be ordered in case pagination is used for the 
+		 * collection resource created from list of filtered entities. Even if
+		 * it is not necessary to paginate the list (because there are too few
+		 * list elements), we still sort the list for consistency. The only
+		 * sensible order is chronological order. Since the Job entities has a 
+		 * Long primary key, we could also sort by id.
+		 */
+		//Comparator<Subscription> chronological = (Subscription subscription1,
+		//		Subscription subscription2) -> subscription1.getCreatedOn().compareTo(subscription2.getCreatedOn());
+		Comparator<Subscription> chronologicalReversed = (Subscription subscription1,
+				Subscription subscription2) -> subscription2.getCreatedOn().compareTo(subscription1.getCreatedOn());
+		Comparator<Subscription> comparator = chronologicalReversed;
+
 		if (filterConditions == null || filterConditions.size() == 0) {
-			return unfilteredSubscriptions; // no filtering
+			/*
+			 * No filtering is required, but we still need to sort.
+			 */
+			unfilteredSubscriptions.sort(comparator);
+			return unfilteredSubscriptions; // sorted, but not filtered
 		}
+
 		List<Object> roleIds = new ArrayList<>(unfilteredSubscriptions.size());
 		for (Subscription subscription : unfilteredSubscriptions) {
 			roleIds.add(subscription.getRole().getRoleId());
@@ -436,15 +460,8 @@ public class Subscription implements Serializable {
 		 * URI.
 		 */
 		filterableAttributes.put("roleId", roleIds);
-		/*
-		 * The list must be ordered in case pagination is used for the 
-		 * collection resource created from list of filtered entities. The only
-		 * sensible order is chronological order.
-		 */
-		Comparator<Subscription> chronological = (Subscription subscription1,
-				Subscription subscription2) -> subscription1.getCreatedOn().compareTo(subscription2.getCreatedOn());
 
-		return RestUtils.filterEntities(unfilteredSubscriptions, filterConditions, filterableAttributes, chronological,
+		return RestUtils.filterEntities(unfilteredSubscriptions, filterConditions, filterableAttributes, comparator,
 				Subscription.class);
 	}
 }

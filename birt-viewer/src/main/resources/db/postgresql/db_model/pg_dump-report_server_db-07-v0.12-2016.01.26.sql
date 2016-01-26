@@ -53,6 +53,55 @@ SET default_tablespace = '';
 SET default_with_oids = false;
 
 --
+-- Name: asset; Type: TABLE; Schema: reporting; Owner: report_server_app; Tablespace: 
+--
+
+CREATE TABLE asset (
+    asset_id uuid DEFAULT uuid_generate_v4() NOT NULL,
+    active boolean NOT NULL,
+    created_on timestamp without time zone NOT NULL,
+    filename character varying(256) NOT NULL,
+    asset_tree_id uuid NOT NULL,
+    asset_type_id uuid NOT NULL,
+    document_id uuid NOT NULL
+);
+
+
+ALTER TABLE asset OWNER TO report_server_app;
+
+--
+-- Name: asset_tree; Type: TABLE; Schema: reporting; Owner: report_server_app; Tablespace: 
+--
+
+CREATE TABLE asset_tree (
+    asset_tree_id uuid DEFAULT uuid_generate_v4() NOT NULL,
+    abbreviation character varying(32) NOT NULL,
+    active boolean NOT NULL,
+    created_on timestamp without time zone NOT NULL,
+    directory character varying(256) NOT NULL,
+    name character varying(32) NOT NULL
+);
+
+
+ALTER TABLE asset_tree OWNER TO report_server_app;
+
+--
+-- Name: asset_type; Type: TABLE; Schema: reporting; Owner: report_server_app; Tablespace: 
+--
+
+CREATE TABLE asset_type (
+    asset_type_id uuid DEFAULT uuid_generate_v4() NOT NULL,
+    abbreviation character varying(32) NOT NULL,
+    active boolean NOT NULL,
+    created_on timestamp without time zone NOT NULL,
+    directory character varying(256) NOT NULL,
+    name character varying(32) NOT NULL
+);
+
+
+ALTER TABLE asset_type OWNER TO report_server_app;
+
+--
 -- Name: authority; Type: TABLE; Schema: reporting; Owner: report_server_app; Tablespace: 
 --
 
@@ -91,6 +140,19 @@ CREATE TABLE configuration (
 
 
 ALTER TABLE configuration OWNER TO report_server_app;
+
+--
+-- Name: document; Type: TABLE; Schema: reporting; Owner: report_server_app; Tablespace: 
+--
+
+CREATE TABLE document (
+    document_id uuid DEFAULT uuid_generate_v4() NOT NULL,
+    content bytea,
+    created_on timestamp without time zone NOT NULL
+);
+
+
+ALTER TABLE document OWNER TO report_server_app;
 
 --
 -- Name: document_format; Type: TABLE; Schema: reporting; Owner: report_server_app; Tablespace: 
@@ -555,25 +617,61 @@ ALTER TABLE ONLY job_parameter_value ALTER COLUMN job_parameter_value_id SET DEF
 
 
 --
+-- Data for Name: asset; Type: TABLE DATA; Schema: reporting; Owner: report_server_app
+--
+
+COPY asset (asset_id, active, created_on, filename, asset_tree_id, asset_type_id, document_id) FROM stdin;
+\.
+
+
+--
+-- Data for Name: asset_tree; Type: TABLE DATA; Schema: reporting; Owner: report_server_app
+--
+
+COPY asset_tree (asset_tree_id, abbreviation, active, created_on, directory, name) FROM stdin;
+7f9d0216-48d7-49ba-b043-ec48db03c938	QFREE	t	2016-01-25 11:17:35.863962	qfree	Q-Free
+272199f9-d407-492f-a147-41a2b7d0cd02	CUST	t	2016-01-25 11:17:35.863962	assets	Customer
+\.
+
+
+--
+-- Data for Name: asset_type; Type: TABLE DATA; Schema: reporting; Owner: report_server_app
+--
+
+COPY asset_type (asset_type_id, abbreviation, active, created_on, directory, name) FROM stdin;
+f2f4b13f-9c45-4515-bb4b-62e8ccc3d95c	CSS	t	2016-01-25 11:17:35.863962	css	CSS file
+2603ed74-94b5-4c39-ad36-a7e16a374237	HTML	t	2016-01-25 11:17:35.863962	html	HTML page
+1e7ddbbc-8b40-4373-bfc5-6e6d3d5964d8	IMAGE	t	2016-01-25 11:17:35.863962	images	Image file
+1c488bcf-15ab-4fcb-8ab8-23cda9342a77	JS	t	2016-01-25 11:17:35.863962	js	JavaScript file
+26835616-00e2-475d-89ce-11c12e659605	BIRT LIB	t	2016-01-25 11:17:35.863962	libraries	BIRT Library
+4b811357-d664-4e44-bc75-197e6946abcd	PROPERTIES	t	2016-01-25 11:17:35.863962	properties	Properties file
+\.
+
+
+--
 -- Data for Name: authority; Type: TABLE DATA; Schema: reporting; Owner: report_server_app
 --
 
 COPY authority (authority_id, active, created_on, name) FROM stdin;
-e2883c0e-5972-4225-a805-27410a2866f4	t	2016-01-12 14:52:30.241347	USE_RESTAPI
-1e4f29b9-3183-4f54-a4ee-96c2347d7e06	t	2016-01-12 14:52:30.241347	MANAGE_AUTHORITIES
-dae0f68f-11c6-438c-8312-aca4d95731fc	t	2016-01-12 14:52:30.241347	MANAGE_CATEGORIES
-cd2c5d93-9b57-4a8b-b789-84dd567e0fa2	t	2016-01-12 14:52:30.241347	MANAGE_FILEFORMATS
-7e1ee8bb-3d5d-481a-b0f9-5c3fae3f4e38	t	2016-01-12 14:52:30.241347	MANAGE_FILESYNCING
-e5b569e6-bb2a-4f00-a9ca-f85ef0a3a339	t	2016-01-12 14:52:30.241347	MANAGE_JOBPROCESSOR
-12b1cb22-7686-4c9b-b73b-a25d4cb31663	t	2016-01-12 14:52:30.241347	MANAGE_JOBS
-ace1edd3-6a5b-4b40-a802-79616472b893	t	2016-01-12 14:52:30.241347	DELETE_JOBS
-bb8f7964-504a-4544-8638-11a62cc9a2ca	t	2016-01-12 14:52:30.241347	MANAGE_JOBSTATUSES
-1bbc9e73-1095-4471-bdb2-726b10e47936	t	2016-01-12 14:52:30.241347	MANAGE_PREFERENCES
-7b758de7-cd54-43fa-baa0-dfbe59e66000	t	2016-01-12 14:52:30.241347	MANAGE_REPORTS
-2efd4eca-bcb2-4cec-b804-3142c8297d65	t	2016-01-12 14:52:30.241347	UPLOAD_REPORTS
-2dac7af0-ba7d-4009-a313-e9a288272e90	t	2016-01-12 14:52:30.241347	MANAGE_ROLES
-608d6156-b155-487d-bdd3-4e00260b7443	t	2016-01-12 14:52:30.241347	MANAGE_SUBSCRIPTIONS
-94db0a84-e366-4ab8-aeba-171482979f3d	t	2016-01-12 14:52:30.241347	DELETE_SUBSCRIPTIONS
+e2883c0e-5972-4225-a805-27410a2866f4	t	2016-01-25 11:17:35.863962	USE_RESTAPI
+1e4f29b9-3183-4f54-a4ee-96c2347d7e06	t	2016-01-25 11:17:35.863962	MANAGE_AUTHORITIES
+dae0f68f-11c6-438c-8312-aca4d95731fc	t	2016-01-25 11:17:35.863962	MANAGE_CATEGORIES
+cd2c5d93-9b57-4a8b-b789-84dd567e0fa2	t	2016-01-25 11:17:35.863962	MANAGE_FILEFORMATS
+7e1ee8bb-3d5d-481a-b0f9-5c3fae3f4e38	t	2016-01-25 11:17:35.863962	MANAGE_FILESYNCING
+e5b569e6-bb2a-4f00-a9ca-f85ef0a3a339	t	2016-01-25 11:17:35.863962	MANAGE_JOBPROCESSOR
+12b1cb22-7686-4c9b-b73b-a25d4cb31663	t	2016-01-25 11:17:35.863962	MANAGE_JOBS
+ace1edd3-6a5b-4b40-a802-79616472b893	t	2016-01-25 11:17:35.863962	DELETE_JOBS
+bb8f7964-504a-4544-8638-11a62cc9a2ca	t	2016-01-25 11:17:35.863962	MANAGE_JOBSTATUSES
+1bbc9e73-1095-4471-bdb2-726b10e47936	t	2016-01-25 11:17:35.863962	MANAGE_PREFERENCES
+7b758de7-cd54-43fa-baa0-dfbe59e66000	t	2016-01-25 11:17:35.863962	MANAGE_REPORTS
+2efd4eca-bcb2-4cec-b804-3142c8297d65	t	2016-01-25 11:17:35.863962	UPLOAD_REPORTS
+2dac7af0-ba7d-4009-a313-e9a288272e90	t	2016-01-25 11:17:35.863962	MANAGE_ROLES
+608d6156-b155-487d-bdd3-4e00260b7443	t	2016-01-25 11:17:35.863962	MANAGE_SUBSCRIPTIONS
+94db0a84-e366-4ab8-aeba-171482979f3d	t	2016-01-25 11:17:35.863962	DELETE_SUBSCRIPTIONS
+b33f1d5c-170a-4737-ae20-eb9e7aa42d04	t	2016-01-25 11:17:35.863962	MANAGE_ASSETS
+e5d86ab9-c660-4bb6-8b96-4b75bd59a5d8	f	2016-01-25 11:17:35.863962	MANAGE_ASSETTREES
+2c68aeeb-af3b-4f7a-8ecf-6ed11252ec23	f	2016-01-25 11:17:35.863962	MANAGE_ASSETTYPES
+d2717c9b-b7ab-4085-a169-b95ede048c4c	f	2016-01-25 11:17:35.863962	MANAGE_DOCUMENTS
 \.
 
 
@@ -582,7 +680,15 @@ bb8f7964-504a-4544-8638-11a62cc9a2ca	t	2016-01-12 14:52:30.241347	MANAGE_JOBSTAT
 --
 
 COPY configuration (configuration_id, boolean_value, bytea_value, created_on, date_value, datetime_value, double_value, float_value, integer_value, long_value, param_name, param_type, string_value, text_value, time_value, role_id) FROM stdin;
-dd8ac737-a9bc-495d-8f57-f7ddf1136ffa	\N	\N	2016-01-12 14:52:30.241347	\N	\N	\N	\N	6	\N	DB_VERSION	INTEGER	6	\N	\N	\N
+9f1f51d2-597d-46ff-9248-388aeed2ccd2	\N	\N	2016-01-25 11:17:35.863962	\N	\N	\N	\N	7	\N	DB_VERSION	INTEGER	7	\N	\N	\N
+\.
+
+
+--
+-- Data for Name: document; Type: TABLE DATA; Schema: reporting; Owner: report_server_app
+--
+
+COPY document (document_id, content, created_on) FROM stdin;
 \.
 
 
@@ -591,17 +697,17 @@ dd8ac737-a9bc-495d-8f57-f7ddf1136ffa	\N	\N	2016-01-12 14:52:30.241347	\N	\N	\N	\
 --
 
 COPY document_format (document_format_id, active, binary_data, birt_format, created_on, file_extension, internet_media_type, name) FROM stdin;
-bc5169e0-3d36-483c-a7b5-a76766587991	t	t	doc	2016-01-12 14:52:30.241347	doc	application/msword	Microsoft Word
-d0225349-1642-46e3-a949-4ce39795907f	t	t	docx	2016-01-12 14:52:30.241347	docx	application/vnd.openxmlformats-officedocument.wordprocessingml.document	Office Open XML Document
-e1d0b3f2-f639-4521-a055-d5465dce29a2	f	f	html	2016-01-12 14:52:30.241347	html	text/html	HTML
-38b73b21-cb66-42cf-932b-1cdf7937525c	t	t	odp	2016-01-12 14:52:30.241347	odp	application/vnd.oasis.opendocument.presentation	OpenDocument Presentation
-05a4ad8d-6f30-4d6d-83d5-995345a8dc58	t	t	ods	2016-01-12 14:52:30.241347	ods	application/vnd.oasis.opendocument.spreadsheet	OpenDocument Spreadsheet
-b4f2249d-f52e-47e2-871c-daf35f4ba78e	t	t	odt	2016-01-12 14:52:30.241347	odt	application/vnd.oasis.opendocument.text	OpenDocument Text
-30800d77-5fdd-44bc-94a3-1502bd307c1d	t	t	pdf	2016-01-12 14:52:30.241347	pdf	application/pdf	PDF
-597f34fb-10d8-4408-971a-1b67472ac588	t	t	ppt	2016-01-12 14:52:30.241347	ppt	application/vnd.ms-powerpoint	PowerPoint
-d7ccb194-91c6-4dce-bbfe-6424f079dc07	t	t	pptx	2016-01-12 14:52:30.241347	pptx	application/vnd.openxmlformats-officedocument.presentationml.presentation	Office Open XML Presentation
-25762ba8-1688-4100-b323-b9e74eba396c	t	t	xls	2016-01-12 14:52:30.241347	xls	application/vnd.ms-excel	Microsoft Excel
-c78ac922-2f37-4855-83ae-b708d453b005	t	t	xlsx	2016-01-12 14:52:30.241347	xlsx	application/vnd.openxmlformats-officedocument.spreadsheetml.sheet	Office Open XML Workbook
+bc5169e0-3d36-483c-a7b5-a76766587991	t	t	doc	2016-01-25 11:17:35.863962	doc	application/msword	Microsoft Word
+d0225349-1642-46e3-a949-4ce39795907f	t	t	docx	2016-01-25 11:17:35.863962	docx	application/vnd.openxmlformats-officedocument.wordprocessingml.document	Office Open XML Document
+e1d0b3f2-f639-4521-a055-d5465dce29a2	f	f	html	2016-01-25 11:17:35.863962	html	text/html	HTML
+38b73b21-cb66-42cf-932b-1cdf7937525c	t	t	odp	2016-01-25 11:17:35.863962	odp	application/vnd.oasis.opendocument.presentation	OpenDocument Presentation
+05a4ad8d-6f30-4d6d-83d5-995345a8dc58	t	t	ods	2016-01-25 11:17:35.863962	ods	application/vnd.oasis.opendocument.spreadsheet	OpenDocument Spreadsheet
+b4f2249d-f52e-47e2-871c-daf35f4ba78e	t	t	odt	2016-01-25 11:17:35.863962	odt	application/vnd.oasis.opendocument.text	OpenDocument Text
+30800d77-5fdd-44bc-94a3-1502bd307c1d	t	t	pdf	2016-01-25 11:17:35.863962	pdf	application/pdf	PDF
+597f34fb-10d8-4408-971a-1b67472ac588	t	t	ppt	2016-01-25 11:17:35.863962	ppt	application/vnd.ms-powerpoint	PowerPoint
+d7ccb194-91c6-4dce-bbfe-6424f079dc07	t	t	pptx	2016-01-25 11:17:35.863962	pptx	application/vnd.openxmlformats-officedocument.presentationml.presentation	Office Open XML Presentation
+25762ba8-1688-4100-b323-b9e74eba396c	t	t	xls	2016-01-25 11:17:35.863962	xls	application/vnd.ms-excel	Microsoft Excel
+c78ac922-2f37-4855-83ae-b708d453b005	t	t	xlsx	2016-01-25 11:17:35.863962	xlsx	application/vnd.openxmlformats-officedocument.spreadsheetml.sheet	Office Open XML Workbook
 \.
 
 
@@ -655,12 +761,12 @@ SELECT pg_catalog.setval('job_parameter_value_job_parameter_value_id_seq', 1, fa
 --
 
 COPY job_status (job_status_id, abbreviation, active, created_on, description) FROM stdin;
-08de9764-735f-4c82-bbe9-3981b29cc133	QUEUED	t	2016-01-12 14:52:30.241347	Queued
-a613aae2-836a-4b03-a75d-cfb8303eaad5	RUNNING	t	2016-01-12 14:52:30.241347	Running
-24274a10-6d83-4f0f-a807-2c96d86ce5d6	DELIVERING	t	2016-01-12 14:52:30.241347	Delivering
-f378fc09-35e4-4096-b1d1-2db14756b098	COMPLETED	t	2016-01-12 14:52:30.241347	Completed
-2a9cd697-af00-45bc-aa6a-053284b9d9e4	FAILED	t	2016-01-12 14:52:30.241347	Failed
-5125c537-e178-42de-b4dd-e538fa3da802	CANCELED	t	2016-01-12 14:52:30.241347	Canceled
+08de9764-735f-4c82-bbe9-3981b29cc133	QUEUED	t	2016-01-25 11:17:35.863962	Queued
+a613aae2-836a-4b03-a75d-cfb8303eaad5	RUNNING	t	2016-01-25 11:17:35.863962	Running
+24274a10-6d83-4f0f-a807-2c96d86ce5d6	DELIVERING	t	2016-01-25 11:17:35.863962	Delivering
+f378fc09-35e4-4096-b1d1-2db14756b098	COMPLETED	t	2016-01-25 11:17:35.863962	Completed
+2a9cd697-af00-45bc-aa6a-053284b9d9e4	FAILED	t	2016-01-25 11:17:35.863962	Failed
+5125c537-e178-42de-b4dd-e538fa3da802	CANCELED	t	2016-01-25 11:17:35.863962	Canceled
 \.
 
 
@@ -685,10 +791,10 @@ COPY report (report_id, active, created_on, name, number, sort_order, report_cat
 --
 
 COPY report_category (report_category_id, abbreviation, active, created_on, description) FROM stdin;
-7a482694-51d2-42d0-b0e2-19dd13bbbc64	ACCT	t	2016-01-12 14:52:30.241347	Accounting
-bb2bc482-c19a-4c19-a087-e68ffc62b5a0	QFREE	t	2016-01-12 14:52:30.241347	Q-Free internal
-5c3cc664-b685-4f6e-8d9a-2927c6bcffdc	MIR	t	2016-01-12 14:52:30.241347	Manual validation
-72d7cb27-1770-4cc7-b301-44d39ccf1e76	TRA	t	2016-01-12 14:52:30.241347	Traffic
+7a482694-51d2-42d0-b0e2-19dd13bbbc64	ACCT	t	2016-01-25 11:17:35.863962	Accounting
+bb2bc482-c19a-4c19-a087-e68ffc62b5a0	QFREE	t	2016-01-25 11:17:35.863962	Q-Free internal
+5c3cc664-b685-4f6e-8d9a-2927c6bcffdc	MIR	t	2016-01-25 11:17:35.863962	Manual validation
+72d7cb27-1770-4cc7-b301-44d39ccf1e76	TRA	t	2016-01-25 11:17:35.863962	Traffic
 \.
 
 
@@ -713,13 +819,13 @@ COPY report_version (report_version_id, active, created_on, file_name, rptdesign
 --
 
 COPY role (role_id, active, created_on, email_address, enabled, encoded_password, full_name, login_role, time_zone_id, username) FROM stdin;
-54aa1d35-f67d-47e6-8bea-cadd6085796e	t	2016-01-12 14:52:30.241347	\N	t	$2a$08$PjY.jVSaf0x2HCnETH6aj.0Gb3RWX9VMunMcpIfrJGBGjsYA2S6vC	Report Administrator	t	CET	reportadmin
-29fe8a1f-7826-4df0-8bfd-151b54198655	t	2016-01-12 14:52:30.241347	user1@somedomain.com	t	$2a$08$SIVVleb01XxPHvn72ThPo.NAgKrbMuq5r/JvcWj5g6LIPDqnuVeT2	User Number 1	t	CET	user1
-fa06393a-d341-4bf6-b047-1a8c6a383483	t	2016-01-12 14:52:30.241347	user2@somedomain.com	t	$2a$08$SjqsEsbb86MU/eggjgjfuuvQ0WnDhKm1oJ9IJn/uc04J51ksXNbN6	User Number 2	f	CET	user2
-b85fd129-17d9-40e7-ac11-7541040f8627	t	2016-01-12 14:52:30.241347	user3@somedomain.com	t	$2a$08$qmN5yWFDL9MT8kjftuVeguljomDvAMkSDaFnw9oSwKdV0RHmNg5TG	User Number 3	t	Canada/Pacific	user3
-46e477dc-085f-4714-a24f-742428579fcc	t	2016-01-12 14:52:30.241347	user4@somedomain.com	t	$2a$08$Co4iHF1kcy1j3r7nd6hBgOAJUgDKaIitNx.BTW8gbVukqwRZr6MLu	User Number 4	t	GMT	user4
-10ab3537-0b12-44fa-a27b-6cf1aac14282	t	2016-01-12 14:52:30.241347	\N	t	$2a$08$53v/RUtexw7Ovdx4i2F44O4XcyOLLZklf39XZW1C4jT3JjBJQ8fi6	Q-Free Administrator	t	CET	qfree-reportserver-admin
-689833f9-e55c-4eaf-aba6-79f8b1d1a058	t	2016-01-12 14:52:30.241347	\N	t	$2a$08$4sGkB9oqsz0ws5liaPYofem6WwiQzmZ6DzDP7cuvwWN24ycZZefbq	ReST Administrator	t	CET	reportserver-restadmin
+54aa1d35-f67d-47e6-8bea-cadd6085796e	t	2016-01-25 11:17:35.863962	\N	t	$2a$08$PjY.jVSaf0x2HCnETH6aj.0Gb3RWX9VMunMcpIfrJGBGjsYA2S6vC	Report Administrator	t	CET	reportadmin
+29fe8a1f-7826-4df0-8bfd-151b54198655	t	2016-01-25 11:17:35.863962	user1@somedomain.com	t	$2a$08$SIVVleb01XxPHvn72ThPo.NAgKrbMuq5r/JvcWj5g6LIPDqnuVeT2	User Number 1	t	CET	user1
+fa06393a-d341-4bf6-b047-1a8c6a383483	t	2016-01-25 11:17:35.863962	user2@somedomain.com	t	$2a$08$SjqsEsbb86MU/eggjgjfuuvQ0WnDhKm1oJ9IJn/uc04J51ksXNbN6	User Number 2	f	CET	user2
+b85fd129-17d9-40e7-ac11-7541040f8627	t	2016-01-25 11:17:35.863962	user3@somedomain.com	t	$2a$08$qmN5yWFDL9MT8kjftuVeguljomDvAMkSDaFnw9oSwKdV0RHmNg5TG	User Number 3	t	Canada/Pacific	user3
+46e477dc-085f-4714-a24f-742428579fcc	t	2016-01-25 11:17:35.863962	user4@somedomain.com	t	$2a$08$Co4iHF1kcy1j3r7nd6hBgOAJUgDKaIitNx.BTW8gbVukqwRZr6MLu	User Number 4	t	GMT	user4
+10ab3537-0b12-44fa-a27b-6cf1aac14282	t	2016-01-25 11:17:35.863962	\N	t	$2a$08$53v/RUtexw7Ovdx4i2F44O4XcyOLLZklf39XZW1C4jT3JjBJQ8fi6	Q-Free Administrator	t	CET	qfree-reportserver-admin
+689833f9-e55c-4eaf-aba6-79f8b1d1a058	t	2016-01-25 11:17:35.863962	\N	t	$2a$08$4sGkB9oqsz0ws5liaPYofem6WwiQzmZ6DzDP7cuvwWN24ycZZefbq	ReST Administrator	t	CET	reportserver-restadmin
 \.
 
 
@@ -728,50 +834,59 @@ b85fd129-17d9-40e7-ac11-7541040f8627	t	2016-01-12 14:52:30.241347	user3@somedoma
 --
 
 COPY role_authority (role_authority_id, created_on, authority_id, role_id) FROM stdin;
-f812aab5-2390-43f3-add3-a3d673939a73	2016-01-12 14:52:30.241347	1e4f29b9-3183-4f54-a4ee-96c2347d7e06	54aa1d35-f67d-47e6-8bea-cadd6085796e
-62c78032-5ec7-440c-8107-386b745b9ab9	2016-01-12 14:52:30.241347	dae0f68f-11c6-438c-8312-aca4d95731fc	54aa1d35-f67d-47e6-8bea-cadd6085796e
-eb8e56c2-7a8e-4dbe-97ca-a0e6166b258a	2016-01-12 14:52:30.241347	cd2c5d93-9b57-4a8b-b789-84dd567e0fa2	54aa1d35-f67d-47e6-8bea-cadd6085796e
-7560ef1c-4acf-43bd-af27-b5ad9f992f57	2016-01-12 14:52:30.241347	7e1ee8bb-3d5d-481a-b0f9-5c3fae3f4e38	54aa1d35-f67d-47e6-8bea-cadd6085796e
-44dd6566-a02c-47eb-b889-31016fe1d8ed	2016-01-12 14:52:30.241347	e5b569e6-bb2a-4f00-a9ca-f85ef0a3a339	54aa1d35-f67d-47e6-8bea-cadd6085796e
-222e6e22-f3e3-4631-847f-31896139987a	2016-01-12 14:52:30.241347	12b1cb22-7686-4c9b-b73b-a25d4cb31663	54aa1d35-f67d-47e6-8bea-cadd6085796e
-d3a80355-b464-4763-97ab-cd76af70b687	2016-01-12 14:52:30.241347	ace1edd3-6a5b-4b40-a802-79616472b893	54aa1d35-f67d-47e6-8bea-cadd6085796e
-69ee95d1-f6b0-4805-b653-e33ad3955609	2016-01-12 14:52:30.241347	bb8f7964-504a-4544-8638-11a62cc9a2ca	54aa1d35-f67d-47e6-8bea-cadd6085796e
-bbaddcf3-ef9c-49d1-9e5a-d9197a106b9e	2016-01-12 14:52:30.241347	1bbc9e73-1095-4471-bdb2-726b10e47936	54aa1d35-f67d-47e6-8bea-cadd6085796e
-8e90d278-a555-4a3a-981a-8e329eac63d4	2016-01-12 14:52:30.241347	7b758de7-cd54-43fa-baa0-dfbe59e66000	54aa1d35-f67d-47e6-8bea-cadd6085796e
-659e6aa3-14bf-4ba2-8630-538da94f6ffc	2016-01-12 14:52:30.241347	2efd4eca-bcb2-4cec-b804-3142c8297d65	54aa1d35-f67d-47e6-8bea-cadd6085796e
-2ef4aaf6-9ea4-48d0-a5a4-79670a264b79	2016-01-12 14:52:30.241347	2dac7af0-ba7d-4009-a313-e9a288272e90	54aa1d35-f67d-47e6-8bea-cadd6085796e
-fb5685ae-2470-449f-bfac-a2a291b863b4	2016-01-12 14:52:30.241347	608d6156-b155-487d-bdd3-4e00260b7443	54aa1d35-f67d-47e6-8bea-cadd6085796e
-13e14dbc-d30d-4006-95ed-b8de417a2315	2016-01-12 14:52:30.241347	94db0a84-e366-4ab8-aeba-171482979f3d	54aa1d35-f67d-47e6-8bea-cadd6085796e
-be6a207f-10f7-4e86-a174-392b4934d2a0	2016-01-12 14:52:30.241347	e2883c0e-5972-4225-a805-27410a2866f4	10ab3537-0b12-44fa-a27b-6cf1aac14282
-4cb38206-bd6c-4db1-a596-0944b386c093	2016-01-12 14:52:30.241347	1e4f29b9-3183-4f54-a4ee-96c2347d7e06	10ab3537-0b12-44fa-a27b-6cf1aac14282
-e2ef968a-7fd6-4e9e-b74a-58fc6f208a50	2016-01-12 14:52:30.241347	dae0f68f-11c6-438c-8312-aca4d95731fc	10ab3537-0b12-44fa-a27b-6cf1aac14282
-143e65a8-3051-4512-bf02-940455f25744	2016-01-12 14:52:30.241347	cd2c5d93-9b57-4a8b-b789-84dd567e0fa2	10ab3537-0b12-44fa-a27b-6cf1aac14282
-e40a6bc3-3888-49ec-a9f5-6c17df4907a2	2016-01-12 14:52:30.241347	7e1ee8bb-3d5d-481a-b0f9-5c3fae3f4e38	10ab3537-0b12-44fa-a27b-6cf1aac14282
-6603e5e2-0b71-4e0c-8983-6c1c50efb0d6	2016-01-12 14:52:30.241347	e5b569e6-bb2a-4f00-a9ca-f85ef0a3a339	10ab3537-0b12-44fa-a27b-6cf1aac14282
-89bc2070-aedf-4959-9492-8f1a051f2c47	2016-01-12 14:52:30.241347	12b1cb22-7686-4c9b-b73b-a25d4cb31663	10ab3537-0b12-44fa-a27b-6cf1aac14282
-d806bc73-1744-471c-8f24-14af227f780b	2016-01-12 14:52:30.241347	ace1edd3-6a5b-4b40-a802-79616472b893	10ab3537-0b12-44fa-a27b-6cf1aac14282
-43c97218-f645-47be-ac64-7004e34ee31c	2016-01-12 14:52:30.241347	bb8f7964-504a-4544-8638-11a62cc9a2ca	10ab3537-0b12-44fa-a27b-6cf1aac14282
-bdb0077e-ddd1-4651-8584-7d67f6a5d7e6	2016-01-12 14:52:30.241347	1bbc9e73-1095-4471-bdb2-726b10e47936	10ab3537-0b12-44fa-a27b-6cf1aac14282
-f3f5546e-d819-4a4a-92be-c6ee150e02d0	2016-01-12 14:52:30.241347	7b758de7-cd54-43fa-baa0-dfbe59e66000	10ab3537-0b12-44fa-a27b-6cf1aac14282
-3d1392ab-b5b8-45b8-96e1-cf7060836924	2016-01-12 14:52:30.241347	2efd4eca-bcb2-4cec-b804-3142c8297d65	10ab3537-0b12-44fa-a27b-6cf1aac14282
-ce4ffcfd-7802-4e1b-bdf1-6d2b70062cef	2016-01-12 14:52:30.241347	2dac7af0-ba7d-4009-a313-e9a288272e90	10ab3537-0b12-44fa-a27b-6cf1aac14282
-54246034-83ed-488c-b447-05fd0b1e57b4	2016-01-12 14:52:30.241347	608d6156-b155-487d-bdd3-4e00260b7443	10ab3537-0b12-44fa-a27b-6cf1aac14282
-0fff6274-a9dc-4262-aa29-5feff9414810	2016-01-12 14:52:30.241347	94db0a84-e366-4ab8-aeba-171482979f3d	10ab3537-0b12-44fa-a27b-6cf1aac14282
-ad0fcb0d-6d89-41ad-9ed7-82292757c496	2016-01-12 14:52:30.241347	e2883c0e-5972-4225-a805-27410a2866f4	689833f9-e55c-4eaf-aba6-79f8b1d1a058
-9186ccf4-bfac-43fd-a200-7484f4d7b0b5	2016-01-12 14:52:30.241347	1e4f29b9-3183-4f54-a4ee-96c2347d7e06	689833f9-e55c-4eaf-aba6-79f8b1d1a058
-bfeb5c18-545e-4a47-b412-25df077bfc19	2016-01-12 14:52:30.241347	dae0f68f-11c6-438c-8312-aca4d95731fc	689833f9-e55c-4eaf-aba6-79f8b1d1a058
-cc1392c8-bf80-474b-9cb8-e01e9ef067b6	2016-01-12 14:52:30.241347	cd2c5d93-9b57-4a8b-b789-84dd567e0fa2	689833f9-e55c-4eaf-aba6-79f8b1d1a058
-43d33928-08c5-4869-bed0-4e81a3c8e0c3	2016-01-12 14:52:30.241347	7e1ee8bb-3d5d-481a-b0f9-5c3fae3f4e38	689833f9-e55c-4eaf-aba6-79f8b1d1a058
-3189a1d0-d7d1-45a5-a002-f34dda0c9916	2016-01-12 14:52:30.241347	e5b569e6-bb2a-4f00-a9ca-f85ef0a3a339	689833f9-e55c-4eaf-aba6-79f8b1d1a058
-619b6650-57bd-4850-a543-9fd0d1a1d3bc	2016-01-12 14:52:30.241347	12b1cb22-7686-4c9b-b73b-a25d4cb31663	689833f9-e55c-4eaf-aba6-79f8b1d1a058
-eb257e2f-d6c3-497f-8e0c-614efc068a03	2016-01-12 14:52:30.241347	ace1edd3-6a5b-4b40-a802-79616472b893	689833f9-e55c-4eaf-aba6-79f8b1d1a058
-b0fd8c8b-7d6d-4d4a-a165-b28b06ea3418	2016-01-12 14:52:30.241347	bb8f7964-504a-4544-8638-11a62cc9a2ca	689833f9-e55c-4eaf-aba6-79f8b1d1a058
-25e8ab17-d66a-4de0-b692-dda9ff36c4ee	2016-01-12 14:52:30.241347	1bbc9e73-1095-4471-bdb2-726b10e47936	689833f9-e55c-4eaf-aba6-79f8b1d1a058
-dd5a9f19-0a8b-4ea9-885f-dcbda4c7431d	2016-01-12 14:52:30.241347	7b758de7-cd54-43fa-baa0-dfbe59e66000	689833f9-e55c-4eaf-aba6-79f8b1d1a058
-534d4b17-1ea6-48eb-8905-6798efe5011e	2016-01-12 14:52:30.241347	2efd4eca-bcb2-4cec-b804-3142c8297d65	689833f9-e55c-4eaf-aba6-79f8b1d1a058
-ca324426-78e9-4232-8ef0-46be70757b01	2016-01-12 14:52:30.241347	2dac7af0-ba7d-4009-a313-e9a288272e90	689833f9-e55c-4eaf-aba6-79f8b1d1a058
-e3f80441-e8ac-44e3-825a-a4ed0c8118ef	2016-01-12 14:52:30.241347	608d6156-b155-487d-bdd3-4e00260b7443	689833f9-e55c-4eaf-aba6-79f8b1d1a058
-6fc151b0-81fb-46d4-a8a4-4cca0ca82e21	2016-01-12 14:52:30.241347	94db0a84-e366-4ab8-aeba-171482979f3d	689833f9-e55c-4eaf-aba6-79f8b1d1a058
+f812aab5-2390-43f3-add3-a3d673939a73	2016-01-25 11:17:35.863962	1e4f29b9-3183-4f54-a4ee-96c2347d7e06	54aa1d35-f67d-47e6-8bea-cadd6085796e
+62c78032-5ec7-440c-8107-386b745b9ab9	2016-01-25 11:17:35.863962	dae0f68f-11c6-438c-8312-aca4d95731fc	54aa1d35-f67d-47e6-8bea-cadd6085796e
+eb8e56c2-7a8e-4dbe-97ca-a0e6166b258a	2016-01-25 11:17:35.863962	cd2c5d93-9b57-4a8b-b789-84dd567e0fa2	54aa1d35-f67d-47e6-8bea-cadd6085796e
+7560ef1c-4acf-43bd-af27-b5ad9f992f57	2016-01-25 11:17:35.863962	7e1ee8bb-3d5d-481a-b0f9-5c3fae3f4e38	54aa1d35-f67d-47e6-8bea-cadd6085796e
+44dd6566-a02c-47eb-b889-31016fe1d8ed	2016-01-25 11:17:35.863962	e5b569e6-bb2a-4f00-a9ca-f85ef0a3a339	54aa1d35-f67d-47e6-8bea-cadd6085796e
+222e6e22-f3e3-4631-847f-31896139987a	2016-01-25 11:17:35.863962	12b1cb22-7686-4c9b-b73b-a25d4cb31663	54aa1d35-f67d-47e6-8bea-cadd6085796e
+d3a80355-b464-4763-97ab-cd76af70b687	2016-01-25 11:17:35.863962	ace1edd3-6a5b-4b40-a802-79616472b893	54aa1d35-f67d-47e6-8bea-cadd6085796e
+69ee95d1-f6b0-4805-b653-e33ad3955609	2016-01-25 11:17:35.863962	bb8f7964-504a-4544-8638-11a62cc9a2ca	54aa1d35-f67d-47e6-8bea-cadd6085796e
+bbaddcf3-ef9c-49d1-9e5a-d9197a106b9e	2016-01-25 11:17:35.863962	1bbc9e73-1095-4471-bdb2-726b10e47936	54aa1d35-f67d-47e6-8bea-cadd6085796e
+8e90d278-a555-4a3a-981a-8e329eac63d4	2016-01-25 11:17:35.863962	7b758de7-cd54-43fa-baa0-dfbe59e66000	54aa1d35-f67d-47e6-8bea-cadd6085796e
+659e6aa3-14bf-4ba2-8630-538da94f6ffc	2016-01-25 11:17:35.863962	2efd4eca-bcb2-4cec-b804-3142c8297d65	54aa1d35-f67d-47e6-8bea-cadd6085796e
+2ef4aaf6-9ea4-48d0-a5a4-79670a264b79	2016-01-25 11:17:35.863962	2dac7af0-ba7d-4009-a313-e9a288272e90	54aa1d35-f67d-47e6-8bea-cadd6085796e
+fb5685ae-2470-449f-bfac-a2a291b863b4	2016-01-25 11:17:35.863962	608d6156-b155-487d-bdd3-4e00260b7443	54aa1d35-f67d-47e6-8bea-cadd6085796e
+13e14dbc-d30d-4006-95ed-b8de417a2315	2016-01-25 11:17:35.863962	94db0a84-e366-4ab8-aeba-171482979f3d	54aa1d35-f67d-47e6-8bea-cadd6085796e
+71ead393-41d2-4dec-b983-aef26ef62827	2016-01-25 11:17:35.863962	b33f1d5c-170a-4737-ae20-eb9e7aa42d04	54aa1d35-f67d-47e6-8bea-cadd6085796e
+be6a207f-10f7-4e86-a174-392b4934d2a0	2016-01-25 11:17:35.863962	e2883c0e-5972-4225-a805-27410a2866f4	10ab3537-0b12-44fa-a27b-6cf1aac14282
+4cb38206-bd6c-4db1-a596-0944b386c093	2016-01-25 11:17:35.863962	1e4f29b9-3183-4f54-a4ee-96c2347d7e06	10ab3537-0b12-44fa-a27b-6cf1aac14282
+e2ef968a-7fd6-4e9e-b74a-58fc6f208a50	2016-01-25 11:17:35.863962	dae0f68f-11c6-438c-8312-aca4d95731fc	10ab3537-0b12-44fa-a27b-6cf1aac14282
+143e65a8-3051-4512-bf02-940455f25744	2016-01-25 11:17:35.863962	cd2c5d93-9b57-4a8b-b789-84dd567e0fa2	10ab3537-0b12-44fa-a27b-6cf1aac14282
+e40a6bc3-3888-49ec-a9f5-6c17df4907a2	2016-01-25 11:17:35.863962	7e1ee8bb-3d5d-481a-b0f9-5c3fae3f4e38	10ab3537-0b12-44fa-a27b-6cf1aac14282
+6603e5e2-0b71-4e0c-8983-6c1c50efb0d6	2016-01-25 11:17:35.863962	e5b569e6-bb2a-4f00-a9ca-f85ef0a3a339	10ab3537-0b12-44fa-a27b-6cf1aac14282
+89bc2070-aedf-4959-9492-8f1a051f2c47	2016-01-25 11:17:35.863962	12b1cb22-7686-4c9b-b73b-a25d4cb31663	10ab3537-0b12-44fa-a27b-6cf1aac14282
+d806bc73-1744-471c-8f24-14af227f780b	2016-01-25 11:17:35.863962	ace1edd3-6a5b-4b40-a802-79616472b893	10ab3537-0b12-44fa-a27b-6cf1aac14282
+43c97218-f645-47be-ac64-7004e34ee31c	2016-01-25 11:17:35.863962	bb8f7964-504a-4544-8638-11a62cc9a2ca	10ab3537-0b12-44fa-a27b-6cf1aac14282
+bdb0077e-ddd1-4651-8584-7d67f6a5d7e6	2016-01-25 11:17:35.863962	1bbc9e73-1095-4471-bdb2-726b10e47936	10ab3537-0b12-44fa-a27b-6cf1aac14282
+f3f5546e-d819-4a4a-92be-c6ee150e02d0	2016-01-25 11:17:35.863962	7b758de7-cd54-43fa-baa0-dfbe59e66000	10ab3537-0b12-44fa-a27b-6cf1aac14282
+3d1392ab-b5b8-45b8-96e1-cf7060836924	2016-01-25 11:17:35.863962	2efd4eca-bcb2-4cec-b804-3142c8297d65	10ab3537-0b12-44fa-a27b-6cf1aac14282
+ce4ffcfd-7802-4e1b-bdf1-6d2b70062cef	2016-01-25 11:17:35.863962	2dac7af0-ba7d-4009-a313-e9a288272e90	10ab3537-0b12-44fa-a27b-6cf1aac14282
+54246034-83ed-488c-b447-05fd0b1e57b4	2016-01-25 11:17:35.863962	608d6156-b155-487d-bdd3-4e00260b7443	10ab3537-0b12-44fa-a27b-6cf1aac14282
+0fff6274-a9dc-4262-aa29-5feff9414810	2016-01-25 11:17:35.863962	94db0a84-e366-4ab8-aeba-171482979f3d	10ab3537-0b12-44fa-a27b-6cf1aac14282
+ef7b2b61-8bfc-4a14-8b41-718a12b115c6	2016-01-25 11:17:35.863962	b33f1d5c-170a-4737-ae20-eb9e7aa42d04	10ab3537-0b12-44fa-a27b-6cf1aac14282
+faac077d-af19-4e00-97da-7c0bf71f07e8	2016-01-25 11:17:35.863962	e5d86ab9-c660-4bb6-8b96-4b75bd59a5d8	10ab3537-0b12-44fa-a27b-6cf1aac14282
+37aaf7d3-1a9f-4e1b-8707-1aaf3ac5bd87	2016-01-25 11:17:35.863962	2c68aeeb-af3b-4f7a-8ecf-6ed11252ec23	10ab3537-0b12-44fa-a27b-6cf1aac14282
+7bcdf522-dac7-4e2a-bc42-6d6872a8391d	2016-01-25 11:17:35.863962	d2717c9b-b7ab-4085-a169-b95ede048c4c	10ab3537-0b12-44fa-a27b-6cf1aac14282
+ad0fcb0d-6d89-41ad-9ed7-82292757c496	2016-01-25 11:17:35.863962	e2883c0e-5972-4225-a805-27410a2866f4	689833f9-e55c-4eaf-aba6-79f8b1d1a058
+9186ccf4-bfac-43fd-a200-7484f4d7b0b5	2016-01-25 11:17:35.863962	1e4f29b9-3183-4f54-a4ee-96c2347d7e06	689833f9-e55c-4eaf-aba6-79f8b1d1a058
+bfeb5c18-545e-4a47-b412-25df077bfc19	2016-01-25 11:17:35.863962	dae0f68f-11c6-438c-8312-aca4d95731fc	689833f9-e55c-4eaf-aba6-79f8b1d1a058
+cc1392c8-bf80-474b-9cb8-e01e9ef067b6	2016-01-25 11:17:35.863962	cd2c5d93-9b57-4a8b-b789-84dd567e0fa2	689833f9-e55c-4eaf-aba6-79f8b1d1a058
+43d33928-08c5-4869-bed0-4e81a3c8e0c3	2016-01-25 11:17:35.863962	7e1ee8bb-3d5d-481a-b0f9-5c3fae3f4e38	689833f9-e55c-4eaf-aba6-79f8b1d1a058
+3189a1d0-d7d1-45a5-a002-f34dda0c9916	2016-01-25 11:17:35.863962	e5b569e6-bb2a-4f00-a9ca-f85ef0a3a339	689833f9-e55c-4eaf-aba6-79f8b1d1a058
+619b6650-57bd-4850-a543-9fd0d1a1d3bc	2016-01-25 11:17:35.863962	12b1cb22-7686-4c9b-b73b-a25d4cb31663	689833f9-e55c-4eaf-aba6-79f8b1d1a058
+eb257e2f-d6c3-497f-8e0c-614efc068a03	2016-01-25 11:17:35.863962	ace1edd3-6a5b-4b40-a802-79616472b893	689833f9-e55c-4eaf-aba6-79f8b1d1a058
+b0fd8c8b-7d6d-4d4a-a165-b28b06ea3418	2016-01-25 11:17:35.863962	bb8f7964-504a-4544-8638-11a62cc9a2ca	689833f9-e55c-4eaf-aba6-79f8b1d1a058
+25e8ab17-d66a-4de0-b692-dda9ff36c4ee	2016-01-25 11:17:35.863962	1bbc9e73-1095-4471-bdb2-726b10e47936	689833f9-e55c-4eaf-aba6-79f8b1d1a058
+dd5a9f19-0a8b-4ea9-885f-dcbda4c7431d	2016-01-25 11:17:35.863962	7b758de7-cd54-43fa-baa0-dfbe59e66000	689833f9-e55c-4eaf-aba6-79f8b1d1a058
+534d4b17-1ea6-48eb-8905-6798efe5011e	2016-01-25 11:17:35.863962	2efd4eca-bcb2-4cec-b804-3142c8297d65	689833f9-e55c-4eaf-aba6-79f8b1d1a058
+ca324426-78e9-4232-8ef0-46be70757b01	2016-01-25 11:17:35.863962	2dac7af0-ba7d-4009-a313-e9a288272e90	689833f9-e55c-4eaf-aba6-79f8b1d1a058
+e3f80441-e8ac-44e3-825a-a4ed0c8118ef	2016-01-25 11:17:35.863962	608d6156-b155-487d-bdd3-4e00260b7443	689833f9-e55c-4eaf-aba6-79f8b1d1a058
+6fc151b0-81fb-46d4-a8a4-4cca0ca82e21	2016-01-25 11:17:35.863962	94db0a84-e366-4ab8-aeba-171482979f3d	689833f9-e55c-4eaf-aba6-79f8b1d1a058
+aec93434-b0b4-432a-b760-57ff6641564a	2016-01-25 11:17:35.863962	b33f1d5c-170a-4737-ae20-eb9e7aa42d04	689833f9-e55c-4eaf-aba6-79f8b1d1a058
+62ebb315-0fcb-49ad-84ac-469adc36f2ef	2016-01-25 11:17:35.863962	e5d86ab9-c660-4bb6-8b96-4b75bd59a5d8	689833f9-e55c-4eaf-aba6-79f8b1d1a058
+2f74ad0b-a447-4012-8816-d1e234b5b3ee	2016-01-25 11:17:35.863962	2c68aeeb-af3b-4f7a-8ecf-6ed11252ec23	689833f9-e55c-4eaf-aba6-79f8b1d1a058
+f1416e42-5aff-4696-9e90-146a0a548b8b	2016-01-25 11:17:35.863962	d2717c9b-b7ab-4085-a169-b95ede048c4c	689833f9-e55c-4eaf-aba6-79f8b1d1a058
 \.
 
 
@@ -804,7 +919,7 @@ COPY role_report (role_report_id, created_on, report_id, role_id) FROM stdin;
 --
 
 COPY role_role (role_role_id, created_on, child_role_id, parent_role_id) FROM stdin;
-3b2c7b99-cf00-43c6-85a7-f4e17bbea386	2016-01-12 14:52:30.241347	46e477dc-085f-4714-a24f-742428579fcc	54aa1d35-f67d-47e6-8bea-cadd6085796e
+3b2c7b99-cf00-43c6-85a7-f4e17bbea386	2016-01-25 11:17:35.863962	46e477dc-085f-4714-a24f-742428579fcc	54aa1d35-f67d-47e6-8bea-cadd6085796e
 \.
 
 
@@ -841,6 +956,30 @@ COPY subscription_parameter_value (subscription_parameter_value_id, boolean_valu
 
 
 --
+-- Name: asset_pkey; Type: CONSTRAINT; Schema: reporting; Owner: report_server_app; Tablespace: 
+--
+
+ALTER TABLE ONLY asset
+    ADD CONSTRAINT asset_pkey PRIMARY KEY (asset_id);
+
+
+--
+-- Name: asset_tree_pkey; Type: CONSTRAINT; Schema: reporting; Owner: report_server_app; Tablespace: 
+--
+
+ALTER TABLE ONLY asset_tree
+    ADD CONSTRAINT asset_tree_pkey PRIMARY KEY (asset_tree_id);
+
+
+--
+-- Name: asset_type_pkey; Type: CONSTRAINT; Schema: reporting; Owner: report_server_app; Tablespace: 
+--
+
+ALTER TABLE ONLY asset_type
+    ADD CONSTRAINT asset_type_pkey PRIMARY KEY (asset_type_id);
+
+
+--
 -- Name: authority_pkey; Type: CONSTRAINT; Schema: reporting; Owner: report_server_app; Tablespace: 
 --
 
@@ -862,6 +1001,14 @@ ALTER TABLE ONLY configuration
 
 ALTER TABLE ONLY document_format
     ADD CONSTRAINT document_format_pkey PRIMARY KEY (document_format_id);
+
+
+--
+-- Name: document_pkey; Type: CONSTRAINT; Schema: reporting; Owner: report_server_app; Tablespace: 
+--
+
+ALTER TABLE ONLY document
+    ADD CONSTRAINT document_pkey PRIMARY KEY (document_id);
 
 
 --
@@ -1118,6 +1265,86 @@ ALTER TABLE ONLY role_role
 
 ALTER TABLE ONLY subscription_parameter
     ADD CONSTRAINT uc_subscriptionparameter_subscription_parameter UNIQUE (subscription_id, report_parameter_id);
+
+
+--
+-- Name: uq_asset_name_tree_type; Type: CONSTRAINT; Schema: reporting; Owner: report_server_app; Tablespace: 
+--
+
+ALTER TABLE ONLY asset
+    ADD CONSTRAINT uq_asset_name_tree_type UNIQUE (filename, asset_tree_id, asset_type_id);
+
+
+--
+-- Name: uq_assettree_abbreviation; Type: CONSTRAINT; Schema: reporting; Owner: report_server_app; Tablespace: 
+--
+
+ALTER TABLE ONLY asset_tree
+    ADD CONSTRAINT uq_assettree_abbreviation UNIQUE (abbreviation);
+
+
+--
+-- Name: uq_assettree_directory; Type: CONSTRAINT; Schema: reporting; Owner: report_server_app; Tablespace: 
+--
+
+ALTER TABLE ONLY asset_tree
+    ADD CONSTRAINT uq_assettree_directory UNIQUE (directory);
+
+
+--
+-- Name: uq_assettree_name; Type: CONSTRAINT; Schema: reporting; Owner: report_server_app; Tablespace: 
+--
+
+ALTER TABLE ONLY asset_tree
+    ADD CONSTRAINT uq_assettree_name UNIQUE (name);
+
+
+--
+-- Name: uq_assettype_abbreviation; Type: CONSTRAINT; Schema: reporting; Owner: report_server_app; Tablespace: 
+--
+
+ALTER TABLE ONLY asset_type
+    ADD CONSTRAINT uq_assettype_abbreviation UNIQUE (abbreviation);
+
+
+--
+-- Name: uq_assettype_directory; Type: CONSTRAINT; Schema: reporting; Owner: report_server_app; Tablespace: 
+--
+
+ALTER TABLE ONLY asset_type
+    ADD CONSTRAINT uq_assettype_directory UNIQUE (directory);
+
+
+--
+-- Name: uq_assettype_name; Type: CONSTRAINT; Schema: reporting; Owner: report_server_app; Tablespace: 
+--
+
+ALTER TABLE ONLY asset_type
+    ADD CONSTRAINT uq_assettype_name UNIQUE (name);
+
+
+--
+-- Name: fk_asset_assettree; Type: FK CONSTRAINT; Schema: reporting; Owner: report_server_app
+--
+
+ALTER TABLE ONLY asset
+    ADD CONSTRAINT fk_asset_assettree FOREIGN KEY (asset_tree_id) REFERENCES asset_tree(asset_tree_id);
+
+
+--
+-- Name: fk_asset_assettype; Type: FK CONSTRAINT; Schema: reporting; Owner: report_server_app
+--
+
+ALTER TABLE ONLY asset
+    ADD CONSTRAINT fk_asset_assettype FOREIGN KEY (asset_type_id) REFERENCES asset_type(asset_type_id);
+
+
+--
+-- Name: fk_asset_document; Type: FK CONSTRAINT; Schema: reporting; Owner: report_server_app
+--
+
+ALTER TABLE ONLY asset
+    ADD CONSTRAINT fk_asset_document FOREIGN KEY (document_id) REFERENCES document(document_id);
 
 
 --

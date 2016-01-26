@@ -861,7 +861,11 @@ public class RestUtils {
 		logger.info("filterConditions = {}", filterConditions);
 
 		if (filterConditions == null || unfilteredEntities.size() == 0) {
-			return unfilteredEntities; // no filtering
+			/*
+			 * No filtering is required, but we still need to sort.
+			 */
+			unfilteredEntities.sort(comparatorForSortingEntities);
+			return unfilteredEntities; // sorted, but not filtered
 		}
 
 		Set<E> filteredEntities = new HashSet<>(unfilteredEntities);
@@ -1090,7 +1094,7 @@ public class RestUtils {
 				}
 			}
 			/*
-			 * Perform and intersection of the entities in the Set 
+			 * Perform an intersection of the entities in the Set 
 			 * filteredEntities with the entities in the Set 
 			 * andFilterConditionEntities
 			 */

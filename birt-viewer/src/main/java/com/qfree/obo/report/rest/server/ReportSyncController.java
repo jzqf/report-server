@@ -38,10 +38,7 @@ public class ReportSyncController extends AbstractBaseController {
 	private static final Logger logger = LoggerFactory.getLogger(ReportSyncController.class);
 
 	private final ReportRepository reportRepository;
-
 	private final ReportSyncService reportSyncService;
-
-	//	private final ReportService reportService;
 
 	@Autowired
 	public ReportSyncController(
@@ -60,8 +57,7 @@ public class ReportSyncController extends AbstractBaseController {
 	@Path("/availablePermits")
 	@GET
 	@Produces(MediaType.TEXT_PLAIN)
-	@PreAuthorize("hasAuthority('" + Authority.AUTHORITY_NAME_USE_RESTAPI + "') and "
-			+ "hasAuthority('" + Authority.AUTHORITY_NAME_MANAGE_FILESYNCING + "')")
+	@PreAuthorize("hasAuthority('" + Authority.AUTHORITY_NAME_MANAGE_FILESYNCING + "')")
 	public int getAvailablePermits(
 			@HeaderParam("Accept") final String acceptHeader,
 			@QueryParam(ResourcePath.EXPAND_QP_NAME) final List<String> expand,
@@ -79,7 +75,8 @@ public class ReportSyncController extends AbstractBaseController {
 	 * This endpoint can be tested with:
 	 * 
 	 *   $ mvn clean spring-boot:run
-	 *   $ curl -iH "Accept: application/json;v=1" -X POST http://localhost:8080/rest/reportSyncs
+	 *   $ curl -X POST -u reportserver-restadmin:ReportServer*RESTADMIN \
+	 *   -iH "Accept: application/json;v=1" http://localhost:8080/report-server/rest/reportSyncs
 	 * 
 	 * @Transactional is used to avoid org.hibernate.LazyInitializationException
 	 * being thrown when evaluating report.getReportVersions().
@@ -88,8 +85,7 @@ public class ReportSyncController extends AbstractBaseController {
 	@POST
 	//@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	@PreAuthorize("hasAuthority('" + Authority.AUTHORITY_NAME_USE_RESTAPI + "') and "
-			+ "hasAuthority('" + Authority.AUTHORITY_NAME_MANAGE_FILESYNCING + "')")
+	@PreAuthorize("hasAuthority('" + Authority.AUTHORITY_NAME_MANAGE_FILESYNCING + "')")
 	public ReportSyncResource syncReportsWithFileSystem(
 			@HeaderParam("Accept") final String acceptHeader,
 			@QueryParam(ResourcePath.EXPAND_QP_NAME) final List<String> expand,

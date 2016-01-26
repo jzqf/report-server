@@ -2,14 +2,13 @@
 
 -- These commands are needed when using an embedded H2 database that is used for
 -- testing, even if a new database is created for each run. It seems that this
--- script is run (by Spring?) before individual test methods *without* first
+-- script is run by Spring before individual test methods *without* first
 -- deleting the H2 database. Hence, this script must be able to execute for an
 -- EXISTING database that already has these objects created. This behaviour only
 -- started after I added Spring Boot to this application. Therefore, it is 
 -- necessary to drop all tables before creating them again.
 
 CREATE SCHEMA IF NOT EXISTS reporting;
---SET SCHEMA reporting; This did not solve the problem, so this line can be removed
 
 DROP TABLE IF EXISTS reporting.configuration CASCADE;
 DROP TABLE IF EXISTS reporting.role_report CASCADE;
@@ -17,6 +16,10 @@ DROP TABLE IF EXISTS reporting.role_role CASCADE;
 DROP TABLE IF EXISTS reporting.role_authority CASCADE;
 --
 DROP TABLE IF EXISTS reporting.authority CASCADE;
+---
+DROP TABLE IF EXISTS reporting.asset CASCADE;
+DROP TABLE IF EXISTS reporting.asset_tree CASCADE;
+DROP TABLE IF EXISTS reporting.asset_type CASCADE;
 --
 DROP TABLE IF EXISTS reporting.role_parameter_value CASCADE;
 DROP TABLE IF EXISTS reporting.role_parameter CASCADE;
@@ -41,11 +44,62 @@ DROP TABLE IF EXISTS reporting.document_format CASCADE;
 DROP TABLE IF EXISTS reporting.report_category CASCADE;
 DROP TABLE IF EXISTS reporting.parameter_group CASCADE;
 DROP TABLE IF EXISTS reporting.job_status CASCADE;
+--
+DROP TABLE IF EXISTS reporting.document CASCADE;
 --------------------------------------------------------------------------------
 
 --
 -- PostgreSQL database dump
 --
+
+--
+-- Name: asset; Type: TABLE; Schema: reporting; Owner: report_server_app; Tablespace: 
+--
+
+CREATE TABLE reporting.asset (
+    asset_id uuid NOT NULL,
+    active boolean NOT NULL,
+    created_on timestamp NOT NULL,
+    filename character varying(256) NOT NULL,
+    asset_tree_id uuid NOT NULL,
+    asset_type_id uuid NOT NULL,
+    document_id uuid NOT NULL
+);
+
+
+
+
+--
+-- Name: asset_tree; Type: TABLE; Schema: reporting; Owner: report_server_app; Tablespace: 
+--
+
+CREATE TABLE reporting.asset_tree (
+    asset_tree_id uuid NOT NULL,
+    abbreviation character varying(32) NOT NULL,
+    active boolean NOT NULL,
+    created_on timestamp NOT NULL,
+    directory character varying(256) NOT NULL,
+    name character varying(32) NOT NULL
+);
+
+
+
+
+--
+-- Name: asset_type; Type: TABLE; Schema: reporting; Owner: report_server_app; Tablespace: 
+--
+
+CREATE TABLE reporting.asset_type (
+    asset_type_id uuid NOT NULL,
+    abbreviation character varying(32) NOT NULL,
+    active boolean NOT NULL,
+    created_on timestamp NOT NULL,
+    directory character varying(256) NOT NULL,
+    name character varying(32) NOT NULL
+);
+
+
+
 
 --
 -- Name: authority; Type: TABLE; Schema: reporting; Owner: report_server_app; Tablespace: 
@@ -82,6 +136,19 @@ CREATE TABLE reporting.configuration (
     text_value text,
     time_value time,
     role_id uuid
+);
+
+
+
+
+--
+-- Name: document; Type: TABLE; Schema: reporting; Owner: report_server_app; Tablespace: 
+--
+
+CREATE TABLE reporting.document (
+    document_id uuid NOT NULL,
+    content bytea,
+    created_on timestamp NOT NULL
 );
 
 
@@ -130,8 +197,6 @@ CREATE TABLE reporting.job (
 
 
 
-
-
 --
 -- Name: job_parameter; Type: TABLE; Schema: reporting; Owner: report_server_app; Tablespace: 
 --
@@ -142,8 +207,6 @@ CREATE TABLE reporting.job_parameter (
     job_id bigint NOT NULL,
     report_parameter_id uuid NOT NULL
 );
-
-
 
 
 
@@ -163,8 +226,6 @@ CREATE TABLE reporting.job_parameter_value (
     time_value time,
     job_parameter_id bigint NOT NULL
 );
-
-
 
 
 
@@ -468,6 +529,29 @@ CREATE TABLE reporting.subscription_parameter_value (
 
 
 
+--
+-- Name: asset_pkey; Type: CONSTRAINT; Schema: reporting; Owner: report_server_app; Tablespace: 
+--
+
+ALTER TABLE reporting.asset
+    ADD CONSTRAINT asset_pkey PRIMARY KEY (asset_id);
+
+
+--
+-- Name: asset_tree_pkey; Type: CONSTRAINT; Schema: reporting; Owner: report_server_app; Tablespace: 
+--
+
+ALTER TABLE reporting.asset_tree
+    ADD CONSTRAINT asset_tree_pkey PRIMARY KEY (asset_tree_id);
+
+
+--
+-- Name: asset_type_pkey; Type: CONSTRAINT; Schema: reporting; Owner: report_server_app; Tablespace: 
+--
+
+ALTER TABLE reporting.asset_type
+    ADD CONSTRAINT asset_type_pkey PRIMARY KEY (asset_type_id);
+
 
 --
 -- Name: authority_pkey; Type: CONSTRAINT; Schema: reporting; Owner: report_server_app; Tablespace: 
@@ -491,6 +575,14 @@ ALTER TABLE reporting.configuration
 
 ALTER TABLE reporting.document_format
     ADD CONSTRAINT document_format_pkey PRIMARY KEY (document_format_id);
+
+
+--
+-- Name: document_pkey; Type: CONSTRAINT; Schema: reporting; Owner: report_server_app; Tablespace: 
+--
+
+ALTER TABLE reporting.document
+    ADD CONSTRAINT document_pkey PRIMARY KEY (document_id);
 
 
 --
@@ -723,6 +815,86 @@ ALTER TABLE reporting.role_role
 
 ALTER TABLE reporting.subscription_parameter
     ADD CONSTRAINT uc_subscriptionparameter_subscription_parameter UNIQUE (subscription_id, report_parameter_id);
+
+
+--
+-- Name: uq_asset_name_tree_type; Type: CONSTRAINT; Schema: reporting; Owner: report_server_app; Tablespace: 
+--
+
+ALTER TABLE reporting.asset
+    ADD CONSTRAINT uq_asset_name_tree_type UNIQUE (filename, asset_tree_id, asset_type_id);
+
+
+--
+-- Name: uq_assettree_abbreviation; Type: CONSTRAINT; Schema: reporting; Owner: report_server_app; Tablespace: 
+--
+
+ALTER TABLE reporting.asset_tree
+    ADD CONSTRAINT uq_assettree_abbreviation UNIQUE (abbreviation);
+
+
+--
+-- Name: uq_assettree_directory; Type: CONSTRAINT; Schema: reporting; Owner: report_server_app; Tablespace: 
+--
+
+ALTER TABLE reporting.asset_tree
+    ADD CONSTRAINT uq_assettree_directory UNIQUE (directory);
+
+
+--
+-- Name: uq_assettree_name; Type: CONSTRAINT; Schema: reporting; Owner: report_server_app; Tablespace: 
+--
+
+ALTER TABLE reporting.asset_tree
+    ADD CONSTRAINT uq_assettree_name UNIQUE (name);
+
+
+--
+-- Name: uq_assettype_abbreviation; Type: CONSTRAINT; Schema: reporting; Owner: report_server_app; Tablespace: 
+--
+
+ALTER TABLE reporting.asset_type
+    ADD CONSTRAINT uq_assettype_abbreviation UNIQUE (abbreviation);
+
+
+--
+-- Name: uq_assettype_directory; Type: CONSTRAINT; Schema: reporting; Owner: report_server_app; Tablespace: 
+--
+
+ALTER TABLE reporting.asset_type
+    ADD CONSTRAINT uq_assettype_directory UNIQUE (directory);
+
+
+--
+-- Name: uq_assettype_name; Type: CONSTRAINT; Schema: reporting; Owner: report_server_app; Tablespace: 
+--
+
+ALTER TABLE reporting.asset_type
+    ADD CONSTRAINT uq_assettype_name UNIQUE (name);
+
+
+--
+-- Name: fk_asset_assettree; Type: FK CONSTRAINT; Schema: reporting; Owner: report_server_app
+--
+
+ALTER TABLE reporting.asset
+    ADD CONSTRAINT fk_asset_assettree FOREIGN KEY (asset_tree_id) REFERENCES asset_tree(asset_tree_id);
+
+
+--
+-- Name: fk_asset_assettype; Type: FK CONSTRAINT; Schema: reporting; Owner: report_server_app
+--
+
+ALTER TABLE reporting.asset
+    ADD CONSTRAINT fk_asset_assettype FOREIGN KEY (asset_type_id) REFERENCES asset_type(asset_type_id);
+
+
+--
+-- Name: fk_asset_document; Type: FK CONSTRAINT; Schema: reporting; Owner: report_server_app
+--
+
+ALTER TABLE reporting.asset
+    ADD CONSTRAINT fk_asset_document FOREIGN KEY (document_id) REFERENCES document(document_id);
 
 
 --

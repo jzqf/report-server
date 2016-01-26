@@ -89,7 +89,7 @@ public class ReportParameterService {
 		 * We assume here that the reportVersionId attribute of this object is
 		 * set to the id of the ReportVersion that will we associated with the
 		 * ReportParameter entity that is be saved/created below. It is not 
-		 * necessary for any on the other ReportVersionResource attributes to 
+		 * necessary for any of the other ReportVersionResource attributes to 
 		 * have non-null values.
 		 * 
 		 * If reportVersionId is not provided here, we throw a custom 
@@ -111,6 +111,7 @@ public class ReportParameterService {
 			throw new RestApiException(RestError.FORBIDDEN_REPORTPARAMETER_REPORTVERSION_NULL, ReportParameter.class,
 					"reportVersionId");
 		}
+
 		/*
 		 * IMPORTANT:
 		 * 
@@ -120,7 +121,7 @@ public class ReportParameterService {
 		 * We assume here that the parameterGroupId attribute of this object is
 		 * set to the id of the ParameterGroup that will we associated with the
 		 * ReportParameter entity that is be saved/created below. It is not 
-		 * necessary for any on the other ParameterGroupResource attributes to 
+		 * necessary for any of the other ParameterGroupResource attributes to 
 		 * have non-null values.
 		 * 
 		 * If parameterGroupId is not provided here, we throw a custom 
