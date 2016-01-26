@@ -45,6 +45,55 @@ DROP TABLE IF EXISTS document CASCADE;
 --
 
 --
+-- Name: asset; Type: TABLE; Schema: reporting; Owner: report_server_app; Tablespace: 
+--
+
+CREATE TABLE asset (
+    asset_id uuid DEFAULT uuid_generate_v4() NOT NULL,
+    active boolean NOT NULL,
+    created_on timestamp without time zone NOT NULL,
+    filename character varying(256) NOT NULL,
+    asset_tree_id uuid NOT NULL,
+    asset_type_id uuid NOT NULL,
+    document_id uuid NOT NULL
+);
+
+
+
+
+--
+-- Name: asset_tree; Type: TABLE; Schema: reporting; Owner: report_server_app; Tablespace: 
+--
+
+CREATE TABLE asset_tree (
+    asset_tree_id uuid DEFAULT uuid_generate_v4() NOT NULL,
+    abbreviation character varying(32) NOT NULL,
+    active boolean NOT NULL,
+    created_on timestamp without time zone NOT NULL,
+    directory character varying(256) NOT NULL,
+    name character varying(32) NOT NULL
+);
+
+
+
+
+--
+-- Name: asset_type; Type: TABLE; Schema: reporting; Owner: report_server_app; Tablespace: 
+--
+
+CREATE TABLE asset_type (
+    asset_type_id uuid DEFAULT uuid_generate_v4() NOT NULL,
+    abbreviation character varying(32) NOT NULL,
+    active boolean NOT NULL,
+    created_on timestamp without time zone NOT NULL,
+    directory character varying(256) NOT NULL,
+    name character varying(32) NOT NULL
+);
+
+
+
+
+--
 -- Name: authority; Type: TABLE; Schema: reporting; Owner: report_server_app; Tablespace: 
 --
 
@@ -79,6 +128,19 @@ CREATE TABLE configuration (
     text_value text,
     time_value time without time zone,
     role_id uuid
+);
+
+
+
+
+--
+-- Name: document; Type: TABLE; Schema: reporting; Owner: report_server_app; Tablespace: 
+--
+
+CREATE TABLE document (
+    document_id uuid DEFAULT uuid_generate_v4() NOT NULL,
+    content bytea,
+    created_on timestamp without time zone NOT NULL
 );
 
 
@@ -568,6 +630,30 @@ SELECT pg_catalog.setval('job_parameter_value_job_parameter_value_id_seq', 1, fa
 
 
 --
+-- Name: asset_pkey; Type: CONSTRAINT; Schema: reporting; Owner: report_server_app; Tablespace: 
+--
+
+ALTER TABLE ONLY asset
+    ADD CONSTRAINT asset_pkey PRIMARY KEY (asset_id);
+
+
+--
+-- Name: asset_tree_pkey; Type: CONSTRAINT; Schema: reporting; Owner: report_server_app; Tablespace: 
+--
+
+ALTER TABLE ONLY asset_tree
+    ADD CONSTRAINT asset_tree_pkey PRIMARY KEY (asset_tree_id);
+
+
+--
+-- Name: asset_type_pkey; Type: CONSTRAINT; Schema: reporting; Owner: report_server_app; Tablespace: 
+--
+
+ALTER TABLE ONLY asset_type
+    ADD CONSTRAINT asset_type_pkey PRIMARY KEY (asset_type_id);
+
+
+--
 -- Name: authority_pkey; Type: CONSTRAINT; Schema: reporting; Owner: report_server_app; Tablespace: 
 --
 
@@ -589,6 +675,14 @@ ALTER TABLE ONLY configuration
 
 ALTER TABLE ONLY document_format
     ADD CONSTRAINT document_format_pkey PRIMARY KEY (document_format_id);
+
+
+--
+-- Name: document_pkey; Type: CONSTRAINT; Schema: reporting; Owner: report_server_app; Tablespace: 
+--
+
+ALTER TABLE ONLY document
+    ADD CONSTRAINT document_pkey PRIMARY KEY (document_id);
 
 
 --
@@ -845,6 +939,86 @@ ALTER TABLE ONLY role_role
 
 ALTER TABLE ONLY subscription_parameter
     ADD CONSTRAINT uc_subscriptionparameter_subscription_parameter UNIQUE (subscription_id, report_parameter_id);
+
+
+--
+-- Name: uq_asset_name_tree_type; Type: CONSTRAINT; Schema: reporting; Owner: report_server_app; Tablespace: 
+--
+
+ALTER TABLE ONLY asset
+    ADD CONSTRAINT uq_asset_name_tree_type UNIQUE (filename, asset_tree_id, asset_type_id);
+
+
+--
+-- Name: uq_assettree_abbreviation; Type: CONSTRAINT; Schema: reporting; Owner: report_server_app; Tablespace: 
+--
+
+ALTER TABLE ONLY asset_tree
+    ADD CONSTRAINT uq_assettree_abbreviation UNIQUE (abbreviation);
+
+
+--
+-- Name: uq_assettree_directory; Type: CONSTRAINT; Schema: reporting; Owner: report_server_app; Tablespace: 
+--
+
+ALTER TABLE ONLY asset_tree
+    ADD CONSTRAINT uq_assettree_directory UNIQUE (directory);
+
+
+--
+-- Name: uq_assettree_name; Type: CONSTRAINT; Schema: reporting; Owner: report_server_app; Tablespace: 
+--
+
+ALTER TABLE ONLY asset_tree
+    ADD CONSTRAINT uq_assettree_name UNIQUE (name);
+
+
+--
+-- Name: uq_assettype_abbreviation; Type: CONSTRAINT; Schema: reporting; Owner: report_server_app; Tablespace: 
+--
+
+ALTER TABLE ONLY asset_type
+    ADD CONSTRAINT uq_assettype_abbreviation UNIQUE (abbreviation);
+
+
+--
+-- Name: uq_assettype_directory; Type: CONSTRAINT; Schema: reporting; Owner: report_server_app; Tablespace: 
+--
+
+ALTER TABLE ONLY asset_type
+    ADD CONSTRAINT uq_assettype_directory UNIQUE (directory);
+
+
+--
+-- Name: uq_assettype_name; Type: CONSTRAINT; Schema: reporting; Owner: report_server_app; Tablespace: 
+--
+
+ALTER TABLE ONLY asset_type
+    ADD CONSTRAINT uq_assettype_name UNIQUE (name);
+
+
+--
+-- Name: fk_asset_assettree; Type: FK CONSTRAINT; Schema: reporting; Owner: report_server_app
+--
+
+ALTER TABLE ONLY asset
+    ADD CONSTRAINT fk_asset_assettree FOREIGN KEY (asset_tree_id) REFERENCES asset_tree(asset_tree_id);
+
+
+--
+-- Name: fk_asset_assettype; Type: FK CONSTRAINT; Schema: reporting; Owner: report_server_app
+--
+
+ALTER TABLE ONLY asset
+    ADD CONSTRAINT fk_asset_assettype FOREIGN KEY (asset_type_id) REFERENCES asset_type(asset_type_id);
+
+
+--
+-- Name: fk_asset_document; Type: FK CONSTRAINT; Schema: reporting; Owner: report_server_app
+--
+
+ALTER TABLE ONLY asset
+    ADD CONSTRAINT fk_asset_document FOREIGN KEY (document_id) REFERENCES document(document_id);
 
 
 --

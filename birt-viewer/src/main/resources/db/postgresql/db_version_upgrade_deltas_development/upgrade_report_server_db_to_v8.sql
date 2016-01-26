@@ -1,10 +1,10 @@
 BEGIN TRANSACTION;
 
--- Update the DB schema from v7 to v8:
+-- Update the DB *schema* from v7 to v8:
 
 
 
--- Update the DB content from v7 to v8:
+-- Update the DB *content* from v7 to v8:
 
 
 
