@@ -3,16 +3,79 @@ BEGIN TRANSACTION;
 -- Update the DB schema from v6 to v7:
 
 -- Create table [Document], plus its associated constraints (foreign key, unique):
-XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+CREATE TABLE reporting.document(
+	document_id uuid NOT NULL DEFAULT uuid_generate_v4(),
+	content bytea,
+	created_on timestamp NOT NULL,
+	CONSTRAINT document_pkey PRIMARY KEY (document_id)
+);
 
 -- Create table [AssetTree], plus its associated constraints (foreign key, unique):
-XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+CREATE TABLE reporting.asset_tree(
+	asset_tree_id uuid NOT NULL DEFAULT uuid_generate_v4(),
+	abbreviation character varying(32) NOT NULL,
+	active boolean NOT NULL,
+	created_on timestamp NOT NULL,
+	directory character varying(256) NOT NULL,
+	name character varying(32) NOT NULL,
+	CONSTRAINT asset_tree_pkey PRIMARY KEY (asset_tree_id),
+	CONSTRAINT uq_assettree_name UNIQUE (name),
+	CONSTRAINT uq_assettree_abbreviation UNIQUE (abbreviation),
+	CONSTRAINT uq_assettree_directory UNIQUE (directory)
+);
 
 -- Create table [AssetType], plus its associated constraints (foreign key, unique):
-XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+CREATE TABLE reporting.asset_type(
+	asset_type_id uuid NOT NULL DEFAULT uuid_generate_v4(),
+	abbreviation character varying(32) NOT NULL,
+	active boolean NOT NULL,
+	created_on timestamp NOT NULL,
+	directory character varying(256) NOT NULL,
+	name character varying(32) NOT NULL,
+	CONSTRAINT asset_type_pkey PRIMARY KEY (asset_type_id),
+	CONSTRAINT uq_assettype_name UNIQUE (name),
+	CONSTRAINT uq_assettype_abbreviation UNIQUE (abbreviation),
+	CONSTRAINT uq_assettype_directory UNIQUE (directory)
+);
 
 -- Create table [Asset], plus its associated constraints (foreign key, unique):
-XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+-- DROP TABLE IF EXISTS reporting.asset CASCADE;
+CREATE TABLE reporting.asset(
+	asset_id uuid NOT NULL DEFAULT uuid_generate_v4(),
+	active boolean NOT NULL,
+	created_on timestamp NOT NULL,
+	filename character varying(256) NOT NULL,
+	asset_tree_id uuid NOT NULL,
+	asset_type_id uuid NOT NULL,
+	document_id uuid NOT NULL,
+	CONSTRAINT asset_pkey PRIMARY KEY (asset_id),
+	CONSTRAINT uq_asset_name_tree_type UNIQUE (filename,asset_tree_id,asset_type_id)
+);
+
+-- New constraints:
+
+-- object: fk_asset_assettree | type: CONSTRAINT --
+-- ALTER TABLE reporting.asset DROP CONSTRAINT IF EXISTS fk_asset_assettree CASCADE;
+ALTER TABLE reporting.asset ADD CONSTRAINT fk_asset_assettree FOREIGN KEY (asset_tree_id)
+REFERENCES reporting.asset_tree (asset_tree_id) MATCH SIMPLE
+ON DELETE NO ACTION ON UPDATE NO ACTION;
+-- ddl-end --
+
+-- object: fk_asset_assettype | type: CONSTRAINT --
+-- ALTER TABLE reporting.asset DROP CONSTRAINT IF EXISTS fk_asset_assettype CASCADE;
+ALTER TABLE reporting.asset ADD CONSTRAINT fk_asset_assettype FOREIGN KEY (asset_type_id)
+REFERENCES reporting.asset_type (asset_type_id) MATCH SIMPLE
+ON DELETE NO ACTION ON UPDATE NO ACTION;
+-- ddl-end --
+
+-- object: fk_asset_document | type: CONSTRAINT --
+-- ALTER TABLE reporting.asset DROP CONSTRAINT IF EXISTS fk_asset_document CASCADE;
+ALTER TABLE reporting.asset ADD CONSTRAINT fk_asset_document FOREIGN KEY (document_id)
+REFERENCES reporting.document (document_id) MATCH SIMPLE
+ON DELETE NO ACTION ON UPDATE NO ACTION;
+-- ddl-end --
+
+
 
 
 -- Update the DB content from v6 to v7:
