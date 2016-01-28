@@ -33,6 +33,16 @@ import com.qfree.obo.report.security.ReportServerUser;
 
 public class RoleReportFilter implements Filter {
 
+	/**
+	 * BIRT report parameter name for parameter that will be assigned the
+	 * username of the authenticated principal that requested the report.
+	 * 
+	 * <p>
+	 * This should be defined as <b>hidden</b> string report parameter in the
+	 * rptdesign file.
+	 */
+	private static final String RP_REPORT_REQUESTED_BY = "report_requested_by";
+
 	private static final Logger logger = LoggerFactory.getLogger(RoleReportFilter.class);
 
 	@Autowired
@@ -127,14 +137,15 @@ public class RoleReportFilter implements Filter {
 		if (userHasAccessToReport(user, reportFilename)) {
 
 			/*
-			 * Insert "report_requested_by" and possibly additional parameters
+			 * Insert RP_REPORT_REQUESTED_BY and possibly additional parameters
 			 * into the request.
 			 * 
-			 * "report_requested_by" is a report parameter can can be used to
+			 * RP_REPORT_REQUESTED_BY is a report parameter that can be used to
 			 * display the username of the authenticated principal that
 			 * requested the report.
 			 */
-			req = insertExtraRequestParameters(request, user); // This re-uses "req"
+			ServletRequest wrappedReq = insertExtraRequestParameters(request, user);
+
 			//Map<String, String[]> newParameterMap = req.getParameterMap();
 			//for (Map.Entry<String, String[]> entry : newParameterMap.entrySet()) {
 			//	String key = entry.getKey();
@@ -150,7 +161,7 @@ public class RoleReportFilter implements Filter {
 			//	}
 			//}
 
-			chain.doFilter(req, res);
+			chain.doFilter(wrappedReq, res);
 			return;
 		}
 
@@ -265,12 +276,6 @@ public class RoleReportFilter implements Filter {
 
 	private ServletRequest insertExtraRequestParameters(HttpServletRequest request, ReportServerUser user) {
 
-		/*
-		 * TODO Only insert a "requested_by" report parameter if one has not already
-		 * been provided. We may want to modify this behaviour at some point to
-		 * catch the case where a reporting user tries to craft his/her own URL
-		 * for nefarious purposes.
-		 */
 		//Map<String, String[]> parameterMap = request.getParameterMap();
 		//for (Map.Entry<String, String[]> entry : parameterMap.entrySet()) {
 		//	String key = entry.getKey();
@@ -283,16 +288,16 @@ public class RoleReportFilter implements Filter {
 		//	}
 		//}
 
-		String[] requestedBy = new String[1];
-		requestedBy[0] = user.getUsername();
-		logger.info("requestedBy[0] = {}", requestedBy[0]);
+		String[] reportRequestedBy = new String[1];
+		reportRequestedBy[0] = user.getUsername();
+		logger.info("reportRequestedBy[0] = {}", reportRequestedBy[0]);
 
-		Map<String, String[]> extraParams = new TreeMap<String, String[]>();
-		extraParams.put("report_requested_by", requestedBy);
+		Map<String, String[]> extraParams = new TreeMap<>();
+		extraParams.put(RP_REPORT_REQUESTED_BY, reportRequestedBy);
 
 		/*
-		 * This will REPLACE the "report_requested_by" parameter in the original
-		 * request if it exists in the original request.
+		 * This will REPLACE the RP_REPORT_REQUESTED_BY parameter in the
+		 * original request if it exists in the original request.
 		 */
 		return new ModifiableParametersRequestWrapper(request, extraParams);
 	}
