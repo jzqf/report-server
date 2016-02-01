@@ -41,8 +41,8 @@ import com.qfree.obo.report.exceptions.JobProcessorSchedulerNotRunningCannotTrig
 import com.qfree.obo.report.exceptions.UntreatedCaseException;
 import com.qfree.obo.report.scheduling.schedulers.SubscriptionJobProcessorScheduler;
 import com.qfree.obo.report.scheduling.schedulers.SubscriptionScheduler;
-import com.qfree.obo.report.security.filter.RoleReportFilter;
 import com.qfree.obo.report.util.DateUtils;
+import com.qfree.obo.report.util.ReportUtils;
 
 /*
  * This class is instantiated by Quartz and therefore Spring-based dependency
@@ -721,16 +721,16 @@ public class SubscriptionScheduledJob {
 							 * override the "string_value" with the username of 
 							 * the Role associated with the Job.
 							 */
-							if (RoleReportFilter.RP_REPORT_REQUESTED_BY
+							if (ReportUtils.RP_REPORT_REQUESTED_BY
 									.equals(jobParameter.getReportParameter().getName())) {
 								logger.info("{}: jobParameterValue.getStringValue() (before) = {}",
-										RoleReportFilter.RP_REPORT_REQUESTED_BY, jobParameterValue.getStringValue());
+										ReportUtils.RP_REPORT_REQUESTED_BY, jobParameterValue.getStringValue());
 								Role role = job.getRole();
 								if (role != null) {
 									jobParameterValue.setStringValue(role.getUsername());
 								}
 								logger.info("{}: jobParameterValue.getStringValue() (after) = {}",
-										RoleReportFilter.RP_REPORT_REQUESTED_BY, jobParameterValue.getStringValue());
+										ReportUtils.RP_REPORT_REQUESTED_BY, jobParameterValue.getStringValue());
 							}
 						}
 					}

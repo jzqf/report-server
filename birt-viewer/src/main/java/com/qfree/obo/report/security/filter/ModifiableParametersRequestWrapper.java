@@ -25,7 +25,7 @@ public class ModifiableParametersRequestWrapper extends HttpServletRequestWrappe
 	 * This Map will hold a copy of the parameters that we will add to the
 	 * request.
 	 */
-	private final Map<String, String[]> modifiableParameters;
+	private final Map<String, String[]> copyOfExtraParameters;
 
 	/*
 	 * This Map will hold both the original parameters from the request that
@@ -49,8 +49,8 @@ public class ModifiableParametersRequestWrapper extends HttpServletRequestWrappe
 	public ModifiableParametersRequestWrapper(final HttpServletRequest request,
 			final Map<String, String[]> extraParams) {
 		super(request);
-		modifiableParameters = new TreeMap<String, String[]>();
-		modifiableParameters.putAll(extraParams);
+		copyOfExtraParameters = new TreeMap<String, String[]>();
+		copyOfExtraParameters.putAll(extraParams);
 	}
 
 	@Override
@@ -73,7 +73,7 @@ public class ModifiableParametersRequestWrapper extends HttpServletRequestWrappe
 		if (allParameters == null) {
 			allParameters = new TreeMap<String, String[]>();
 			allParameters.putAll(super.getParameterMap());
-			allParameters.putAll(modifiableParameters);
+			allParameters.putAll(copyOfExtraParameters);
 		}
 		/*
 		 * Return an unmodifiable collection because that is the interface

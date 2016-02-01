@@ -30,18 +30,9 @@ import com.qfree.obo.report.domain.RoleReport;
 import com.qfree.obo.report.domain.UuidCustomType;
 import com.qfree.obo.report.rest.server.RoleController;
 import com.qfree.obo.report.security.ReportServerUser;
+import com.qfree.obo.report.util.ReportUtils;
 
 public class RoleReportFilter implements Filter {
-
-	/**
-	 * BIRT report parameter name for parameter that will be assigned the
-	 * username of the authenticated principal that requested the report.
-	 * 
-	 * <p>
-	 * This should be defined as <b>hidden</b> string report parameter in the
-	 * rptdesign file.
-	 */
-	public static final String RP_REPORT_REQUESTED_BY = "report_requested_by";
 
 	private static final Logger logger = LoggerFactory.getLogger(RoleReportFilter.class);
 
@@ -293,7 +284,7 @@ public class RoleReportFilter implements Filter {
 		logger.info("reportRequestedBy[0] = {}", reportRequestedBy[0]);
 
 		Map<String, String[]> extraParams = new TreeMap<>();
-		extraParams.put(RP_REPORT_REQUESTED_BY, reportRequestedBy);
+		extraParams.put(ReportUtils.RP_REPORT_REQUESTED_BY, reportRequestedBy);
 
 		/*
 		 * This will REPLACE the RP_REPORT_REQUESTED_BY parameter in the
