@@ -26,11 +26,13 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.qfree.obo.report.db.JobRepository;
 import com.qfree.obo.report.db.JobStatusRepository;
+import com.qfree.obo.report.db.RoleRepository;
 import com.qfree.obo.report.db.SubscriptionRepository;
 import com.qfree.obo.report.domain.Job;
 import com.qfree.obo.report.domain.JobParameter;
 import com.qfree.obo.report.domain.JobParameterValue;
 import com.qfree.obo.report.domain.JobStatus;
+import com.qfree.obo.report.domain.Role;
 import com.qfree.obo.report.domain.Subscription;
 import com.qfree.obo.report.domain.SubscriptionParameter;
 import com.qfree.obo.report.domain.SubscriptionParameterValue;
@@ -38,6 +40,8 @@ import com.qfree.obo.report.exceptions.JobProcessorNotScheduledCannotTrigger;
 import com.qfree.obo.report.exceptions.JobProcessorSchedulerNotRunningCannotTrigger;
 import com.qfree.obo.report.exceptions.UntreatedCaseException;
 import com.qfree.obo.report.scheduling.schedulers.SubscriptionJobProcessorScheduler;
+import com.qfree.obo.report.scheduling.schedulers.SubscriptionScheduler;
+import com.qfree.obo.report.security.filter.RoleReportFilter;
 import com.qfree.obo.report.util.DateUtils;
 
 /*
@@ -137,6 +141,18 @@ public class SubscriptionScheduledJob {
 	@Autowired
 	private SubscriptionJobProcessorScheduler subscriptionJobProcessorScheduler;
 
+	@Autowired
+	private RoleRepository roleRepository;
+
+	/**
+	 * This is set in {@link SubscriptionScheduler#scheduleJob(Subscription)}
+	 * when a {@link Subscription} is scheduled as a job with the Quartz
+	 * Scheduler.
+	 * 
+	 * <p>
+	 * This is how this {@link SubscriptionScheduledJob} knows which
+	 * {@link Subscription} it is for.
+	 */
 	private UUID subscriptionId;
 
 	/*
@@ -153,10 +169,12 @@ public class SubscriptionScheduledJob {
 	 */
 	private long lastRunMs = 0;
 
-	/*
-	 * This is the minimum time in milliseconds between runs. The "run()" method
-	 * will do nothing until at least this much time has elapsed since the last
-	 * time it processed the subscription.
+	/**
+	 * This is the minimum time in milliseconds between runs.
+	 * 
+	 * <p>
+	 * The "run()" method will do nothing until at least this much time has
+	 * elapsed since the last time it processed the subscription.
 	 */
 	private final long MIN_TIME_BETWEEN_RUNS_MS = 60L * 1000L;
 
@@ -237,7 +255,8 @@ public class SubscriptionScheduledJob {
 
 					/*
 					 * Create one JobParameterValue for each 
-					 * SubscriptionParameterValue:
+					 * SubscriptionParameterValue that is linked to the 
+					 * SubscriptionParameter entity:
 					 */
 					List<SubscriptionParameterValue> subscriptionParameterValues = subscriptionParameter
 							.getSubscriptionParameterValues();
@@ -695,6 +714,24 @@ public class SubscriptionScheduledJob {
 							JobParameterValue jobParameterValue = new JobParameterValue(jobParameter,
 									subscriptionParameterValue);
 							jobParameterValues.add(jobParameterValue);
+
+							/*
+							 * Treat the special report parameter 
+							 * RP_REPORT_REQUESTED_BY. For this parameter, we 
+							 * override the "string_value" with the username of 
+							 * the Role associated with the Job.
+							 */
+							if (RoleReportFilter.RP_REPORT_REQUESTED_BY
+									.equals(jobParameter.getReportParameter().getName())) {
+								logger.info("{}: jobParameterValue.getStringValue() (before) = {}",
+										RoleReportFilter.RP_REPORT_REQUESTED_BY, jobParameterValue.getStringValue());
+								Role role = job.getRole();
+								if (role != null) {
+									jobParameterValue.setStringValue(role.getUsername());
+								}
+								logger.info("{}: jobParameterValue.getStringValue() (after) = {}",
+										RoleReportFilter.RP_REPORT_REQUESTED_BY, jobParameterValue.getStringValue());
+							}
 						}
 					}
 				}

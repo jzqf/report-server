@@ -41,7 +41,7 @@ public class RoleReportFilter implements Filter {
 	 * This should be defined as <b>hidden</b> string report parameter in the
 	 * rptdesign file.
 	 */
-	private static final String RP_REPORT_REQUESTED_BY = "report_requested_by";
+	public static final String RP_REPORT_REQUESTED_BY = "report_requested_by";
 
 	private static final Logger logger = LoggerFactory.getLogger(RoleReportFilter.class);
 
