@@ -710,6 +710,14 @@ public class SubscriptionScheduledJob {
 						} else {
 							/*
 							 * The SubscriptionParameterValue entity represents a static value.
+							 * 
+							 * This may be one of several SubscriptionParameterValue entities
+							 * for the current SubscriptionParameter entity, assuming the
+							 * report parameter is multi-valued; otherwise, this should be 
+							 * the one and only SubscriptionParameterValue entity for the
+							 * current SubscriptionParameter entity, However, the code here 
+							 * does not need to check whether the current report parameter
+							 * that is being processed is multi-valued or not.
 							 */
 							JobParameterValue jobParameterValue = new JobParameterValue(jobParameter,
 									subscriptionParameterValue);
