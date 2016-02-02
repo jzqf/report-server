@@ -135,7 +135,7 @@ public class RoleReportFilter implements Filter {
 			 * display the username of the authenticated principal that
 			 * requested the report.
 			 */
-			ServletRequest wrappedReq = insertExtraRequestParameters(request, user);
+			ServletRequest wrappedReq = insertExtraRequestParameters(request, user, reportFilename);
 
 			//Map<String, String[]> newParameterMap = req.getParameterMap();
 			//for (Map.Entry<String, String[]> entry : newParameterMap.entrySet()) {
@@ -265,7 +265,10 @@ public class RoleReportFilter implements Filter {
 		return false;
 	}
 
-	private ServletRequest insertExtraRequestParameters(HttpServletRequest request, ReportServerUser user) {
+	private ServletRequest insertExtraRequestParameters(
+			HttpServletRequest request,
+			ReportServerUser user,
+			String reportFilename) {
 
 		//Map<String, String[]> parameterMap = request.getParameterMap();
 		//for (Map.Entry<String, String[]> entry : parameterMap.entrySet()) {
@@ -279,16 +282,39 @@ public class RoleReportFilter implements Filter {
 		//	}
 		//}
 
+		/*
+		 * reportVersion will be null if one of the test reports in the "test"
+		 * directory are being displayed. We check for that below to avoid a
+		 * NullPointerException.
+		 */
+		ReportVersion reportVersion = reportVersionRepository.findByFileName(reportFilename);
+
 		String[] reportRequestedBy = new String[1];
 		reportRequestedBy[0] = user.getUsername();
 		logger.info("reportRequestedBy[0] = {}", reportRequestedBy[0]);
 
+		String[] reportName = new String[1];
+		reportName[0] = reportVersion != null ? reportVersion.getReport().getName() : "";
+		logger.info("reportName[0] = {}", reportName[0]);
+
+		String[] reportNumber = new String[1];
+		reportNumber[0] = reportVersion != null ? reportVersion.getReport().getNumber().toString() : "";
+		logger.info("reportNumber[0] = {}", reportNumber[0]);
+
+		String[] reportVersionName = new String[1];
+		reportVersionName[0] = reportVersion != null ? reportVersion.getVersionName() : "";
+		logger.info("reportVersionName[0] = {}", reportVersionName[0]);
+
 		Map<String, String[]> extraParams = new TreeMap<>();
 		extraParams.put(ReportUtils.RP_REPORT_REQUESTED_BY, reportRequestedBy);
+		extraParams.put(ReportUtils.RP_REPORT_NAME, reportName);
+		extraParams.put(ReportUtils.RP_REPORT_NUMBER, reportNumber);
+		extraParams.put(ReportUtils.RP_REPORT_VERSION, reportVersionName);
 
 		/*
-		 * This will REPLACE the RP_REPORT_REQUESTED_BY parameter in the
-		 * original request if it exists in the original request.
+		 * This will *replace* the RP_REPORT_REQUESTED_BY, RP_REPORT_NAME, ...,
+		 * special report parameters in the original request (if they exist in
+		 * the original request).
 		 */
 		return new ModifiableParametersRequestWrapper(request, extraParams);
 	}

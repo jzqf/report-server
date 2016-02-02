@@ -767,22 +767,45 @@ public class SubscriptionScheduledJob {
 									subscriptionParameterValue);
 							jobParameterValues.add(jobParameterValue);
 
+							logger.info("{}: jobParameterValue.getStringValue() (before) = {}",
+									jobParameter.getReportParameter().getName(), jobParameterValue.getStringValue());
+
 							/*
-							 * Treat the special report parameter 
-							 * RP_REPORT_REQUESTED_BY. For this parameter, we 
-							 * override the "string_value" with the username of 
-							 * the Role associated with the Job.
+							 * Check if the current report parameter being treated is a
+							 * "special" hidden string report parameters. If so, its 
+							 * "string_value" field will be assigned a value here,
+							 * replacing any current default value, that can be displayed
+							 * on the report, used as a data set parameter, or for any
+							 * other purpose.
 							 */
 							if (ReportUtils.RP_REPORT_REQUESTED_BY
 									.equals(jobParameter.getReportParameter().getName())) {
-								logger.info("{}: jobParameterValue.getStringValue() (before) = {}",
-										ReportUtils.RP_REPORT_REQUESTED_BY, jobParameterValue.getStringValue());
+
+								/*
+								 * Override the "string_value" field with the 
+								 * username of the Role associated with the Job.
+								 */
 								Role role = job.getRole();
 								if (role != null) {
 									jobParameterValue.setStringValue(role.getUsername());
 								}
-								logger.info("{}: jobParameterValue.getStringValue() (after)  = {}",
-										ReportUtils.RP_REPORT_REQUESTED_BY, jobParameterValue.getStringValue());
+
+							} else if (ReportUtils.RP_REPORT_NAME
+									.equals(jobParameter.getReportParameter().getName())) {
+
+								jobParameterValue.setStringValue(job.getReportVersion().getReport().getName());
+
+							} else if (ReportUtils.RP_REPORT_NUMBER
+									.equals(jobParameter.getReportParameter().getName())) {
+
+								jobParameterValue
+										.setStringValue(job.getReportVersion().getReport().getNumber().toString());
+
+							} else if (ReportUtils.RP_REPORT_VERSION
+									.equals(jobParameter.getReportParameter().getName())) {
+
+								jobParameterValue.setStringValue(job.getReportVersion().getVersionName());
+
 							} else {
 
 								/*
@@ -796,18 +819,16 @@ public class SubscriptionScheduledJob {
 									for (Map.Entry<String, String> entry : customReportParameters.entrySet()) {
 										String paramName = entry.getKey();
 										if (paramName.equals(jobParameter.getReportParameter().getName())) {
-											logger.info("{}: jobParameterValue.getStringValue() (before) = {}",
-													paramName, jobParameterValue.getStringValue());
 											String paramValue = entry.getValue();
 											jobParameterValue.setStringValue(paramValue);
-											logger.info("{}: jobParameterValue.getStringValue() (after)  = {}",
-													paramName, jobParameterValue.getStringValue());
 											break;
 										}
 									}
 								}
 
 							}
+							logger.info("{}: jobParameterValue.getStringValue() (after)  = {}",
+									jobParameter.getReportParameter().getName(), jobParameterValue.getStringValue());
 						}
 					}
 				}
