@@ -12,7 +12,9 @@ import java.time.temporal.TemporalAdjuster;
 import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import org.eclipse.birt.report.engine.api.IParameterDefn;
@@ -221,6 +223,48 @@ public class SubscriptionScheduledJob {
 
 			Subscription subscription = subscriptionRepository.findOne(subscriptionId);
 			if (subscription != null) {
+
+				/*
+				 * Extract all non-null "customReportParameter{1,8}_name"
+				 * values along with their matching values of
+				 * "customReportParameter{1,8}_value".
+				 * 
+				 * These will be used below to set the values of "special"
+				 * report parameters.
+				 */
+				Map<String, String> customReportParameters = new HashMap<>();
+				if (subscription.getCustomReportParameter1_name() != null) {
+					customReportParameters.put(subscription.getCustomReportParameter1_name(),
+							subscription.getCustomReportParameter1_value());
+				}
+				if (subscription.getCustomReportParameter2_name() != null) {
+					customReportParameters.put(subscription.getCustomReportParameter2_name(),
+							subscription.getCustomReportParameter2_value());
+				}
+				if (subscription.getCustomReportParameter3_name() != null) {
+					customReportParameters.put(subscription.getCustomReportParameter3_name(),
+							subscription.getCustomReportParameter3_value());
+				}
+				if (subscription.getCustomReportParameter4_name() != null) {
+					customReportParameters.put(subscription.getCustomReportParameter4_name(),
+							subscription.getCustomReportParameter4_value());
+				}
+				if (subscription.getCustomReportParameter5_name() != null) {
+					customReportParameters.put(subscription.getCustomReportParameter5_name(),
+							subscription.getCustomReportParameter5_value());
+				}
+				if (subscription.getCustomReportParameter6_name() != null) {
+					customReportParameters.put(subscription.getCustomReportParameter6_name(),
+							subscription.getCustomReportParameter6_value());
+				}
+				if (subscription.getCustomReportParameter7_name() != null) {
+					customReportParameters.put(subscription.getCustomReportParameter7_name(),
+							subscription.getCustomReportParameter7_value());
+				}
+				if (subscription.getCustomReportParameter8_name() != null) {
+					customReportParameters.put(subscription.getCustomReportParameter8_name(),
+							subscription.getCustomReportParameter8_value());
+				}
 
 				/*
 				 * The new Job will have status=QUEUED.
@@ -737,8 +781,32 @@ public class SubscriptionScheduledJob {
 								if (role != null) {
 									jobParameterValue.setStringValue(role.getUsername());
 								}
-								logger.info("{}: jobParameterValue.getStringValue() (after) = {}",
+								logger.info("{}: jobParameterValue.getStringValue() (after)  = {}",
 										ReportUtils.RP_REPORT_REQUESTED_BY, jobParameterValue.getStringValue());
+							} else {
+
+								/*
+								 * Treat the "custom" report parameters that are handled
+								 * with the Subscription fields: 
+								 *   "customReportParameter{1,8}_name"
+								 * and
+								 *   "customReportParameter{1,8}_value"
+								 */
+								if (customReportParameters != null) {
+									for (Map.Entry<String, String> entry : customReportParameters.entrySet()) {
+										String paramName = entry.getKey();
+										if (paramName.equals(jobParameter.getReportParameter().getName())) {
+											logger.info("{}: jobParameterValue.getStringValue() (before) = {}",
+													paramName, jobParameterValue.getStringValue());
+											String paramValue = entry.getValue();
+											jobParameterValue.setStringValue(paramValue);
+											logger.info("{}: jobParameterValue.getStringValue() (after)  = {}",
+													paramName, jobParameterValue.getStringValue());
+											break;
+										}
+									}
+								}
+
 							}
 						}
 					}

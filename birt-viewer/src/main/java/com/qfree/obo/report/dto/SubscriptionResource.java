@@ -54,6 +54,54 @@ public class SubscriptionResource extends AbstractBaseResource {
 	@XmlElement
 	private String description;
 
+	@XmlElement
+	private String customReportParameter1_name;
+
+	@XmlElement
+	private String customReportParameter1_value;
+
+	@XmlElement
+	private String customReportParameter2_name;
+
+	@XmlElement
+	private String customReportParameter2_value;
+
+	@XmlElement
+	private String customReportParameter3_name;
+
+	@XmlElement
+	private String customReportParameter3_value;
+
+	@XmlElement
+	private String customReportParameter4_name;
+
+	@XmlElement
+	private String customReportParameter4_value;
+
+	@XmlElement
+	private String customReportParameter5_name;
+
+	@XmlElement
+	private String customReportParameter5_value;
+
+	@XmlElement
+	private String customReportParameter6_name;
+
+	@XmlElement
+	private String customReportParameter6_value;
+
+	@XmlElement
+	private String customReportParameter7_name;
+
+	@XmlElement
+	private String customReportParameter7_value;
+
+	@XmlElement
+	private String customReportParameter8_name;
+
+	@XmlElement
+	private String customReportParameter8_value;
+
 	@XmlElement(name = "subscriptionParameters")
 	private SubscriptionParameterCollectionResource subscriptionParameterCollectionResource;
 
@@ -171,6 +219,22 @@ public class SubscriptionResource extends AbstractBaseResource {
 			this.deliveryDatetimeRunAt = subscription.getDeliveryDatetimeRunAt();
 			this.emailAddress = subscription.getEmailAddress();
 			this.description = subscription.getDescription();
+			this.customReportParameter1_name = subscription.getCustomReportParameter1_name();
+			this.customReportParameter1_value = subscription.getCustomReportParameter1_value();
+			this.customReportParameter2_name = subscription.getCustomReportParameter2_name();
+			this.customReportParameter2_value = subscription.getCustomReportParameter2_value();
+			this.customReportParameter3_name = subscription.getCustomReportParameter3_name();
+			this.customReportParameter3_value = subscription.getCustomReportParameter3_value();
+			this.customReportParameter4_name = subscription.getCustomReportParameter4_name();
+			this.customReportParameter4_value = subscription.getCustomReportParameter4_value();
+			this.customReportParameter5_name = subscription.getCustomReportParameter5_name();
+			this.customReportParameter5_value = subscription.getCustomReportParameter5_value();
+			this.customReportParameter6_name = subscription.getCustomReportParameter6_name();
+			this.customReportParameter6_value = subscription.getCustomReportParameter6_value();
+			this.customReportParameter7_name = subscription.getCustomReportParameter7_name();
+			this.customReportParameter7_value = subscription.getCustomReportParameter7_value();
+			this.customReportParameter8_name = subscription.getCustomReportParameter8_name();
+			this.customReportParameter8_value = subscription.getCustomReportParameter8_value();
 			this.enabled = subscription.getEnabled();
 			this.active = subscription.getActive();
 			this.createdOn = subscription.getCreatedOn();
@@ -317,6 +381,134 @@ public class SubscriptionResource extends AbstractBaseResource {
 		this.description = description;
 	}
 
+	public String getCustomReportParameter1_name() {
+		return customReportParameter1_name;
+	}
+
+	public void setCustomReportParameter1_name(String customReportParameter1_name) {
+		this.customReportParameter1_name = customReportParameter1_name;
+	}
+
+	public String getCustomReportParameter1_value() {
+		return customReportParameter1_value;
+	}
+
+	public void setCustomReportParameter1_value(String customReportParameter1_value) {
+		this.customReportParameter1_value = customReportParameter1_value;
+	}
+
+	public String getCustomReportParameter2_name() {
+		return customReportParameter2_name;
+	}
+
+	public void setCustomReportParameter2_name(String customReportParameter2_name) {
+		this.customReportParameter2_name = customReportParameter2_name;
+	}
+
+	public String getCustomReportParameter2_value() {
+		return customReportParameter2_value;
+	}
+
+	public void setCustomReportParameter2_value(String customReportParameter2_value) {
+		this.customReportParameter2_value = customReportParameter2_value;
+	}
+
+	public String getCustomReportParameter3_name() {
+		return customReportParameter3_name;
+	}
+
+	public void setCustomReportParameter3_name(String customReportParameter3_name) {
+		this.customReportParameter3_name = customReportParameter3_name;
+	}
+
+	public String getCustomReportParameter3_value() {
+		return customReportParameter3_value;
+	}
+
+	public void setCustomReportParameter3_value(String customReportParameter3_value) {
+		this.customReportParameter3_value = customReportParameter3_value;
+	}
+
+	public String getCustomReportParameter4_name() {
+		return customReportParameter4_name;
+	}
+
+	public void setCustomReportParameter4_name(String customReportParameter4_name) {
+		this.customReportParameter4_name = customReportParameter4_name;
+	}
+
+	public String getCustomReportParameter4_value() {
+		return customReportParameter4_value;
+	}
+
+	public void setCustomReportParameter4_value(String customReportParameter4_value) {
+		this.customReportParameter4_value = customReportParameter4_value;
+	}
+
+	public String getCustomReportParameter5_name() {
+		return customReportParameter5_name;
+	}
+
+	public void setCustomReportParameter5_name(String customReportParameter5_name) {
+		this.customReportParameter5_name = customReportParameter5_name;
+	}
+
+	public String getCustomReportParameter5_value() {
+		return customReportParameter5_value;
+	}
+
+	public void setCustomReportParameter5_value(String customReportParameter5_value) {
+		this.customReportParameter5_value = customReportParameter5_value;
+	}
+
+	public String getCustomReportParameter6_name() {
+		return customReportParameter6_name;
+	}
+
+	public void setCustomReportParameter6_name(String customReportParameter6_name) {
+		this.customReportParameter6_name = customReportParameter6_name;
+	}
+
+	public String getCustomReportParameter6_value() {
+		return customReportParameter6_value;
+	}
+
+	public void setCustomReportParameter6_value(String customReportParameter6_value) {
+		this.customReportParameter6_value = customReportParameter6_value;
+	}
+
+	public String getCustomReportParameter7_name() {
+		return customReportParameter7_name;
+	}
+
+	public void setCustomReportParameter7_name(String customReportParameter7_name) {
+		this.customReportParameter7_name = customReportParameter7_name;
+	}
+
+	public String getCustomReportParameter7_value() {
+		return customReportParameter7_value;
+	}
+
+	public void setCustomReportParameter7_value(String customReportParameter7_value) {
+		this.customReportParameter7_value = customReportParameter7_value;
+	}
+
+	public String getCustomReportParameter8_name() {
+		return customReportParameter8_name;
+	}
+
+	public void setCustomReportParameter8_name(String customReportParameter8_name) {
+		this.customReportParameter8_name = customReportParameter8_name;
+	}
+
+	public String getCustomReportParameter8_value() {
+		return customReportParameter8_value;
+	}
+
+	public void setCustomReportParameter8_value(String customReportParameter8_value) {
+		this.customReportParameter8_value = customReportParameter8_value;
+	}
+
 	public Boolean getEnabled() {
 		return enabled;
 	}
@@ -379,6 +571,38 @@ public class SubscriptionResource extends AbstractBaseResource {
 		builder.append(emailAddress);
 		builder.append(", description=");
 		builder.append(description);
+		builder.append(", customReportParameter1_name=");
+		builder.append(customReportParameter1_name);
+		builder.append(", customReportParameter1_value=");
+		builder.append(customReportParameter1_value);
+		builder.append(", customReportParameter2_name=");
+		builder.append(customReportParameter2_name);
+		builder.append(", customReportParameter2_value=");
+		builder.append(customReportParameter2_value);
+		builder.append(", customReportParameter3_name=");
+		builder.append(customReportParameter3_name);
+		builder.append(", customReportParameter3_value=");
+		builder.append(customReportParameter3_value);
+		builder.append(", customReportParameter4_name=");
+		builder.append(customReportParameter4_name);
+		builder.append(", customReportParameter4_value=");
+		builder.append(customReportParameter4_value);
+		builder.append(", customReportParameter5_name=");
+		builder.append(customReportParameter5_name);
+		builder.append(", customReportParameter5_value=");
+		builder.append(customReportParameter5_value);
+		builder.append(", customReportParameter6_name=");
+		builder.append(customReportParameter6_name);
+		builder.append(", customReportParameter6_value=");
+		builder.append(customReportParameter6_value);
+		builder.append(", customReportParameter7_name=");
+		builder.append(customReportParameter7_name);
+		builder.append(", customReportParameter7_value=");
+		builder.append(customReportParameter7_value);
+		builder.append(", customReportParameter8_name=");
+		builder.append(customReportParameter8_name);
+		builder.append(", customReportParameter8_value=");
+		builder.append(customReportParameter8_value);
 		builder.append(", enabled=");
 		builder.append(enabled);
 		builder.append(", schedulingStatusResource=");
@@ -390,4 +614,5 @@ public class SubscriptionResource extends AbstractBaseResource {
 		builder.append("]");
 		return builder.toString();
 	}
+
 }
