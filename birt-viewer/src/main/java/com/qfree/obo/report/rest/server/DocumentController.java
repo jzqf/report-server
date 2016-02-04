@@ -229,7 +229,7 @@ public class DocumentController extends AbstractBaseController {
 	 * This endpoint can be tested with:
 	 * 
 	 *   $ mvn clean spring-boot:run
-	 *   $ curl -X GET -iH "Accept: application/json;v=1" \
+	 *   $ curl -X GET -u ''<username>'':''<password>'' -iH "Accept: application/json;v=1" \
 	 *   http://localhost:8080/rest/documents/2d01c072-5d9e-44f9-bfe3-b785d9a6bb0d?expand=documents
 	 * 
 	 * @Transactional is used to avoid org.hibernate.LazyInitializationException
@@ -273,9 +273,14 @@ public class DocumentController extends AbstractBaseController {
 	 * 
 	 * <pre>
 	 * <code>$ mvn clean spring-boot:run
-	 * $ curl -X GET -iH "Accept: application/pdf;v=1" \
-	 * http://localhost:8080/rest/documents/2d01c072-5d9e-44f9-bfe3-b785d9a6bb0d/content</code>
+	 * $ curl -X GET -u ''&lt;username&gt;'':''&lt;password&gt;'' -H "Accept: application/json;v=1" \
+	 * http://localhost:8080/report-server/rest/documents/2d01c072-5d9e-44f9-bfe3-b785d9a6bb0d/content &gt; file.ext</code>
 	 * </pre>
+	 * 
+	 * <p>
+	 * Note that the "-i" <code>curl</code> option is not used here because we
+	 * do not want to write the response headers in the destination file
+	 * file.ext.
 	 * 
 	 * @param id
 	 * @param acceptHeader
