@@ -91,28 +91,30 @@ public class RestUtils {
 	public static RestApiVersion extractAPIVersion(String httpAcceptHeader, RestApiVersion defaultVersion) {
 		RestApiVersion apiVersion = defaultVersion;
 
-		/*
-		 * Support Accept headers of the form:
-		 * 
-		 *     <media-type>;v=<version>
-		 *     <media-type>;morestuff&v=<version>
-		 * 
-		 * Therefore, the regex for the delimiter specifies ";" or "&".
-		 */
-		for (String token : httpAcceptHeader.split("[;&]")) {
-			String[] potentialKeyValuePair = token.split("=");
-			if (potentialKeyValuePair.length == 2) {
-				String key = potentialKeyValuePair[0].trim();
-				if (key.equalsIgnoreCase("v")) {
-					String apiVersionString = potentialKeyValuePair[1].trim();
-					try {
-						apiVersion = RestApiVersion.valueOf("v" + apiVersionString);
-					} catch (IllegalArgumentException | NullPointerException e) {
-						/* '"v" + apiVersionString' is not a valid element of the
-						 * RestApiVersion enum. Return default version instead.
-						 */
+		if (httpAcceptHeader != null) {
+			/*
+			 * Support Accept headers of the form:
+			 * 
+			 *     <media-type>;v=<version>
+			 *     <media-type>;morestuff&v=<version>
+			 * 
+			 * Therefore, the regex for the delimiter specifies ";" or "&".
+			 */
+			for (String token : httpAcceptHeader.split("[;&]")) {
+				String[] potentialKeyValuePair = token.split("=");
+				if (potentialKeyValuePair.length == 2) {
+					String key = potentialKeyValuePair[0].trim();
+					if (key.equalsIgnoreCase("v")) {
+						String apiVersionString = potentialKeyValuePair[1].trim();
+						try {
+							apiVersion = RestApiVersion.valueOf("v" + apiVersionString);
+						} catch (IllegalArgumentException | NullPointerException e) {
+							/* '"v" + apiVersionString' is not a valid element of the
+							 * RestApiVersion enum. Return default version instead.
+							 */
+						}
+						break;
 					}
-					break;
 				}
 			}
 		}

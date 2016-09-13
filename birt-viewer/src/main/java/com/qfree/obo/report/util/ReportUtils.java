@@ -24,6 +24,35 @@ public class ReportUtils {
 
 	private static final Logger logger = LoggerFactory.getLogger(ReportUtils.class);
 
+	/**
+	 * BIRT report parameter names for parameters that will be assigned the
+	 * report name, number, version, ..., of the requested the report.
+	 * 
+	 * <p>
+	 * These should all be defined as <b>hidden</b> <b>string</b> report
+	 * parameters in the rptdesign file. These report parameter should also be
+	 * given a default value; otherwise, the BIRT Viewer will throw an exception
+	 * during development because no value will exist for the parameter (a value
+	 * will not be prompted for because the parameter is hidden).
+	 */
+	public static final String RP_REPORT_NAME = "report_name";
+	public static final String RP_REPORT_NUMBER = "report_number";
+	public static final String RP_REPORT_VERSION = "report_version";
+
+	/**
+	 * BIRT report parameter name for parameter that will be assigned the
+	 * username of the authenticated principal that requested the report.
+	 * 
+	 * <p>
+	 * This should be defined as a <b>hidden</b> <b>string</b> report parameter
+	 * in the rptdesign file. This report parameter should also be given a
+	 * default value ("unknown" is a good choice); otherwise, the BIRT Viewer
+	 * will throw an exception during development because no value will exist
+	 * for the parameter (a value will not be prompted for because the parameter
+	 * is hidden).
+	 */
+	public static final String RP_REPORT_REQUESTED_BY = "report_requested_by";
+
 	/*
 	 * This counting semaphore is used to ensure that only one thread is 
 	 * performing some sort of synchronization action between the rptdesign
