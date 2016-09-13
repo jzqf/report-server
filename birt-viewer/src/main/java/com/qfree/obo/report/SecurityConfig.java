@@ -199,6 +199,19 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		if (env.getProperty("appsecurity.enable").equals("true")) {
 
 			http
+					/*
+					 * By inserting requestMatchingRoleReportFilter() *after*
+					 * FilterSecurityInterceptor.class, this ensures that my
+					 * RoleReportFilter will have access to the the name of the
+					 * authenticated security principal which RoleReportFilter
+					 * can use to look up the authorities granted to the user
+					 * who made the request as well as determine if that user 
+					 * should have access to the report requested. This is 
+					 * because authentication (provided by my 
+					 * ReportServerAuthenticationProvider somehow via 
+					 * FilterSecurityInterceptor, I believe) will be performed 
+					 * *before* the request is passed to RoleReportFilter.
+					 */
 					.addFilterAfter(requestMatchingRoleReportFilter(), FilterSecurityInterceptor.class)
 					/*
 					 * Use this filter to log all request URIs. This may be 
