@@ -63,6 +63,7 @@ public interface ReportRepository extends JpaRepository<Report, UUID>, ReportRep
 			"INNER JOIN role_report ON role_report.role_id=role.role_id " +
 			//"WHERE role_report.report_id=:reportId " +
 			"WHERE role_report.report_id=CAST(:reportId AS uuid) " +
+			"AND (role.active=true OR :activeOnly=false) " +
 
 			"UNION ALL " +
 
@@ -73,7 +74,7 @@ public interface ReportRepository extends JpaRepository<Report, UUID>, ReportRep
 			"INNER JOIN role_role link ON link.parent_role_id=descendent.role_id " +
 			"INNER JOIN role ON role.role_id=link.child_role_id " +
 			"WHERE level<10 " +
-			//"AND (descendent.active=true OR :activeOnly=false) " +
+			"AND (role.active=true OR :activeOnly=false) " +
 			
 			") " +
 
@@ -97,8 +98,8 @@ public interface ReportRepository extends JpaRepository<Report, UUID>, ReportRep
 			"SELECT DT.role_id FROM " +
 			"(" +
 			"    SELECT DISTINCT CAST(descendent.role_id AS varchar), descendent.username FROM descendent " +
-			"    INNER JOIN role ON role.role_id=descendent.role_id " +
-			"    WHERE (role.active=true OR :activeOnly=false) " +
+			//"    INNER JOIN role ON role.role_id=descendent.role_id " +
+			//"    WHERE (role.active=true OR :activeOnly=false) " +
 			") DT " +
 			"ORDER BY DT.username",
 			nativeQuery = true)

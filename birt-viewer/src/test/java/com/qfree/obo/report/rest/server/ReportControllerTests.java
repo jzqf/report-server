@@ -631,7 +631,7 @@ public class ReportControllerTests {
 		logger.debug("roleCollectionResource = {}", roleCollectionResource);
 		System.out.printf("\nreport = %s\n", report.getName());
 		for (RoleResource roleResource:roleCollectionResource.getItems()){
-			System.out.printf("\tauthorized role = %s\n", roleResource.getUsername());
+			System.out.printf("					 *     %s\n", roleResource.getUsername());
 		}
 		assertThat(roleCollectionResource, is(not(nullValue())));
 		assertThat(roleCollectionResource.getItems(), is(not(nullValue())));
@@ -640,7 +640,10 @@ public class ReportControllerTests {
 		if (RoleController.ALLOW_ALL_REPORTS_FOR_EACH_ROLE) {
 			Integer numRoles = null;
 			if (RestUtils.FILTER_INACTIVE_RECORDS) {
-				numRoles = 89; // number of active roles (roleRepository.findByActiveTrue().size())
+				/*
+				 * Role "aa" is inactive.
+				 */
+				numRoles = 88; // number of active roles (roleRepository.findByActiveTrue().size())
 			} else {
 				numRoles = 89; // total number of roles (roleRepository.findAll().size())
 			}
@@ -653,35 +656,156 @@ public class ReportControllerTests {
 			 * consider inheritance of report access for roles. This means that
 			 * the tests here must be different for H2 and PostgreSQL.
 			 */
-//		if (UuidCustomType.DB_VENDOR.equals(UuidCustomType.POSTGRESQL_VENDOR)) {
-//			/*
-//			 * With Role inheritance included, there are 4 Report's that are
-//			 * "enabled" for Role "aabb":
-//			 * 
-//			 * 		"Report name #01"
-//			 * 		"Report name #02"
-//			 * 		"Report name #03"  (inactive)
-//			 * 		"Report name #04"
-//			 * 
-//			 * However, report "Report name #03" is not active,so that leave 3
-//			 * "active" Report's.
-//			 * 
-//			 * With recursive CTE expression:
-//			 */
-//			if (RoleController.ALLOW_ALL_REPORTS_FOR_EACH_ROLE == false) {
-//				assertThat(reportCollectionResource.getItems(), IsCollectionWithSize.hasSize(3));
-//				assertThat(reportCollectionResource.getItems(), hasSize(3));
-//			} else {
-//				assertThat(reportCollectionResource.getItems(), IsCollectionWithSize.hasSize(4));
-//				assertThat(reportCollectionResource.getItems(), hasSize(4));
-//			}
-//			List<UUID> activeReportUuidsFromEndpoint = new ArrayList<>(reportCollectionResource.getItems().size());
-//			for (ReportResource reportResource : reportCollectionResource.getItems()) {
-//				activeReportUuidsFromEndpoint.add(reportResource.getReportId());
-//			}
-//			assertThat(activeReportUuidsFromEndpoint,
-//					IsCollectionContaining.hasItems(uuidOfReport01, uuidOfReport02, uuidOfReport04));
-//		} else {
+			if (UuidCustomType.DB_VENDOR.equals(UuidCustomType.POSTGRESQL_VENDOR)) {
+				/*
+				 * With Role inheritance included (recursive CTE expression):
+				 */
+				if (RestUtils.FILTER_INACTIVE_RECORDS) {
+					/*
+					 * Report "Report name #02" is directly authorized via
+					 * RoleReport entities for the two roles: "a" and "aab".
+					 * 
+					 * But, since role "aa" is inactive, the following roles are
+					 * authorized for this report:
+					 * 
+					 *     a
+					 *     ab
+					 *     ac
+					 *     aab
+					 *     aba
+					 *     abb
+					 *     abc
+					 *     aca
+					 *     acb
+					 *     acc
+					 *     aaba
+					 *     aabb
+					 *     aabc
+					 *     abaa
+					 *     abab
+					 *     abac
+					 *     abba
+					 *     abbb
+					 *     abbc
+					 *     abca
+					 *     abcb
+					 *     abcc
+					 *     acaa
+					 *     acab
+					 *     acac
+					 *     acba
+					 *     acbb
+					 *     acbc
+					 *     acca
+					 *     accb
+					 *     accc
+					 *     [aaa,aab]-a
+					 *     [aaa,aab]-b
+					 *     [aaa,aab]-c
+					 * 
+					 * In order to understand this, use the following logic:
+					 * 
+					 * 1. Role "a" is authorized via a RoleReport entity. 
+					 *    Therefore, Role "a" and all of its children are 
+					 *    authorized.
+					 * 
+					 * 2. Since Role "aa" is inactive, this means that we must
+					 *    eliminate Role "aa" and all of its children from the
+					 *    Roles obtained in step 1.
+					 * 
+					 * 3. Since Role "aab" is also authorized via a RoleReport 
+					 *    entity, we must add back in Role "aab" (which was
+					 *    eliminated in step 2) and all of its children to the 
+					 *    list of authorized Roles.
+					 */
+					assertThat(roleCollectionResource.getItems(), IsCollectionWithSize.hasSize(34));
+					assertThat(roleCollectionResource.getItems(), hasSize(34));
+					// List<UUID> activeRoleUuidsFromEndpoint = new
+					// ArrayList<>(roleCollectionResource.getItems().size());
+					// for (RoleResource roleResource :
+					// roleCollectionResource.getItems()) {
+					// activeRoleUuidsFromEndpoint.add(roleResource.getRoleId());
+					// }
+					// assertThat(activeRoleUuidsFromEndpoint,IsCollectionContaining.hasItems(
+					// uuidOfRole_a,
+					// uuidOfRole_ab,
+					// uuidOfRole_ac,
+					// uuidOfRole_aab
+					// // ...
+					// ));
+				} else {
+					/*
+					 * Report "Report name #02" is directly authorized via
+					 * RoleReport entities for the two roles: "a" and "aab".
+					 * This leads to the following roles being authorized for 
+					 * this report:
+					 * 
+					 *     a
+					 *     aa
+					 *     ab
+					 *     ac
+					 *     aaa
+					 *     aab
+					 *     aac
+					 *     aba
+					 *     abb
+					 *     abc
+					 *     aca
+					 *     acb
+					 *     acc
+					 *     aaaa
+					 *     aaab
+					 *     aaac
+					 *     aaba
+					 *     aabb
+					 *     aabc
+					 *     aaca
+					 *     aacb
+					 *     aacc
+					 *     abaa
+					 *     abab
+					 *     abac
+					 *     abba
+					 *     abbb
+					 *     abbc
+					 *     abca
+					 *     abcb
+					 *     abcc
+					 *     acaa
+					 *     acab
+					 *     acac
+					 *     acba
+					 *     acbb
+					 *     acbc
+					 *     acca
+					 *     accb
+					 *     accc
+					 *     [aaa,bbb]-a
+					 *     [aaa,bbb]-b
+					 *     [aaa,bbb]-c
+					 *     [aaa,aab]-a
+					 *     [aaa,aab]-b
+					 *     [aaa,aab]-c
+					 * 
+					 * In order to understand this, use the following logic:
+					 * 
+					 * 1. Role "a" is authorized via a RoleReport entity. 
+					 *    Therefore, Role "a" and all of its children are 
+					 *    authorized.
+					 * 
+					 * 2. Ignore the fact that Role "aa" is inactive, so this
+					 *    has no effect.
+					 * 
+					 * 3. Since Role "aab" is also authorized via a RoleReport 
+					 *    entity, we must add Role "aab" as well as all of its 
+					 *    children to the list of authorized Roles, but these 
+					 *    are already present from step 1, so this has no real
+					 *    effect either.
+					 */
+					assertThat(roleCollectionResource.getItems(), IsCollectionWithSize.hasSize(46));
+					assertThat(roleCollectionResource.getItems(), hasSize(46));
+				}
+			} else {
 //			/*
 //			 * Without considering Role inheritance, there should only be a single
 //			 * *active* Report returned, "Report name #04". "Report name #03" is
@@ -702,7 +826,7 @@ public class ReportControllerTests {
 //				activeReportUuidsFromEndpoint.add(reportResource.getReportId());
 //			}
 //			assertThat(activeReportUuidsFromEndpoint, IsCollectionContaining.hasItems(uuidOfReport04));
-//		}
+		}
 //
 //		/*
 //		 * Repeat, but this time turn off filtering on "active" for both Reports
