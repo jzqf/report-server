@@ -16,7 +16,7 @@ can be done easily by following these simple steps:
 
 1.	Move the installation archive:
 
-		install_report_server-***.tar.gz
+		install_report_server-<version>.tar.gz
 	
 	to a directory that the "postgres" user has access to. The simplest choice 
 	is:
@@ -28,7 +28,7 @@ can be done easily by following these simple steps:
 
 2.	Extract the files from this archive using:
 
-		tar -xvzpf install_report_server-***.tar.gz
+		tar -xvzpf install_report_server-<version>.tar.gz
 
 The "-p" option is essential. If you do not follow these instructions, the 
 installation may fail.
@@ -89,7 +89,7 @@ B.	===== Customizing the Tomcat 8.x environment =====
 2.	Increase maximum file upload size:
 
 	Configure the maximum file upload size for the Tomcat manager application to
-	be at least 100 MB. If this is not done, it might not be possible to upload 
+	be at least 150 MB. If this is not done, it might not be possible to upload 
 	the report server WAR file. This setting can be changed by editing the 
 	max-file-size and max-request-size XML elements in the file:
 
@@ -222,7 +222,7 @@ II.	===== Installing the report server application =====
 	the protocol for accessing it, as well as the port number if a non-standard 
 	port number is used. You will need to authenticate with a username and 
 	password for a role that has the authority "USE_RESTAPI" granted, e.g., the
-	roel with username = "reportserver-restadmin". This can be done using a web
+	role with username = "reportserver-restadmin". This can be done using a web
 	browser or it can be done in a bash shell by executing:
 
 		curl -X GET -u <username>:<password> <host>/report-server/rest/appversion

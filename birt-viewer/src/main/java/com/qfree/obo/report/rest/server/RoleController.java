@@ -62,7 +62,7 @@ public class RoleController extends AbstractBaseController {
 	 * This is just for a transition period until we have better/different
 	 * role management implemented.
 	 */
-	public static final boolean ALLOW_ALL_REPORTS_FOR_EACH_ROLE = true;
+	public static final boolean ALLOW_ALL_REPORTS_FOR_EACH_ROLE = false;
 
 	private final RoleRepository roleRepository;
 	private final RoleService roleService;
@@ -85,7 +85,8 @@ public class RoleController extends AbstractBaseController {
 	 * This endpoint can be tested with:
 	 * 
 	 *   $ mvn clean spring-boot:run
-	 *   $ curl -i -H "Accept: application/json;v=1" -X GET http://localhost:8080/rest/roles?expand=roles
+	 *   $ curl -X GET -u reportserver-restadmin:ReportServer*RESTADMIN -iH "Accept: application/json;v=1" \
+	 *   http://localhost:8080/rest/roles?expand=roles
 	 */
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
@@ -127,7 +128,8 @@ public class RoleController extends AbstractBaseController {
 	 * This endpoint can be tested with:
 	 * 
 	 *   $ mvn clean spring-boot:run
-	 *   $ curl -X POST -iH "Accept: application/json;v=1" -H "Content-Type: application/json" -d \
+	 *   $ curl -X POST -u reportserver-restadmin:ReportServer*RESTADMIN \
+	 *   -iH "Accept: application/json;v=1" -H "Content-Type: application/json" -d \
 	 *   '{"username":"bozoc","fullName":"Bozo the clown","unencodedPassword":"iambozo","loginRole":true,\
 	 *   "enabled":true,"emailAddress":"bozo@circus.net","timeZoneId":"CET"}' http://localhost:8080/rest/roles
 	 */
@@ -158,7 +160,8 @@ public class RoleController extends AbstractBaseController {
 	 * This endpoint can be tested with:
 	 * 
 	 *   $ mvn clean spring-boot:run
-	 *   $ curl -X GET -iH "Accept: application/json;v=1" http://localhost:8080/rest/roles/b85fd129-17d9-40e7-ac11-7541040f8627
+	 *   $ curl -X GET -u reportserver-restadmin:ReportServer*RESTADMIN -iH "Accept: application/json;v=1" \
+	 *   http://localhost:8080/rest/roles/b85fd129-17d9-40e7-ac11-7541040f8627
 	 */
 	@Path("/{id}")
 	@GET
@@ -211,7 +214,7 @@ public class RoleController extends AbstractBaseController {
 	 * so it will not be treated specially by the bash shell):
 	 * 
 	 *   $ mvn clean spring-boot:run
-	 *   $ curl -i -H "Accept: application/json;v=1" -X GET \
+	 *   $ curl -X GET -u reportserver-restadmin:ReportServer*RESTADMIN -iH "Accept: application/json;v=1" \
 	 *   http://localhost:8080/rest/roles/b85fd129-17d9-40e7-ac11-7541040f8627/reports\
 	 *   ?expand=reports\&expand=reportVersions\&expand=rptdesign
 	 * 
@@ -231,7 +234,7 @@ public class RoleController extends AbstractBaseController {
 	 * @param uriInfo
 	 * @return
 	 */
-	@Path("/{id}/reports")
+	@Path("/{id}" + ResourcePath.REPORTS_PATH)
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	@Transactional
@@ -249,7 +252,7 @@ public class RoleController extends AbstractBaseController {
 		RestApiVersion apiVersion = RestUtils.extractAPIVersion(acceptHeader, RestApiVersion.v1);
 
 		if (RestUtils.AUTO_EXPAND_PRIMARY_RESOURCES) {
-			addToExpandList(expand, Role.class);
+			addToExpandList(expand, Report.class);
 		}
 		Role role = roleRepository.findOne(id);
 		RestUtils.ifNullThen404(role, Role.class, "roleId", id.toString());
@@ -320,7 +323,7 @@ public class RoleController extends AbstractBaseController {
 				 * This code returns only those Reports associated with RoleReport
 				 * entities that are *directly* linked to the Role role. This does *not*
 				 * include Reports associated with RoleReport entities that are linked 
-				 * to ancestors (parents, gransparents, ...) of Role role.
+				 * to ancestors (parents, grandparents, ...) of Role role.
 				 */
 				if (RestUtils.FILTER_INACTIVE_RECORDS && !ResourcePath.showAll(Report.class, showAll)) {
 					reports = roleRepository.findActiveReportsByRoleId(role.getRoleId());
@@ -342,7 +345,8 @@ public class RoleController extends AbstractBaseController {
 	 * 
 	 *   $ mvn clean spring-boot:run
 	 *   
-	 *   $ curl -X PUT -iH "Accept: application/json;v=1" -H "Content-Type: application/json" -d \
+	 *   $ curl -X PUT -u reportserver-restadmin:ReportServer*RESTADMIN \
+	 *   -iH "Accept: application/json;v=1" -H "Content-Type: application/json" -d \
 	 *   '{"username":"bozoc","fullName":"Bozo the clown","loginRole":true,\
 	 *   "emailAddress":"dumbo@circus.net","timeZoneId":"UTC"}' \
 	 *   http://localhost:8080/rest/roles/f9a94054-c62b-464c-874c-a61d18530c87
@@ -350,7 +354,8 @@ public class RoleController extends AbstractBaseController {
 	 * This example updates the password that is used to *locally* authenticate
 	 * the role:
 	 * 
-	 *   $ curl -X PUT -iH "Accept: application/json;v=1" -H "Content-Type: application/json" -d \
+	 *   $ curl -X PUT -u reportserver-restadmin:ReportServer*RESTADMIN \
+	 *   -iH "Accept: application/json;v=1" -H "Content-Type: application/json" -d \
 	 *   '{"username":"bozoc","fullName":"Bozo the clown","loginRole":true,\
 	 *   "unencodedPassword":"iambozo2","emailAddress":"dumbo@circus.net","timeZoneId":"UTC"}' \
 	 *   http://localhost:8080/rest/roles/f9a94054-c62b-464c-874c-a61d18530c87
@@ -471,7 +476,7 @@ public class RoleController extends AbstractBaseController {
 	 * specified by its id. This endpoint can be tested with:
 	 * 
 	 *   $ mvn clean spring-boot:run
-	 *   $ curl -X GET -iH "Accept: application/json;v=1" \
+	 *   $ curl -X GET -u reportserver-restadmin:ReportServer*RESTADMIN -iH "Accept: application/json;v=1" \
 	 *   http://localhost:8080/rest/roles/b85fd129-17d9-40e7-ac11-7541040f8627/jobs
 	 * 
 	 * Note:  This endpoint supports pagination.
@@ -515,7 +520,7 @@ public class RoleController extends AbstractBaseController {
 	 * specified by its id. This endpoint can be tested with:
 	 * 
 	 *   $ mvn clean spring-boot:run
-	 *   $ curl -X GET -iH "Accept: application/json;v=1" \
+	 *   $ curl -X GET -u reportserver-restadmin:ReportServer*RESTADMIN -iH "Accept: application/json;v=1" \
 	 *   http://localhost:8080/rest/roles/b85fd129-17d9-40e7-ac11-7541040f8627/subscriptions
 	 * 
 	 * @Transactional is used to avoid org.hibernate.LazyInitializationException
@@ -551,7 +556,7 @@ public class RoleController extends AbstractBaseController {
 	 * specified by its id. This endpoint can be tested with:
 	 * 
 	 *   $ mvn clean spring-boot:run
-	 *   $ curl -X GET -iH "Accept: application/json;v=1" \
+	 *   $ curl -X GET -u reportserver-restadmin:ReportServer*RESTADMIN -iH "Accept: application/json;v=1" \
 	 *   http://localhost:8080/rest/roles/46e477dc-085f-4714-a24f-742428579fcc/authorities?expand=authorities
 	 * 
 	 * @Transactional is used to avoid org.hibernate.LazyInitializationException

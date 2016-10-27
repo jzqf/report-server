@@ -45,13 +45,19 @@ import com.qfree.obo.report.db.ReportVersionRepository;
 import com.qfree.obo.report.domain.Report;
 import com.qfree.obo.report.domain.ReportCategory;
 import com.qfree.obo.report.domain.ReportVersion;
+import com.qfree.obo.report.domain.Role;
+import com.qfree.obo.report.domain.UuidCustomType;
 import com.qfree.obo.report.dto.ReportCategoryResource;
+import com.qfree.obo.report.dto.ReportCollectionResource;
 import com.qfree.obo.report.dto.ReportResource;
 import com.qfree.obo.report.dto.ReportVersionResource;
 import com.qfree.obo.report.dto.ResourcePath;
 import com.qfree.obo.report.dto.RestErrorResource;
 import com.qfree.obo.report.dto.RestErrorResource.RestError;
+import com.qfree.obo.report.dto.RoleCollectionResource;
+import com.qfree.obo.report.dto.RoleResource;
 import com.qfree.obo.report.util.DateUtils;
+import com.qfree.obo.report.util.RestUtils;
 
 /**
  * 
@@ -569,6 +575,223 @@ public class ReportControllerTests {
 		assertThat(report.getSortOrder(), is(newSortOrder));
 		assertThat(report.isActive(), is(newActive));
 		assertThat(DateUtils.entityTimestampToNormalDate(report.getCreatedOn()), is(currentCreatedOn));
+	}
+
+	/*
+	 * This test 
+	 */
+	@Test
+	//	@DirtiesContext
+	@Transactional
+	public void testGetAuthorizedRolesForReport() {
+		/* 
+		 * This is the default version for the endpoint 
+		 * .../ResourcePath.REPORTS_PATH/{id}/ResourcePath.ROLES_PATH using HTTP GET.
+		 */
+		String defaultApiVersion = "1";
+
+		UUID uuidOfReport01 = UUID.fromString("d65f3d9c-f67d-4beb-9936-9dfa19aa1407");	// active=true
+		UUID uuidOfReport02 = UUID.fromString("c7f1d394-9814-4ede-bb01-2700187d79ca");	// active=true
+		UUID uuidOfReport03 = UUID.fromString("fe718314-5b39-40e7-aed2-279354c04a9d");	// active=false
+		UUID uuidOfReport04 = UUID.fromString("702d5daa-e23d-4f00-b32b-67b44c06d8f6");	// active=true
+
+		/*
+		 * Details of the Report (from test-data.sql) for which authenticated 
+		 * Roles will be fetched.
+		 */
+		UUID selectedReportUUID = uuidOfReport02;
+		String selectedReportName = "Report name #02";
+
+		Report report = reportRepository.findOne(selectedReportUUID);
+		assertThat(report, is(not(nullValue())));
+		assertThat(report.getName(), is(selectedReportName));
+
+		Response response;
+		String path;
+
+		path = Paths
+				.get(
+						ResourcePath.forEntity(Report.class).getPath(),
+						selectedReportUUID.toString(),
+						ResourcePath.forEntity(Role.class).getPath())
+				.toString();
+		logger.debug("path = {}", path);
+
+		/*
+		 * Retrieve the RoleResource's via HTTP GET.
+		 */
+		response = webTarget.path(path)
+				.queryParam(ResourcePath.EXPAND_QP_NAME,
+						ResourcePath.ROLE_EXPAND_PARAM)
+				.request()
+				.header("Accept", MediaType.APPLICATION_JSON + ";v=" + defaultApiVersion)
+				.get();
+		assertThat(response.getStatus(), is(Response.Status.OK.getStatusCode()));
+		RoleCollectionResource roleCollectionResource = response.readEntity(RoleCollectionResource.class);
+		logger.debug("roleCollectionResource = {}", roleCollectionResource);
+		System.out.printf("\nreport = %s\n", report.getName());
+		for (RoleResource roleResource:roleCollectionResource.getItems()){
+			System.out.printf("\tauthorized role = %s\n", roleResource.getUsername());
+		}
+		assertThat(roleCollectionResource, is(not(nullValue())));
+		assertThat(roleCollectionResource.getItems(), is(not(nullValue())));
+		System.out.printf("Number of roles = %s\n", roleCollectionResource.getItems().size());
+
+		if (RoleController.ALLOW_ALL_REPORTS_FOR_EACH_ROLE) {
+			Integer numRoles = null;
+			if (RestUtils.FILTER_INACTIVE_RECORDS) {
+				numRoles = 89; // number of active roles (roleRepository.findByActiveTrue().size())
+			} else {
+				numRoles = 89; // total number of roles (roleRepository.findAll().size())
+			}
+			assertThat(roleCollectionResource.getItems().size(), is(numRoles));
+		} else {
+
+			/*
+			 * Note: Since the H2 database does not support recursive CTE
+			 * expressions, the REST endpoint being tested here does not
+			 * consider inheritance of report access for roles. This means that
+			 * the tests here must be different for H2 and PostgreSQL.
+			 */
+//		if (UuidCustomType.DB_VENDOR.equals(UuidCustomType.POSTGRESQL_VENDOR)) {
+//			/*
+//			 * With Role inheritance included, there are 4 Report's that are
+//			 * "enabled" for Role "aabb":
+//			 * 
+//			 * 		"Report name #01"
+//			 * 		"Report name #02"
+//			 * 		"Report name #03"  (inactive)
+//			 * 		"Report name #04"
+//			 * 
+//			 * However, report "Report name #03" is not active,so that leave 3
+//			 * "active" Report's.
+//			 * 
+//			 * With recursive CTE expression:
+//			 */
+//			if (RoleController.ALLOW_ALL_REPORTS_FOR_EACH_ROLE == false) {
+//				assertThat(reportCollectionResource.getItems(), IsCollectionWithSize.hasSize(3));
+//				assertThat(reportCollectionResource.getItems(), hasSize(3));
+//			} else {
+//				assertThat(reportCollectionResource.getItems(), IsCollectionWithSize.hasSize(4));
+//				assertThat(reportCollectionResource.getItems(), hasSize(4));
+//			}
+//			List<UUID> activeReportUuidsFromEndpoint = new ArrayList<>(reportCollectionResource.getItems().size());
+//			for (ReportResource reportResource : reportCollectionResource.getItems()) {
+//				activeReportUuidsFromEndpoint.add(reportResource.getReportId());
+//			}
+//			assertThat(activeReportUuidsFromEndpoint,
+//					IsCollectionContaining.hasItems(uuidOfReport01, uuidOfReport02, uuidOfReport04));
+//		} else {
+//			/*
+//			 * Without considering Role inheritance, there should only be a single
+//			 * *active* Report returned, "Report name #04". "Report name #03" is
+//			 * also linked to the Role with id uuidOfRole_aabb, but it is not 
+//			 * active.
+//			 * 
+//			 * Without recursive CTE expression:
+//			 */
+//			if (RoleController.ALLOW_ALL_REPORTS_FOR_EACH_ROLE == false) {
+//				assertThat(reportCollectionResource.getItems(), IsCollectionWithSize.hasSize(1));
+//				assertThat(reportCollectionResource.getItems(), hasSize(1));
+//			} else {
+//				assertThat(reportCollectionResource.getItems(), IsCollectionWithSize.hasSize(4));
+//				assertThat(reportCollectionResource.getItems(), hasSize(4));
+//			}
+//			List<UUID> activeReportUuidsFromEndpoint = new ArrayList<>(reportCollectionResource.getItems().size());
+//			for (ReportResource reportResource : reportCollectionResource.getItems()) {
+//				activeReportUuidsFromEndpoint.add(reportResource.getReportId());
+//			}
+//			assertThat(activeReportUuidsFromEndpoint, IsCollectionContaining.hasItems(uuidOfReport04));
+//		}
+//
+//		/*
+//		 * Repeat, but this time turn off filtering on "active" for both Reports
+//		 * and ReportVersions.
+//		 */
+//		response = webTarget.path(path)
+//				.queryParam(ResourcePath.EXPAND_QP_NAME,
+//						ResourcePath.REPORT_EXPAND_PARAM,
+//						ResourcePath.REPORTVERSION_EXPAND_PARAM)
+//				.queryParam(ResourcePath.SHOWALL_QP_NAME,
+//						ResourcePath.REPORT_SHOWALL_PARAM,
+//						ResourcePath.REPORTVERSION_SHOWALL_PARAM)
+//				.request()
+//				.header("Accept", MediaType.APPLICATION_JSON + ";v=" + defaultApiVersion)
+//				.get();
+//		assertThat(response.getStatus(), is(Response.Status.OK.getStatusCode()));
+//		reportCollectionResource = response.readEntity(ReportCollectionResource.class);
+//		logger.debug("reportCollectionResource = {}", reportCollectionResource);
+//		assertThat(reportCollectionResource, is(not(nullValue())));
+//		assertThat(reportCollectionResource.getItems(), is(not(nullValue())));
+//		if (UuidCustomType.DB_VENDOR.equals(UuidCustomType.POSTGRESQL_VENDOR)) {
+//			/*
+//			 * With recursive CTE expression:
+//			 */
+//			if (RoleController.ALLOW_ALL_REPORTS_FOR_EACH_ROLE == false) {
+//				assertThat(reportCollectionResource.getItems(), IsCollectionWithSize.hasSize(4));
+//				assertThat(reportCollectionResource.getItems(), hasSize(4));
+//			} else {
+//				assertThat(reportCollectionResource.getItems(), IsCollectionWithSize.hasSize(6));
+//				assertThat(reportCollectionResource.getItems(), hasSize(6));
+//			}
+//			List<UUID> allReportUuidsFromEndpoint = new ArrayList<>(reportCollectionResource.getItems().size());
+//			for (ReportResource reportResource : reportCollectionResource.getItems()) {
+//				allReportUuidsFromEndpoint.add(reportResource.getReportId());
+//			}
+//			assertThat(allReportUuidsFromEndpoint,
+//					IsCollectionContaining.hasItems(uuidOfReport01, uuidOfReport02, uuidOfReport03, uuidOfReport04));
+//		} else {
+//			/*
+//			 * Without recursive CTE expression:
+//			 */
+//			if (RoleController.ALLOW_ALL_REPORTS_FOR_EACH_ROLE == false) {
+//				assertThat(reportCollectionResource.getItems(), IsCollectionWithSize.hasSize(2));
+//				assertThat(reportCollectionResource.getItems(), hasSize(2));
+//			} else {
+//				assertThat(reportCollectionResource.getItems(), IsCollectionWithSize.hasSize(6));
+//				assertThat(reportCollectionResource.getItems(), hasSize(6));
+//			}
+//			List<UUID> allReportUuidsFromEndpoint = new ArrayList<>(reportCollectionResource.getItems().size());
+//			for (ReportResource reportResource : reportCollectionResource.getItems()) {
+//				allReportUuidsFromEndpoint.add(reportResource.getReportId());
+//			}
+//			assertThat(allReportUuidsFromEndpoint, IsCollectionContaining.hasItems(uuidOfReport03, uuidOfReport04));
+//		}
+//
+//		/*
+//		 * Attempt to fetch a list of reports for a Role using an id that does 
+//		 * not exist. This should throw a "404" exception.
+//		 */
+//		UUID uuidOfNonExistentRole = UUID.fromString("6c328253-0000-0000-0000-ef38197931b0");
+//
+//		path = Paths
+//				.get(
+//						ResourcePath.forEntity(Role.class).getPath(),
+//						uuidOfNonExistentRole.toString(),
+//						ResourcePath.forEntity(Report.class).getPath())
+//				.toString();
+//
+//		/*
+//		 * Attempt to retrieve the list of reports via HTTP GET.
+//		 */
+//		response = webTarget.path(path)
+//				.request()
+//				.header("Accept", MediaType.APPLICATION_JSON + ";v=" + defaultApiVersion)
+//				.get();
+//		assertThat(response.getStatus(), is(Response.Status.NOT_FOUND.getStatusCode()));
+//		/*
+//		 * If an error occurs, then a RestErrorResource is returned as the 
+//		 * entity, not a RoleResource.
+//		 */
+//		RestErrorResource restErrorResource = response.readEntity(RestErrorResource.class);
+//		logger.debug("restErrorResource = {}", restErrorResource);
+//		assertThat(restErrorResource, is(not(nullValue())));
+//		assertThat(restErrorResource.getHttpStatus(), is(404));
+//		assertThat(restErrorResource.getHttpStatus(),
+//				is(RestError.NOT_FOUND_RESOUCE.getResponseStatus().getStatusCode()));
+//		assertThat(restErrorResource.getErrorCode(), is(RestError.NOT_FOUND_RESOUCE.getErrorCode()));
+
+		}
 	}
 
 }
