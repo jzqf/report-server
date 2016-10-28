@@ -274,6 +274,8 @@ public class RoleController extends AbstractBaseController {
 			if (UuidCustomType.DB_VENDOR.equals(UuidCustomType.POSTGRESQL_VENDOR)) {
 
 				/*
+				 * PostgreSQL:
+				 * 
 				 * roleRepository.findReportsByRoleIdRecursive(...) is a Spring Data
 				 * JPA repository method that uses a *native* SQL query. It appears 
 				 * that Hibernate has a problem treating the UUID data type for this
@@ -300,11 +302,10 @@ public class RoleController extends AbstractBaseController {
 				 *   	return a list of Report's given the list of UUID's.
 				 */
 				List<String> stringUuids = null;
-				if (RestUtils.FILTER_INACTIVE_RECORDS && !ResourcePath.showAll(Report.class, showAll)) {
-					stringUuids = roleRepository.findReportsByRoleIdRecursive(role.getRoleId().toString(), true);
-				} else {
-					stringUuids = roleRepository.findReportsByRoleIdRecursive(role.getRoleId().toString(), false);
-				}
+				Boolean activeReportsOnly = RestUtils.FILTER_INACTIVE_RECORDS && !ResourcePath.showAll(Report.class, showAll);
+				Boolean activeRolesOnly = RestUtils.FILTER_INACTIVE_RECORDS && !ResourcePath.showAll(Role.class, showAll);
+				stringUuids = roleRepository.findReportsByRoleIdRecursive(role.getRoleId().toString(),
+						activeReportsOnly, activeReportsOnly);
 				if (stringUuids != null && stringUuids.size() > 0) {
 					logger.debug("Number of stringUuids (recursive) = {}", stringUuids.size());
 					/*
@@ -320,6 +321,8 @@ public class RoleController extends AbstractBaseController {
 
 			} else {
 				/*
+				 * H2:
+				 * 
 				 * This code returns only those Reports associated with RoleReport
 				 * entities that are *directly* linked to the Role role. This does *not*
 				 * include Reports associated with RoleReport entities that are linked 

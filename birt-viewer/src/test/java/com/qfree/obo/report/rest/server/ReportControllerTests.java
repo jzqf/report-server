@@ -744,7 +744,7 @@ public class ReportControllerTests {
 					 * this report:
 					 * 
 					 *     a
-					 *     aa
+					 *     aa    inactive
 					 *     ab
 					 *     ac
 					 *     aaa

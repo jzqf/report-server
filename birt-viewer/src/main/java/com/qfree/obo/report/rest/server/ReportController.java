@@ -325,6 +325,8 @@ public class ReportController extends AbstractBaseController {
 			if (UuidCustomType.DB_VENDOR.equals(UuidCustomType.POSTGRESQL_VENDOR)) {
 
 				/*
+				 * PostgreSQL:
+				 * 
 				 * reportRepository.findRolesByReportIdRecursive(...) is a
 				 * Spring Data JPA repository method that uses a *native* SQL
 				 * query. It appears that Hibernate has a problem treating the
@@ -373,6 +375,8 @@ public class ReportController extends AbstractBaseController {
 
 			} else {
 				/*
+				 * H2:
+				 * 
 				 * This code returns only those Roles associated with RoleReport
 				 * entities that are *directly* linked to the Report report.
 				 * This does not* include Roles associated with RoleReport
