@@ -65,7 +65,7 @@ public interface RoleRepository extends JpaRepository<Role, UUID>, RoleRepositor
 	 * @param activeReportsOnly
 	 *            If {@code true}, only {@link Report}s that have
 	 *            {@code active=true} will be returned,
-	 * @param activeRolesOnly
+	 * @param activeInheritedRolesOnly
 	 *            If {@code true}, only {@link Roles}s that have
 	 *            {@code active=true} will be considered for Role inheritance.
 	 * @return
@@ -90,13 +90,13 @@ public interface RoleRepository extends JpaRepository<Role, UUID>, RoleRepositor
 			"WHERE level<10 " +
 			/* 
 			 * Insist that Roles used for Role inheritance are active if
-			 * Parameter activeRolesOnly = true. This test is NOT performed
+			 * Parameter activeInheritedRolesOnly = true. This test is NOT performed
 			 * for the CTE anchor member because the Role involved there is
 			 * specified directly by the parameter "roleId", and if the user
 			 * wants to find the authorized Reports for it, we allow the 
 			 * query to return Reports for that Role.
 			 */
-			"AND (role.active=true OR :activeRolesOnly=false) " +
+			"AND (role.active=true OR :activeInheritedRolesOnly=false) " +
 
 			") " +
 
@@ -129,5 +129,5 @@ public interface RoleRepository extends JpaRepository<Role, UUID>, RoleRepositor
 	public List<String> findReportsByRoleIdRecursive(
 			@Param("roleId") String roleId,
 			@Param("activeReportsOnly") Boolean activeReportsOnly,
-			@Param("activeRolesOnly") Boolean activeRolesOnly);
+			@Param("activeInheritedRolesOnly") Boolean activeInheritedRolesOnly);
 }

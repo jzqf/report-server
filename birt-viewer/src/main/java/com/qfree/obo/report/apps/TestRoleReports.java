@@ -44,12 +44,12 @@ public class TestRoleReports {
 		List<String> availableReportVersions = null;
 		
 		availableReportVersions = reportVersionRepository
-				.findReportVersionFilenamesByRoleIdRecursive(reportadmin_uuid.toString(), activeReportsOnly);
+				.findReportVersionFilenamesByRoleIdRecursive(reportadmin_uuid.toString(), activeReportsOnly, true);
 		logger.info("findReportVersionFilenamesByRoleIdRecursive(reportadmin_uuid.toString(), activeReportsOnly) = {}",
 				availableReportVersions);
 
 		availableReportVersions = reportVersionRepository
-				.findReportVersionFilenamesByRoleIdRecursive(user4_uuid.toString(), activeReportsOnly);
+				.findReportVersionFilenamesByRoleIdRecursive(user4_uuid.toString(), activeReportsOnly, true);
 		logger.info("findReportVersionFilenamesByRoleIdRecursive(user4_uuid.toString(), activeReportsOnly) = {}",
 				availableReportVersions);
 
