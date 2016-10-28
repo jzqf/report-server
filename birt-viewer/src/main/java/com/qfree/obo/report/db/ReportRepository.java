@@ -49,7 +49,7 @@ public interface ReportRepository extends JpaRepository<Report, UUID>, ReportRep
 	 * @param reportId
 	 *            String representation of the id of the {@link Report} for 
 	 *            which authorized roles will be returned.
-	 * @param activeOnly
+	 * @param activeRolesOnly
 	 *            If {@code true}, only {@link Role}s that have
 	 *            {@code active=true} will be returned
 	 * @return
@@ -63,7 +63,7 @@ public interface ReportRepository extends JpaRepository<Report, UUID>, ReportRep
 			"INNER JOIN role_report ON role_report.role_id=role.role_id " +
 			//"WHERE role_report.report_id=:reportId " +
 			"WHERE role_report.report_id=CAST(:reportId AS uuid) " +
-			"AND (role.active=true OR :activeOnly=false) " +
+			"AND (role.active=true OR :activeRolesOnly=false) " +
 
 			"UNION ALL " +
 
@@ -74,7 +74,7 @@ public interface ReportRepository extends JpaRepository<Report, UUID>, ReportRep
 			"INNER JOIN role_role link ON link.parent_role_id=descendent.role_id " +
 			"INNER JOIN role ON role.role_id=link.child_role_id " +
 			"WHERE level<10 " +
-			"AND (role.active=true OR :activeOnly=false) " +
+			"AND (role.active=true OR :activeRolesOnly=false) " +
 			
 			") " +
 
@@ -99,11 +99,11 @@ public interface ReportRepository extends JpaRepository<Report, UUID>, ReportRep
 			"(" +
 			"    SELECT DISTINCT CAST(descendent.role_id AS varchar), descendent.username FROM descendent " +
 			//"    INNER JOIN role ON role.role_id=descendent.role_id " +
-			//"    WHERE (role.active=true OR :activeOnly=false) " +
+			//"    WHERE (role.active=true OR :activeRolesOnly=false) " +
 			") DT " +
 			"ORDER BY DT.username",
 			nativeQuery = true)
 	public List<String> findRolesByReportIdRecursive(
 			@Param("reportId") String reportId,
-			@Param("activeOnly") Boolean activeOnly);
+			@Param("activeRolesOnly") Boolean activeRolesOnly);
 }

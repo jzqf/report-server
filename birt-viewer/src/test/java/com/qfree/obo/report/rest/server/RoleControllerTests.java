@@ -447,9 +447,9 @@ public class RoleControllerTests {
 		//for (ReportResource reportResource:reportCollectionResource.getItems()){
 		//	System.out.printf("					 *     %s\n", reportResource.getName());
 		//}
+		//System.out.printf("Number of reports = %s\n", reportCollectionResource.getItems().size());
 		assertThat(reportCollectionResource, is(not(nullValue())));
 		assertThat(reportCollectionResource.getItems(), is(not(nullValue())));
-		System.out.printf("Number of reports = %s\n", reportCollectionResource.getItems().size());
 
 		if (RoleController.ALLOW_ALL_REPORTS_FOR_EACH_ROLE) {
 			if (RestUtils.FILTER_INACTIVE_RECORDS) {
@@ -602,39 +602,34 @@ public class RoleControllerTests {
 		logger.debug("reportCollectionResource = {}", reportCollectionResource);
 		assertThat(reportCollectionResource, is(not(nullValue())));
 		assertThat(reportCollectionResource.getItems(), is(not(nullValue())));
-		if (UuidCustomType.DB_VENDOR.equals(UuidCustomType.POSTGRESQL_VENDOR)) {
-			/*
-			 * With recursive CTE expression:
-			 */
-			if (RoleController.ALLOW_ALL_REPORTS_FOR_EACH_ROLE == false) {
+		if (RoleController.ALLOW_ALL_REPORTS_FOR_EACH_ROLE) {
+			assertThat(reportCollectionResource.getItems(), IsCollectionWithSize.hasSize(6));
+			assertThat(reportCollectionResource.getItems(), hasSize(6));
+		} else {
+			if (UuidCustomType.DB_VENDOR.equals(UuidCustomType.POSTGRESQL_VENDOR)) {
+				/*
+				 * With recursive CTE expression:
+				 */
 				assertThat(reportCollectionResource.getItems(), IsCollectionWithSize.hasSize(4));
 				assertThat(reportCollectionResource.getItems(), hasSize(4));
+				List<UUID> allReportUuidsFromEndpoint = new ArrayList<>(reportCollectionResource.getItems().size());
+				for (ReportResource reportResource : reportCollectionResource.getItems()) {
+					allReportUuidsFromEndpoint.add(reportResource.getReportId());
+				}
+				assertThat(allReportUuidsFromEndpoint, IsCollectionContaining.hasItems(uuidOfReport01, uuidOfReport02,
+						uuidOfReport03, uuidOfReport04));
 			} else {
-				assertThat(reportCollectionResource.getItems(), IsCollectionWithSize.hasSize(6));
-				assertThat(reportCollectionResource.getItems(), hasSize(6));
-			}
-			List<UUID> allReportUuidsFromEndpoint = new ArrayList<>(reportCollectionResource.getItems().size());
-			for (ReportResource reportResource : reportCollectionResource.getItems()) {
-				allReportUuidsFromEndpoint.add(reportResource.getReportId());
-			}
-			assertThat(allReportUuidsFromEndpoint,
-					IsCollectionContaining.hasItems(uuidOfReport01, uuidOfReport02, uuidOfReport03, uuidOfReport04));
-		} else {
-			/*
-			 * Without recursive CTE expression:
-			 */
-			if (RoleController.ALLOW_ALL_REPORTS_FOR_EACH_ROLE == false) {
+				/*
+				 * Without recursive CTE expression:
+				 */
 				assertThat(reportCollectionResource.getItems(), IsCollectionWithSize.hasSize(2));
 				assertThat(reportCollectionResource.getItems(), hasSize(2));
-			} else {
-				assertThat(reportCollectionResource.getItems(), IsCollectionWithSize.hasSize(6));
-				assertThat(reportCollectionResource.getItems(), hasSize(6));
+				List<UUID> allReportUuidsFromEndpoint = new ArrayList<>(reportCollectionResource.getItems().size());
+				for (ReportResource reportResource : reportCollectionResource.getItems()) {
+					allReportUuidsFromEndpoint.add(reportResource.getReportId());
+				}
+				assertThat(allReportUuidsFromEndpoint, IsCollectionContaining.hasItems(uuidOfReport03, uuidOfReport04));
 			}
-			List<UUID> allReportUuidsFromEndpoint = new ArrayList<>(reportCollectionResource.getItems().size());
-			for (ReportResource reportResource : reportCollectionResource.getItems()) {
-				allReportUuidsFromEndpoint.add(reportResource.getReportId());
-			}
-			assertThat(allReportUuidsFromEndpoint, IsCollectionContaining.hasItems(uuidOfReport03, uuidOfReport04));
 		}
 
 		/*

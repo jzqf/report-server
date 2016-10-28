@@ -62,7 +62,7 @@ public interface RoleRepository extends JpaRepository<Role, UUID>, RoleRepositor
 	 * @param roleId
 	 *            String representation of the id of the {@link Role} for which
 	 *            reports will be returned.
-	 * @param activeOnly
+	 * @param activeReportsOnly
 	 *            If {@code true}, only {@link Report}s that have
 	 *            {@code active=true} will be returned
 	 * @return
@@ -110,11 +110,11 @@ public interface RoleRepository extends JpaRepository<Role, UUID>, RoleRepositor
 			"    SELECT DISTINCT CAST(report.report_id AS varchar), report.number FROM role_report " +
 			"    INNER JOIN ancestor ON ancestor.role_id=role_report.role_id " +
 			"    INNER JOIN report ON report.report_id=role_report.report_id " +
-			"    WHERE (report.active=true OR :activeOnly=false)" +
+			"    WHERE (report.active=true OR :activeReportsOnly=false)" +
 			") DT " +
 			"ORDER BY DT.number",
 			nativeQuery = true)
 	public List<String> findReportsByRoleIdRecursive(
 			@Param("roleId") String roleId,
-			@Param("activeOnly") Boolean activeOnly);
+			@Param("activeReportsOnly") Boolean activeReportsOnly);
 }

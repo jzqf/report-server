@@ -172,7 +172,7 @@ INSERT INTO reporting.role (role_id, username, login_role, encoded_password, ful
 INSERT INTO reporting.role (role_id, username, login_role, encoded_password, full_name, enabled, active, created_on) VALUES ('e73ee6a5-5236-4630-aba1-de18e76b8105', 'a', false, '', '', true, true, '2015-04-13T08:00:00');
 
 -- Children of "a":
-INSERT INTO reporting.role (role_id, username, login_role, encoded_password, full_name, enabled, active, created_on) VALUES ('1f47643b-0cb7-42a1-82bd-ab912d369567', 'aa', false, '', '', true, true, '2015-04-13T08:00:00');
+INSERT INTO reporting.role (role_id, username, login_role, encoded_password, full_name, enabled, active, created_on) VALUES ('1f47643b-0cb7-42a1-82bd-ab912d369567', 'aa', false, '', '', true, false, '2015-04-13T08:00:00');
 INSERT INTO reporting.role (role_id, username, login_role, encoded_password, full_name, enabled, active, created_on) VALUES ('07d768c2-9243-4521-bf31-53cfe7a54eb7', 'ab', false, '', '', true, true, '2015-04-13T08:00:00');
 INSERT INTO reporting.role (role_id, username, login_role, encoded_password, full_name, enabled, active, created_on) VALUES ('e745b03b-a63d-4c14-8b3c-d9aa773080f1', 'ac', false, '', '', true, true, '2015-04-13T08:00:00');
 -- parent='a', child='aa':

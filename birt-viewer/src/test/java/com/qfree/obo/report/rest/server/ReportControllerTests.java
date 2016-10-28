@@ -595,6 +595,9 @@ public class ReportControllerTests {
 		UUID uuidOfReport03 = UUID.fromString("fe718314-5b39-40e7-aed2-279354c04a9d");	// active=false
 		UUID uuidOfReport04 = UUID.fromString("702d5daa-e23d-4f00-b32b-67b44c06d8f6");	// active=true
 
+		UUID uuidOfRole_a = UUID.fromString("e73ee6a5-5236-4630-aba1-de18e76b8105");	// active=true
+		UUID uuidOfRole_aab = UUID.fromString("149c594e-9ae6-4c48-b02d-e84659d030ad");	// active=true
+		
 		/*
 		 * Details of the Report (from test-data.sql) for which authenticated 
 		 * Roles will be fetched.
@@ -629,13 +632,13 @@ public class ReportControllerTests {
 		assertThat(response.getStatus(), is(Response.Status.OK.getStatusCode()));
 		RoleCollectionResource roleCollectionResource = response.readEntity(RoleCollectionResource.class);
 		logger.debug("roleCollectionResource = {}", roleCollectionResource);
-		System.out.printf("\nreport = %s\n", report.getName());
-		for (RoleResource roleResource:roleCollectionResource.getItems()){
-			System.out.printf("					 *     %s\n", roleResource.getUsername());
-		}
+		//System.out.printf("\nreport = %s\n", report.getName());
+		//for (RoleResource roleResource:roleCollectionResource.getItems()){
+		//	System.out.printf("					 *     %s\n", roleResource.getUsername());
+		//}
+		//System.out.printf("Number of roles = %s\n", roleCollectionResource.getItems().size());
 		assertThat(roleCollectionResource, is(not(nullValue())));
 		assertThat(roleCollectionResource.getItems(), is(not(nullValue())));
-		System.out.printf("Number of roles = %s\n", roleCollectionResource.getItems().size());
 
 		if (RoleController.ALLOW_ALL_REPORTS_FOR_EACH_ROLE) {
 			Integer numRoles = null;
@@ -662,7 +665,7 @@ public class ReportControllerTests {
 				 */
 				if (RestUtils.FILTER_INACTIVE_RECORDS) {
 					/*
-					 * Report "Report name #02" is directly authorized via
+					 * Report "Report name #02" is *directly* authorized via
 					 * RoleReport entities for the two roles: "a" and "aab".
 					 * 
 					 * But, since role "aa" is inactive, the following roles are
@@ -806,28 +809,36 @@ public class ReportControllerTests {
 					assertThat(roleCollectionResource.getItems(), hasSize(46));
 				}
 			} else {
-//				/*
-//				 * H2:
-//				 * 
-//				 * Without considering Role inheritance, there should only be a single
-//				 * *active* Report returned, "Report name #04". "Report name #03" is
-//				 * also linked to the Role with id uuidOfRole_aabb, but it is not 
-//				 * active.
-//				 * 
-//				 * Without recursive CTE expression:
-//				 */
-//				if (RoleController.ALLOW_ALL_REPORTS_FOR_EACH_ROLE == false) {
-//					assertThat(reportCollectionResource.getItems(), IsCollectionWithSize.hasSize(1));
-//					assertThat(reportCollectionResource.getItems(), hasSize(1));
-//				} else {
-//					assertThat(reportCollectionResource.getItems(), IsCollectionWithSize.hasSize(4));
-//					assertThat(reportCollectionResource.getItems(), hasSize(4));
-//				}
-//				List<UUID> activeReportUuidsFromEndpoint = new ArrayList<>(reportCollectionResource.getItems().size());
-//				for (ReportResource reportResource : reportCollectionResource.getItems()) {
-//					activeReportUuidsFromEndpoint.add(reportResource.getReportId());
-//				}
-//				assertThat(activeReportUuidsFromEndpoint, IsCollectionContaining.hasItems(uuidOfReport04));
+				/*
+				 * H2: Without Role inheritance:
+				 *
+				 * Report "Report name #02" is *directly* authorized via
+				 * RoleReport entities for the two roles: 
+				 * 
+				 *     a
+				 *     aab
+				 *     
+				 * Both of these roles are active, so the tests implemented
+				 * here are the same for RestUtils.FILTER_INACTIVE_RECORDS 
+				 * equal to true or false.
+				 */
+				if (RestUtils.FILTER_INACTIVE_RECORDS) {
+					assertThat(roleCollectionResource.getItems(), IsCollectionWithSize.hasSize(2));
+					assertThat(roleCollectionResource.getItems(), hasSize(2));
+					List<UUID> roleUuidsFromEndpoint = new ArrayList<>(roleCollectionResource.getItems().size());
+					for (RoleResource roleResource : roleCollectionResource.getItems()) {
+						roleUuidsFromEndpoint.add(roleResource.getRoleId());
+					}
+					assertThat(roleUuidsFromEndpoint, IsCollectionContaining.hasItems(uuidOfRole_a, uuidOfRole_aab));					
+				} else {
+					assertThat(roleCollectionResource.getItems(), IsCollectionWithSize.hasSize(2));
+					assertThat(roleCollectionResource.getItems(), hasSize(2));
+					List<UUID> roleUuidsFromEndpoint = new ArrayList<>(roleCollectionResource.getItems().size());
+					for (RoleResource roleResource : roleCollectionResource.getItems()) {
+						roleUuidsFromEndpoint.add(roleResource.getRoleId());
+					}
+					assertThat(roleUuidsFromEndpoint, IsCollectionContaining.hasItems(uuidOfRole_a, uuidOfRole_aab));					
+				}
 		}
 //
 //		/*
