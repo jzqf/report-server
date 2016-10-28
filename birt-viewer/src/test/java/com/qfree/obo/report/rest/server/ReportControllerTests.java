@@ -806,26 +806,28 @@ public class ReportControllerTests {
 					assertThat(roleCollectionResource.getItems(), hasSize(46));
 				}
 			} else {
-//			/*
-//			 * Without considering Role inheritance, there should only be a single
-//			 * *active* Report returned, "Report name #04". "Report name #03" is
-//			 * also linked to the Role with id uuidOfRole_aabb, but it is not 
-//			 * active.
-//			 * 
-//			 * Without recursive CTE expression:
-//			 */
-//			if (RoleController.ALLOW_ALL_REPORTS_FOR_EACH_ROLE == false) {
-//				assertThat(reportCollectionResource.getItems(), IsCollectionWithSize.hasSize(1));
-//				assertThat(reportCollectionResource.getItems(), hasSize(1));
-//			} else {
-//				assertThat(reportCollectionResource.getItems(), IsCollectionWithSize.hasSize(4));
-//				assertThat(reportCollectionResource.getItems(), hasSize(4));
-//			}
-//			List<UUID> activeReportUuidsFromEndpoint = new ArrayList<>(reportCollectionResource.getItems().size());
-//			for (ReportResource reportResource : reportCollectionResource.getItems()) {
-//				activeReportUuidsFromEndpoint.add(reportResource.getReportId());
-//			}
-//			assertThat(activeReportUuidsFromEndpoint, IsCollectionContaining.hasItems(uuidOfReport04));
+//				/*
+//				 * H2:
+//				 * 
+//				 * Without considering Role inheritance, there should only be a single
+//				 * *active* Report returned, "Report name #04". "Report name #03" is
+//				 * also linked to the Role with id uuidOfRole_aabb, but it is not 
+//				 * active.
+//				 * 
+//				 * Without recursive CTE expression:
+//				 */
+//				if (RoleController.ALLOW_ALL_REPORTS_FOR_EACH_ROLE == false) {
+//					assertThat(reportCollectionResource.getItems(), IsCollectionWithSize.hasSize(1));
+//					assertThat(reportCollectionResource.getItems(), hasSize(1));
+//				} else {
+//					assertThat(reportCollectionResource.getItems(), IsCollectionWithSize.hasSize(4));
+//					assertThat(reportCollectionResource.getItems(), hasSize(4));
+//				}
+//				List<UUID> activeReportUuidsFromEndpoint = new ArrayList<>(reportCollectionResource.getItems().size());
+//				for (ReportResource reportResource : reportCollectionResource.getItems()) {
+//					activeReportUuidsFromEndpoint.add(reportResource.getReportId());
+//				}
+//				assertThat(activeReportUuidsFromEndpoint, IsCollectionContaining.hasItems(uuidOfReport04));
 		}
 //
 //		/*

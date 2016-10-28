@@ -182,17 +182,16 @@ public class ReportVersionRepositoryTests {
 	@Transactional
 	public void delete() {
 		UUID uuidOfReport04Version2 = UUID.fromString("80b14b11-45c7-4a05-99ed-972050f2338f");
-		long currentNumberOfReportVersions = 7;
-		long numberOfReportVersionReportParameters = 7;
-		long currentTotalNumberOfReportParameters = 13;
-		long currentTotalNumberOfReports = 6;
+		long currentNumberOfReportVersions = 7L;
+		long numberOfReportVersionReportParameters = 7L;
+		long currentTotalNumberOfReportParameters = 13L;
+		long currentTotalNumberOfReports = 6L;
 		assertThat(reportVersionRepository.count(), is(currentNumberOfReportVersions));
 		assertThat(reportParameterRepository.count(), is(currentTotalNumberOfReportParameters));
 		assertThat(reportRepository.count(), is(currentTotalNumberOfReports));
 		assertThat(reportVersionRepository.findOne(uuidOfReport04Version2), is(not(nullValue())));
-		//ReportVersion Report04Version2 = reportVersionRepository.findOne(uuidOfReport04Version2);
 		reportVersionRepository.delete(uuidOfReport04Version2);
-		assertThat(reportVersionRepository.count(), is(currentNumberOfReportVersions - 1));
+		assertThat(reportVersionRepository.count(), is(currentNumberOfReportVersions - 1L));
 		assertThat(reportParameterRepository.count(), is(currentTotalNumberOfReportParameters
 				- numberOfReportVersionReportParameters));
 		assertThat(reportRepository.count(), is(currentTotalNumberOfReports));

@@ -50,6 +50,7 @@ import com.qfree.obo.report.dto.RestErrorResource;
 import com.qfree.obo.report.dto.RestErrorResource.RestError;
 import com.qfree.obo.report.dto.RoleResource;
 import com.qfree.obo.report.util.DateUtils;
+import com.qfree.obo.report.util.RestUtils;
 
 /**
  * 
@@ -442,63 +443,144 @@ public class RoleControllerTests {
 		assertThat(response.getStatus(), is(Response.Status.OK.getStatusCode()));
 		ReportCollectionResource reportCollectionResource = response.readEntity(ReportCollectionResource.class);
 		logger.debug("reportCollectionResource = {}", reportCollectionResource);
+		//System.out.printf("\nrole = %s\n", role_aabb.getUsername());
+		//for (ReportResource reportResource:reportCollectionResource.getItems()){
+		//	System.out.printf("					 *     %s\n", reportResource.getName());
+		//}
 		assertThat(reportCollectionResource, is(not(nullValue())));
 		assertThat(reportCollectionResource.getItems(), is(not(nullValue())));
-		/*
-		 * Note:	Since the H2 database does not support recursive CTE 
-		 * 			expressions, the REST endpoint being tested here does not
-		 * 			consider inheritance of report access for roles. This means
-		 * 			that the tests here must be different for H2 and PostgreSQL.
-		 */
-		if (UuidCustomType.DB_VENDOR.equals(UuidCustomType.POSTGRESQL_VENDOR)) {
-			/*
-			 * With Role inheritance included, there are 4 Report's that are
-			 * "enabled" for Role "aabb":
-			 * 
-			 * 		"Report name #01"
-			 * 		"Report name #02"
-			 * 		"Report name #03"  (inactive)
-			 * 		"Report name #04"
-			 * 
-			 * However, report "Report name #03" is not active,so that leave 3
-			 * "active" Report's.
-			 * 
-			 * With recursive CTE expression:
-			 */
-			if (RoleController.ALLOW_ALL_REPORTS_FOR_EACH_ROLE == false) {
-				assertThat(reportCollectionResource.getItems(), IsCollectionWithSize.hasSize(3));
-				assertThat(reportCollectionResource.getItems(), hasSize(3));
-			} else {
+		System.out.printf("Number of reports = %s\n", reportCollectionResource.getItems().size());
+
+		if (RoleController.ALLOW_ALL_REPORTS_FOR_EACH_ROLE) {
+			if (RestUtils.FILTER_INACTIVE_RECORDS) {
+				/*
+				 * All *active* reports:
+				 * 
+				 *     Report name #01
+				 *     Report name #02
+				 *     Report name #04
+				 *     Report name #06
+				 */
 				assertThat(reportCollectionResource.getItems(), IsCollectionWithSize.hasSize(4));
 				assertThat(reportCollectionResource.getItems(), hasSize(4));
+			} else {
+				/*
+				 * All reports (active or inactive):
+				 * 
+				 *     Report name #01
+				 *     Report name #02
+				 *     Report name #03	(inactive)
+				 *     Report name #04
+				 *     Report name #05	(inactive)
+				 *     Report name #06
+				 */
+				assertThat(reportCollectionResource.getItems(), IsCollectionWithSize.hasSize(6));
+				assertThat(reportCollectionResource.getItems(), hasSize(6));
 			}
-			List<UUID> activeReportUuidsFromEndpoint = new ArrayList<>(reportCollectionResource.getItems().size());
-			for (ReportResource reportResource : reportCollectionResource.getItems()) {
-				activeReportUuidsFromEndpoint.add(reportResource.getReportId());
-			}
-			assertThat(activeReportUuidsFromEndpoint,
-					IsCollectionContaining.hasItems(uuidOfReport01, uuidOfReport02, uuidOfReport04));
 		} else {
+			
 			/*
-			 * Without considering Role inheritance, there should only be a single
-			 * *active* Report returned, "Report name #04". "Report name #03" is
-			 * also linked to the Role with id uuidOfRole_aabb, but it is not 
-			 * active.
-			 * 
-			 * Without recursive CTE expression:
+			 * Note:	Since the H2 database does not support recursive CTE 
+			 * 			expressions, the REST endpoint being tested here does not
+			 * 			consider inheritance of report access for roles. This means
+			 * 			that the tests here must be different for H2 and PostgreSQL.
 			 */
-			if (RoleController.ALLOW_ALL_REPORTS_FOR_EACH_ROLE == false) {
-				assertThat(reportCollectionResource.getItems(), IsCollectionWithSize.hasSize(1));
-				assertThat(reportCollectionResource.getItems(), hasSize(1));
+			if (UuidCustomType.DB_VENDOR.equals(UuidCustomType.POSTGRESQL_VENDOR)) {
+				/*
+				 * With Role inheritance included (recursive CTE expression):
+				 */
+				if (RestUtils.FILTER_INACTIVE_RECORDS) {
+					/*
+					 * There are 4 Report's that are authorized for 
+					 * Role "aabb" via inheritance:
+					 * 
+					 * 		"Report name #01"
+					 * 		"Report name #02"
+					 * 		"Report name #03"  - inactive; therefore, eliminated
+					 * 		"Report name #04"
+					 * 
+					 * However, report "Report name #03" is not active, so that 
+					 * leaves 3 *active* Report's.
+					 */
+					assertThat(reportCollectionResource.getItems(), IsCollectionWithSize.hasSize(3));
+					assertThat(reportCollectionResource.getItems(), hasSize(3));
+					List<UUID> activeReportUuidsFromEndpoint = new ArrayList<>(
+							reportCollectionResource.getItems().size());
+					for (ReportResource reportResource : reportCollectionResource.getItems()) {
+						activeReportUuidsFromEndpoint.add(reportResource.getReportId());
+					}
+					assertThat(activeReportUuidsFromEndpoint,
+							IsCollectionContaining.hasItems(uuidOfReport01, uuidOfReport02, uuidOfReport04));
+				} else {
+					/*
+					 * There are 4 Report's (active or inactive) that are 
+					 * authorized for Role "aabb" via inheritance:
+					 * 
+					 * 		"Report name #01"
+					 * 		"Report name #02"
+					 * 		"Report name #03"  (inactive)
+					 * 		"Report name #04"
+					 */
+					assertThat(reportCollectionResource.getItems(), IsCollectionWithSize.hasSize(4));
+					assertThat(reportCollectionResource.getItems(), hasSize(4));
+					List<UUID> activeReportUuidsFromEndpoint = new ArrayList<>(
+							reportCollectionResource.getItems().size());
+					for (ReportResource reportResource : reportCollectionResource.getItems()) {
+						activeReportUuidsFromEndpoint.add(reportResource.getReportId());
+					}
+					assertThat(activeReportUuidsFromEndpoint,
+							IsCollectionContaining.hasItems(uuidOfReport01, uuidOfReport02, uuidOfReport03, uuidOfReport04));
+				}
 			} else {
-				assertThat(reportCollectionResource.getItems(), IsCollectionWithSize.hasSize(4));
-				assertThat(reportCollectionResource.getItems(), hasSize(4));
+				/*
+				 * H2: Without considering Role inheritance, i.e., without
+				 *     a recursive CTE expression:
+				 */
+				if (RestUtils.FILTER_INACTIVE_RECORDS) {
+					/*
+					 * There are 2 Report's that are directly authorized for 
+					 * Role "aabb" via RoleReport entities, i.e., without 
+					 * including the effect of Role inheritance:
+					 * 
+					 * "Report name #03" - inactive; therefore, eliminated "Report name #04"
+					 * "Report name #04"
+					 * 
+					 * However, report "Report name #03" is not active, so that
+					 * leaves 1 *active* Report.
+					 */
+					/*
+					 * There should only be a single *active* Report returned,
+					 * "Report name #04". "Report name #03" is also linked to
+					 * the Role with id uuidOfRole_aabb, but it is not active.
+					 */
+					assertThat(reportCollectionResource.getItems(), IsCollectionWithSize.hasSize(1));
+					assertThat(reportCollectionResource.getItems(), hasSize(1));
+					List<UUID> activeReportUuidsFromEndpoint = new ArrayList<>(
+							reportCollectionResource.getItems().size());
+					for (ReportResource reportResource : reportCollectionResource.getItems()) {
+						activeReportUuidsFromEndpoint.add(reportResource.getReportId());
+					}
+					assertThat(activeReportUuidsFromEndpoint, IsCollectionContaining.hasItems(uuidOfReport04));
+				} else {
+					/*
+					 * There are 2 Report's that are directly authorized for 
+					 * Role "aabb" via RoleReport entities, i.e., without 
+					 * including the effect of Role inheritance:
+					 * 
+					 * "Report name #03" - inactive, but we include this report
+					 * "Report name #04"
+					 */
+					assertThat(reportCollectionResource.getItems(), IsCollectionWithSize.hasSize(2));
+					assertThat(reportCollectionResource.getItems(), hasSize(2));
+					List<UUID> activeReportUuidsFromEndpoint = new ArrayList<>(
+							reportCollectionResource.getItems().size());
+					for (ReportResource reportResource : reportCollectionResource.getItems()) {
+						activeReportUuidsFromEndpoint.add(reportResource.getReportId());
+					}
+					assertThat(activeReportUuidsFromEndpoint, IsCollectionContaining.hasItems(uuidOfReport03, uuidOfReport04)); 
+				}
 			}
-			List<UUID> activeReportUuidsFromEndpoint = new ArrayList<>(reportCollectionResource.getItems().size());
-			for (ReportResource reportResource : reportCollectionResource.getItems()) {
-				activeReportUuidsFromEndpoint.add(reportResource.getReportId());
-			}
-			assertThat(activeReportUuidsFromEndpoint, IsCollectionContaining.hasItems(uuidOfReport04));
+			
 		}
 
 		/*
