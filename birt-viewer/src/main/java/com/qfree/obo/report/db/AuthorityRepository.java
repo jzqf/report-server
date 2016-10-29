@@ -92,6 +92,9 @@ public interface AuthorityRepository extends JpaRepository<Authority, UUID> {
 	 * @param activeAuthoritiesOnly
 	 *            If {@code true}, only {@link Authority}'s that have
 	 *            {@code active=true} will be returned
+	 * @param activeInheritedRolesOnly
+	 *            If {@code true}, only {@link Roles}s that have
+	 *            {@code active=true} will be considered for Role inheritance.
 	 * @return
 	 */
 	@Query(value = "WITH RECURSIVE ancestor(level, role_id) AS (" +

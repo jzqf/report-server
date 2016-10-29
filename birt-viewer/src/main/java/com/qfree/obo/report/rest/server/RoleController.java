@@ -303,9 +303,9 @@ public class RoleController extends AbstractBaseController {
 				 */
 				List<String> stringUuids = null;
 				Boolean activeReportsOnly = RestUtils.FILTER_INACTIVE_RECORDS && !ResourcePath.showAll(Report.class, showAll);
-				Boolean activeRolesOnly = RestUtils.FILTER_INACTIVE_RECORDS && !ResourcePath.showAll(Role.class, showAll);
+				Boolean activeInheritedRolesOnly = true;  //RestUtils.FILTER_INACTIVE_RECORDS && !ResourcePath.showAll(Role.class, showAll);
 				stringUuids = roleRepository.findReportsByRoleIdRecursive(role.getRoleId().toString(),
-						activeReportsOnly, activeReportsOnly);
+						activeReportsOnly, activeInheritedRolesOnly);
 				if (stringUuids != null && stringUuids.size() > 0) {
 					logger.debug("Number of stringUuids (recursive) = {}", stringUuids.size());
 					/*

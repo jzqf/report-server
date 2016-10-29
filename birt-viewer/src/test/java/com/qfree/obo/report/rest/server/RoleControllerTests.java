@@ -599,6 +599,12 @@ public class RoleControllerTests {
 		assertThat(response.getStatus(), is(Response.Status.OK.getStatusCode()));
 		reportCollectionResource = response.readEntity(ReportCollectionResource.class);
 		logger.debug("reportCollectionResource = {}", reportCollectionResource);
+//System.out.printf("\nrole = %s\n", role_aabb.getUsername());
+//for (ReportResource reportResource:reportCollectionResource.getItems()){
+//	System.out.printf("					 *     %s\n", reportResource.getName());
+//}
+//System.out.printf("Number of reports = %s\n", reportCollectionResource.getItems().size());
+
 		assertThat(reportCollectionResource, is(not(nullValue())));
 		assertThat(reportCollectionResource.getItems(), is(not(nullValue())));
 		if (RoleController.ALLOW_ALL_REPORTS_FOR_EACH_ROLE) {
@@ -609,13 +615,13 @@ public class RoleControllerTests {
 				/*
 				 * With recursive CTE expression:
 				 */
-				assertThat(reportCollectionResource.getItems(), IsCollectionWithSize.hasSize(4));
-				assertThat(reportCollectionResource.getItems(), hasSize(4));
+				assertThat(reportCollectionResource.getItems(), IsCollectionWithSize.hasSize(3));
+				assertThat(reportCollectionResource.getItems(), hasSize(3));
 				List<UUID> allReportUuidsFromEndpoint = new ArrayList<>(reportCollectionResource.getItems().size());
 				for (ReportResource reportResource : reportCollectionResource.getItems()) {
 					allReportUuidsFromEndpoint.add(reportResource.getReportId());
 				}
-				assertThat(allReportUuidsFromEndpoint, IsCollectionContaining.hasItems(uuidOfReport01, uuidOfReport02,
+				assertThat(allReportUuidsFromEndpoint, IsCollectionContaining.hasItems(uuidOfReport02,
 						uuidOfReport03, uuidOfReport04));
 			} else {
 				/*
