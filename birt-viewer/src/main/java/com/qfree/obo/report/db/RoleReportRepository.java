@@ -36,6 +36,11 @@ public interface RoleReportRepository extends JpaRepository<RoleReport, UUID> {
 	 * @param reportId
 	 * @return
 	 */
+	/*
+	 * The name of this method is odd because it is a Spring Data JPA query
+	 * method where the syntax of the method name defines the query that
+	 * is performed, as well as the types of the parameters expected.
+	 */
 	RoleReport findByRoleRoleIdAndReportReportId(UUID roleId, UUID reportId);
 	  
 }

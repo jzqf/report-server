@@ -62,7 +62,7 @@ public class RoleController extends AbstractBaseController {
 	 * This is just for a transition period until we have better/different
 	 * role management implemented.
 	 */
-	public static final boolean ALLOW_ALL_REPORTS_FOR_EACH_ROLE = false;
+	public static final boolean ALLOW_ALL_REPORTS_FOR_EACH_ROLE = true;
 
 	private final RoleRepository roleRepository;
 	private final RoleService roleService;
