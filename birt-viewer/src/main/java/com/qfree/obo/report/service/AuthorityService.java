@@ -72,7 +72,8 @@ public class AuthorityService {
 		 * This returns a list of Strings, each of which represents a UUID id
 		 * of and Authority. 
 		 */
-		List<String> uuidStrings = findActiveAuthorityIdsByRoleId(roleId);
+		Boolean activeAuthoritiesOnly = true;
+		List<String> uuidStrings = findAuthorityIdsByRoleId(roleId, activeAuthoritiesOnly);
 		/*
 		 * The rest of this method generates a list of Authority entities from
 		 * the list of Authority ids that are expressed as Strings, i.e., it
@@ -93,8 +94,7 @@ public class AuthorityService {
 		return authorities;
 	}
 
-	public List<String> findActiveAuthorityIdsByRoleId(UUID roleId) {
-		Boolean activeAuthoritiesOnly=true;
+	public List<String> findAuthorityIdsByRoleId(UUID roleId, Boolean activeAuthoritiesOnly) {
 		/*
 		 * The H2 database does not support recursive CTE expressions, so it is 
 		 * necessary to run different code if the database is not PostgreSQL.
