@@ -255,6 +255,17 @@ public class ReportServerAuthenticationProvider implements AuthenticationProvide
 
 						List<String> authorities = null;
 						if (username.equals(Role.QFREE_ADMIN_ROLE_NAME)) {
+							/*
+							 * Authorities are granted to the QFREE_ADMIN_ROLE_NAME
+							 * role regardless of whether they are active or not.
+							 * This is because the "active" setting for an Authority
+							 * will be managed by some sort of administrator to 
+							 * control the operations available to normal report 
+							 * server users. The QFREE_ADMIN_ROLE_NAME role is a 
+							 * special role for Q-Free use only - we don't want this
+							 * role's capabilities to be altered by normal report
+							 * server administrative operations.
+							 */
 							authorities = authorityService.findAuthorityNamesByRoleId(role.getRoleId());
 						} else {
 							/*

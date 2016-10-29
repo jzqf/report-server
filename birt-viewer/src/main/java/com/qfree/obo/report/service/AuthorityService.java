@@ -54,11 +54,29 @@ public class AuthorityService {
 		return authorities;
 	}
 
+	/**
+	 * Returns an {@link Authority} {@link List} for a {@link Role} specified
+	 * by its id. If a PostgreSQL database is being used, {@link Role} 
+	 * inheritance will be taken into account. If H2 is being used (for unit
+	 * and integration tests), then {@link Role} inheritance will not be taken 
+	 * into account.
+	 * 
+	 * @param roleId
+	 * @return
+	 */
 	@Transactional
 	public List<Authority> getActiveAuthoritiesByRoleId(UUID roleId) {
 
-		//List<String> uuidStrings = authorityRepository.findActiveAuthorityIdsByRoleIdRecursive(roleId.toString());
+		/*
+		 * This returns a list of Strings, each of which represents a UUID id
+		 * of and Authority. 
+		 */
 		List<String> uuidStrings = findActiveAuthorityIdsByRoleId(roleId);
+		/*
+		 * The rest of this method generates a list of Authority entities from
+		 * the list of Authority ids that are expressed as Strings, i.e., it
+		 * performs the conversion:  List<String> -> List<Authority>
+		 */
 		List<Authority> authorities = new ArrayList<>(uuidStrings.size());
 		for (String uuidString : uuidStrings) {
 			try {
