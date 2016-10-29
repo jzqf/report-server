@@ -102,7 +102,7 @@ public class AuthorityService {
 		 * in production. 
 		 */
 		if (UuidCustomType.DB_VENDOR.equals(UuidCustomType.POSTGRESQL_VENDOR)) {
-			return authorityRepository.findActiveAuthorityIdsByRoleIdRecursive(roleId.toString());
+			return authorityRepository.findAuthorityIdsByRoleIdRecursive(roleId.toString(), activeAuthoritiesOnly);
 		} else {
 			return authorityRepository.findAuthorityIdsByRoleId(roleId.toString(), activeAuthoritiesOnly);
 		}

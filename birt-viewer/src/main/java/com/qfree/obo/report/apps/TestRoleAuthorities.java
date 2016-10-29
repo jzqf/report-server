@@ -30,6 +30,7 @@ public class TestRoleAuthorities {
 		logger.info("authority_DELETE_JOBS = {}", authority_DELETE_JOBS);
 
 		Boolean activeAuthoritiesOnly = true;
+		
 		List<String> uuidStrings_ADMIN_ROLE = authorityRepository
 				.findAuthorityIdsByRoleId(Role.ADMIN_ROLE_ID.toString(), activeAuthoritiesOnly);
 		logger.info("----------");
@@ -46,7 +47,7 @@ public class TestRoleAuthorities {
 		logger.info("uuidStrings_user1.size() = {}", uuidStrings_user1.size());
 		logger.info("uuidStrings_user1 = {}",        uuidStrings_user1);
 		List<String> uuidStrings_user1_recursive = authorityRepository
-				.findActiveAuthorityIdsByRoleIdRecursive(uuidOfRole_user1.toString());  // WHY DOES THIS RETURN 15 AUTHORITIES????
+				.findAuthorityIdsByRoleIdRecursive(uuidOfRole_user1.toString(), activeAuthoritiesOnly);
 		logger.info("----------");
 		logger.info("uuidStrings_user1_recursive.size() = {}", uuidStrings_user1_recursive.size());
 		logger.info("uuidStrings_user1_recursive = {}",        uuidStrings_user1_recursive);
@@ -62,7 +63,7 @@ public class TestRoleAuthorities {
 		logger.info("uuidStrings_user4 = {}",        uuidStrings_user4);
 
 		List<String> uuidStrings_user4_recursive = authorityRepository
-				.findActiveAuthorityIdsByRoleIdRecursive(uuidOfRole_user4.toString());
+				.findAuthorityIdsByRoleIdRecursive(uuidOfRole_user4.toString(), activeAuthoritiesOnly);
 		logger.info("----------");
 		logger.info("uuidStrings_user4_recursive.size() = {}", uuidStrings_user4_recursive.size());
 		logger.info("uuidStrings_user4_recursive = {}",        uuidStrings_user4_recursive);
