@@ -443,11 +443,11 @@ public class RoleControllerTests {
 		assertThat(response.getStatus(), is(Response.Status.OK.getStatusCode()));
 		ReportCollectionResource reportCollectionResource = response.readEntity(ReportCollectionResource.class);
 		logger.debug("reportCollectionResource = {}", reportCollectionResource);
-		System.out.printf("\nrole = %s\n", role_aabb.getUsername());
-		for (ReportResource reportResource:reportCollectionResource.getItems()){
-			System.out.printf("					 *     %s\n", reportResource.getName());
-		}
-		System.out.printf("Number of reports = %s\n", reportCollectionResource.getItems().size());
+//System.out.printf("\nrole = %s\n", role_aabb.getUsername());
+//for (ReportResource reportResource:reportCollectionResource.getItems()){
+//	System.out.printf("					 *     %s\n", reportResource.getName());
+//}
+//System.out.printf("Number of reports = %s\n", reportCollectionResource.getItems().size());
 		assertThat(reportCollectionResource, is(not(nullValue())));
 		assertThat(reportCollectionResource.getItems(), is(not(nullValue())));
 

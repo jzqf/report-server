@@ -102,7 +102,9 @@ public class AuthorityService {
 		 * in production. 
 		 */
 		if (UuidCustomType.DB_VENDOR.equals(UuidCustomType.POSTGRESQL_VENDOR)) {
-			return authorityRepository.findAuthorityIdsByRoleIdRecursive(roleId.toString(), activeAuthoritiesOnly);
+			Boolean activeInheritedRolesOnly = true;
+			return authorityRepository.findAuthorityIdsByRoleIdRecursive(roleId.toString(), 
+					activeAuthoritiesOnly, activeInheritedRolesOnly);
 		} else {
 			return authorityRepository.findAuthorityIdsByRoleId(roleId.toString(), activeAuthoritiesOnly);
 		}
@@ -116,7 +118,9 @@ public class AuthorityService {
 		 * used in production. 
 		 */
 		if (UuidCustomType.DB_VENDOR.equals(UuidCustomType.POSTGRESQL_VENDOR)) {
-			return authorityRepository.findAuthorityNamesByRoleIdRecursive(roleId.toString(), activeAuthoritiesOnly);
+			Boolean activeInheritedRolesOnly = true;
+			return authorityRepository.findAuthorityNamesByRoleIdRecursive(roleId.toString(), 
+					activeAuthoritiesOnly, activeInheritedRolesOnly);
 		} else {
 			return authorityRepository.findAuthorityNamesByRoleId(roleId.toString(), activeAuthoritiesOnly);
 		}

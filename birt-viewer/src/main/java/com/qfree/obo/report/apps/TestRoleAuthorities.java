@@ -32,6 +32,7 @@ public class TestRoleAuthorities {
 //logger.info("authority_DELETE_JOBS = {}", authority_DELETE_JOBS);
 
 		Boolean activeAuthoritiesOnly = true;
+		Boolean activeInheritedRolesOnly = true;
 		
 		List<String> uuidStrings_ADMIN_ROLE = authorityRepository
 				.findAuthorityIdsByRoleId(Role.ADMIN_ROLE_ID.toString(), activeAuthoritiesOnly);
@@ -55,8 +56,9 @@ public class TestRoleAuthorities {
 			Authority authority = authorityRepository.findOne(UUID.fromString(u));
 			logger.info("Authority (direct) for user1: {}, {}", authority.getAuthorityId(), authority.getName());
 		}
+		
 		List<String> uuidStrings_user1_recursive = authorityRepository
-				.findAuthorityIdsByRoleIdRecursive(uuidOfRole_user1.toString(), activeAuthoritiesOnly);
+				.findAuthorityIdsByRoleIdRecursive(uuidOfRole_user1.toString(), activeAuthoritiesOnly, activeInheritedRolesOnly);
 		logger.info("----------");
 		logger.info("uuidStrings_user1_recursive.size() = {}", uuidStrings_user1_recursive.size());
 		//logger.info("uuidStrings_user1_recursive = {}",        uuidStrings_user1_recursive);
@@ -82,7 +84,7 @@ public class TestRoleAuthorities {
 		}
 
 		List<String> uuidStrings_user4_recursive = authorityRepository
-				.findAuthorityIdsByRoleIdRecursive(uuidOfRole_user4.toString(), activeAuthoritiesOnly);
+				.findAuthorityIdsByRoleIdRecursive(uuidOfRole_user4.toString(), activeAuthoritiesOnly, activeInheritedRolesOnly);
 		logger.info("----------");
 		logger.info("uuidStrings_user4_recursive.size() = {}", uuidStrings_user4_recursive.size());
 		//logger.info("uuidStrings_user4_recursive = {}",        uuidStrings_user4_recursive);

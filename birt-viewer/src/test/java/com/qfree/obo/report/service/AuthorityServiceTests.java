@@ -29,6 +29,12 @@ import com.qfree.obo.report.domain.UuidCustomType;
 public class AuthorityServiceTests {
 
 	private static final Logger logger = LoggerFactory.getLogger(AuthorityServiceTests.class);
+	
+	/*
+	 * Number of Authority's granted directly to the Role with username:
+	 * "reportadmin".
+	 */
+	private static final int NUM_AUTHORITIES_GRANTED_TO_ADMINROLE = 15;
 
 	@Autowired
 	AuthorityService authorityService;
@@ -39,7 +45,7 @@ public class AuthorityServiceTests {
 		List<Authority> authorities = authorityService.getActiveAuthoritiesByRoleId(Role.ADMIN_ROLE_ID);
 		logger.info("authorities = {}", authorities);
 		assertThat(authorities, is(not(nullValue())));
-		assertThat(authorities, hasSize(15));
+		assertThat(authorities, hasSize(NUM_AUTHORITIES_GRANTED_TO_ADMINROLE));
 	}
 
 	@Test
@@ -48,7 +54,7 @@ public class AuthorityServiceTests {
 		List<String> authorityNames = authorityService.findAuthorityNamesByRoleId(Role.ADMIN_ROLE_ID, false);
 		logger.info("authorityNames = {}", authorityNames);
 		assertThat(authorityNames, is(not(nullValue())));
-		assertThat(authorityNames, hasSize(15));
+		assertThat(authorityNames, hasSize(NUM_AUTHORITIES_GRANTED_TO_ADMINROLE));
 	}
 
 	@Test
@@ -57,7 +63,7 @@ public class AuthorityServiceTests {
 		List<String> authorityNames = authorityService.findAuthorityNamesByRoleId(Role.ADMIN_ROLE_ID, true);
 		logger.info("authorityNames = {}", authorityNames);
 		assertThat(authorityNames, is(not(nullValue())));
-		assertThat(authorityNames, hasSize(15));
+		assertThat(authorityNames, hasSize(NUM_AUTHORITIES_GRANTED_TO_ADMINROLE));
 	}
 
 	@Test
@@ -65,7 +71,11 @@ public class AuthorityServiceTests {
 	/**
 	 * Role "aa" has no authorities of its own, but it is a direct child of the
 	 * "reportadmin" Role. Hence, it should inherit all of the authorities of
-	 * "reportadmin".
+	 * "reportadmin" *even though* role "aa" is set as "inactive". This is
+	 * because a role does not need to be active in order to query which 
+	 * Authorities are granted to it, but any Authorities that are granted
+	 * to ancestor (parent, grandparent, ...) Roles are only returned here 
+	 * these ancestor roles, as well as any intermediate roles, are "active".
 	 */
 	public void findAuthoritiesForDirectChildOfReportadmin() {
 		UUID uuidOfRole_aa = UUID.fromString("1f47643b-0cb7-42a1-82bd-ab912d369567");
@@ -73,7 +83,7 @@ public class AuthorityServiceTests {
 		logger.info("authorities = {}", authorities);
 		assertThat(authorities, is(not(nullValue())));
 		if (UuidCustomType.DB_VENDOR.equals(UuidCustomType.POSTGRESQL_VENDOR)) {
-			assertThat(authorities, hasSize(15));
+			assertThat(authorities, hasSize(NUM_AUTHORITIES_GRANTED_TO_ADMINROLE));
 		} else {
 			/*
 			 * authorityService.getActiveAuthoritiesByRoleId(...) does not take
@@ -89,15 +99,41 @@ public class AuthorityServiceTests {
 	/**
 	 * Role "aabc" has no authorities of its own, but it is a descendant of the
 	 * "reportadmin" Role (via Role "aa"). Hence, it should inherit all of the
-	 * authorities of "reportadmin".
+	 * authorities of "reportadmin". But it does not (the number of Authorities
+	 * located in this test is zero), because the intermediate role "aa" is
+	 * set to be "inactive".
 	 */
-	public void findAuthoritiesForDescendantReportadmin() {
+	public void findAuthoritiesForDescendantReportadminInactiveIntermediateRole() {
 		UUID uuidOfRole_aabc = UUID.fromString("f46f6b53-d70e-4044-91e2-ff749159fd90");
 		List<Authority> authorities = authorityService.getActiveAuthoritiesByRoleId(uuidOfRole_aabc);
 		logger.info("authorities = {}", authorities);
 		assertThat(authorities, is(not(nullValue())));
 		if (UuidCustomType.DB_VENDOR.equals(UuidCustomType.POSTGRESQL_VENDOR)) {
-			assertThat(authorities, hasSize(15));
+			assertThat(authorities, hasSize(0));
+		} else {
+			/*
+			 * authorityService.getActiveAuthoritiesByRoleId(...) does not take
+			 * into account role inheritance in we are using H2 (because it does
+			 * not support recursive CTEs).
+			 */
+			assertThat(authorities, hasSize(0));
+		}
+	}
+
+	@Test
+	@Transactional
+	/**
+	 * Role "acab" has no authorities of its own, but it is a descendant of the
+	 * "reportadmin" Role (via Role "aa"). Hence, it should inherit all of the
+	 * authorities of "reportadmin".
+	 */
+	public void findAuthoritiesForDescendantReportadmin() {
+		UUID uuidOfRole_acab = UUID.fromString("7ad44167-6dd9-46eb-a613-69c1e31e51d6");
+		List<Authority> authorities = authorityService.getActiveAuthoritiesByRoleId(uuidOfRole_acab);
+		logger.info("authorities = {}", authorities);
+		assertThat(authorities, is(not(nullValue())));
+		if (UuidCustomType.DB_VENDOR.equals(UuidCustomType.POSTGRESQL_VENDOR)) {
+			assertThat(authorities, hasSize(NUM_AUTHORITIES_GRANTED_TO_ADMINROLE));
 		} else {
 			/*
 			 * authorityService.getActiveAuthoritiesByRoleId(...) does not take

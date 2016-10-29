@@ -58,6 +58,9 @@ public interface AuthorityRepository extends JpaRepository<Authority, UUID> {
 	 * @param activeAuthoritiesOnly
 	 *            If {@code true}, only {@link Authority}'s that have
 	 *            {@code active=true} will be returned
+	 * @param activeInheritedRolesOnly
+	 *            If {@code true}, only {@link Roles}s that have
+	 *            {@code active=true} will be considered for Role inheritance.
 	 * @return
 	 */
 	//@Query(value = "SELECT CAST(a.authority_id AS varchar) FROM reporting.authority a " +
@@ -107,6 +110,15 @@ public interface AuthorityRepository extends JpaRepository<Authority, UUID> {
 			"INNER JOIN role_role link ON link.child_role_id=ancestor.role_id " +
 			"INNER JOIN role ON role.role_id=link.parent_role_id " +
 			"WHERE level<10 " +
+			/* 
+			 * Insist that Roles used for Role inheritance are active if
+			 * Parameter activeInheritedRolesOnly = true. This test is NOT performed
+			 * for the CTE anchor member because the Role involved there is
+			 * specified directly by the parameter "roleId", and if the user
+			 * wants to find the Authority's for it, we allow the 
+			 * query to return Authority's for that Role.
+			 */
+			"AND (role.active=true OR :activeInheritedRolesOnly=false) " +
 
 			") " +
 
@@ -136,7 +148,8 @@ public interface AuthorityRepository extends JpaRepository<Authority, UUID> {
 			nativeQuery = true)
 	public List<String> findAuthorityIdsByRoleIdRecursive(
 			@Param("roleId") String roleId,
-			@Param("activeAuthoritiesOnly") Boolean activeAuthoritiesOnly);
+			@Param("activeAuthoritiesOnly") Boolean activeAuthoritiesOnly,
+			@Param("activeInheritedRolesOnly") Boolean activeInheritedRolesOnly);
 
 	/**
 	 * Returns a {@link List}&lt;{@link String}&gt; that contains the ids (as
@@ -182,6 +195,9 @@ public interface AuthorityRepository extends JpaRepository<Authority, UUID> {
 	 * @param activeAuthoritiesOnly
 	 *            If {@code true}, only {@link Authority}'s that have
 	 *            {@code active=true} will be returned
+	 * @param activeInheritedRolesOnly
+	 *            If {@code true}, only {@link Roles}s that have
+	 *            {@code active=true} will be considered for Role inheritance.
 	 * @return
 	 */
 	@Query(value = "WITH RECURSIVE ancestor(level, role_id) AS (" +
@@ -200,6 +216,15 @@ public interface AuthorityRepository extends JpaRepository<Authority, UUID> {
 			"INNER JOIN role_role link ON link.child_role_id=ancestor.role_id " +
 			"INNER JOIN role ON role.role_id=link.parent_role_id " +
 			"WHERE level<10 " +
+			/* 
+			 * Insist that Roles used for Role inheritance are active if
+			 * Parameter activeInheritedRolesOnly = true. This test is NOT performed
+			 * for the CTE anchor member because the Role involved there is
+			 * specified directly by the parameter "roleId", and if the user
+			 * wants to find the Authority's for it, we allow the 
+			 * query to return Authority's for that Role.
+			 */
+			"AND (role.active=true OR :activeInheritedRolesOnly=false) " +
 
 			") " +
 
@@ -228,5 +253,6 @@ public interface AuthorityRepository extends JpaRepository<Authority, UUID> {
 			nativeQuery = true)
 	public List<String> findAuthorityNamesByRoleIdRecursive(
 			@Param("roleId") String roleId,
-			@Param("activeAuthoritiesOnly") Boolean activeAuthoritiesOnly);
+			@Param("activeAuthoritiesOnly") Boolean activeAuthoritiesOnly,
+			@Param("activeInheritedRolesOnly") Boolean activeInheritedRolesOnly);
 }
