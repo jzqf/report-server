@@ -266,15 +266,17 @@ public class ReportServerAuthenticationProvider implements AuthenticationProvide
 							 * role's capabilities to be altered by normal report
 							 * server administrative operations.
 							 */
-							authorities = authorityService.findAuthorityNamesByRoleId(role.getRoleId());
+							Boolean activeAuthoritiesOnly = false;
+							authorities = authorityService.findAuthorityNamesByRoleId(role.getRoleId(), activeAuthoritiesOnly);
 						} else {
 							/*
 							 * Note that only names of *active* Authority entities 
-							 * are returned here. This means that inactive Authority
-							 * entities that are already linked to a Role will not
-							 * be made available to the Role here.
+							 * are returned here. This means that *inactive* 
+							 * Authority entities that are linked to a Role will 
+							 * not be made available to the Role here.
 							 */
-							authorities = authorityService.findActiveAuthorityNamesByRoleId(role.getRoleId());
+							Boolean activeAuthoritiesOnly = true;
+							authorities = authorityService.findAuthorityNamesByRoleId(role.getRoleId(), activeAuthoritiesOnly);
 						}
 						logger.info("authorities = {}", authorities);
 

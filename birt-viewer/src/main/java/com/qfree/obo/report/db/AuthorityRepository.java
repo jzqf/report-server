@@ -176,10 +176,12 @@ public interface AuthorityRepository extends JpaRepository<Authority, UUID> {
 	@Query(value = "SELECT a.name FROM reporting.authority a " +
 			"INNER JOIN reporting.role_authority ra ON ra.authority_id=a.authority_id " +
 			"WHERE ra.role_id=CAST(:roleId AS uuid) " +
+			"AND (a.active=true OR :activeAuthoritiesOnly=false)" +
 			"ORDER BY a.name",
 			nativeQuery = true)
 	public List<String> findAuthorityNamesByRoleId(
-			@Param("roleId") String roleId);
+			@Param("roleId") String roleId,
+			@Param("activeAuthoritiesOnly") Boolean activeAuthoritiesOnly);
 
 	/**
 	 * Returns a {@link List}&lt;{@link String}&gt; that contains the names of
@@ -286,9 +288,11 @@ public interface AuthorityRepository extends JpaRepository<Authority, UUID> {
 			"    FROM role_authority " +
 			"    INNER JOIN ancestor ON ancestor.role_id=role_authority.role_id " +
 			"    INNER JOIN authority ON authority.authority_id=role_authority.authority_id " +
+			"    WHERE (authority.active=true OR :activeAuthoritiesOnly=false)" +
 			") DT " +
 			"ORDER BY DT.name",
 			nativeQuery = true)
 	public List<String> findAuthorityNamesByRoleIdRecursive(
-			@Param("roleId") String roleId);
+			@Param("roleId") String roleId,
+			@Param("activeAuthoritiesOnly") Boolean activeAuthoritiesOnly);
 }

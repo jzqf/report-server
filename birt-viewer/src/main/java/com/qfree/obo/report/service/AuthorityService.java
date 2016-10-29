@@ -106,31 +106,31 @@ public class AuthorityService {
 		}
 	}
 
-	public List<String> findActiveAuthorityNamesByRoleId(UUID roleId) {
-		/*
-		 * The H2 database does not support recursive CTE expressions, so it is 
-		 * necessary to run different code if the database is not PostgreSQL.
-		 * This only affects integration tests, because only PostreSQL is used
-		 * in production. 
-		 */
-		if (UuidCustomType.DB_VENDOR.equals(UuidCustomType.POSTGRESQL_VENDOR)) {
-			return authorityRepository.findActiveAuthorityNamesByRoleIdRecursive(roleId.toString());
-		} else {
-			return authorityRepository.findActiveAuthorityNamesByRoleId(roleId.toString());
-		}
-	}
+//	public List<String> findActiveAuthorityNamesByRoleId(UUID roleId) {
+//		/*
+//		 * The H2 database does not support recursive CTE expressions, so it is 
+//		 * necessary to run different code if the database is not PostgreSQL.
+//		 * This only affects integration tests, because only PostreSQL is used
+//		 * in production. 
+//		 */
+//		if (UuidCustomType.DB_VENDOR.equals(UuidCustomType.POSTGRESQL_VENDOR)) {
+//			return authorityRepository.findActiveAuthorityNamesByRoleIdRecursive(roleId.toString());
+//		} else {
+//			return authorityRepository.findActiveAuthorityNamesByRoleId(roleId.toString());
+//		}
+//	}
 
-	public List<String> findAuthorityNamesByRoleId(UUID roleId) {
+	public List<String> findAuthorityNamesByRoleId(UUID roleId, Boolean activeAuthoritiesOnly) {
 		/*
 		 * The H2 database does not support recursive CTE expressions, so it is 
 		 * necessary to run different code if the database is not PostgreSQL.
-		 * This only affects integration tests, because only PostreSQL is used
-		 * in production. 
+		 * This only affects unit/integration tests, because only PostreSQL is 
+		 * used in production. 
 		 */
 		if (UuidCustomType.DB_VENDOR.equals(UuidCustomType.POSTGRESQL_VENDOR)) {
-			return authorityRepository.findAuthorityNamesByRoleIdRecursive(roleId.toString());
+			return authorityRepository.findAuthorityNamesByRoleIdRecursive(roleId.toString(), activeAuthoritiesOnly);
 		} else {
-			return authorityRepository.findAuthorityNamesByRoleId(roleId.toString());
+			return authorityRepository.findAuthorityNamesByRoleId(roleId.toString(), activeAuthoritiesOnly);
 		}
 	}
 

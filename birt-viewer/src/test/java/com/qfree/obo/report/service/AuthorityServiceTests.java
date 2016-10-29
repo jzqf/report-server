@@ -42,10 +42,28 @@ public class AuthorityServiceTests {
 		assertThat(authorities, hasSize(15));
 	}
 
+//	@Test
+//	@Transactional
+//	public void findActiveAuthorityNamesForReportAdminDELETEME() {
+//		List<String> authorityNames = authorityService.findActiveAuthorityNamesByRoleId(Role.ADMIN_ROLE_ID);
+//		logger.info("authorityNames = {}", authorityNames);
+//		assertThat(authorityNames, is(not(nullValue())));
+//		assertThat(authorityNames, hasSize(15));
+//	}
+
+	@Test
+	@Transactional
+	public void findAllAuthorityNamesForReportAdmin() {
+		List<String> authorityNames = authorityService.findAuthorityNamesByRoleId(Role.ADMIN_ROLE_ID, false);
+		logger.info("authorityNames = {}", authorityNames);
+		assertThat(authorityNames, is(not(nullValue())));
+		assertThat(authorityNames, hasSize(15));
+	}
+
 	@Test
 	@Transactional
 	public void findActiveAuthorityNamesForReportAdmin() {
-		List<String> authorityNames = authorityService.findActiveAuthorityNamesByRoleId(Role.ADMIN_ROLE_ID);
+		List<String> authorityNames = authorityService.findAuthorityNamesByRoleId(Role.ADMIN_ROLE_ID, true);
 		logger.info("authorityNames = {}", authorityNames);
 		assertThat(authorityNames, is(not(nullValue())));
 		assertThat(authorityNames, hasSize(15));
