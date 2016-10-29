@@ -55,20 +55,27 @@ public interface AuthorityRepository extends JpaRepository<Authority, UUID> {
 	 * @param roleId
 	 *            String representation of the id of the {@link Role} for which
 	 *            {@link Authority} id values will be returned.
+	 * @param activeAuthoritiesOnly
+	 *            If {@code true}, only {@link Authority}'s that have
+	 *            {@code active=true} will be returned
 	 * @return
 	 */
 	//@Query(value = "SELECT CAST(a.authority_id AS varchar) FROM reporting.authority a " +
 	//		"INNER JOIN reporting.role_authority ra ON ra.authority_id=a.authority_id " +
 	//		"INNER JOIN reporting.role r ON r.role_id=ra.role_id " +
-	//		"WHERE r.role_id=CAST(:roleId AS uuid) AND a.active=true " +
+	//		"WHERE r.role_id=CAST(:roleId AS uuid) " +
+	//		"AND (a.active=true OR :activeAuthoritiesOnly=false)" +
 	//		"ORDER BY a.name",
 	//		nativeQuery = true)
 	@Query(value = "SELECT CAST(a.authority_id AS varchar) FROM reporting.authority a " +
 			"INNER JOIN reporting.role_authority ra ON ra.authority_id=a.authority_id " +
-			"WHERE ra.role_id=CAST(:roleId AS uuid) AND a.active=true " +
+			"WHERE ra.role_id=CAST(:roleId AS uuid) " +
+			"AND (a.active=true OR :activeAuthoritiesOnly=false)" +
 			"ORDER BY a.name",
 			nativeQuery = true)
-	public List<String> findActiveAuthorityIdsByRoleId(@Param("roleId") String roleId);
+	public List<String> findAuthorityIdsByRoleId(
+			@Param("roleId") String roleId,
+			@Param("activeAuthoritiesOnly") Boolean activeAuthoritiesOnly);
 
 	/**
 	 * Returns a {@link List}&lt;{@link String}&gt; that contains the ids (as
@@ -138,33 +145,9 @@ public interface AuthorityRepository extends JpaRepository<Authority, UUID> {
 	 * @param roleId
 	 *            String representation of the id of the {@link Role} for which
 	 *            {@link Authority} id values will be returned.
-	 * @return
-	 */
-	//@Query(value = "SELECT a.name FROM reporting.authority a " +
-	//		"INNER JOIN reporting.role_authority ra ON ra.authority_id=a.authority_id " +
-	//		"INNER JOIN reporting.role r ON r.role_id=ra.role_id " +
-	//		"WHERE r.role_id=CAST(:roleId AS uuid) AND a.active=true " +
-	//		"ORDER BY a.name",
-	//		nativeQuery = true)
-	@Query(value = "SELECT a.name FROM reporting.authority a " +
-			"INNER JOIN reporting.role_authority ra ON ra.authority_id=a.authority_id " +
-			"WHERE ra.role_id=CAST(:roleId AS uuid) AND a.active=true " +
-			"ORDER BY a.name",
-			nativeQuery = true)
-	public List<String> findActiveAuthorityNamesByRoleId(
-			@Param("roleId") String roleId);
-
-	/**
-	 * Returns a {@link List}&lt;{@link String}&gt; that contains the ids (as
-	 * strings) of {@link Authority} entities that have been granted
-	 * <b>directly</b> to a {@link Role} with a specified value of roleId.
-	 * 
-	 * It is necessary to specify the schema (reporting.) for each table in
-	 * order for the integration tests to run using the H2 database engine.
-	 * 
-	 * @param roleId
-	 *            String representation of the id of the {@link Role} for which
-	 *            {@link Authority} id values will be returned.
+	 * @param activeAuthoritiesOnly
+	 *            If {@code true}, only {@link Authority}'s that have
+	 *            {@code active=true} will be returned
 	 * @return
 	 */
 	//@Query(value = "SELECT a.name FROM reporting.authority a " +

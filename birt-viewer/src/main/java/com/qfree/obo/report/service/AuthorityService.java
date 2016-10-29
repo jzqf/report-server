@@ -37,8 +37,9 @@ public class AuthorityService {
 	 */
 	@Transactional
 	public List<Authority> getActiveAuthoritiesByRoleIdDirect(UUID roleId) {
+		Boolean activeAuthoritiesOnly=true;
 
-		List<String> uuidStrings = authorityRepository.findActiveAuthorityIdsByRoleId(roleId.toString());
+		List<String> uuidStrings = authorityRepository.findAuthorityIdsByRoleId(roleId.toString(), activeAuthoritiesOnly);
 		List<Authority> authorities = new ArrayList<>(uuidStrings.size());
 		for (String uuidString : uuidStrings) {
 			try {
@@ -93,6 +94,7 @@ public class AuthorityService {
 	}
 
 	public List<String> findActiveAuthorityIdsByRoleId(UUID roleId) {
+		Boolean activeAuthoritiesOnly=true;
 		/*
 		 * The H2 database does not support recursive CTE expressions, so it is 
 		 * necessary to run different code if the database is not PostgreSQL.
@@ -102,23 +104,9 @@ public class AuthorityService {
 		if (UuidCustomType.DB_VENDOR.equals(UuidCustomType.POSTGRESQL_VENDOR)) {
 			return authorityRepository.findActiveAuthorityIdsByRoleIdRecursive(roleId.toString());
 		} else {
-			return authorityRepository.findActiveAuthorityIdsByRoleId(roleId.toString());
+			return authorityRepository.findAuthorityIdsByRoleId(roleId.toString(), activeAuthoritiesOnly);
 		}
 	}
-
-//	public List<String> findActiveAuthorityNamesByRoleId(UUID roleId) {
-//		/*
-//		 * The H2 database does not support recursive CTE expressions, so it is 
-//		 * necessary to run different code if the database is not PostgreSQL.
-//		 * This only affects integration tests, because only PostreSQL is used
-//		 * in production. 
-//		 */
-//		if (UuidCustomType.DB_VENDOR.equals(UuidCustomType.POSTGRESQL_VENDOR)) {
-//			return authorityRepository.findActiveAuthorityNamesByRoleIdRecursive(roleId.toString());
-//		} else {
-//			return authorityRepository.findActiveAuthorityNamesByRoleId(roleId.toString());
-//		}
-//	}
 
 	public List<String> findAuthorityNamesByRoleId(UUID roleId, Boolean activeAuthoritiesOnly) {
 		/*

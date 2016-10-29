@@ -29,40 +29,58 @@ public class TestRoleAuthorities {
 		Authority authority_DELETE_JOBS = authorityRepository.findOne(uuidOfAuthority_DELETE_JOBS);
 		logger.info("authority_DELETE_JOBS = {}", authority_DELETE_JOBS);
 
+		Boolean activeAuthoritiesOnly = true;
 		List<String> uuidStrings_ADMIN_ROLE = authorityRepository
-				.findActiveAuthorityIdsByRoleId(Role.ADMIN_ROLE_ID.toString());
-		logger.info("uuidStrings_ADMIN_ROLE = {}", uuidStrings_ADMIN_ROLE);
+				.findAuthorityIdsByRoleId(Role.ADMIN_ROLE_ID.toString(), activeAuthoritiesOnly);
+		logger.info("----------");
+		logger.info("uuidStrings_ADMIN_ROLE.size() = {}", uuidStrings_ADMIN_ROLE.size());
+		logger.info("uuidStrings_ADMIN_ROLE = {}",        uuidStrings_ADMIN_ROLE);
 
 		/*
 		 * "user1" is not linked to the "reportadmin" Role.
 		 */
 		UUID uuidOfRole_user1 = UUID.fromString("29fe8a1f-7826-4df0-8bfd-151b54198655");
 		List<String> uuidStrings_user1 = authorityRepository
-				.findActiveAuthorityIdsByRoleId(uuidOfRole_user1.toString());
-		logger.info("uuidStrings_user1 = {}", uuidStrings_user1);
+				.findAuthorityIdsByRoleId(uuidOfRole_user1.toString(), activeAuthoritiesOnly);
+		logger.info("----------");
+		logger.info("uuidStrings_user1.size() = {}", uuidStrings_user1.size());
+		logger.info("uuidStrings_user1 = {}",        uuidStrings_user1);
 		List<String> uuidStrings_user1_recursive = authorityRepository
-				.findActiveAuthorityIdsByRoleIdRecursive(uuidOfRole_user1.toString());
-		logger.info("uuidStrings_user1_recursive = {}", uuidStrings_user1_recursive);
+				.findActiveAuthorityIdsByRoleIdRecursive(uuidOfRole_user1.toString());  // WHY DOES THIS RETURN 15 AUTHORITIES????
+		logger.info("----------");
+		logger.info("uuidStrings_user1_recursive.size() = {}", uuidStrings_user1_recursive.size());
+		logger.info("uuidStrings_user1_recursive = {}",        uuidStrings_user1_recursive);
 
 		/*
 		 * "user4" *IS* linked to the "reportadmin" Role.
 		 */
 		UUID uuidOfRole_user4 = UUID.fromString("46e477dc-085f-4714-a24f-742428579fcc");
 		List<String> uuidStrings_user4 = authorityRepository
-				.findActiveAuthorityIdsByRoleId(uuidOfRole_user4.toString());
-		logger.info("uuidStrings_user4 = {}", uuidStrings_user4);
+				.findAuthorityIdsByRoleId(uuidOfRole_user4.toString(), activeAuthoritiesOnly);
+		logger.info("----------");
+		logger.info("uuidStrings_user4.size() = {}", uuidStrings_user4.size());
+		logger.info("uuidStrings_user4 = {}",        uuidStrings_user4);
+
 		List<String> uuidStrings_user4_recursive = authorityRepository
 				.findActiveAuthorityIdsByRoleIdRecursive(uuidOfRole_user4.toString());
-		logger.info("uuidStrings_user4_recursive = {}", uuidStrings_user4_recursive);
+		logger.info("----------");
+		logger.info("uuidStrings_user4_recursive.size() = {}", uuidStrings_user4_recursive.size());
+		logger.info("uuidStrings_user4_recursive = {}",        uuidStrings_user4_recursive);
 
 		List<Authority> authorities_reportadmin = authorityService.getActiveAuthoritiesByRoleId(Role.ADMIN_ROLE_ID);
-		logger.info("authorities_reportadmin = {}", authorities_reportadmin);
+		logger.info("----------");
+		logger.info("authorities_reportadmin.size() = {}", authorities_reportadmin.size());
+		logger.info("authorities_reportadmin = {}",        authorities_reportadmin);
 
 		List<Authority> authorities_user1 = authorityService.getActiveAuthoritiesByRoleId(uuidOfRole_user1);
-		logger.info("authorities_user1 = {}", authorities_user1);
+		logger.info("----------");
+		logger.info("authorities_user1.size() = {}", authorities_user1.size());
+		logger.info("authorities_user1 = {}",        authorities_user1);
 
 		List<Authority> authorities_user4 = authorityService.getActiveAuthoritiesByRoleId(uuidOfRole_user4);
-		logger.info("authorities_user4 = {}", authorities_user4);
+		logger.info("----------");
+		logger.info("authorities_user4.size() = {}", authorities_user4.size());
+		logger.info("authorities_user4 = {}",        authorities_user4);
 
 		logger.info("\n\n\n");
 

@@ -42,15 +42,6 @@ public class AuthorityServiceTests {
 		assertThat(authorities, hasSize(15));
 	}
 
-//	@Test
-//	@Transactional
-//	public void findActiveAuthorityNamesForReportAdminDELETEME() {
-//		List<String> authorityNames = authorityService.findActiveAuthorityNamesByRoleId(Role.ADMIN_ROLE_ID);
-//		logger.info("authorityNames = {}", authorityNames);
-//		assertThat(authorityNames, is(not(nullValue())));
-//		assertThat(authorityNames, hasSize(15));
-//	}
-
 	@Test
 	@Transactional
 	public void findAllAuthorityNamesForReportAdmin() {
