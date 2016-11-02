@@ -40,17 +40,18 @@ public class TestRoleReports {
 		//	UUID reportversion_allparams_uuid=UUID.fromString("");
 
 		Boolean activeReportsOnly = true;
+		Boolean activeInheritedRolesOnly = true;
 		
 		List<String> availableReportVersions = null;
-		
+
 		availableReportVersions = reportVersionRepository
-				.findReportVersionFilenamesByRoleIdRecursive(reportadmin_uuid.toString(), activeReportsOnly);
-		logger.info("findReportVersionFilenamesByRoleIdRecursive(reportadmin_uuid.toString(), activeReportsOnly) = {}",
+				.findReportVersionFilenamesByRoleIdRecursive(reportadmin_uuid.toString(), activeReportsOnly, activeInheritedRolesOnly);
+		logger.info("findReportVersionFilenamesByRoleIdRecursive(reportadmin_uuid.toString(), activeReportsOnly, activeInheritedRolesOnly) = {}",
 				availableReportVersions);
 
 		availableReportVersions = reportVersionRepository
-				.findReportVersionFilenamesByRoleIdRecursive(user4_uuid.toString(), activeReportsOnly);
-		logger.info("findReportVersionFilenamesByRoleIdRecursive(user4_uuid.toString(), activeReportsOnly) = {}",
+				.findReportVersionFilenamesByRoleIdRecursive(user4_uuid.toString(), activeReportsOnly, activeInheritedRolesOnly);
+		logger.info("findReportVersionFilenamesByRoleIdRecursive(user4_uuid.toString(), activeReportsOnly, activeInheritedRolesOnly) = {}",
 				availableReportVersions);
 
 		RoleReport roleReport = null;

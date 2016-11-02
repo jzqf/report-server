@@ -62,9 +62,12 @@ public interface RoleRepository extends JpaRepository<Role, UUID>, RoleRepositor
 	 * @param roleId
 	 *            String representation of the id of the {@link Role} for which
 	 *            reports will be returned.
-	 * @param activeOnly
+	 * @param activeReportsOnly
 	 *            If {@code true}, only {@link Report}s that have
-	 *            {@code active=true} will be returned
+	 *            {@code active=true} will be returned,
+	 * @param activeInheritedRolesOnly
+	 *            If {@code true}, only {@link Roles}s that have
+	 *            {@code active=true} will be considered for Role inheritance.
 	 * @return
 	 */
 	@Query(value = "WITH RECURSIVE ancestor(level, role_id, username) AS (" +
@@ -85,6 +88,15 @@ public interface RoleRepository extends JpaRepository<Role, UUID>, RoleRepositor
 			"INNER JOIN role_role link ON link.child_role_id=ancestor.role_id " +
 			"INNER JOIN role ON role.role_id=link.parent_role_id " +
 			"WHERE level<10 " +
+			/* 
+			 * Insist that Roles used for Role inheritance are active if
+			 * Parameter activeInheritedRolesOnly = true. This test is NOT performed
+			 * for the CTE anchor member because the Role involved there is
+			 * specified directly by the parameter "roleId", and if the user
+			 * wants to find the authorized Reports for it, we allow the 
+			 * query to return Reports for that Role.
+			 */
+			"AND (role.active=true OR :activeInheritedRolesOnly=false) " +
 
 			") " +
 
@@ -110,11 +122,12 @@ public interface RoleRepository extends JpaRepository<Role, UUID>, RoleRepositor
 			"    SELECT DISTINCT CAST(report.report_id AS varchar), report.number FROM role_report " +
 			"    INNER JOIN ancestor ON ancestor.role_id=role_report.role_id " +
 			"    INNER JOIN report ON report.report_id=role_report.report_id " +
-			"    WHERE (report.active=true OR :activeOnly=false)" +
+			"    WHERE (report.active=true OR :activeReportsOnly=false)" +
 			") DT " +
 			"ORDER BY DT.number",
 			nativeQuery = true)
 	public List<String> findReportsByRoleIdRecursive(
 			@Param("roleId") String roleId,
-			@Param("activeOnly") Boolean activeOnly);
+			@Param("activeReportsOnly") Boolean activeReportsOnly,
+			@Param("activeInheritedRolesOnly") Boolean activeInheritedRolesOnly);
 }

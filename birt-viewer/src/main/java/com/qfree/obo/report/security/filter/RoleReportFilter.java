@@ -231,9 +231,10 @@ public class RoleReportFilter implements Filter {
 						if (UuidCustomType.DB_VENDOR.equals(UuidCustomType.POSTGRESQL_VENDOR)) {
 
 							Boolean activeReportsOnly = true;
+							Boolean activeInheritedRolesOnly = true;
 							List<String> availableReportVersions = reportVersionRepository
 									.findReportVersionFilenamesByRoleIdRecursive(user.getRoleId().toString(),
-											activeReportsOnly);
+											activeReportsOnly, activeInheritedRolesOnly);
 							for (String filename : availableReportVersions) {
 								if (reportFilename.equals(filename)) {
 									return true;

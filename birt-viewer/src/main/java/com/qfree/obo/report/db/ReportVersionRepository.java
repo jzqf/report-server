@@ -53,10 +53,13 @@ public interface ReportVersionRepository extends JpaRepository<ReportVersion, UU
 	 * @param roleId
 	 *            String representation of the id of the {@link Role} for which
 	 *            report version filenames will be returned.
-	 * @param activeOnly
-	 *            If {@code true}, only {@link ReportVersion}s that have
-	 *            {@code active=true} and for which {@code active=true} for its
-	 *            parent{@link Report} will be returned.
+	 * @param activeReportsAndVersionsOnly
+	 *            If {@code true}, only {@link ReportVersion}s will be returned
+	 *            for which {@code active=true} for the {@link ReportVersion}
+	 *            as well as for its parent{@link Report}.
+	 * @param activeInheritedRolesOnly
+	 *            If {@code true}, only {@link Roles}s that have
+	 *            {@code active=true} will be considered for Role inheritance.
 	 * @return
 	 */
 	@Query(value = "WITH RECURSIVE ancestor(level, role_id, username) AS (" +
@@ -77,6 +80,16 @@ public interface ReportVersionRepository extends JpaRepository<ReportVersion, UU
 			"INNER JOIN role_role link ON link.child_role_id=ancestor.role_id " +
 			"INNER JOIN role ON role.role_id=link.parent_role_id " +
 			"WHERE level<10 " +
+			/* 
+			 * Insist that Roles used for Role inheritance are active if
+			 * Parameter activeInheritedRolesOnly = true. This test is NOT performed
+			 * for the CTE anchor member because the Role involved there is
+			 * specified directly by the parameter "roleId", and if the user
+			 * wants to find the names of ReportVersion entities that this
+			 * Role has access to, we allow the query to return this 
+			 * information.
+			 */
+			"AND (role.active=true OR :activeInheritedRolesOnly=false) " +
 
 			") " +
 
@@ -101,12 +114,13 @@ public interface ReportVersionRepository extends JpaRepository<ReportVersion, UU
 			"    INNER JOIN ancestor ON ancestor.role_id=role_report.role_id " +
 			"    INNER JOIN report ON report.report_id=role_report.report_id " +
 			"    INNER JOIN report_version ON report_version.report_id=report.report_id " +
-			"    WHERE ((report.active        =true OR :activeOnly=false) AND " +
-			"           (report_version.active=true OR :activeOnly=false))" +
+			"    WHERE ((report.active        =true OR :activeReportsAndVersionsOnly=false) AND " +
+			"           (report_version.active=true OR :activeReportsAndVersionsOnly=false))" +
 			") DT " +
 			"ORDER BY DT.file_name",
 			nativeQuery = true)
 	public List<String> findReportVersionFilenamesByRoleIdRecursive(
 			@Param("roleId") String roleId,
-			@Param("activeOnly") Boolean activeOnly);
+			@Param("activeReportsAndVersionsOnly") Boolean activeReportsAndVersionsOnly,
+			@Param("activeInheritedRolesOnly") Boolean activeInheritedRolesOnly);
 }

@@ -529,7 +529,23 @@ CREATE TABLE subscription (
     enabled boolean NOT NULL,
     document_format_id uuid NOT NULL,
     report_version_id uuid NOT NULL,
-    role_id uuid NOT NULL
+    role_id uuid NOT NULL,
+    custom_report_parameter_1_name character varying(64),
+    custom_report_parameter_1_value character varying(64),
+    custom_report_parameter_2_name character varying(64),
+    custom_report_parameter_2_value character varying(64),
+    custom_report_parameter_3_name character varying(64),
+    custom_report_parameter_3_value character varying(64),
+    custom_report_parameter_4_name character varying(64),
+    custom_report_parameter_4_value character varying(64),
+    custom_report_parameter_5_name character varying(64),
+    custom_report_parameter_5_value character varying(64),
+    custom_report_parameter_6_name character varying(64),
+    custom_report_parameter_6_value character varying(64),
+    custom_report_parameter_7_name character varying(64),
+    custom_report_parameter_7_value character varying(64),
+    custom_report_parameter_8_name character varying(64),
+    custom_report_parameter_8_value character varying(64)
 );
 
 

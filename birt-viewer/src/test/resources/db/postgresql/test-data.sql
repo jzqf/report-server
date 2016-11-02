@@ -172,7 +172,9 @@ INSERT INTO reporting.role (role_id, username, login_role, encoded_password, ful
 INSERT INTO reporting.role (role_id, username, login_role, encoded_password, full_name, enabled, active, created_on) VALUES ('e73ee6a5-5236-4630-aba1-de18e76b8105', 'a', false, '', '', true, true, '2015-04-13T08:00:00');
 
 -- Children of "a":
-INSERT INTO reporting.role (role_id, username, login_role, encoded_password, full_name, enabled, active, created_on) VALUES ('1f47643b-0cb7-42a1-82bd-ab912d369567', 'aa', false, '', '', true, true, '2015-04-13T08:00:00');
+--
+-- Note:  "aa" is "inactive!
+INSERT INTO reporting.role (role_id, username, login_role, encoded_password, full_name, enabled, active, created_on) VALUES ('1f47643b-0cb7-42a1-82bd-ab912d369567', 'aa', false, '', '', true, false, '2015-04-13T08:00:00');
 INSERT INTO reporting.role (role_id, username, login_role, encoded_password, full_name, enabled, active, created_on) VALUES ('07d768c2-9243-4521-bf31-53cfe7a54eb7', 'ab', false, '', '', true, true, '2015-04-13T08:00:00');
 INSERT INTO reporting.role (role_id, username, login_role, encoded_password, full_name, enabled, active, created_on) VALUES ('e745b03b-a63d-4c14-8b3c-d9aa773080f1', 'ac', false, '', '', true, true, '2015-04-13T08:00:00');
 -- parent='a', child='aa':
@@ -182,10 +184,19 @@ INSERT INTO reporting.role_role (role_role_id, parent_role_id, child_role_id, cr
 -- parent='a', child='ac':
 INSERT INTO reporting.role_role (role_role_id, parent_role_id, child_role_id, created_on) VALUES ('a71d5e9f-752e-4e92-936e-71d7276da511', 'e73ee6a5-5236-4630-aba1-de18e76b8105', 'e745b03b-a63d-4c14-8b3c-d9aa773080f1', '2015-04-13T09:00:00');
 
--- Make user "aa" a child of "reportadmin", effectively making it, as well as 
--- any of its descendents ("aaa", "aab", ... "aaaa", "aaab",...), i.e., any role
--- whose username starts with "aa" an administrator:
+-- Make role "aa" a child of "reportadmin", effectively making it an 
+-- administrator, i.e., it will inherit all of the authorities that are granted
+-- toe the "reportadmin" role. Normally, this will also make all of its 
+-- descendents ("aaa", "aab", ... "aaaa", "aaab",..., i.e., any role whose 
+-- username starts with "aa") be administrators as well. However, role "aa" is 
+-- set to be "inactive"; hence, role inheritance will *not* be used so these 
+-- desendents will not, in fact, be administrtors.
 INSERT INTO reporting.role_role (role_role_id, parent_role_id, child_role_id, created_on) VALUES ('3b2c7b99-cf00-43c6-85a7-f4e17bbea386', '54aa1d35-f67d-47e6-8bea-cadd6085796e', '1f47643b-0cb7-42a1-82bd-ab912d369567', '2016-01-31T15:00:00');
+
+-- Make user "ac" a child of "reportadmin", effectively making it, as well as 
+-- all of its descendents ("aca", "acb", ... "acaa", "acab",...), i.e., any role
+-- whose username starts with "ac" an administrator:
+INSERT INTO reporting.role_role (role_role_id, parent_role_id, child_role_id, created_on) VALUES ('35e18995-b004-42d3-8073-f82c3cf13c59', '54aa1d35-f67d-47e6-8bea-cadd6085796e', 'e745b03b-a63d-4c14-8b3c-d9aa773080f1', '2016-01-31T15:00:00');
 
 -- Children of "aa":
 INSERT INTO reporting.role (role_id, username, login_role, encoded_password, full_name, enabled, active, created_on) VALUES ('1994c086-7d8d-47c0-ab1d-5bfa7e8d0267', 'aaa', false, '', '', true, true, '2015-04-13T08:00:00');
