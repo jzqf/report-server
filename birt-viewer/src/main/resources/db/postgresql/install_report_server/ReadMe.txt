@@ -62,7 +62,7 @@ PostgreSQL 9.x server. It is convenient to install this database server on the
 same host as the Tomcat 8.x application server that hosts the OBO Report Server 
 web application, although this is not an installation requirement. However, if 
 Tomcat and the database are installed on different hosts, extra configuration 
-will be necessary which is not yet documented.
+will be necessary which is not documented here.
 
 The only extra configuration that must be made to a standard PostgreSQL 
 installation is to install the "contrib" package for the particular version of 
@@ -98,8 +98,8 @@ B.	===== Customizing the Tomcat 8.x environment =====
 3.	Install PostgreSQL JDBC driver:
 
 	In order to use container-managed database connections, it is necessary to 
-	install the latest JDBC driver for PostgreSQL. The latest JDBC v4.1 driver 
-	for PostgreSQL v9.4 can be downloaded from:
+	install the latest JDBC driver for PostgreSQL. The latest JDBC v4.2 driver 
+	for PostgreSQL v9.x can be downloaded from:
 
 		https://jdbc.postgresql.org/download.html .
 		
@@ -207,10 +207,10 @@ II.	===== Installing the report server application =====
 	Important: This should be done after the PostgreSQL database is installed 
 	and populated because the report server attempts to validate the database 
 	schema when the report server web application starts up. This startup phase 
-	also occurs when a new WAR file is uploaded. If the report server database 
-	is not available during startup, this validation will fail. To check for 
-	validation errors, examine the log file. On Tomcat, the log file can be 
-	found here:
+	also occurs when a new WAR file is uploaded, as is done during this step. If 
+	the report server database is not available during startup, this validation 
+	will fail. To check for validation errors, examine the log file. On Tomcat, 
+	the log file can be found here:
 
 		<CATALINA_HOME>/logs/obo-report-server/obo-report-server.log
 
