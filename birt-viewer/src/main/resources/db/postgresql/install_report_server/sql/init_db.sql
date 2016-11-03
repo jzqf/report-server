@@ -46,8 +46,11 @@ DROP TABLE IF EXISTS document CASCADE;
 -- PostgreSQL database dump
 --
 
+-- Dumped from database version 9.5.5
+-- Dumped by pg_dump version 9.5.5
+
 --
--- Name: asset; Type: TABLE; Schema: reporting; Owner: report_server_app; Tablespace: 
+-- Name: asset; Type: TABLE; Schema: reporting; Owner: report_server_app
 --
 
 CREATE TABLE asset (
@@ -64,7 +67,7 @@ CREATE TABLE asset (
 
 
 --
--- Name: asset_tree; Type: TABLE; Schema: reporting; Owner: report_server_app; Tablespace: 
+-- Name: asset_tree; Type: TABLE; Schema: reporting; Owner: report_server_app
 --
 
 CREATE TABLE asset_tree (
@@ -80,7 +83,7 @@ CREATE TABLE asset_tree (
 
 
 --
--- Name: asset_type; Type: TABLE; Schema: reporting; Owner: report_server_app; Tablespace: 
+-- Name: asset_type; Type: TABLE; Schema: reporting; Owner: report_server_app
 --
 
 CREATE TABLE asset_type (
@@ -96,7 +99,7 @@ CREATE TABLE asset_type (
 
 
 --
--- Name: authority; Type: TABLE; Schema: reporting; Owner: report_server_app; Tablespace: 
+-- Name: authority; Type: TABLE; Schema: reporting; Owner: report_server_app
 --
 
 CREATE TABLE authority (
@@ -110,7 +113,7 @@ CREATE TABLE authority (
 
 
 --
--- Name: configuration; Type: TABLE; Schema: reporting; Owner: report_server_app; Tablespace: 
+-- Name: configuration; Type: TABLE; Schema: reporting; Owner: report_server_app
 --
 
 CREATE TABLE configuration (
@@ -136,7 +139,7 @@ CREATE TABLE configuration (
 
 
 --
--- Name: document; Type: TABLE; Schema: reporting; Owner: report_server_app; Tablespace: 
+-- Name: document; Type: TABLE; Schema: reporting; Owner: report_server_app
 --
 
 CREATE TABLE document (
@@ -149,7 +152,7 @@ CREATE TABLE document (
 
 
 --
--- Name: document_format; Type: TABLE; Schema: reporting; Owner: report_server_app; Tablespace: 
+-- Name: document_format; Type: TABLE; Schema: reporting; Owner: report_server_app
 --
 
 CREATE TABLE document_format (
@@ -167,7 +170,7 @@ CREATE TABLE document_format (
 
 
 --
--- Name: job; Type: TABLE; Schema: reporting; Owner: report_server_app; Tablespace: 
+-- Name: job; Type: TABLE; Schema: reporting; Owner: report_server_app
 --
 
 CREATE TABLE job (
@@ -214,7 +217,7 @@ ALTER SEQUENCE job_job_id_seq OWNED BY job.job_id;
 
 
 --
--- Name: job_parameter; Type: TABLE; Schema: reporting; Owner: report_server_app; Tablespace: 
+-- Name: job_parameter; Type: TABLE; Schema: reporting; Owner: report_server_app
 --
 
 CREATE TABLE job_parameter (
@@ -249,7 +252,7 @@ ALTER SEQUENCE job_parameter_job_parameter_id_seq OWNED BY job_parameter.job_par
 
 
 --
--- Name: job_parameter_value; Type: TABLE; Schema: reporting; Owner: report_server_app; Tablespace: 
+-- Name: job_parameter_value; Type: TABLE; Schema: reporting; Owner: report_server_app
 --
 
 CREATE TABLE job_parameter_value (
@@ -290,7 +293,7 @@ ALTER SEQUENCE job_parameter_value_job_parameter_value_id_seq OWNED BY job_param
 
 
 --
--- Name: job_status; Type: TABLE; Schema: reporting; Owner: report_server_app; Tablespace: 
+-- Name: job_status; Type: TABLE; Schema: reporting; Owner: report_server_app
 --
 
 CREATE TABLE job_status (
@@ -305,7 +308,7 @@ CREATE TABLE job_status (
 
 
 --
--- Name: parameter_group; Type: TABLE; Schema: reporting; Owner: report_server_app; Tablespace: 
+-- Name: parameter_group; Type: TABLE; Schema: reporting; Owner: report_server_app
 --
 
 CREATE TABLE parameter_group (
@@ -320,7 +323,7 @@ CREATE TABLE parameter_group (
 
 
 --
--- Name: report; Type: TABLE; Schema: reporting; Owner: report_server_app; Tablespace: 
+-- Name: report; Type: TABLE; Schema: reporting; Owner: report_server_app
 --
 
 CREATE TABLE report (
@@ -337,7 +340,7 @@ CREATE TABLE report (
 
 
 --
--- Name: report_category; Type: TABLE; Schema: reporting; Owner: report_server_app; Tablespace: 
+-- Name: report_category; Type: TABLE; Schema: reporting; Owner: report_server_app
 --
 
 CREATE TABLE report_category (
@@ -352,7 +355,7 @@ CREATE TABLE report_category (
 
 
 --
--- Name: report_parameter; Type: TABLE; Schema: reporting; Owner: report_server_app; Tablespace: 
+-- Name: report_parameter; Type: TABLE; Schema: reporting; Owner: report_server_app
 --
 
 CREATE TABLE report_parameter (
@@ -386,7 +389,7 @@ CREATE TABLE report_parameter (
 
 
 --
--- Name: report_version; Type: TABLE; Schema: reporting; Owner: report_server_app; Tablespace: 
+-- Name: report_version; Type: TABLE; Schema: reporting; Owner: report_server_app
 --
 
 CREATE TABLE report_version (
@@ -404,7 +407,7 @@ CREATE TABLE report_version (
 
 
 --
--- Name: role; Type: TABLE; Schema: reporting; Owner: report_server_app; Tablespace: 
+-- Name: role; Type: TABLE; Schema: reporting; Owner: report_server_app
 --
 
 CREATE TABLE role (
@@ -424,7 +427,7 @@ CREATE TABLE role (
 
 
 --
--- Name: role_authority; Type: TABLE; Schema: reporting; Owner: report_server_app; Tablespace: 
+-- Name: role_authority; Type: TABLE; Schema: reporting; Owner: report_server_app
 --
 
 CREATE TABLE role_authority (
@@ -438,7 +441,7 @@ CREATE TABLE role_authority (
 
 
 --
--- Name: role_parameter; Type: TABLE; Schema: reporting; Owner: report_server_app; Tablespace: 
+-- Name: role_parameter; Type: TABLE; Schema: reporting; Owner: report_server_app
 --
 
 CREATE TABLE role_parameter (
@@ -452,7 +455,7 @@ CREATE TABLE role_parameter (
 
 
 --
--- Name: role_parameter_value; Type: TABLE; Schema: reporting; Owner: report_server_app; Tablespace: 
+-- Name: role_parameter_value; Type: TABLE; Schema: reporting; Owner: report_server_app
 --
 
 CREATE TABLE role_parameter_value (
@@ -472,7 +475,7 @@ CREATE TABLE role_parameter_value (
 
 
 --
--- Name: role_report; Type: TABLE; Schema: reporting; Owner: report_server_app; Tablespace: 
+-- Name: role_report; Type: TABLE; Schema: reporting; Owner: report_server_app
 --
 
 CREATE TABLE role_report (
@@ -486,7 +489,7 @@ CREATE TABLE role_report (
 
 
 --
--- Name: role_role; Type: TABLE; Schema: reporting; Owner: report_server_app; Tablespace: 
+-- Name: role_role; Type: TABLE; Schema: reporting; Owner: report_server_app
 --
 
 CREATE TABLE role_role (
@@ -500,7 +503,7 @@ CREATE TABLE role_role (
 
 
 --
--- Name: selection_list_value; Type: TABLE; Schema: reporting; Owner: report_server_app; Tablespace: 
+-- Name: selection_list_value; Type: TABLE; Schema: reporting; Owner: report_server_app
 --
 
 CREATE TABLE selection_list_value (
@@ -516,13 +519,29 @@ CREATE TABLE selection_list_value (
 
 
 --
--- Name: subscription; Type: TABLE; Schema: reporting; Owner: report_server_app; Tablespace: 
+-- Name: subscription; Type: TABLE; Schema: reporting; Owner: report_server_app
 --
 
 CREATE TABLE subscription (
     subscription_id uuid DEFAULT uuid_generate_v4() NOT NULL,
     active boolean NOT NULL,
     created_on timestamp without time zone NOT NULL,
+    custom_report_parameter_1_name character varying(64),
+    custom_report_parameter_1_value character varying(64),
+    custom_report_parameter_2_name character varying(64),
+    custom_report_parameter_2_value character varying(64),
+    custom_report_parameter_3_name character varying(64),
+    custom_report_parameter_3_value character varying(64),
+    custom_report_parameter_4_name character varying(64),
+    custom_report_parameter_4_value character varying(64),
+    custom_report_parameter_5_name character varying(64),
+    custom_report_parameter_5_value character varying(64),
+    custom_report_parameter_6_name character varying(64),
+    custom_report_parameter_6_value character varying(64),
+    custom_report_parameter_7_name character varying(64),
+    custom_report_parameter_7_value character varying(64),
+    custom_report_parameter_8_name character varying(64),
+    custom_report_parameter_8_value character varying(64),
     delivery_cron_schedule character varying(80),
     delivery_datetime_run_at timestamp without time zone,
     delivery_time_zone_id character varying(80),
@@ -538,7 +557,7 @@ CREATE TABLE subscription (
 
 
 --
--- Name: subscription_parameter; Type: TABLE; Schema: reporting; Owner: report_server_app; Tablespace: 
+-- Name: subscription_parameter; Type: TABLE; Schema: reporting; Owner: report_server_app
 --
 
 CREATE TABLE subscription_parameter (
@@ -552,7 +571,7 @@ CREATE TABLE subscription_parameter (
 
 
 --
--- Name: subscription_parameter_value; Type: TABLE; Schema: reporting; Owner: report_server_app; Tablespace: 
+-- Name: subscription_parameter_value; Type: TABLE; Schema: reporting; Owner: report_server_app
 --
 
 CREATE TABLE subscription_parameter_value (
@@ -632,7 +651,7 @@ SELECT pg_catalog.setval('job_parameter_value_job_parameter_value_id_seq', 1, fa
 
 
 --
--- Name: asset_pkey; Type: CONSTRAINT; Schema: reporting; Owner: report_server_app; Tablespace: 
+-- Name: asset_pkey; Type: CONSTRAINT; Schema: reporting; Owner: report_server_app
 --
 
 ALTER TABLE ONLY asset
@@ -640,7 +659,7 @@ ALTER TABLE ONLY asset
 
 
 --
--- Name: asset_tree_pkey; Type: CONSTRAINT; Schema: reporting; Owner: report_server_app; Tablespace: 
+-- Name: asset_tree_pkey; Type: CONSTRAINT; Schema: reporting; Owner: report_server_app
 --
 
 ALTER TABLE ONLY asset_tree
@@ -648,7 +667,7 @@ ALTER TABLE ONLY asset_tree
 
 
 --
--- Name: asset_type_pkey; Type: CONSTRAINT; Schema: reporting; Owner: report_server_app; Tablespace: 
+-- Name: asset_type_pkey; Type: CONSTRAINT; Schema: reporting; Owner: report_server_app
 --
 
 ALTER TABLE ONLY asset_type
@@ -656,7 +675,7 @@ ALTER TABLE ONLY asset_type
 
 
 --
--- Name: authority_pkey; Type: CONSTRAINT; Schema: reporting; Owner: report_server_app; Tablespace: 
+-- Name: authority_pkey; Type: CONSTRAINT; Schema: reporting; Owner: report_server_app
 --
 
 ALTER TABLE ONLY authority
@@ -664,7 +683,7 @@ ALTER TABLE ONLY authority
 
 
 --
--- Name: configuration_pkey; Type: CONSTRAINT; Schema: reporting; Owner: report_server_app; Tablespace: 
+-- Name: configuration_pkey; Type: CONSTRAINT; Schema: reporting; Owner: report_server_app
 --
 
 ALTER TABLE ONLY configuration
@@ -672,7 +691,7 @@ ALTER TABLE ONLY configuration
 
 
 --
--- Name: document_format_pkey; Type: CONSTRAINT; Schema: reporting; Owner: report_server_app; Tablespace: 
+-- Name: document_format_pkey; Type: CONSTRAINT; Schema: reporting; Owner: report_server_app
 --
 
 ALTER TABLE ONLY document_format
@@ -680,7 +699,7 @@ ALTER TABLE ONLY document_format
 
 
 --
--- Name: document_pkey; Type: CONSTRAINT; Schema: reporting; Owner: report_server_app; Tablespace: 
+-- Name: document_pkey; Type: CONSTRAINT; Schema: reporting; Owner: report_server_app
 --
 
 ALTER TABLE ONLY document
@@ -688,7 +707,7 @@ ALTER TABLE ONLY document
 
 
 --
--- Name: job_parameter_pkey; Type: CONSTRAINT; Schema: reporting; Owner: report_server_app; Tablespace: 
+-- Name: job_parameter_pkey; Type: CONSTRAINT; Schema: reporting; Owner: report_server_app
 --
 
 ALTER TABLE ONLY job_parameter
@@ -696,7 +715,7 @@ ALTER TABLE ONLY job_parameter
 
 
 --
--- Name: job_parameter_value_pkey; Type: CONSTRAINT; Schema: reporting; Owner: report_server_app; Tablespace: 
+-- Name: job_parameter_value_pkey; Type: CONSTRAINT; Schema: reporting; Owner: report_server_app
 --
 
 ALTER TABLE ONLY job_parameter_value
@@ -704,7 +723,7 @@ ALTER TABLE ONLY job_parameter_value
 
 
 --
--- Name: job_pkey; Type: CONSTRAINT; Schema: reporting; Owner: report_server_app; Tablespace: 
+-- Name: job_pkey; Type: CONSTRAINT; Schema: reporting; Owner: report_server_app
 --
 
 ALTER TABLE ONLY job
@@ -712,7 +731,7 @@ ALTER TABLE ONLY job
 
 
 --
--- Name: job_status_pkey; Type: CONSTRAINT; Schema: reporting; Owner: report_server_app; Tablespace: 
+-- Name: job_status_pkey; Type: CONSTRAINT; Schema: reporting; Owner: report_server_app
 --
 
 ALTER TABLE ONLY job_status
@@ -720,7 +739,7 @@ ALTER TABLE ONLY job_status
 
 
 --
--- Name: parameter_group_pkey; Type: CONSTRAINT; Schema: reporting; Owner: report_server_app; Tablespace: 
+-- Name: parameter_group_pkey; Type: CONSTRAINT; Schema: reporting; Owner: report_server_app
 --
 
 ALTER TABLE ONLY parameter_group
@@ -728,7 +747,7 @@ ALTER TABLE ONLY parameter_group
 
 
 --
--- Name: report_category_pkey; Type: CONSTRAINT; Schema: reporting; Owner: report_server_app; Tablespace: 
+-- Name: report_category_pkey; Type: CONSTRAINT; Schema: reporting; Owner: report_server_app
 --
 
 ALTER TABLE ONLY report_category
@@ -736,7 +755,7 @@ ALTER TABLE ONLY report_category
 
 
 --
--- Name: report_parameter_pkey; Type: CONSTRAINT; Schema: reporting; Owner: report_server_app; Tablespace: 
+-- Name: report_parameter_pkey; Type: CONSTRAINT; Schema: reporting; Owner: report_server_app
 --
 
 ALTER TABLE ONLY report_parameter
@@ -744,7 +763,7 @@ ALTER TABLE ONLY report_parameter
 
 
 --
--- Name: report_pkey; Type: CONSTRAINT; Schema: reporting; Owner: report_server_app; Tablespace: 
+-- Name: report_pkey; Type: CONSTRAINT; Schema: reporting; Owner: report_server_app
 --
 
 ALTER TABLE ONLY report
@@ -752,7 +771,7 @@ ALTER TABLE ONLY report
 
 
 --
--- Name: report_version_pkey; Type: CONSTRAINT; Schema: reporting; Owner: report_server_app; Tablespace: 
+-- Name: report_version_pkey; Type: CONSTRAINT; Schema: reporting; Owner: report_server_app
 --
 
 ALTER TABLE ONLY report_version
@@ -760,7 +779,7 @@ ALTER TABLE ONLY report_version
 
 
 --
--- Name: role_authority_pkey; Type: CONSTRAINT; Schema: reporting; Owner: report_server_app; Tablespace: 
+-- Name: role_authority_pkey; Type: CONSTRAINT; Schema: reporting; Owner: report_server_app
 --
 
 ALTER TABLE ONLY role_authority
@@ -768,7 +787,7 @@ ALTER TABLE ONLY role_authority
 
 
 --
--- Name: role_parameter_pkey; Type: CONSTRAINT; Schema: reporting; Owner: report_server_app; Tablespace: 
+-- Name: role_parameter_pkey; Type: CONSTRAINT; Schema: reporting; Owner: report_server_app
 --
 
 ALTER TABLE ONLY role_parameter
@@ -776,7 +795,7 @@ ALTER TABLE ONLY role_parameter
 
 
 --
--- Name: role_parameter_value_pkey; Type: CONSTRAINT; Schema: reporting; Owner: report_server_app; Tablespace: 
+-- Name: role_parameter_value_pkey; Type: CONSTRAINT; Schema: reporting; Owner: report_server_app
 --
 
 ALTER TABLE ONLY role_parameter_value
@@ -784,7 +803,7 @@ ALTER TABLE ONLY role_parameter_value
 
 
 --
--- Name: role_pkey; Type: CONSTRAINT; Schema: reporting; Owner: report_server_app; Tablespace: 
+-- Name: role_pkey; Type: CONSTRAINT; Schema: reporting; Owner: report_server_app
 --
 
 ALTER TABLE ONLY role
@@ -792,7 +811,7 @@ ALTER TABLE ONLY role
 
 
 --
--- Name: role_report_pkey; Type: CONSTRAINT; Schema: reporting; Owner: report_server_app; Tablespace: 
+-- Name: role_report_pkey; Type: CONSTRAINT; Schema: reporting; Owner: report_server_app
 --
 
 ALTER TABLE ONLY role_report
@@ -800,7 +819,7 @@ ALTER TABLE ONLY role_report
 
 
 --
--- Name: role_role_pkey; Type: CONSTRAINT; Schema: reporting; Owner: report_server_app; Tablespace: 
+-- Name: role_role_pkey; Type: CONSTRAINT; Schema: reporting; Owner: report_server_app
 --
 
 ALTER TABLE ONLY role_role
@@ -808,7 +827,7 @@ ALTER TABLE ONLY role_role
 
 
 --
--- Name: selection_list_value_pkey; Type: CONSTRAINT; Schema: reporting; Owner: report_server_app; Tablespace: 
+-- Name: selection_list_value_pkey; Type: CONSTRAINT; Schema: reporting; Owner: report_server_app
 --
 
 ALTER TABLE ONLY selection_list_value
@@ -816,7 +835,7 @@ ALTER TABLE ONLY selection_list_value
 
 
 --
--- Name: subscription_parameter_pkey; Type: CONSTRAINT; Schema: reporting; Owner: report_server_app; Tablespace: 
+-- Name: subscription_parameter_pkey; Type: CONSTRAINT; Schema: reporting; Owner: report_server_app
 --
 
 ALTER TABLE ONLY subscription_parameter
@@ -824,7 +843,7 @@ ALTER TABLE ONLY subscription_parameter
 
 
 --
--- Name: subscription_parameter_value_pkey; Type: CONSTRAINT; Schema: reporting; Owner: report_server_app; Tablespace: 
+-- Name: subscription_parameter_value_pkey; Type: CONSTRAINT; Schema: reporting; Owner: report_server_app
 --
 
 ALTER TABLE ONLY subscription_parameter_value
@@ -832,7 +851,7 @@ ALTER TABLE ONLY subscription_parameter_value
 
 
 --
--- Name: subscription_pkey; Type: CONSTRAINT; Schema: reporting; Owner: report_server_app; Tablespace: 
+-- Name: subscription_pkey; Type: CONSTRAINT; Schema: reporting; Owner: report_server_app
 --
 
 ALTER TABLE ONLY subscription
@@ -840,7 +859,7 @@ ALTER TABLE ONLY subscription
 
 
 --
--- Name: uc_authority_name; Type: CONSTRAINT; Schema: reporting; Owner: report_server_app; Tablespace: 
+-- Name: uc_authority_name; Type: CONSTRAINT; Schema: reporting; Owner: report_server_app
 --
 
 ALTER TABLE ONLY authority
@@ -848,7 +867,7 @@ ALTER TABLE ONLY authority
 
 
 --
--- Name: uc_configuration_paramname_role; Type: CONSTRAINT; Schema: reporting; Owner: report_server_app; Tablespace: 
+-- Name: uc_configuration_paramname_role; Type: CONSTRAINT; Schema: reporting; Owner: report_server_app
 --
 
 ALTER TABLE ONLY configuration
@@ -856,7 +875,7 @@ ALTER TABLE ONLY configuration
 
 
 --
--- Name: uc_jobparameter_job_parameter; Type: CONSTRAINT; Schema: reporting; Owner: report_server_app; Tablespace: 
+-- Name: uc_jobparameter_job_parameter; Type: CONSTRAINT; Schema: reporting; Owner: report_server_app
 --
 
 ALTER TABLE ONLY job_parameter
@@ -864,7 +883,7 @@ ALTER TABLE ONLY job_parameter
 
 
 --
--- Name: uc_reportparameter_reportversion_orderindex; Type: CONSTRAINT; Schema: reporting; Owner: report_server_app; Tablespace: 
+-- Name: uc_reportparameter_reportversion_orderindex; Type: CONSTRAINT; Schema: reporting; Owner: report_server_app
 --
 
 ALTER TABLE ONLY report_parameter
@@ -872,7 +891,7 @@ ALTER TABLE ONLY report_parameter
 
 
 --
--- Name: uc_reportversion_filename; Type: CONSTRAINT; Schema: reporting; Owner: report_server_app; Tablespace: 
+-- Name: uc_reportversion_filename; Type: CONSTRAINT; Schema: reporting; Owner: report_server_app
 --
 
 ALTER TABLE ONLY report_version
@@ -880,7 +899,7 @@ ALTER TABLE ONLY report_version
 
 
 --
--- Name: uc_reportversion_report_versioncode; Type: CONSTRAINT; Schema: reporting; Owner: report_server_app; Tablespace: 
+-- Name: uc_reportversion_report_versioncode; Type: CONSTRAINT; Schema: reporting; Owner: report_server_app
 --
 
 ALTER TABLE ONLY report_version
@@ -888,7 +907,7 @@ ALTER TABLE ONLY report_version
 
 
 --
--- Name: uc_reportversion_report_versionname; Type: CONSTRAINT; Schema: reporting; Owner: report_server_app; Tablespace: 
+-- Name: uc_reportversion_report_versionname; Type: CONSTRAINT; Schema: reporting; Owner: report_server_app
 --
 
 ALTER TABLE ONLY report_version
@@ -896,7 +915,7 @@ ALTER TABLE ONLY report_version
 
 
 --
--- Name: uc_role_username; Type: CONSTRAINT; Schema: reporting; Owner: report_server_app; Tablespace: 
+-- Name: uc_role_username; Type: CONSTRAINT; Schema: reporting; Owner: report_server_app
 --
 
 ALTER TABLE ONLY role
@@ -904,7 +923,7 @@ ALTER TABLE ONLY role
 
 
 --
--- Name: uc_roleauthority_role_authority; Type: CONSTRAINT; Schema: reporting; Owner: report_server_app; Tablespace: 
+-- Name: uc_roleauthority_role_authority; Type: CONSTRAINT; Schema: reporting; Owner: report_server_app
 --
 
 ALTER TABLE ONLY role_authority
@@ -912,7 +931,7 @@ ALTER TABLE ONLY role_authority
 
 
 --
--- Name: uc_roleparameter_role_parameter; Type: CONSTRAINT; Schema: reporting; Owner: report_server_app; Tablespace: 
+-- Name: uc_roleparameter_role_parameter; Type: CONSTRAINT; Schema: reporting; Owner: report_server_app
 --
 
 ALTER TABLE ONLY role_parameter
@@ -920,7 +939,7 @@ ALTER TABLE ONLY role_parameter
 
 
 --
--- Name: uc_rolereport_role_report; Type: CONSTRAINT; Schema: reporting; Owner: report_server_app; Tablespace: 
+-- Name: uc_rolereport_role_report; Type: CONSTRAINT; Schema: reporting; Owner: report_server_app
 --
 
 ALTER TABLE ONLY role_report
@@ -928,7 +947,7 @@ ALTER TABLE ONLY role_report
 
 
 --
--- Name: uc_rolerole_parent_child; Type: CONSTRAINT; Schema: reporting; Owner: report_server_app; Tablespace: 
+-- Name: uc_rolerole_parent_child; Type: CONSTRAINT; Schema: reporting; Owner: report_server_app
 --
 
 ALTER TABLE ONLY role_role
@@ -936,7 +955,7 @@ ALTER TABLE ONLY role_role
 
 
 --
--- Name: uc_subscriptionparameter_subscription_parameter; Type: CONSTRAINT; Schema: reporting; Owner: report_server_app; Tablespace: 
+-- Name: uc_subscriptionparameter_subscription_parameter; Type: CONSTRAINT; Schema: reporting; Owner: report_server_app
 --
 
 ALTER TABLE ONLY subscription_parameter
@@ -944,7 +963,7 @@ ALTER TABLE ONLY subscription_parameter
 
 
 --
--- Name: uq_asset_name_tree_type; Type: CONSTRAINT; Schema: reporting; Owner: report_server_app; Tablespace: 
+-- Name: uq_asset_name_tree_type; Type: CONSTRAINT; Schema: reporting; Owner: report_server_app
 --
 
 ALTER TABLE ONLY asset
@@ -952,7 +971,7 @@ ALTER TABLE ONLY asset
 
 
 --
--- Name: uq_assettree_abbreviation; Type: CONSTRAINT; Schema: reporting; Owner: report_server_app; Tablespace: 
+-- Name: uq_assettree_abbreviation; Type: CONSTRAINT; Schema: reporting; Owner: report_server_app
 --
 
 ALTER TABLE ONLY asset_tree
@@ -960,7 +979,7 @@ ALTER TABLE ONLY asset_tree
 
 
 --
--- Name: uq_assettree_directory; Type: CONSTRAINT; Schema: reporting; Owner: report_server_app; Tablespace: 
+-- Name: uq_assettree_directory; Type: CONSTRAINT; Schema: reporting; Owner: report_server_app
 --
 
 ALTER TABLE ONLY asset_tree
@@ -968,7 +987,7 @@ ALTER TABLE ONLY asset_tree
 
 
 --
--- Name: uq_assettree_name; Type: CONSTRAINT; Schema: reporting; Owner: report_server_app; Tablespace: 
+-- Name: uq_assettree_name; Type: CONSTRAINT; Schema: reporting; Owner: report_server_app
 --
 
 ALTER TABLE ONLY asset_tree
@@ -976,7 +995,7 @@ ALTER TABLE ONLY asset_tree
 
 
 --
--- Name: uq_assettype_abbreviation; Type: CONSTRAINT; Schema: reporting; Owner: report_server_app; Tablespace: 
+-- Name: uq_assettype_abbreviation; Type: CONSTRAINT; Schema: reporting; Owner: report_server_app
 --
 
 ALTER TABLE ONLY asset_type
@@ -984,7 +1003,7 @@ ALTER TABLE ONLY asset_type
 
 
 --
--- Name: uq_assettype_directory; Type: CONSTRAINT; Schema: reporting; Owner: report_server_app; Tablespace: 
+-- Name: uq_assettype_directory; Type: CONSTRAINT; Schema: reporting; Owner: report_server_app
 --
 
 ALTER TABLE ONLY asset_type
@@ -992,7 +1011,7 @@ ALTER TABLE ONLY asset_type
 
 
 --
--- Name: uq_assettype_name; Type: CONSTRAINT; Schema: reporting; Owner: report_server_app; Tablespace: 
+-- Name: uq_assettype_name; Type: CONSTRAINT; Schema: reporting; Owner: report_server_app
 --
 
 ALTER TABLE ONLY asset_type
@@ -1420,7 +1439,7 @@ INSERT INTO reporting.role_authority (role_authority_id, role_id, authority_id, 
 -- version. This will get updated at the database is upgraded over time. This
 -- version number will be updated whenever the data model changes *or* Q-Free
 -- supplied content changes (records are created, updated or deleted).
-INSERT INTO reporting.configuration (param_name, role_id, param_type, integer_value, string_value , created_on) VALUES ('DB_VERSION', null, 'INTEGER', 7, '7', current_timestamp AT TIME ZONE 'UTC');
+INSERT INTO reporting.configuration (param_name, role_id, param_type, integer_value, string_value , created_on) VALUES ('DB_VERSION', null, 'INTEGER', 8, '8', current_timestamp AT TIME ZONE 'UTC');
 
 --ROLLBACK;
 COMMIT;
