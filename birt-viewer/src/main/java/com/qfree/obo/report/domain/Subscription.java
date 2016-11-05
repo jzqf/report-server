@@ -149,6 +149,54 @@ public class Subscription implements Serializable {
 	@Column(name = "description", nullable = true, length = 1024)
 	private String description;
 
+	@Column(name = "custom_report_parameter_1_name", nullable = true, length = 64)
+	private String customReportParameter1_name;
+
+	@Column(name = "custom_report_parameter_1_value", nullable = true, length = 64)
+	private String customReportParameter1_value;
+
+	@Column(name = "custom_report_parameter_2_name", nullable = true, length = 64)
+	private String customReportParameter2_name;
+
+	@Column(name = "custom_report_parameter_2_value", nullable = true, length = 64)
+	private String customReportParameter2_value;
+
+	@Column(name = "custom_report_parameter_3_name", nullable = true, length = 64)
+	private String customReportParameter3_name;
+
+	@Column(name = "custom_report_parameter_3_value", nullable = true, length = 64)
+	private String customReportParameter3_value;
+
+	@Column(name = "custom_report_parameter_4_name", nullable = true, length = 64)
+	private String customReportParameter4_name;
+
+	@Column(name = "custom_report_parameter_4_value", nullable = true, length = 64)
+	private String customReportParameter4_value;
+
+	@Column(name = "custom_report_parameter_5_name", nullable = true, length = 64)
+	private String customReportParameter5_name;
+
+	@Column(name = "custom_report_parameter_5_value", nullable = true, length = 64)
+	private String customReportParameter5_value;
+
+	@Column(name = "custom_report_parameter_6_name", nullable = true, length = 64)
+	private String customReportParameter6_name;
+
+	@Column(name = "custom_report_parameter_6_value", nullable = true, length = 64)
+	private String customReportParameter6_value;
+
+	@Column(name = "custom_report_parameter_7_name", nullable = true, length = 64)
+	private String customReportParameter7_name;
+
+	@Column(name = "custom_report_parameter_7_value", nullable = true, length = 64)
+	private String customReportParameter7_value;
+
+	@Column(name = "custom_report_parameter_8_name", nullable = true, length = 64)
+	private String customReportParameter8_name;
+
+	@Column(name = "custom_report_parameter_8_value", nullable = true, length = 64)
+	private String customReportParameter8_value;
+
 	@NotNull
 	@Column(name = "enabled", nullable = false)
 	private Boolean enabled;
@@ -223,6 +271,22 @@ public class Subscription implements Serializable {
 				subscriptionResource.getDeliveryDatetimeRunAt(),
 				subscriptionResource.getEmailAddress(),
 				subscriptionResource.getDescription(),
+				subscriptionResource.getCustomReportParameter1_name(),
+				subscriptionResource.getCustomReportParameter1_value(),
+				subscriptionResource.getCustomReportParameter2_name(),
+				subscriptionResource.getCustomReportParameter2_value(),
+				subscriptionResource.getCustomReportParameter3_name(),
+				subscriptionResource.getCustomReportParameter3_value(),
+				subscriptionResource.getCustomReportParameter4_name(),
+				subscriptionResource.getCustomReportParameter4_value(),
+				subscriptionResource.getCustomReportParameter5_name(),
+				subscriptionResource.getCustomReportParameter5_value(),
+				subscriptionResource.getCustomReportParameter6_name(),
+				subscriptionResource.getCustomReportParameter6_value(),
+				subscriptionResource.getCustomReportParameter7_name(),
+				subscriptionResource.getCustomReportParameter7_value(),
+				subscriptionResource.getCustomReportParameter8_name(),
+				subscriptionResource.getCustomReportParameter8_value(),
 				subscriptionResource.getEnabled(),
 				subscriptionResource.getActive(),
 				subscriptionResource.getCreatedOn());
@@ -238,6 +302,22 @@ public class Subscription implements Serializable {
 			Date deliveryDatetimeRunAt,
 			String emailAddress,
 			String description,
+			String customReportParameter1_name,
+			String customReportParameter1_value,
+			String customReportParameter2_name,
+			String customReportParameter2_value,
+			String customReportParameter3_name,
+			String customReportParameter3_value,
+			String customReportParameter4_name,
+			String customReportParameter4_value,
+			String customReportParameter5_name,
+			String customReportParameter5_value,
+			String customReportParameter6_name,
+			String customReportParameter6_value,
+			String customReportParameter7_name,
+			String customReportParameter7_value,
+			String customReportParameter8_name,
+			String customReportParameter8_value,
 			Boolean enabled,
 			Boolean active,
 			Date createdOn) {
@@ -251,6 +331,22 @@ public class Subscription implements Serializable {
 		this.deliveryDatetimeRunAt = deliveryDatetimeRunAt;
 		this.emailAddress = emailAddress;
 		this.description = description;
+		this.customReportParameter1_name = customReportParameter1_name;
+		this.customReportParameter1_value = customReportParameter1_value;
+		this.customReportParameter2_name = customReportParameter2_name;
+		this.customReportParameter2_value = customReportParameter2_value;
+		this.customReportParameter3_name = customReportParameter3_name;
+		this.customReportParameter3_value = customReportParameter3_value;
+		this.customReportParameter4_name = customReportParameter4_name;
+		this.customReportParameter4_value = customReportParameter4_value;
+		this.customReportParameter5_name = customReportParameter5_name;
+		this.customReportParameter5_value = customReportParameter5_value;
+		this.customReportParameter6_name = customReportParameter6_name;
+		this.customReportParameter6_value = customReportParameter6_value;
+		this.customReportParameter7_name = customReportParameter7_name;
+		this.customReportParameter7_value = customReportParameter7_value;
+		this.customReportParameter8_name = customReportParameter8_name;
+		this.customReportParameter8_value = customReportParameter8_value;
 		this.enabled = (enabled != null) ? enabled : false;
 		this.active = (active != null) ? active : true;
 		this.createdOn = (createdOn != null) ? createdOn : DateUtils.nowUtc();
@@ -318,6 +414,134 @@ public class Subscription implements Serializable {
 
 	public void setDescription(String description) {
 		this.description = description;
+	}
+
+	public String getCustomReportParameter1_name() {
+		return customReportParameter1_name;
+	}
+
+	public void setCustomReportParameter1_name(String customReportParameter1_name) {
+		this.customReportParameter1_name = customReportParameter1_name;
+	}
+
+	public String getCustomReportParameter1_value() {
+		return customReportParameter1_value;
+	}
+
+	public void setCustomReportParameter1_value(String customReportParameter1_value) {
+		this.customReportParameter1_value = customReportParameter1_value;
+	}
+
+	public String getCustomReportParameter2_name() {
+		return customReportParameter2_name;
+	}
+
+	public void setCustomReportParameter2_name(String customReportParameter2_name) {
+		this.customReportParameter2_name = customReportParameter2_name;
+	}
+
+	public String getCustomReportParameter2_value() {
+		return customReportParameter2_value;
+	}
+
+	public void setCustomReportParameter2_value(String customReportParameter2_value) {
+		this.customReportParameter2_value = customReportParameter2_value;
+	}
+
+	public String getCustomReportParameter3_name() {
+		return customReportParameter3_name;
+	}
+
+	public void setCustomReportParameter3_name(String customReportParameter3_name) {
+		this.customReportParameter3_name = customReportParameter3_name;
+	}
+
+	public String getCustomReportParameter3_value() {
+		return customReportParameter3_value;
+	}
+
+	public void setCustomReportParameter3_value(String customReportParameter3_value) {
+		this.customReportParameter3_value = customReportParameter3_value;
+	}
+
+	public String getCustomReportParameter4_name() {
+		return customReportParameter4_name;
+	}
+
+	public void setCustomReportParameter4_name(String customReportParameter4_name) {
+		this.customReportParameter4_name = customReportParameter4_name;
+	}
+
+	public String getCustomReportParameter4_value() {
+		return customReportParameter4_value;
+	}
+
+	public void setCustomReportParameter4_value(String customReportParameter4_value) {
+		this.customReportParameter4_value = customReportParameter4_value;
+	}
+
+	public String getCustomReportParameter5_name() {
+		return customReportParameter5_name;
+	}
+
+	public void setCustomReportParameter5_name(String customReportParameter5_name) {
+		this.customReportParameter5_name = customReportParameter5_name;
+	}
+
+	public String getCustomReportParameter5_value() {
+		return customReportParameter5_value;
+	}
+
+	public void setCustomReportParameter5_value(String customReportParameter5_value) {
+		this.customReportParameter5_value = customReportParameter5_value;
+	}
+
+	public String getCustomReportParameter6_name() {
+		return customReportParameter6_name;
+	}
+
+	public void setCustomReportParameter6_name(String customReportParameter6_name) {
+		this.customReportParameter6_name = customReportParameter6_name;
+	}
+
+	public String getCustomReportParameter6_value() {
+		return customReportParameter6_value;
+	}
+
+	public void setCustomReportParameter6_value(String customReportParameter6_value) {
+		this.customReportParameter6_value = customReportParameter6_value;
+	}
+
+	public String getCustomReportParameter7_name() {
+		return customReportParameter7_name;
+	}
+
+	public void setCustomReportParameter7_name(String customReportParameter7_name) {
+		this.customReportParameter7_name = customReportParameter7_name;
+	}
+
+	public String getCustomReportParameter7_value() {
+		return customReportParameter7_value;
+	}
+
+	public void setCustomReportParameter7_value(String customReportParameter7_value) {
+		this.customReportParameter7_value = customReportParameter7_value;
+	}
+
+	public String getCustomReportParameter8_name() {
+		return customReportParameter8_name;
+	}
+
+	public void setCustomReportParameter8_name(String customReportParameter8_name) {
+		this.customReportParameter8_name = customReportParameter8_name;
+	}
+
+	public String getCustomReportParameter8_value() {
+		return customReportParameter8_value;
+	}
+
+	public void setCustomReportParameter8_value(String customReportParameter8_value) {
+		this.customReportParameter8_value = customReportParameter8_value;
 	}
 
 	public Boolean getEnabled() {
@@ -400,6 +624,38 @@ public class Subscription implements Serializable {
 		builder.append(emailAddress);
 		builder.append(", description=");
 		builder.append(description);
+		builder.append(", customReportParameter1_name=");
+		builder.append(customReportParameter1_name);
+		builder.append(", customReportParameter1_value=");
+		builder.append(customReportParameter1_value);
+		builder.append(", customReportParameter2_name=");
+		builder.append(customReportParameter2_name);
+		builder.append(", customReportParameter2_value=");
+		builder.append(customReportParameter2_value);
+		builder.append(", customReportParameter3_name=");
+		builder.append(customReportParameter3_name);
+		builder.append(", customReportParameter3_value=");
+		builder.append(customReportParameter3_value);
+		builder.append(", customReportParameter4_name=");
+		builder.append(customReportParameter4_name);
+		builder.append(", customReportParameter4_value=");
+		builder.append(customReportParameter4_value);
+		builder.append(", customReportParameter5_name=");
+		builder.append(customReportParameter5_name);
+		builder.append(", customReportParameter5_value=");
+		builder.append(customReportParameter5_value);
+		builder.append(", customReportParameter6_name=");
+		builder.append(customReportParameter6_name);
+		builder.append(", customReportParameter6_value=");
+		builder.append(customReportParameter6_value);
+		builder.append(", customReportParameter7_name=");
+		builder.append(customReportParameter7_name);
+		builder.append(", customReportParameter7_value=");
+		builder.append(customReportParameter7_value);
+		builder.append(", customReportParameter8_name=");
+		builder.append(customReportParameter8_name);
+		builder.append(", customReportParameter8_value=");
+		builder.append(customReportParameter8_value);
 		builder.append(", enabled=");
 		builder.append(enabled);
 		builder.append(", active=");

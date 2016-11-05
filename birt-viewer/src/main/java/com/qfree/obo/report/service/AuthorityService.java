@@ -37,8 +37,9 @@ public class AuthorityService {
 	 */
 	@Transactional
 	public List<Authority> getActiveAuthoritiesByRoleIdDirect(UUID roleId) {
+		Boolean activeAuthoritiesOnly=true;
 
-		List<String> uuidStrings = authorityRepository.findActiveAuthorityIdsByRoleId(roleId.toString());
+		List<String> uuidStrings = authorityRepository.findAuthorityIdsByRoleId(roleId.toString(), activeAuthoritiesOnly);
 		List<Authority> authorities = new ArrayList<>(uuidStrings.size());
 		for (String uuidString : uuidStrings) {
 			try {
@@ -54,11 +55,30 @@ public class AuthorityService {
 		return authorities;
 	}
 
+	/**
+	 * Returns an {@link Authority} {@link List} for a {@link Role} specified
+	 * by its id. If a PostgreSQL database is being used, {@link Role} 
+	 * inheritance will be taken into account. If H2 is being used (for unit
+	 * and integration tests), then {@link Role} inheritance will not be taken 
+	 * into account.
+	 * 
+	 * @param roleId
+	 * @return
+	 */
 	@Transactional
 	public List<Authority> getActiveAuthoritiesByRoleId(UUID roleId) {
 
-		//List<String> uuidStrings = authorityRepository.findActiveAuthorityIdsByRoleIdRecursive(roleId.toString());
-		List<String> uuidStrings = findActiveAuthorityIdsByRoleId(roleId);
+		/*
+		 * This returns a list of Strings, each of which represents a UUID id
+		 * of and Authority. 
+		 */
+		Boolean activeAuthoritiesOnly = true;
+		List<String> uuidStrings = findAuthorityIdsByRoleId(roleId, activeAuthoritiesOnly);
+		/*
+		 * The rest of this method generates a list of Authority entities from
+		 * the list of Authority ids that are expressed as Strings, i.e., it
+		 * performs the conversion:  List<String> -> List<Authority>
+		 */
 		List<Authority> authorities = new ArrayList<>(uuidStrings.size());
 		for (String uuidString : uuidStrings) {
 			try {
@@ -74,7 +94,7 @@ public class AuthorityService {
 		return authorities;
 	}
 
-	public List<String> findActiveAuthorityIdsByRoleId(UUID roleId) {
+	public List<String> findAuthorityIdsByRoleId(UUID roleId, Boolean activeAuthoritiesOnly) {
 		/*
 		 * The H2 database does not support recursive CTE expressions, so it is 
 		 * necessary to run different code if the database is not PostgreSQL.
@@ -82,37 +102,27 @@ public class AuthorityService {
 		 * in production. 
 		 */
 		if (UuidCustomType.DB_VENDOR.equals(UuidCustomType.POSTGRESQL_VENDOR)) {
-			return authorityRepository.findActiveAuthorityIdsByRoleIdRecursive(roleId.toString());
+			Boolean activeInheritedRolesOnly = true;
+			return authorityRepository.findAuthorityIdsByRoleIdRecursive(roleId.toString(), 
+					activeAuthoritiesOnly, activeInheritedRolesOnly);
 		} else {
-			return authorityRepository.findActiveAuthorityIdsByRoleId(roleId.toString());
+			return authorityRepository.findAuthorityIdsByRoleId(roleId.toString(), activeAuthoritiesOnly);
 		}
 	}
 
-	public List<String> findActiveAuthorityNamesByRoleId(UUID roleId) {
+	public List<String> findAuthorityNamesByRoleId(UUID roleId, Boolean activeAuthoritiesOnly) {
 		/*
 		 * The H2 database does not support recursive CTE expressions, so it is 
 		 * necessary to run different code if the database is not PostgreSQL.
-		 * This only affects integration tests, because only PostreSQL is used
-		 * in production. 
+		 * This only affects unit/integration tests, because only PostreSQL is 
+		 * used in production. 
 		 */
 		if (UuidCustomType.DB_VENDOR.equals(UuidCustomType.POSTGRESQL_VENDOR)) {
-			return authorityRepository.findActiveAuthorityNamesByRoleIdRecursive(roleId.toString());
+			Boolean activeInheritedRolesOnly = true;
+			return authorityRepository.findAuthorityNamesByRoleIdRecursive(roleId.toString(), 
+					activeAuthoritiesOnly, activeInheritedRolesOnly);
 		} else {
-			return authorityRepository.findActiveAuthorityNamesByRoleId(roleId.toString());
-		}
-	}
-
-	public List<String> findAuthorityNamesByRoleId(UUID roleId) {
-		/*
-		 * The H2 database does not support recursive CTE expressions, so it is 
-		 * necessary to run different code if the database is not PostgreSQL.
-		 * This only affects integration tests, because only PostreSQL is used
-		 * in production. 
-		 */
-		if (UuidCustomType.DB_VENDOR.equals(UuidCustomType.POSTGRESQL_VENDOR)) {
-			return authorityRepository.findAuthorityNamesByRoleIdRecursive(roleId.toString());
-		} else {
-			return authorityRepository.findAuthorityNamesByRoleId(roleId.toString());
+			return authorityRepository.findAuthorityNamesByRoleId(roleId.toString(), activeAuthoritiesOnly);
 		}
 	}
 

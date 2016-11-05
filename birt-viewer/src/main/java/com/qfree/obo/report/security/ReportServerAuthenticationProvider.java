@@ -255,15 +255,28 @@ public class ReportServerAuthenticationProvider implements AuthenticationProvide
 
 						List<String> authorities = null;
 						if (username.equals(Role.QFREE_ADMIN_ROLE_NAME)) {
-							authorities = authorityService.findAuthorityNamesByRoleId(role.getRoleId());
+							/*
+							 * Authorities are granted to the QFREE_ADMIN_ROLE_NAME
+							 * role regardless of whether they are active or not.
+							 * This is because the "active" setting for an Authority
+							 * will be managed by some sort of administrator to 
+							 * control the operations available to normal report 
+							 * server users. The QFREE_ADMIN_ROLE_NAME role is a 
+							 * special role for Q-Free use only - we don't want this
+							 * role's capabilities to be altered by normal report
+							 * server administrative operations.
+							 */
+							Boolean activeAuthoritiesOnly = false;
+							authorities = authorityService.findAuthorityNamesByRoleId(role.getRoleId(), activeAuthoritiesOnly);
 						} else {
 							/*
 							 * Note that only names of *active* Authority entities 
-							 * are returned here. This means that inactive Authority
-							 * entities that are already linked to a Role will not
-							 * be made available to the Role here.
+							 * are returned here. This means that *inactive* 
+							 * Authority entities that are linked to a Role will 
+							 * not be made available to the Role here.
 							 */
-							authorities = authorityService.findActiveAuthorityNamesByRoleId(role.getRoleId());
+							Boolean activeAuthoritiesOnly = true;
+							authorities = authorityService.findAuthorityNamesByRoleId(role.getRoleId(), activeAuthoritiesOnly);
 						}
 						logger.info("authorities = {}", authorities);
 

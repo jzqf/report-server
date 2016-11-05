@@ -38,6 +38,9 @@ public class ReportRepositoryTests {
 	ReportRepository reportRepository;
 
 	@Autowired
+	ReportVersionRepository reportVersionRepository;
+
+	@Autowired
 	ReportCategoryRepository reportCategoryRepository;
 
 	@Test
@@ -135,15 +138,20 @@ public class ReportRepositoryTests {
 	@Test
 	@Transactional
 	public void delete() {
-		assertThat(reportRepository.count(), is(6L));
-		assertThat(reportCategoryRepository.count(), is(4L));
+		long currentTotalNumberOfReports = 6L;
+		long numberOfVersionsforReport = 1L; // the selected Report has one linked ReportVersion
+		long currentNumberOfReportVersions = 7L;
+		long numberOfReportCategories = 4L;
+		assertThat(reportRepository.count(), is(currentTotalNumberOfReports));
+		assertThat(reportVersionRepository.count(), is(currentNumberOfReportVersions));
+		assertThat(reportCategoryRepository.count(), is(numberOfReportCategories));
 		UUID uuidOfReport02 = UUID.fromString("c7f1d394-9814-4ede-bb01-2700187d79ca");
 		assertThat(reportRepository.findOne(uuidOfReport02), is(not(nullValue())));
-		//		ReportCategory reportCategoryOfReport02 = reportRepository.findOne(uuidOf2ndRow).getReportCategory();
 		reportRepository.delete(uuidOfReport02);
-		assertThat(reportRepository.count(), is(5L));
+		assertThat(reportRepository.count(), is(currentTotalNumberOfReports - 1));
+		assertThat(reportVersionRepository.count(), is(currentNumberOfReportVersions - numberOfVersionsforReport));
+		assertThat(reportCategoryRepository.count(), is(numberOfReportCategories));
 		assertThat(reportRepository.findOne(uuidOfReport02), is(nullValue()));
-		assertThat(reportCategoryRepository.count(), is(4L));
 	}
 
 	private void assertRecent(List<Report> recent, int count) {

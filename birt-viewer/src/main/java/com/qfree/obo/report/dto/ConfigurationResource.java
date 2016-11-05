@@ -139,8 +139,9 @@ public class ConfigurationResource extends AbstractBaseResource {
 			if (configuration.getRole() != null) {
 				/*
 				 * We do not have access to an AuthorityService bean here, so we
-				 * just pass null here. As a result, the RoleResource will not
-				 * have an "authorities" attribute.
+				 * just pass null here. As a result, the RoleResource 
+				 * constructed here will not have a "directAuthorities" or an 
+				 * "allAuthorities" attribute (they will be null).
 				 */
 				this.roleResource = new RoleResource(configuration.getRole(), null,
 						uriInfo, newQueryParams, apiVersion);

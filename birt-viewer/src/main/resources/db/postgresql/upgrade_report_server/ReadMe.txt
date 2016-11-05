@@ -18,20 +18,20 @@ I.	===== Upgrading the report server database =====
 3.	Log into the PostgreSQL host machine, either directly or via the ssh 
 	command.
 
-4.	Execute the following in a bash shell from the upgrade_report_server 
-	directory on the PostgreSQL host machine:
+4.	Execute the following in a bash shell from the 
+	upgrade_report_server-<version> directory on the PostgreSQL host machine:
 
 		./upgrade_report_server_db.sh
 
 	The OS user account from which this is run should have the permission to 
-	write from the upgrade_report_server directory because this script writes 
-	errors and other messages to a log file named "logfile" in the script's 
-	directory.
+	write from the upgrade_report_server-<version> directory because this script 
+	writes errors and other messages to a log file named "logfile" in the 
+	script's directory.
 
 	Unless a different PostgreSQL role (user) is specified with the -U option, 
 	this script will attempt to connect to the report server database using the 
 	role "report_server_app", which is the role used by the report server 
-	application itself to connect to the report server application. To simplify 
+	application itself to connect to the report server database. To simplify 
 	execution of this script, the PostgreSQL password for this role can be 
 	placed in the .pgpass file of the OS user's account from which this script 
 	is executed; otherwise, the user will be prompted for this password each 

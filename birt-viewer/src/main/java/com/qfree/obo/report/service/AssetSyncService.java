@@ -74,94 +74,99 @@ public class AssetSyncService {
 		 */
 		List<String> assetsNotCreated = new ArrayList<>();
 
-		try {
-			if (ReportUtils.assetSyncSemaphore.tryAcquire(ReportUtils.MAX_WAIT_ACQUIRE_ASSETSYNCSEMAPHORE,
-					TimeUnit.SECONDS)) {
-				try {
+		/*
+		 * We only sync the assets if we detect that there is an appropriate
+		 * directory tree in which they can be written.
+		 */
+		if (ReportUtils.applicationPackagedAsWar()) {
+			try {
+				if (ReportUtils.assetSyncSemaphore.tryAcquire(ReportUtils.MAX_WAIT_ACQUIRE_ASSETSYNCSEMAPHORE,
+						TimeUnit.SECONDS)) {
+					try {
 
-					/*
-					 * Delete *all* files in each asset directory in each asset 
-					 * tree, except for files named "ReadMe.txt".
-					 * 
-					 * No attempt is made to delete directories that are no 
-					 * longer used or to delete files in directories that are no
-					 * longer used. Those directories will automatically 
-					 * disappear the next time a new WAR file is installed.
-					 * 
-					 * This step is not strictly necessary. It is difficult to
-					 * image problems that could arise because of the presence 
-					 * of asset files in these directories that are not matched 
-					 * with files stored in the report server database, but this
-					 * is done anyway, to avoid the unlikely event of such a
-					 * problem arising one day.
-					 */
-					for (AssetTree assetTree : assetTreeRepository.findByActiveTrue()) {
-						for (AssetType assetType : assetTypeRepository.findByActiveTrue()) {
-							File assetDirectory = absoluteContextPath
-									.resolve(ReportUtils.ASSET_FILES_PARENT_FOLDER)
-									.resolve(assetTree.getDirectory())
-									.resolve(assetType.getDirectory())
-									.toFile();
-							logger.info("Deleting files from directory {} ...", assetDirectory.toString());
-							if (assetDirectory.isDirectory()) {
-								File[] files = assetDirectory.listFiles(new AssetFileFilter());
-								if (files != null) {
-									for (File file : files) {
-										if (file.delete()) {
-											assetsDeleted.add(file.getAbsolutePath());
-											logger.info("Deleted file \"{}\"", file.getAbsolutePath());
-										} else {
-											assetsNotDeleted.add(file.getAbsolutePath());
-											logger.warn("Unable to delete file \"{}\"", file.getAbsolutePath());
+						/*
+						 * Delete *all* files in each asset directory in each asset 
+						 * tree, except for files named "ReadMe.txt".
+						 * 
+						 * No attempt is made to delete directories that are no 
+						 * longer used or to delete files in directories that are no
+						 * longer used. Those directories will automatically 
+						 * disappear the next time a new WAR file is installed.
+						 * 
+						 * This step is not strictly necessary. It is difficult to
+						 * image problems that could arise because of the presence 
+						 * of asset files in these directories that are not matched 
+						 * with files stored in the report server database, but this
+						 * is done anyway, to avoid the unlikely event of such a
+						 * problem arising one day.
+						 */
+						for (AssetTree assetTree : assetTreeRepository.findByActiveTrue()) {
+							for (AssetType assetType : assetTypeRepository.findByActiveTrue()) {
+								File assetDirectory = absoluteContextPath
+										.resolve(ReportUtils.ASSET_FILES_PARENT_FOLDER)
+										.resolve(assetTree.getDirectory())
+										.resolve(assetType.getDirectory())
+										.toFile();
+								logger.info("Deleting files from directory {} ...", assetDirectory.toString());
+								if (assetDirectory.isDirectory()) {
+									File[] files = assetDirectory.listFiles(new AssetFileFilter());
+									if (files != null) {
+										for (File file : files) {
+											if (file.delete()) {
+												assetsDeleted.add(file.getAbsolutePath());
+												logger.info("Deleted file \"{}\"", file.getAbsolutePath());
+											} else {
+												assetsNotDeleted.add(file.getAbsolutePath());
+												logger.warn("Unable to delete file \"{}\"", file.getAbsolutePath());
+											}
 										}
 									}
+								} else {
+									logger.info(
+											"Directory {} does not exist. This is OK. The directory will be created, if necessary.",
+											assetDirectory.toString());
 								}
-							} else {
-								logger.info(
-										"Directory {} does not exist. This is OK. The directory will be created, if necessary.",
-										assetDirectory.toString());
 							}
 						}
-					}
 
-					/*
-					* Write out asset files from the report server database. 
-					* Directories are created, if necessary.
-					*/
-					List<Asset> assets = null;
-					if (RestUtils.FILTER_INACTIVE_RECORDS
-							&& !(syncInactiveAssets != null ? syncInactiveAssets : false)) {
-						assets = assetRepository.findByActiveTrue();
-					} else {
-						assets = assetRepository.findAll();
-					}
-					for (Asset asset : assets) {
-						logger.info("Writing asset = {}, number of bytes = {}", asset.getFilename(),
-								asset.getDocument().getContent().length);
 						/*
-						 * Write uploaded asset file to the file system of the 
-						 * report server, overwriting a file with the same name,
-						 * if one exists.
+						* Write out asset files from the report server database. 
+						* Directories are created, if necessary.
+						*/
+						List<Asset> assets = null;
+						if (RestUtils.FILTER_INACTIVE_RECORDS
+								&& !(syncInactiveAssets != null ? syncInactiveAssets : false)) {
+							assets = assetRepository.findByActiveTrue();
+						} else {
+							assets = assetRepository.findAll();
+						}
+						for (Asset asset : assets) {
+							logger.info("Writing asset = {}, number of bytes = {}", asset.getFilename(),
+									asset.getDocument().getContent().length);
+							/*
+							 * Write uploaded asset file to the file system of the 
+							 * report server, overwriting a file with the same name,
+							 * if one exists.
+							 */
+							Path assetFilePath = ReportUtils.writeAssetFile(asset, absoluteContextPath.toString());
+							assetsCreated.add(assetFilePath.toAbsolutePath().toString());
+						}
+
+					} catch (IOException e) {
+						/*
+						 * Can be thrown by: Files.createDirectories(...)
 						 */
-						Path assetFilePath = ReportUtils.writeAssetFile(asset, absoluteContextPath.toString());
-						assetsCreated.add(assetFilePath.toAbsolutePath().toString());
+						throw new RestApiException(RestError.INTERNAL_SERVER_ERROR_ASSET_SYNC, e);
+					} finally {
+						ReportUtils.assetSyncSemaphore.release();
 					}
-
-				} catch (IOException e) {
-					/*
-					 * Can be thrown by: Files.createDirectories(...)
-					 */
-					throw new RestApiException(RestError.INTERNAL_SERVER_ERROR_ASSET_SYNC, e);
-				} finally {
-					ReportUtils.assetSyncSemaphore.release();
+				} else {
+					throw new RestApiException(RestError.INTERNAL_SERVER_ERROR_RPTDESIGN_SYNC_NO_PERMIT);
 				}
-			} else {
-				throw new RestApiException(RestError.INTERNAL_SERVER_ERROR_RPTDESIGN_SYNC_NO_PERMIT);
+			} catch (InterruptedException e) {
+				throw new RestApiException(RestError.INTERNAL_SERVER_ERROR_RPTDESIGN_SYNC_INTERRUPT, e);
 			}
-		} catch (InterruptedException e) {
-			throw new RestApiException(RestError.INTERNAL_SERVER_ERROR_RPTDESIGN_SYNC_INTERRUPT, e);
 		}
-
 		return new AssetSyncResource(assetsDeleted, assetsNotDeleted, assetsCreated, assetsNotCreated);
 	}
 
@@ -182,7 +187,7 @@ public class AssetSyncService {
 		Path assetFilePath = null;
 		/*
 		 * We only write the file if we detect that there is an appropriate
-		 * directory tree in which is can be written.
+		 * directory tree in which it can be written.
 		 */
 		if (ReportUtils.applicationPackagedAsWar()) {
 			try {

@@ -25,12 +25,18 @@ public class RestAPITimingTests {
 	 */
 	public static void main(String[] args) throws Exception {
 
+		BCryptPasswordEncoder bCryptPasswordEncoder_08 = new BCryptPasswordEncoder(8);
 		BCryptPasswordEncoder bCryptPasswordEncoder_10 = new BCryptPasswordEncoder(10);
 		BCryptPasswordEncoder bCryptPasswordEncoder_12 = new BCryptPasswordEncoder(12);
 		String encodedPassword_10 = bCryptPasswordEncoder_10.encode("ui");
 		System.out.println("encodedPassword_10 = " + encodedPassword_10);
 		System.out.println("bCryptPasswordEncoder_10.matches(\"ui\", encodedPassword_10) = "
 				+ bCryptPasswordEncoder_10.matches("ui", encodedPassword_10));
+		
+//	System.out.println("bCryptPasswordEncoder_08.encode('reportadmin') = "+bCryptPasswordEncoder_08.encode("reportadmin"));
+//	System.out.println("bCryptPasswordEncoder_10.encode('reportadmin') = "+bCryptPasswordEncoder_10.encode("reportadmin"));
+//	System.out.println("bCryptPasswordEncoder_12.encode('reportadmin') = "+bCryptPasswordEncoder_12.encode("reportadmin"));		
+		
 		/*
 		 * This shows that in order to match an unencoded password with an
 		 * encoded one, it is *NOT* necessary to perform the match using a

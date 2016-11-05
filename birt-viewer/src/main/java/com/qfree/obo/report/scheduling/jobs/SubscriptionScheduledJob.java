@@ -12,7 +12,9 @@ import java.time.temporal.TemporalAdjuster;
 import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import org.eclipse.birt.report.engine.api.IParameterDefn;
@@ -26,11 +28,13 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.qfree.obo.report.db.JobRepository;
 import com.qfree.obo.report.db.JobStatusRepository;
+import com.qfree.obo.report.db.RoleRepository;
 import com.qfree.obo.report.db.SubscriptionRepository;
 import com.qfree.obo.report.domain.Job;
 import com.qfree.obo.report.domain.JobParameter;
 import com.qfree.obo.report.domain.JobParameterValue;
 import com.qfree.obo.report.domain.JobStatus;
+import com.qfree.obo.report.domain.Role;
 import com.qfree.obo.report.domain.Subscription;
 import com.qfree.obo.report.domain.SubscriptionParameter;
 import com.qfree.obo.report.domain.SubscriptionParameterValue;
@@ -38,7 +42,9 @@ import com.qfree.obo.report.exceptions.JobProcessorNotScheduledCannotTrigger;
 import com.qfree.obo.report.exceptions.JobProcessorSchedulerNotRunningCannotTrigger;
 import com.qfree.obo.report.exceptions.UntreatedCaseException;
 import com.qfree.obo.report.scheduling.schedulers.SubscriptionJobProcessorScheduler;
+import com.qfree.obo.report.scheduling.schedulers.SubscriptionScheduler;
 import com.qfree.obo.report.util.DateUtils;
+import com.qfree.obo.report.util.ReportUtils;
 
 /*
  * This class is instantiated by Quartz and therefore Spring-based dependency
@@ -137,6 +143,18 @@ public class SubscriptionScheduledJob {
 	@Autowired
 	private SubscriptionJobProcessorScheduler subscriptionJobProcessorScheduler;
 
+	@Autowired
+	private RoleRepository roleRepository;
+
+	/**
+	 * This is set in {@link SubscriptionScheduler#scheduleJob(Subscription)}
+	 * when a {@link Subscription} is scheduled as a job with the Quartz
+	 * Scheduler.
+	 * 
+	 * <p>
+	 * This is how this {@link SubscriptionScheduledJob} knows which
+	 * {@link Subscription} it is for.
+	 */
 	private UUID subscriptionId;
 
 	/*
@@ -153,10 +171,12 @@ public class SubscriptionScheduledJob {
 	 */
 	private long lastRunMs = 0;
 
-	/*
-	 * This is the minimum time in milliseconds between runs. The "run()" method
-	 * will do nothing until at least this much time has elapsed since the last
-	 * time it processed the subscription.
+	/**
+	 * This is the minimum time in milliseconds between runs.
+	 * 
+	 * <p>
+	 * The "run()" method will do nothing until at least this much time has
+	 * elapsed since the last time it processed the subscription.
 	 */
 	private final long MIN_TIME_BETWEEN_RUNS_MS = 60L * 1000L;
 
@@ -205,6 +225,48 @@ public class SubscriptionScheduledJob {
 			if (subscription != null) {
 
 				/*
+				 * Extract all non-null "customReportParameter{1,8}_name"
+				 * values along with their matching values of
+				 * "customReportParameter{1,8}_value".
+				 * 
+				 * These will be used below to set the values of "special"
+				 * report parameters.
+				 */
+				Map<String, String> customReportParameters = new HashMap<>();
+				if (subscription.getCustomReportParameter1_name() != null) {
+					customReportParameters.put(subscription.getCustomReportParameter1_name(),
+							subscription.getCustomReportParameter1_value());
+				}
+				if (subscription.getCustomReportParameter2_name() != null) {
+					customReportParameters.put(subscription.getCustomReportParameter2_name(),
+							subscription.getCustomReportParameter2_value());
+				}
+				if (subscription.getCustomReportParameter3_name() != null) {
+					customReportParameters.put(subscription.getCustomReportParameter3_name(),
+							subscription.getCustomReportParameter3_value());
+				}
+				if (subscription.getCustomReportParameter4_name() != null) {
+					customReportParameters.put(subscription.getCustomReportParameter4_name(),
+							subscription.getCustomReportParameter4_value());
+				}
+				if (subscription.getCustomReportParameter5_name() != null) {
+					customReportParameters.put(subscription.getCustomReportParameter5_name(),
+							subscription.getCustomReportParameter5_value());
+				}
+				if (subscription.getCustomReportParameter6_name() != null) {
+					customReportParameters.put(subscription.getCustomReportParameter6_name(),
+							subscription.getCustomReportParameter6_value());
+				}
+				if (subscription.getCustomReportParameter7_name() != null) {
+					customReportParameters.put(subscription.getCustomReportParameter7_name(),
+							subscription.getCustomReportParameter7_value());
+				}
+				if (subscription.getCustomReportParameter8_name() != null) {
+					customReportParameters.put(subscription.getCustomReportParameter8_name(),
+							subscription.getCustomReportParameter8_value());
+				}
+
+				/*
 				 * The new Job will have status=QUEUED.
 				 */
 				JobStatus jobStatusQueued = jobStatusRepository.findOne(JobStatus.QUEUED_ID);
@@ -237,7 +299,8 @@ public class SubscriptionScheduledJob {
 
 					/*
 					 * Create one JobParameterValue for each 
-					 * SubscriptionParameterValue:
+					 * SubscriptionParameterValue that is linked to the 
+					 * SubscriptionParameter entity:
 					 */
 					List<SubscriptionParameterValue> subscriptionParameterValues = subscriptionParameter
 							.getSubscriptionParameterValues();
@@ -691,10 +754,81 @@ public class SubscriptionScheduledJob {
 						} else {
 							/*
 							 * The SubscriptionParameterValue entity represents a static value.
+							 * 
+							 * This may be one of several SubscriptionParameterValue entities
+							 * for the current SubscriptionParameter entity, assuming the
+							 * report parameter is multi-valued; otherwise, this should be 
+							 * the one and only SubscriptionParameterValue entity for the
+							 * current SubscriptionParameter entity, However, the code here 
+							 * does not need to check whether the current report parameter
+							 * that is being processed is multi-valued or not.
 							 */
 							JobParameterValue jobParameterValue = new JobParameterValue(jobParameter,
 									subscriptionParameterValue);
 							jobParameterValues.add(jobParameterValue);
+
+							logger.info("{}: jobParameterValue.getStringValue() (before) = {}",
+									jobParameter.getReportParameter().getName(), jobParameterValue.getStringValue());
+
+							/*
+							 * Check if the current report parameter being treated is a
+							 * "special" hidden string report parameters. If so, its 
+							 * "string_value" field will be assigned a value here,
+							 * replacing any current default value, that can be displayed
+							 * on the report, used as a data set parameter, or for any
+							 * other purpose.
+							 */
+							if (ReportUtils.RP_REPORT_REQUESTED_BY
+									.equals(jobParameter.getReportParameter().getName())) {
+
+								/*
+								 * Override the "string_value" field with the 
+								 * username of the Role associated with the Job.
+								 */
+								Role role = job.getRole();
+								if (role != null) {
+									jobParameterValue.setStringValue(role.getUsername());
+								}
+
+							} else if (ReportUtils.RP_REPORT_NAME
+									.equals(jobParameter.getReportParameter().getName())) {
+
+								jobParameterValue.setStringValue(job.getReportVersion().getReport().getName());
+
+							} else if (ReportUtils.RP_REPORT_NUMBER
+									.equals(jobParameter.getReportParameter().getName())) {
+
+								jobParameterValue
+										.setStringValue(job.getReportVersion().getReport().getNumber().toString());
+
+							} else if (ReportUtils.RP_REPORT_VERSION
+									.equals(jobParameter.getReportParameter().getName())) {
+
+								jobParameterValue.setStringValue(job.getReportVersion().getVersionName());
+
+							} else {
+
+								/*
+								 * Treat the "custom" report parameters that are handled
+								 * with the Subscription fields: 
+								 *   "customReportParameter{1,8}_name"
+								 * and
+								 *   "customReportParameter{1,8}_value"
+								 */
+								if (customReportParameters != null) {
+									for (Map.Entry<String, String> entry : customReportParameters.entrySet()) {
+										String paramName = entry.getKey();
+										if (paramName.equals(jobParameter.getReportParameter().getName())) {
+											String paramValue = entry.getValue();
+											jobParameterValue.setStringValue(paramValue);
+											break;
+										}
+									}
+								}
+
+							}
+							logger.info("{}: jobParameterValue.getStringValue() (after)  = {}",
+									jobParameter.getReportParameter().getName(), jobParameterValue.getStringValue());
 						}
 					}
 				}

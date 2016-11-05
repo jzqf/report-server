@@ -3,6 +3,7 @@ package com.qfree.obo.report.security.filter;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -29,6 +30,7 @@ import com.qfree.obo.report.domain.RoleReport;
 import com.qfree.obo.report.domain.UuidCustomType;
 import com.qfree.obo.report.rest.server.RoleController;
 import com.qfree.obo.report.security.ReportServerUser;
+import com.qfree.obo.report.util.ReportUtils;
 
 public class RoleReportFilter implements Filter {
 
@@ -124,7 +126,33 @@ public class RoleReportFilter implements Filter {
 		}
 
 		if (userHasAccessToReport(user, reportFilename)) {
-			chain.doFilter(req, res);
+
+			/*
+			 * Insert RP_REPORT_REQUESTED_BY and possibly additional parameters
+			 * into the request.
+			 * 
+			 * RP_REPORT_REQUESTED_BY is a report parameter that can be used to
+			 * display the username of the authenticated principal that
+			 * requested the report.
+			 */
+			ServletRequest wrappedReq = insertExtraRequestParameters(request, user, reportFilename);
+
+			//Map<String, String[]> newParameterMap = req.getParameterMap();
+			//for (Map.Entry<String, String[]> entry : newParameterMap.entrySet()) {
+			//	String key = entry.getKey();
+			//	String[] values = entry.getValue();
+			//	//if (values != null) {
+			//	//	logger.info("key, value = {}, {}", key, values[0]);
+			//	//}
+			//	logger.info("key = {}", key);
+			//	if (values != null) {
+			//		for (String s : values) {
+			//			logger.info("    value = {}", s);
+			//		}
+			//	}
+			//}
+
+			chain.doFilter(wrappedReq, res);
 			return;
 		}
 
@@ -203,9 +231,10 @@ public class RoleReportFilter implements Filter {
 						if (UuidCustomType.DB_VENDOR.equals(UuidCustomType.POSTGRESQL_VENDOR)) {
 
 							Boolean activeReportsOnly = true;
+							Boolean activeInheritedRolesOnly = true;
 							List<String> availableReportVersions = reportVersionRepository
 									.findReportVersionFilenamesByRoleIdRecursive(user.getRoleId().toString(),
-											activeReportsOnly);
+											activeReportsOnly, activeInheritedRolesOnly);
 							for (String filename : availableReportVersions) {
 								if (reportFilename.equals(filename)) {
 									return true;
@@ -235,6 +264,60 @@ public class RoleReportFilter implements Filter {
 
 		}
 		return false;
+	}
+
+	private ServletRequest insertExtraRequestParameters(
+			HttpServletRequest request,
+			ReportServerUser user,
+			String reportFilename) {
+
+		//Map<String, String[]> parameterMap = request.getParameterMap();
+		//for (Map.Entry<String, String[]> entry : parameterMap.entrySet()) {
+		//	String key = entry.getKey();
+		//	String[] values = entry.getValue();
+		//	logger.info("key = {}", key);
+		//	if (values != null) {
+		//		for (String s : values) {
+		//			logger.info("    value = {}", s);
+		//		}
+		//	}
+		//}
+
+		/*
+		 * reportVersion will be null if one of the test reports in the "test"
+		 * directory are being displayed. We check for that below to avoid a
+		 * NullPointerException.
+		 */
+		ReportVersion reportVersion = reportVersionRepository.findByFileName(reportFilename);
+
+		String[] reportRequestedBy = new String[1];
+		reportRequestedBy[0] = user.getUsername();
+		logger.info("reportRequestedBy[0] = {}", reportRequestedBy[0]);
+
+		String[] reportName = new String[1];
+		reportName[0] = reportVersion != null ? reportVersion.getReport().getName() : "";
+		logger.info("reportName[0] = {}", reportName[0]);
+
+		String[] reportNumber = new String[1];
+		reportNumber[0] = reportVersion != null ? reportVersion.getReport().getNumber().toString() : "";
+		logger.info("reportNumber[0] = {}", reportNumber[0]);
+
+		String[] reportVersionName = new String[1];
+		reportVersionName[0] = reportVersion != null ? reportVersion.getVersionName() : "";
+		logger.info("reportVersionName[0] = {}", reportVersionName[0]);
+
+		Map<String, String[]> extraParams = new TreeMap<>();
+		extraParams.put(ReportUtils.RP_REPORT_REQUESTED_BY, reportRequestedBy);
+		extraParams.put(ReportUtils.RP_REPORT_NAME, reportName);
+		extraParams.put(ReportUtils.RP_REPORT_NUMBER, reportNumber);
+		extraParams.put(ReportUtils.RP_REPORT_VERSION, reportVersionName);
+
+		/*
+		 * This will *replace* the RP_REPORT_REQUESTED_BY, RP_REPORT_NAME, ...,
+		 * special report parameters in the original request (if they exist in
+		 * the original request).
+		 */
+		return new ModifiableParametersRequestWrapper(request, extraParams);
 	}
 
 	@Override

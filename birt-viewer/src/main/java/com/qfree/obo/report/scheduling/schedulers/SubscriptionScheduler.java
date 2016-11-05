@@ -179,6 +179,7 @@ public class SubscriptionScheduler {
 	/**
 	 * Schedules a Subscription as a job with the Quartz Scheduler.
 	 * 
+	 * <p>
 	 * This method ...
 	 * 
 	 * @param subscription
