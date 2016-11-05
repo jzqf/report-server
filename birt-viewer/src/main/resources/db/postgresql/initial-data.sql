@@ -165,7 +165,7 @@ INSERT INTO reporting.role_authority (role_authority_id, role_id, authority_id, 
 -- version. This will get updated at the database is upgraded over time. This
 -- version number will be updated whenever the data model changes *or* Q-Free
 -- supplied content changes (records are created, updated or deleted).
-INSERT INTO reporting.configuration (param_name, role_id, param_type, integer_value, string_value , created_on) VALUES ('DB_VERSION', null, 'INTEGER', 8, '8', current_timestamp AT TIME ZONE 'UTC');
+INSERT INTO reporting.configuration (param_name, role_id, param_type, integer_value, string_value , created_on) VALUES ('DB_VERSION', null, 'INTEGER', 9, '9', current_timestamp AT TIME ZONE 'UTC');
 
 --ROLLBACK;
 COMMIT;
