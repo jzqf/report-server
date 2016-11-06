@@ -50,16 +50,18 @@ public class RoleReportFilter implements Filter {
 			FilterChain chain) throws IOException, ServletException {
 
 		HttpServletRequest request = (HttpServletRequest) req;
-		//	logger.info("request = {}", request);
-		//	logger.info("request.getRequestURL() = {}", request.getRequestURL());
-		//	logger.info("request.getRequestURI() = {}", request.getRequestURI());
-		//	logger.info("request.getContextPath() = {}", request.getContextPath());
-		//	logger.info("request.getServletPath() = {}", request.getServletPath());
-		//	logger.info("request.getPathInfo() = {}", request.getPathInfo());// <--- ****************
-		//	for (Map.Entry<String, String[]> mapEntry : request.getParameterMap().entrySet()) {
-		//		logger.info("    ParameterMap<{}> = {}", mapEntry.getKey(), mapEntry.getValue());
-		//	}
+		logger.info("request = {}", request);
+		logger.info("request.getRequestURL() = {}", request.getRequestURL());
+		logger.info("request.getRequestURI() = {}", request.getRequestURI());
+		logger.info("request.getContextPath() = {}", request.getContextPath());
+		logger.info("request.getServletPath() = {}", request.getServletPath());
+		logger.info("request.getPathInfo() = {}", request.getPathInfo());// <- Is this always null?
+
 		Map<String, String[]> parameterMap = request.getParameterMap();
+		logger.info("ParameterMap = {}", parameterMap);
+		for (Map.Entry<String, String[]> mapEntry : parameterMap.entrySet()) {
+			logger.info("    ParameterMap<{}> = {}", mapEntry.getKey(), mapEntry.getValue());
+		}
 
 		/*
 		 * Extract the report file name from the request URI. it will be 
@@ -87,7 +89,7 @@ public class RoleReportFilter implements Filter {
 		if (reportFileNames != null && reportFileNames.length == 1) {
 			reportFilename = reportFileNames[0];
 		}
-		logger.debug("reportFilename = {}", reportFilename);
+		logger.info("reportFilename = {}", reportFilename);
 
 		/*
 		 * Extract name of principal. This is the user name from the HTTP 
@@ -186,10 +188,12 @@ public class RoleReportFilter implements Filter {
 	 * @return
 	 */
 	private boolean userHasAccessToReport(ReportServerUser user, String reportFilename) {
+		//		if (1 == 1) {
+		//			return true;
+		//		}
+		logger.info("reportFilename = {}", reportFilename);
+		logger.info("user           = {}", user);
 		if (user != null && reportFilename != null && !reportFilename.isEmpty()) {
-
-			logger.info("reportFilename = {}", reportFilename);
-			logger.info("user           = {}", user);
 
 			/*
 			 * "user.getUsername()" must match an existing Role that is active and enabled.
