@@ -167,6 +167,7 @@ public class ReportParameterService {
 		 */
 		//Map<String, Map<String, Serializable>> parameters = ReportUtils.parseReportParams(reportVersion.getRptdesign());
 		Map<String, Map<String, Serializable>> parameters = birtService.parseReportParams(reportVersion.getRptdesign());
+		logger.info("Returned from parseReportParams.");
 
 		/*
 		 * This is used to keep track of ParameterGroup entities that have been

@@ -470,19 +470,21 @@ public class BirtService {
 			} else {
 
 				IScalarParameterDefn scalarParameter = (IScalarParameterDefn) param;
-				logger.info("Scalar parameter '{}'", scalarParameter.getName());
+				logger.info("Getting details for scalar parameter '{}'", scalarParameter.getName());
 				/*
 				 * Get details about the parameter as a Map and then insert
 				 * that Map into the paramDetails Map
 				 */
 				parameters.put(scalarParameter.getName(),
 						BirtService.loadParameterDetails(task, scalarParameter, runnableReportDesign, null));
+				logger.info("Loaded  details for scalar parameter '{}'", scalarParameter.getName());
 
 			}
 		}
 
 		task.close();
 
+		logger.info("Returning from parseReportParams. parameters = {}", parameters);
 		return parameters;
 	}
 
