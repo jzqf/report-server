@@ -404,10 +404,14 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 					 */
 					.and().anonymous().authorities(
 							"USE_RESTAPI",
+							"MANAGE_ASSETS",
+							"MANAGE_ASSETTREES",
+							"MANAGE_ASSETTYPES",
 							"MANAGE_AUTHORITIES",
+							"MANAGE_CATEGORIES",
+							"MANAGE_DOCUMENTS",
 							"MANAGE_FILEFORMATS",
 							"MANAGE_FILESYNCING",
-							"MANAGE_CATEGORIES",
 							"MANAGE_JOBPROCESSOR",
 							"MANAGE_JOBS",
 							"DELETE_JOBS",
