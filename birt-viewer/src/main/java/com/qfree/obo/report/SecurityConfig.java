@@ -179,15 +179,28 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		auth.authenticationProvider(reportServerAuthenticationProvider());
 	}
 
-	/*
-	 * This is so that media asset files (images, CSS files, JavaScript files,
-	 * etc.) are ignored by Spring Security. This means that Spring Security
-	 * will not require that a Basic Authentication header is provided, and if
-	 * an Authentication header *is* provided, it will be ignored.
-	 */
 	@Override
 	public void configure(WebSecurity web) throws Exception {
+		/*
+		 * This is so that media asset files (images, CSS files, JavaScript files,
+		 * etc.) are ignored by Spring Security. This means that Spring Security
+		 * will not require that a Basic Authentication header is provided, and if
+		 * an Authentication header *is* provided, it will be ignored.
+		 */
 		web.ignoring().antMatchers("/webcontent/birt/**");
+		/*
+		 * This does not seem to have any effect because the HTTP requests that
+		 * are generated to request the asset files from this directory tree are
+		 * somehow rewritten by BIRT so that the files in this directory tree
+		 * are requested using URLs that do not include "/webcontent/qfree/". It
+		 * may be that BIRT performs some sort of server-side processing before 
+		 * report file is sent to the client so that these files can be requested
+		 * by URLs that do not include ""/webcontent/qfree/". In fact, it seems
+		 * that images are requested via query parameters, e.g., something like:
+		 * http://localhost:8081/report-server/preview?__imageid=file6a7b9263158434ac2872.png
+		 * This can be seen by detailed logging in RoleReportFilter.
+		 */
+		//web.ignoring().antMatchers("/webcontent/qfree/**");
 	}
 
 	@Override
@@ -391,10 +404,14 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 					 */
 					.and().anonymous().authorities(
 							"USE_RESTAPI",
+							"MANAGE_ASSETS",
+							"MANAGE_ASSETTREES",
+							"MANAGE_ASSETTYPES",
 							"MANAGE_AUTHORITIES",
+							"MANAGE_CATEGORIES",
+							"MANAGE_DOCUMENTS",
 							"MANAGE_FILEFORMATS",
 							"MANAGE_FILESYNCING",
-							"MANAGE_CATEGORIES",
 							"MANAGE_JOBPROCESSOR",
 							"MANAGE_JOBS",
 							"DELETE_JOBS",
