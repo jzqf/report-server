@@ -10,6 +10,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
+import org.springframework.ldap.core.LdapTemplate;
+import org.springframework.ldap.core.support.LdapContextSource;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
@@ -172,6 +174,50 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		filterRegistrationBean.setFilter(logRequestsFilter());
 		filterRegistrationBean.setEnabled(false);
 		return filterRegistrationBean;
+	}
+
+	/**
+	 * This bean is used to create an LdapTemplate bean.
+	 * 
+	 * @return
+	 */
+	@Bean
+	public LdapContextSource contextSource() {
+		LdapContextSource contextSource = new LdapContextSource();
+		//		contextSource.setUrl(env.getRequiredProperty("ldap.url"));
+		//		contextSource.setBase(env.getRequiredProperty("ldap.base"));
+		//		contextSource.setUserDn(env.getRequiredProperty("ldap.user"));
+		//		contextSource.setPassword(env.getRequiredProperty("ldap.password"));
+		/*
+		 * For testing purposes,this needs to be updated to the IP number of
+		 * my VirtualBox VM named "debian" that is configured with an OpenLDAP
+		 * server. To get this IP number:
+		 * 
+		 * 	1. Start the VM.
+		 * 	2. Log in with user="root", password="qfreerd".
+		 * 	3. Run "ifconfig". Use the IP number for the "eth0" interface.
+		 */
+		contextSource.setUrl("ldap://192.168.6.79:389");
+		contextSource.setBase("dc=qmcs,dc=local");
+		contextSource.setUserDn("cn=admin,dc=qmcs,dc=local");
+		contextSource.setPassword("qfreeLDAP");
+		//contextSource.afterPropertiesSet(); //??????????????????????????????? TRY WITHOUT! ?????????????????????????????
+		return contextSource;
+	}
+
+	/**
+	 * This bean is used to authenticate an HTTP connection against an LDAP
+	 * server (which might be a proxy to another service such as Active
+	 * Directory).
+	 * <p>
+	 * This authentication, if configured to be used, is done by a
+	 * {@link ReportServerAuthenticationProvider} bean.
+	 * 
+	 * @return
+	 */
+	@Bean
+	public LdapTemplate ldapTemplate() {
+		return new LdapTemplate(contextSource());
 	}
 
 	@Override

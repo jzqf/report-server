@@ -16,6 +16,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
+import org.springframework.ldap.core.LdapTemplate;
+import org.springframework.ldap.filter.AndFilter;
+import org.springframework.ldap.filter.EqualsFilter;
+import org.springframework.ldap.filter.Filter;
+import org.springframework.ldap.filter.HardcodedFilter;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -63,6 +68,9 @@ public class ReportServerAuthenticationProvider implements AuthenticationProvide
 	@Autowired
 	private PasswordEncoder passwordEncoder;
 
+	@Autowired
+	private LdapTemplate ldapTemplate;
+
 	public ReportServerAuthenticationProvider() {
 		super();
 	}
@@ -82,6 +90,62 @@ public class ReportServerAuthenticationProvider implements AuthenticationProvide
 		logger.info("username = {}, password = {}", username, password);
 
 		if (username != null && !username.trim().isEmpty() && password != null && !password.trim().isEmpty()) {
+
+			/*
+			 * LDAP test:
+			 * 
+			 * Still to do:
+			 * 
+			 * 1. The "hardcoded" part of the LDAP filter must be replaced by
+			 *    a configuration parameter in config.properties or by a 
+			 *    Configuration entity. In the test code below, this is the
+			 *    string USER_BASE_FILTER. In practice, this may be more 
+			 *    complex, e.g., if two attributes must be specified, it will 
+			 *    look something like:
+			 *    
+			 *    	"(&(objectclass=person)(someattr=somevalue))".
+			 *    
+			 *    See the Javadoc for HardcodedFilter if you need a more 
+			 *    complex base filter.
+			 * 
+			 * 2. The LDAP attribute that represents the username or user id 
+			 *    that the value of "username" will be used for looking up the
+			 *    LDAP entry for the user must be replaced by a configuration 
+			 *    parameter in config.properties or by a Configuration entity. 
+			 *    In the test code below, this is the string 
+			 *    USERNAME_ATTRIBUTE.
+			 *    
+			 *    	filter.and(new EqualsFilter("uid", uid));
+			 */
+			String USER_BASE_FILTER = "(objectclass=person)";
+			String USER_BASE_DN = "";
+			String USERNAME_ATTRIBUTE = "uid";
+
+			String uid = "queeniew2";
+			String passwordToAuthenticate = "queeniew2";
+
+			Filter baseUserFilter = new HardcodedFilter(USER_BASE_FILTER);
+			AndFilter filter = new AndFilter();
+			//filter.and(new EqualsFilter("objectclass", "person"));
+			filter.and(baseUserFilter);
+			filter.and(new EqualsFilter(USERNAME_ATTRIBUTE, uid));
+			boolean authenticatedByLdap = false;
+			try {
+				/*
+				 * The DN to use as the base of the search is "" here because
+				 * the base DN is specified in the LdapContextSource bean in
+				 * ServerConfig.
+				 */
+				authenticatedByLdap = ldapTemplate.authenticate(USER_BASE_DN, filter.encode(), passwordToAuthenticate);
+				//authenticatedByLdap = ldapTemplate.authenticate("dc=qmcs,dc=local", filter.encode(), passwordToAuthenticate);
+			} catch (Exception e) {
+				logger.error("Exception thrown attempting to authenticate user via LDAP", e);
+			}
+			if (authenticatedByLdap) {
+				logger.info("Successfully authenticated by LDAP!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+			} else {
+				logger.info("*NOT* authenticated by LDAP :-( :-( :-( :-( :-( :-( :-( :-( :-( :-( :-(");
+			}
 
 			boolean authenticated = false;
 
