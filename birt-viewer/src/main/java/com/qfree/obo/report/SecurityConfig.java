@@ -196,12 +196,20 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		 * 	1. Start the VM.
 		 * 	2. Log in with user="root", password="qfreerd".
 		 * 	3. Run "ifconfig". Use the IP number for the "eth0" interface.
+		 * 
+		 * IMPORTANT: If this bean is not defined here but, rather, created
+		 *            in code by executing "new LdapContextSource()", then it
+		 *            will be necessary to also execute:
+		 *            
+		 *            	contextSource.afterPropertiesSet();
+		 *            
+		 *            See: https://gist.github.com/mpilone/7582628
 		 */
 		contextSource.setUrl("ldap://192.168.6.79:389");
 		contextSource.setBase("dc=qmcs,dc=local");
 		contextSource.setUserDn("cn=admin,dc=qmcs,dc=local");
 		contextSource.setPassword("qfreeLDAP");
-		//contextSource.afterPropertiesSet(); //??????????????????????????????? TRY WITHOUT! ?????????????????????????????
+		//contextSource.afterPropertiesSet(); // Necessary if object created by explicitly executing "new LdapContextSource()"
 		return contextSource;
 	}
 
@@ -217,7 +225,18 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	 */
 	@Bean
 	public LdapTemplate ldapTemplate() {
-		return new LdapTemplate(contextSource());
+		/*
+		 * IMPORTANT: If this bean is not defined here but, rather, created
+		 *            in code by executing "new LdapTemplate(contextSource())", 
+		 *            then it will be necessary to also execute:
+		 *            
+		 *            	template.afterPropertiesSet();
+		 *            
+		 *            See: https://gist.github.com/mpilone/7582628
+		 */
+		LdapTemplate template = new LdapTemplate(contextSource());
+		//template.afterPropertiesSet(); // Necessary if object created by explicitly executing "new LdapTemplate(contextSource())"
+		return template;
 	}
 
 	@Override
