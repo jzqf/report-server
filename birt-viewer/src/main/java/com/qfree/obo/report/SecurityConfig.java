@@ -10,8 +10,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
-import org.springframework.ldap.core.LdapTemplate;
-import org.springframework.ldap.core.support.LdapContextSource;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
@@ -176,68 +174,68 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		return filterRegistrationBean;
 	}
 
-	/**
-	 * This bean is used to create an LdapTemplate bean.
-	 * 
-	 * @return
-	 */
-	@Bean
-	public LdapContextSource contextSource() {
-		LdapContextSource contextSource = new LdapContextSource();
-		//		contextSource.setUrl(env.getRequiredProperty("ldap.url"));
-		//		contextSource.setBase(env.getRequiredProperty("ldap.base"));
-		//		contextSource.setUserDn(env.getRequiredProperty("ldap.user"));
-		//		contextSource.setPassword(env.getRequiredProperty("ldap.password"));
-		/*
-		 * For testing purposes,this needs to be updated to the IP number of
-		 * my VirtualBox VM named "debian" that is configured with an OpenLDAP
-		 * server. To get this IP number:
-		 * 
-		 * 	1. Start the VM.
-		 * 	2. Log in with user="root", password="qfreerd".
-		 * 	3. Run "ifconfig". Use the IP number for the "eth0" interface.
-		 * 
-		 * IMPORTANT: If this bean is not defined here but, rather, created
-		 *            in code by executing "new LdapContextSource()", then it
-		 *            will be necessary to also execute:
-		 *            
-		 *            	contextSource.afterPropertiesSet();
-		 *            
-		 *            See: https://gist.github.com/mpilone/7582628
-		 */
-		contextSource.setUrl("ldap://192.168.6.79:389");
-		contextSource.setBase("dc=qmcs,dc=local");
-		contextSource.setUserDn("cn=admin,dc=qmcs,dc=local");
-		contextSource.setPassword("qfreeLDAP");
-		//contextSource.afterPropertiesSet(); // Necessary if object created by explicitly executing "new LdapContextSource()"
-		return contextSource;
-	}
-
-	/**
-	 * This bean is used to authenticate an HTTP connection against an LDAP
-	 * server (which might be a proxy to another service such as Active
-	 * Directory).
-	 * <p>
-	 * This authentication, if configured to be used, is done by a
-	 * {@link ReportServerAuthenticationProvider} bean.
-	 * 
-	 * @return
-	 */
-	@Bean
-	public LdapTemplate ldapTemplate() {
-		/*
-		 * IMPORTANT: If this bean is not defined here but, rather, created
-		 *            in code by executing "new LdapTemplate(contextSource())", 
-		 *            then it will be necessary to also execute:
-		 *            
-		 *            	template.afterPropertiesSet();
-		 *            
-		 *            See: https://gist.github.com/mpilone/7582628
-		 */
-		LdapTemplate template = new LdapTemplate(contextSource());
-		//template.afterPropertiesSet(); // Necessary if object created by explicitly executing "new LdapTemplate(contextSource())"
-		return template;
-	}
+	//	/**
+	//	 * This bean is used to create an LdapTemplate bean.
+	//	 * 
+	//	 * @return
+	//	 */
+	//	@Bean
+	//	public LdapContextSource contextSource() {
+	//		LdapContextSource contextSource = new LdapContextSource();
+	//		//		contextSource.setUrl(env.getRequiredProperty("ldap.url"));
+	//		//		contextSource.setBase(env.getRequiredProperty("ldap.base"));
+	//		//		contextSource.setUserDn(env.getRequiredProperty("ldap.user"));
+	//		//		contextSource.setPassword(env.getRequiredProperty("ldap.password"));
+	//		/*
+	//		 * For testing purposes,this needs to be updated to the IP number of
+	//		 * my VirtualBox VM named "debian" that is configured with an OpenLDAP
+	//		 * server. To get this IP number:
+	//		 * 
+	//		 * 	1. Start the VM.
+	//		 * 	2. Log in with user="root", password="qfreerd".
+	//		 * 	3. Run "ifconfig". Use the IP number for the "eth0" interface.
+	//		 * 
+	//		 * IMPORTANT: If this bean is not defined here but, rather, created
+	//		 *            in code by executing "new LdapContextSource()", then it
+	//		 *            will be necessary to also execute:
+	//		 *            
+	//		 *            	contextSource.afterPropertiesSet();
+	//		 *            
+	//		 *            See: https://gist.github.com/mpilone/7582628
+	//		 */
+	//		contextSource.setUrl("ldap://192.168.6.79:389");
+	//		contextSource.setBase("dc=qmcs,dc=local");
+	//		contextSource.setUserDn("cn=admin,dc=qmcs,dc=local");
+	//		contextSource.setPassword("qfreeLDAP");
+	//		//contextSource.afterPropertiesSet(); // Necessary if object created by explicitly executing "new LdapContextSource()"
+	//		return contextSource;
+	//	}
+	//
+	//	/**
+	//	 * This bean is used to authenticate an HTTP connection against an LDAP
+	//	 * server (which might be a proxy to another service such as Active
+	//	 * Directory).
+	//	 * <p>
+	//	 * This authentication, if configured to be used, is done by a
+	//	 * {@link ReportServerAuthenticationProvider} bean.
+	//	 * 
+	//	 * @return
+	//	 */
+	//	@Bean
+	//	public LdapTemplate ldapTemplate() {
+	//		/*
+	//		 * IMPORTANT: If this bean is not defined here but, rather, created
+	//		 *            in code by executing "new LdapTemplate(contextSource())", 
+	//		 *            then it will be necessary to also execute:
+	//		 *            
+	//		 *            	template.afterPropertiesSet();
+	//		 *            
+	//		 *            See: https://gist.github.com/mpilone/7582628
+	//		 */
+	//		LdapTemplate template = new LdapTemplate(contextSource());
+	//		//template.afterPropertiesSet(); // Necessary if object created by explicitly executing "new LdapTemplate(contextSource())"
+	//		return template;
+	//	}
 
 	@Override
 	protected void configure(AuthenticationManagerBuilder auth) throws Exception {
