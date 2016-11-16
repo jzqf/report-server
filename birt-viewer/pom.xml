@@ -632,10 +632,29 @@
                                 <resource>
                                     <directory>src/deb/control</directory>
                                     <filtering>true</filtering>
-                                </resource>
+                                </resource>                             
                             </resources>
                         </configuration>
                     </execution>
+                    <execution>
+                        <id>filter-config-files</id>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <phase>process-resources</phase>
+                        <configuration>
+                            <outputDirectory>${project.build.directory}</outputDirectory>
+                            <resources>
+                                <resource>
+                                    <directory>src/main/resources</directory>
+                                    <includes>
+                                        <include>config.properties</include>
+                                    </includes>
+                                    <filtering>true</filtering>
+                                </resource>                                
+                            </resources>
+                        </configuration>
+                    </execution>                    
                 </executions>
             </plugin>
             <plugin>
@@ -644,21 +663,19 @@
                 <version>1.5</version>
                 <executions>
                     <execution>
-                        <id>install</id>
                         <phase>package</phase>
                         <goals>
                             <goal>jdeb</goal>
                         </goals>
                         <configuration>
                             <controlDir>${project.build.directory}/jdeb-resources</controlDir>
-                            <deb>${project.build.directory}/create-report-server_${project.version}.deb</deb>
                             <dataSet>
                                 <data>
                                     <src>target/report-server.war</src>
                                     <type>file</type>
                                     <mapper>
                                         <type>perm</type>
-                                        <prefix>/tmp/create-report-server-${project.version}</prefix>
+                                        <prefix>/tmp/report-server-${project.version}</prefix>
                                         <filemode>777</filemode>
                                     </mapper>
                                 </data>
@@ -667,29 +684,7 @@
                                     <type>directory</type>
                                     <mapper>
                                         <type>perm</type>
-                                        <prefix>/tmp/create-report-server-${project.version}</prefix>
-                                        <filemode>777</filemode>
-                                    </mapper>
-                                </data>
-                            </dataSet>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>upgrade</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>jdeb</goal>
-                        </goals>
-                        <configuration>
-                            <controlDir>${project.build.directory}/jdeb-resources</controlDir>
-                            <deb>${project.build.directory}/upgrade-report-server_${project.version}.deb</deb>
-                            <dataSet>
-                                <data>
-                                    <src>target/report-server.war</src>
-                                    <type>file</type>
-                                    <mapper>
-                                        <type>perm</type>
-                                        <prefix>/tmp/upgrade-report-server-${project.version}</prefix>
+                                        <prefix>/tmp/report-server-${project.version}/create</prefix>
                                         <filemode>777</filemode>
                                     </mapper>
                                 </data>
@@ -698,13 +693,13 @@
                                     <type>directory</type>
                                     <mapper>
                                         <type>perm</type>
-                                        <prefix>/tmp/upgrade-report-server-${project.version}</prefix>
+                                        <prefix>/tmp/report-server-${project.version}/upgrade</prefix>
                                         <filemode>777</filemode>
                                     </mapper>
-                                </data>
+                                </data>                                
                             </dataSet>
                         </configuration>
-                    </execution>                    
+                    </execution>                   
                 </executions>
             </plugin>                                   	
         </plugins>
