@@ -555,6 +555,18 @@
                         reports/*.rptdesign,
                         reports/old/
                     </packagingExcludes>
+                    <!-- Sends the config file through filtering, and overwrites
+                    the config file which was included anyway via src/main/resources -->
+                    <webResources>
+                        <resource>
+                            <directory>src/main/resources</directory>
+                            <includes>
+                                <include>config.properties</include>
+                            </includes>
+                            <targetPath>WEB-INF/classes</targetPath>
+                            <filtering>true</filtering>
+                        </resource>
+                    </webResources>
                 </configuration>
             </plugin>
 
@@ -636,25 +648,6 @@
                             </resources>
                         </configuration>
                     </execution>
-                    <execution>
-                        <id>filter-config-files</id>
-                        <goals>
-                            <goal>copy-resources</goal>
-                        </goals>
-                        <phase>process-resources</phase>
-                        <configuration>
-                            <outputDirectory>${project.build.directory}</outputDirectory>
-                            <resources>
-                                <resource>
-                                    <directory>src/main/resources</directory>
-                                    <includes>
-                                        <include>config.properties</include>
-                                    </includes>
-                                    <filtering>true</filtering>
-                                </resource>                                
-                            </resources>
-                        </configuration>
-                    </execution>                    
                 </executions>
             </plugin>
             <plugin>
