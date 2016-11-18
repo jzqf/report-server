@@ -669,7 +669,8 @@
                                     <mapper>
                                         <type>perm</type>
                                         <prefix>/tmp/report-server-${project.version}</prefix>
-                                        <filemode>777</filemode>
+                                        <!-- <filemode>777</filemode> -->
+                                        <dirmode>777</dirmode>
                                     </mapper>
                                 </data>
                                 <data>
@@ -678,7 +679,8 @@
                                     <mapper>
                                         <type>perm</type>
                                         <prefix>/tmp/report-server-${project.version}/install</prefix>
-                                        <filemode>777</filemode>
+                                        <!-- <filemode>777</filemode> -->
+                                        <dirmode>777</dirmode>
                                     </mapper>
                                 </data>
                                 <data>
