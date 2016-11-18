@@ -404,7 +404,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 					//.anyRequest().authenticated()
 					//.anyRequest().permitAll()
 
-					.and().httpBasic().realmName("Q-Free Report Server")
+					//.and().httpBasic().realmName("Q-Free Report Server")
+					//.and().x509()
 
 					/*
 					 * This tells Spring Security to *NOT* create a session, 
@@ -416,6 +417,20 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 					 * each request.
 					 */
 					.and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+
+			/*
+			 * Configure the client authentication mechanism.
+			 */
+			if (env.getProperty("appsecurity.client.authentication.x509").equals("true")) {
+				http.x509();
+			} else if (env.getProperty("appsecurity.client.authentication.httpbasic").equals("true")) {
+				http.httpBasic().realmName("Q-Free Report Server");
+			} else {
+				/* 
+				 * How should I handle the default case? Should I just do nothing here?
+				 */
+				http.httpBasic().realmName("Q-Free Report Server"); // Is this a reasonable default treatment?
+			}
 
 			/*
 			 * Enforce channel security.

@@ -24,6 +24,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationToken;
 
 import com.qfree.obo.report.db.RoleRepository;
 import com.qfree.obo.report.domain.Authority;
@@ -387,7 +388,12 @@ public class ReportServerAuthenticationProvider implements AuthenticationProvide
 
 	@Override
 	public boolean supports(final Class<?> authentication) {
-		return authentication.equals(UsernamePasswordAuthenticationToken.class);
+		if (env.getProperty("appsecurity.client.authentication.x509").equals("true")) {
+			return authentication.equals(PreAuthenticatedAuthenticationToken.class);
+		} else if (env.getProperty("appsecurity.client.authentication.httpbasic").equals("true")) {
+			return authentication.equals(UsernamePasswordAuthenticationToken.class);
+		}
+		return authentication.equals(UsernamePasswordAuthenticationToken.class); // default treatment
 	}
 
 }
