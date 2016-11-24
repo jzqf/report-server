@@ -6,7 +6,7 @@
         <!--<withJansi>true</withJansi>-->
         <encoder>
 <!--             <pattern>%date %-5level [%thread] %logger{35} %message %ex%n</pattern> -->
-            <pattern>%date %highlight(%-5level) [%thread] %cyan(%logger{15}) - %msg %n</pattern>
+            <pattern>%date %highlight(%-5level) [%thread] %cyan(%logger{15}) %green(%M) - %msg%n</pattern>
         </encoder>
     </appender>
 

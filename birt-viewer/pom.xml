@@ -670,7 +670,7 @@
                                         <type>perm</type>
                                         <prefix>/tmp/report-server-${project.version}</prefix>
                                         <filemode>777</filemode>
-                                        <dirmode>777</dirmode>
+                                        <!-- <dirmode>777</dirmode>  <- Has no effect. "postinst" used instead -->
                                     </mapper>
                                 </data>
                                 <data>
@@ -680,7 +680,7 @@
                                         <type>perm</type>
                                         <prefix>/tmp/report-server-${project.version}/install</prefix>
                                         <filemode>777</filemode>
-                                        <dirmode>777</dirmode>
+                                        <!-- <dirmode>777</dirmode>  <- Has no effect. "postinst" used instead -->
                                     </mapper>
                                 </data>
                                 <data>
@@ -689,7 +689,7 @@
                                     <mapper>
                                         <type>perm</type>
                                         <prefix>/tmp/report-server-${project.version}/upgrade</prefix>
-                                        <filemode>777</filemode>
+                                        <!-- <dirmode>777</dirmode>  <- Has no effect. "postinst" used instead -->
                                     </mapper>
                                 </data>                                
                             </dataSet>
