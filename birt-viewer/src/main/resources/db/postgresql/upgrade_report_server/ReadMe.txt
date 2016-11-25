@@ -2,11 +2,11 @@
 
 The report server is distributed in a Debian package named:
 
-	birt-viewer-<version>.deb
+	report-server-<version>.deb
 
 Install this package on the report server host machine with:
 
-	sudo dpkg -i birt-viewer-<version>.deb
+	sudo dpkg -i report-server-<version>.deb
 
 This will install the following tree of files in the /tmp directory:
 

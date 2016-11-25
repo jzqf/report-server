@@ -308,7 +308,7 @@ public class ReportUtils {
 	 * (Jeffrey Zelt), this will be within:
 	 * 
 	 * <p>
-	 * <code>/home/jeffreyz/git/obo-birt-viewer/birt-viewer/src/main/webapp</code>
+	 * <code>/home/jeffreyz/git/qfree-report-server/birt-viewer/src/main/webapp</code>
 	 * 
 	 * <p>
 	 * I do not want to write files to this directory tree because any files
