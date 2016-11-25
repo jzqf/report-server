@@ -1,47 +1,53 @@
 ===== Extracting the files from the installation package archive =====
 
-The script that is packaged in this archive is written to be executed by the 
-"postgres" operating system user. The reason for this approach is that this 
-"postgres" user automatically has super-user access to the PostgreSQL cluster. 
-This simplifies creating and initializing the report server database since no 
-special super-user needs to first be created in order to bootstrap the process.
-A operating system account for the "postgres" user is created automatically when
-PostgreSQL is installed, and this user can log into the local PostgreSQL cluster
-using the PostgreSQL role of the same name, "postgres".
+The report server is distributed in a Debian package named:
 
-In order for the installation script to be executed successfully by the 
-"postgres" user, the files in this archive must be extracted to a location where
-the "postgres" user has the appropriate permissions to access these files. This
-can be done easily by following these simple steps:
+	birt-viewer-<version>.deb
 
-1.	Move the installation archive:
+Install this package on the report server host machine with:
 
-		install_report_server-<version>.tar.gz
-	
-	to a directory that the "postgres" user has access to. The simplest choice 
-	is:
-	
-		/tmp
-	
-	Do not use your own user account because it is unlikely that the "postgres"
-	user will have the necessary permissions to access files there.
+	sudo dpkg -i birt-viewer-<version>.deb
 
-2.	Extract the files from this archive using:
+This will install the following tree of files in the /tmp directory:
 
-		tar -xvzpf install_report_server-<version>.tar.gz
+	report-server-<version>/
+		report-server.war
+		install/
+			ReadMe.txt
+			create-report_server_db.sh
+			sql/
+				init_db.sql
+		upgrade/
+			ReadMe.txt
+			upgrade_report_server_db.sh
+			db_version_upgrade_deltas/
+				upgrade_report_server_db_to_v2.sql
+				upgrade_report_server_db_to_v3.sql
+				upgrade_report_server_db_to_v4.sql
+				...
 
-The "-p" option is essential. If you do not follow these instructions, the 
-installation may fail.
+Note: The install script that is packaged in this archive:
+
+	create-report_server_db.sh ,
+
+is written to be executed by the "postgres" operating system user. The reason 
+for this approach is that this "postgres" user automatically has super-user 
+access to the PostgreSQL cluster. This simplifies creating and initializing the 
+report server database since no special super-user needs to first be created in 
+order to bootstrap the process. A operating system account for the "postgres" 
+user is created automatically when PostgreSQL is installed, and this user can 
+log into the local PostgreSQL cluster using the PostgreSQL role of the same 
+name, "postgres".
 
 
 ===== Installation instructions =====
 
 Before the report server can be installed, both a Tomcat 8.x server and a 
 PostgreSQL 9.x server must be installed in a Debian or Ubuntu GNU/Linux 
-operating system. This document assumes that standard installation of both of
-these servers have been performed. However, the customization details (beyond a
-standard installation) that are necessary to support the report server are 
-covered here. In particular:
+operating system. This document assumes that standard installations of both of
+these servers have already been performed. However, the customization details 
+(beyond a standard installation) that are necessary to support the report server 
+are covered here. In particular:
 
 	A.	Customizing the PostgreSQL 9.x environment
 	B.	Customizing the Tomcat 8.x environment
@@ -124,12 +130,6 @@ order they appear here:
 	If this is the first time that the create-report_server_db.sh script is run
 	for the PostgreSQL cluster, then the report server database will not yet 
 	exist and there is nothing to do here. 
-	
-	However, this script can be run to also drop an existing report server 
-	database and then recreate a fresh, empty one (using the -D option). Under 
-	this condition, there could be existing connections to the database. If
-	the report server application is running, it must be shut down because it
-	maintains an open connection to the database.
 
 2.	Configure psql so that it does not prompt for a password when connecting to 
 	the report server database. This step is optional and only for convenience:
@@ -180,15 +180,21 @@ order they appear here:
 		* Create the database tables and other database objects.
 		* Populate the database with initial data.
 
-	From a shell on the database host, execute the following from the directory
-	containing the script create-report_server_db.sh:
+	From a shell on the database host, execute the following:
 
+		cd /tmp/report-server-<version>/install/
 		sudo -u postgres ./create-report_server_db.sh
 
 	To see a list of all options that this script provides, type:
 
 		./create-report_server_db.sh -h
-	
+
+	For example, this script can be run with the -D option. This will first drop 
+	an *existing* report server database and then recreate a new one. If an 
+	existing report server application is running when this option is used, it 
+	must first be shut down because it maintains an open connection to the 
+	database, which will cause this script to fail.
+
 It should now be possible to make a local connection from the PostgreSQL server
 host to the database "report_server_db" using the PostgreSQL role 
 "report_server_app" by executing in a shell (on the PostgreSQL server host):

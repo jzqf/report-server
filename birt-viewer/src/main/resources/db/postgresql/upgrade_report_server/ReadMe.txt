@@ -1,3 +1,34 @@
+===== Extracting the files from the installation package archive =====
+
+The report server is distributed in a Debian package named:
+
+	birt-viewer-<version>.deb
+
+Install this package on the report server host machine with:
+
+	sudo dpkg -i birt-viewer-<version>.deb
+
+This will install the following tree of files in the /tmp directory:
+
+	report-server-<version>/
+		report-server.war
+		install/
+			ReadMe.txt
+			create-report_server_db.sh
+			sql/
+				init_db.sql
+		upgrade/
+			ReadMe.txt
+			upgrade_report_server_db.sh
+			db_version_upgrade_deltas/
+				upgrade_report_server_db_to_v2.sql
+				upgrade_report_server_db_to_v3.sql
+				upgrade_report_server_db_to_v4.sql
+				...
+
+
+===== Upgrade instructions =====
+
 Upgrading the report server involves updating two components of the report 
 server installation:
 
@@ -7,7 +38,7 @@ server installation:
 This document covers upgrading both of these components.
 
 
-I.	===== Upgrading the report server database =====
+I.	==== Upgrading the report server database ====
 
 1.	Stop and then *undeploy* the report server application using the Tomcat
 	administrative HTML interface. 
@@ -22,11 +53,6 @@ I.	===== Upgrading the report server database =====
 	upgrade_report_server-<version> directory on the PostgreSQL host machine:
 
 		./upgrade_report_server_db.sh
-
-	The OS user account from which this is run should have the permission to 
-	write from the upgrade_report_server-<version> directory because this script 
-	writes errors and other messages to a log file named "logfile" in the 
-	script's directory.
 
 	Unless a different PostgreSQL role (user) is specified with the -U option, 
 	this script will attempt to connect to the report server database using the 
@@ -46,7 +72,7 @@ I.	===== Upgrading the report server database =====
 	necessary, using command line options.
 
 
-II.	===== Upgrading the report server application =====
+II.	==== Upgrading the report server application ====
 
 1.	Deploy report-server.war for the new version of the report server 
 	application using the Tomcat administrative HTML interface. This step should
@@ -66,7 +92,7 @@ II.	===== Upgrading the report server application =====
 	the protocol for accessing it, as well as the port number if a non-standard 
 	port number is used. You will need to authenticate with a username and 
 	password for a role that has the authority "USE_RESTAPI" granted, e.g., the
-	roel with username = "reportserver-restadmin". This can be done using a web
+	role with username = "reportserver-restadmin". This can be done using a web
 	browser or it can be done in a bash shell by executing:
 
 		curl -X GET -u <username>:<password> <host>/report-server/rest/appversion
