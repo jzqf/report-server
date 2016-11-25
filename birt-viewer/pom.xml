@@ -11,7 +11,7 @@
     </parent>
 
     <!-- <groupId>com.qfree.obo</groupId> -->
-    <artifactId>birt-viewer</artifactId>
+    <artifactId>report-server</artifactId>
     <version>0.15.0-SNAPSHOT</version>
     <packaging>war</packaging>
     <name>OBO Report Viewer</name>
@@ -535,9 +535,9 @@
                 <artifactId>maven-war-plugin</artifactId>
                 <version>2.6</version>
                 <configuration>
-                    <!-- When the WAR file birt-viewer-${project.version}.war is 
+                    <!-- When the WAR file report-server-${project.version}.war is 
                     generated, this tells this plugin to also create a JAR 
-                    artifact named birt-viewer-${project.version}-classes.jar.
+                    artifact named report-server-${project.version}-classes.jar.
                     This enables another Maven project to create a dependency 
                     on the Java code in this project (since it does not work 
                     to make a dependency on a WAR file). This JAR file is 
