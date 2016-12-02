@@ -5,7 +5,7 @@
 						http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd"
 	id="WebApp_ID" version="3.1">
 
-	<display-name>OBO Report Server</display-name>
+	<display-name>Q-Free Report Server</display-name>
 
 
 	<!-- Spring: -->
@@ -41,7 +41,7 @@
 	<context-param>
 		<param-name>contextConfigLocation</param-name>
 		<param-value>
-			com.qfree.obo.report.ApplicationConfig
+			com.qfree.bo.report.ApplicationConfig
 		</param-value>
 	</context-param>
 
@@ -66,7 +66,7 @@
 		</servlet-class>
 		<init-param>
 			<param-name>javax.ws.rs.Application</param-name>
-			<param-value>com.qfree.obo.report.rest.server.JAXRSConfiguration</param-value>			
+			<param-value>com.qfree.bo.report.rest.server.JAXRSConfiguration</param-value>			
 		</init-param>		
 		<load-on-startup>1</load-on-startup>
 	</servlet>

@@ -79,7 +79,7 @@ II.	==== Upgrading the report server application ====
 	also start the application. If the application does not start, check the
 	container log file, which for Tomcat can be found here:
 
-		<CATALINA_HOME>/logs/obo-report-server/obo-report-server.log
+		<CATALINA_HOME>/logs/qfree-report-server/qfree-report-server.log
 	
 	Important:	The new report-server.war file must be deployed  *after* the 
 				database is upgraded.

@@ -35,18 +35,18 @@
 			On a default GlassFish 4 installation, this log file will be created
 			in: .../glassfish4/glassfish/domains/domain1/logs/
 		-->
-		<File>${catalina.base}/logs/obo-report-server/obo-report-server.log</File>
+		<File>${catalina.base}/logs/qfree-report-server/qfree-report-server.log</File>
 		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
 		
 			<FileNamePattern>
 				<!-- Log file will be archived in "archive" directory at the beginning of each minute: -->
-				<!-- ${catalina.base}/logs/obo-report-server/archive/obo-report-server.%d{yyyy-MM-dd_HH-mm}.log.zip -->
+				<!-- ${catalina.base}/logs/qfree-report-server/archive/qfree-report-server.%d{yyyy-MM-dd_HH-mm}.log.zip -->
 
 				<!-- Default. Log file will be archived at midnight each day: -->
-				<!-- ${catalina.base}/logs/obo-report-server/archive/obo-report-server.%d{yyyy-MM-dd}.log.zip -->
-				${catalina.base}/logs/obo-report-server/archive/obo-report-server.%d{yyyy-MM-dd}.log
+				<!-- ${catalina.base}/logs/qfree-report-server/archive/qfree-report-server.%d{yyyy-MM-dd}.log.zip -->
+				${catalina.base}/logs/qfree-report-server/archive/qfree-report-server.%d{yyyy-MM-dd}.log
 				     
-				<!-- ${catalina.base}/logs/obo-report-server/archive/obo-report-server.%d{yyyy-MM}.log.zip -->
+				<!-- ${catalina.base}/logs/qfree-report-server/archive/qfree-report-server.%d{yyyy-MM}.log.zip -->
 			</FileNamePattern>
 
 			<maxHistory>365</maxHistory>	<!-- Maximum number of archive files to keep, deleting older files -->
@@ -70,16 +70,16 @@
 	</appender>
 
 	<!-- Application Loggers -->
-	<!-- <logger name="com.qfree.obo.report.dto.ReportResource"><level value="DEBUG" /></logger> -->
-	<!-- <logger name="com.qfree.obo.report.dto.ReportVersionResource"><level value="DEBUG" /></logger> -->
-	<!-- <logger name="com.qfree.obo.report.exceptions.RestApiException"><level value="DEBUG" /></logger> -->
-	<!-- <logger name="com.qfree.obo.report.rest.server.LoginAttemptController"><level value="DEBUG" /></logger> -->
-	<!-- <logger name="com.qfree.obo.report.rest.server.ReportControllerTests"><level value="DEBUG" /></logger> -->
-	<!-- <logger name="com.qfree.obo.report.rest.server.ReportVersionController"><level value="DEBUG" /></logger> -->
-	<!-- <logger name="com.qfree.obo.report.rest.server.ReportController"><level value="DEBUG" /></logger> -->
-	<!-- <logger name="com.qfree.obo.report.rest.server.RoleController"><level value="DEBUG" /></logger> -->
-	<!-- <logger name="com.qfree.obo.report.service.ReportVersionService"><level value="DEBUG" /></logger> -->
-	<!-- <logger name="com.qfree.obo.report.service.RoleService"><level value="DEBUG" /></logger> -->
+	<!-- <logger name="com.qfree.bo.report.dto.ReportResource"><level value="DEBUG" /></logger> -->
+	<!-- <logger name="com.qfree.bo.report.dto.ReportVersionResource"><level value="DEBUG" /></logger> -->
+	<!-- <logger name="com.qfree.bo.report.exceptions.RestApiException"><level value="DEBUG" /></logger> -->
+	<!-- <logger name="com.qfree.bo.report.rest.server.LoginAttemptController"><level value="DEBUG" /></logger> -->
+	<!-- <logger name="com.qfree.bo.report.rest.server.ReportControllerTests"><level value="DEBUG" /></logger> -->
+	<!-- <logger name="com.qfree.bo.report.rest.server.ReportVersionController"><level value="DEBUG" /></logger> -->
+	<!-- <logger name="com.qfree.bo.report.rest.server.ReportController"><level value="DEBUG" /></logger> -->
+	<!-- <logger name="com.qfree.bo.report.rest.server.RoleController"><level value="DEBUG" /></logger> -->
+	<!-- <logger name="com.qfree.bo.report.service.ReportVersionService"><level value="DEBUG" /></logger> -->
+	<!-- <logger name="com.qfree.bo.report.service.RoleService"><level value="DEBUG" /></logger> -->
 		
 	<!-- 3rdparty Loggers -->
 	<logger name="org.hibernate"><level value="INFO" /></logger>

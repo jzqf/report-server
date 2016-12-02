@@ -63,9 +63,9 @@ This document covers the installation of both of these components below.
 
 A.	===== Customizing the PostgreSQL 9.x environment =====
 
-The OBO Report Server database has been developed and tested to run on a 
+The report server database has been developed and tested to run on a 
 PostgreSQL 9.x server. It is convenient to install this database server on the 
-same host as the Tomcat 8.x application server that hosts the OBO Report Server 
+same host as the Tomcat 8.x application server that hosts the report server 
 web application, although this is not an installation requirement. However, if 
 Tomcat and the database are installed on different hosts, extra configuration 
 will be necessary which is not documented here.
@@ -218,7 +218,7 @@ II.	===== Installing the report server application =====
 	will fail. To check for validation errors, examine the log file. On Tomcat, 
 	the log file can be found here:
 
-		<CATALINA_HOME>/logs/obo-report-server/obo-report-server.log
+		<CATALINA_HOME>/logs/qfree-report-server/qfree-report-server.log
 
 2.	Test that the report server is running by visiting the following URL:
 
