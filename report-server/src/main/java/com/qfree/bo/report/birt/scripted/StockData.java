@@ -1,4 +1,4 @@
-package com.qfree.obo.report.birt.scripted;
+package com.qfree.bo.report.birt.scripted;
 
 import java.util.Date;
 

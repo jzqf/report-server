@@ -1,4 +1,4 @@
-package com.qfree.obo.report.security;
+package com.qfree.bo.report.security;
 
 import java.util.Collection;
 import java.util.UUID;

@@ -1,4 +1,4 @@
-package com.qfree.obo.report.service;
+package com.qfree.bo.report.service;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -6,10 +6,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.qfree.obo.report.db.DocumentFormatRepository;
-import com.qfree.obo.report.domain.DocumentFormat;
-import com.qfree.obo.report.dto.DocumentFormatResource;
-import com.qfree.obo.report.util.RestUtils;
+import com.qfree.bo.report.db.DocumentFormatRepository;
+import com.qfree.bo.report.domain.DocumentFormat;
+import com.qfree.bo.report.dto.DocumentFormatResource;
+import com.qfree.bo.report.util.RestUtils;
 
 @Component
 @Transactional

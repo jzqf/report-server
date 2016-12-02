@@ -1,4 +1,4 @@
-package com.qfree.obo.report.apps;
+package com.qfree.bo.report.apps;
 
 import java.util.Date;
 import java.util.Locale;
@@ -8,7 +8,7 @@ import org.eclipse.birt.report.engine.api.ReportParameterConverter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.qfree.obo.report.util.DateUtils;
+import com.qfree.bo.report.util.DateUtils;
 
 public class BirtReportParameterConverterTests {
 

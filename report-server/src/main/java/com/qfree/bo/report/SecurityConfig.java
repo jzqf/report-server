@@ -1,4 +1,4 @@
-package com.qfree.obo.report;
+package com.qfree.bo.report;
 
 import javax.servlet.Filter;
 
@@ -26,11 +26,11 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.web.util.matcher.OrRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 
-import com.qfree.obo.report.domain.Authority;
-import com.qfree.obo.report.security.ReportServerAuthenticationProvider;
-import com.qfree.obo.report.security.filter.DelegateRequestMatchingFilter;
-import com.qfree.obo.report.security.filter.LogRequestsFilter;
-import com.qfree.obo.report.security.filter.RoleReportFilter;
+import com.qfree.bo.report.domain.Authority;
+import com.qfree.bo.report.security.ReportServerAuthenticationProvider;
+import com.qfree.bo.report.security.filter.DelegateRequestMatchingFilter;
+import com.qfree.bo.report.security.filter.LogRequestsFilter;
+import com.qfree.bo.report.security.filter.RoleReportFilter;
 
 /**
  * Configure security details for this application.

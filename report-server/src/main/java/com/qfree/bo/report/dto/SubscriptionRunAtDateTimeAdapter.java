@@ -1,4 +1,4 @@
-package com.qfree.obo.report.dto;
+package com.qfree.bo.report.dto;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeParseException;
@@ -9,8 +9,8 @@ import javax.xml.bind.annotation.adapters.XmlAdapter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.qfree.obo.report.scheduling.schedulers.SubscriptionScheduler;
-import com.qfree.obo.report.util.DateUtils;
+import com.qfree.bo.report.scheduling.schedulers.SubscriptionScheduler;
+import com.qfree.bo.report.util.DateUtils;
 
 /**
  * Adapter class for the SubscriptionResource.deliveryDatetimeRunAt field to

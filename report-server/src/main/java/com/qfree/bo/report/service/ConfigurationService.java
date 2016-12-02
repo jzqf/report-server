@@ -1,4 +1,4 @@
-package com.qfree.obo.report.service;
+package com.qfree.bo.report.service;
 
 import java.util.Date;
 import java.util.UUID;
@@ -9,15 +9,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.qfree.obo.report.db.ConfigurationRepository;
-import com.qfree.obo.report.db.RoleRepository;
-import com.qfree.obo.report.domain.Configuration;
-import com.qfree.obo.report.domain.Configuration.ParamName;
-import com.qfree.obo.report.domain.Configuration.ParamType;
-import com.qfree.obo.report.domain.Role;
-import com.qfree.obo.report.dto.ConfigurationResource;
-import com.qfree.obo.report.dto.RoleResource;
-import com.qfree.obo.report.util.RestUtils;
+import com.qfree.bo.report.db.ConfigurationRepository;
+import com.qfree.bo.report.db.RoleRepository;
+import com.qfree.bo.report.domain.Configuration;
+import com.qfree.bo.report.domain.Role;
+import com.qfree.bo.report.domain.Configuration.ParamName;
+import com.qfree.bo.report.domain.Configuration.ParamType;
+import com.qfree.bo.report.dto.ConfigurationResource;
+import com.qfree.bo.report.dto.RoleResource;
+import com.qfree.bo.report.util.RestUtils;
 
 @Component
 @Transactional

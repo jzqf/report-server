@@ -1,4 +1,4 @@
-package com.qfree.obo.report.domain;
+package com.qfree.bo.report.domain;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -28,9 +28,9 @@ import org.hibernate.validator.constraints.NotBlank;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.qfree.obo.report.dto.ReportVersionResource;
-import com.qfree.obo.report.exceptions.ResourceFilterExecutionException;
-import com.qfree.obo.report.util.DateUtils;
+import com.qfree.bo.report.dto.ReportVersionResource;
+import com.qfree.bo.report.exceptions.ResourceFilterExecutionException;
+import com.qfree.bo.report.util.DateUtils;
 
 /**
  * The persistent class for the "report_version" database table.

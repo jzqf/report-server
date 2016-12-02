@@ -1,4 +1,4 @@
-package com.qfree.obo.report.rest.server;
+package com.qfree.bo.report.rest.server;
 
 import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.hasSize;
@@ -38,20 +38,20 @@ import org.springframework.test.annotation.DirtiesContext.ClassMode;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.qfree.obo.report.ApplicationConfig;
-import com.qfree.obo.report.db.ReportParameterRepository;
-import com.qfree.obo.report.db.ReportRepository;
-import com.qfree.obo.report.db.ReportVersionRepository;
-import com.qfree.obo.report.domain.Report;
-import com.qfree.obo.report.domain.ReportParameter;
-import com.qfree.obo.report.domain.ReportVersion;
-import com.qfree.obo.report.dto.ReportParameterResource;
-import com.qfree.obo.report.dto.ReportResource;
-import com.qfree.obo.report.dto.ReportVersionResource;
-import com.qfree.obo.report.dto.ResourcePath;
-import com.qfree.obo.report.dto.RestErrorResource;
-import com.qfree.obo.report.dto.RestErrorResource.RestError;
-import com.qfree.obo.report.util.DateUtils;
+import com.qfree.bo.report.ApplicationConfig;
+import com.qfree.bo.report.db.ReportParameterRepository;
+import com.qfree.bo.report.db.ReportRepository;
+import com.qfree.bo.report.db.ReportVersionRepository;
+import com.qfree.bo.report.domain.Report;
+import com.qfree.bo.report.domain.ReportParameter;
+import com.qfree.bo.report.domain.ReportVersion;
+import com.qfree.bo.report.dto.ReportParameterResource;
+import com.qfree.bo.report.dto.ReportResource;
+import com.qfree.bo.report.dto.ReportVersionResource;
+import com.qfree.bo.report.dto.ResourcePath;
+import com.qfree.bo.report.dto.RestErrorResource;
+import com.qfree.bo.report.dto.RestErrorResource.RestError;
+import com.qfree.bo.report.util.DateUtils;
 
 /**
  * 

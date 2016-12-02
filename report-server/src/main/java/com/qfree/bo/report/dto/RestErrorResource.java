@@ -1,4 +1,4 @@
-package com.qfree.obo.report.dto;
+package com.qfree.bo.report.dto;
 
 import javax.ws.rs.core.Response;
 import javax.xml.bind.annotation.XmlAccessType;

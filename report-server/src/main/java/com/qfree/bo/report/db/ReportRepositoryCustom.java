@@ -1,8 +1,8 @@
-package com.qfree.obo.report.db;
+package com.qfree.bo.report.db;
 
 import java.util.List;
 
-import com.qfree.obo.report.domain.Report;
+import com.qfree.bo.report.domain.Report;
 
 /**
  * "Custom" repository interface for {@link Report} persistence.

@@ -1,4 +1,4 @@
-package com.qfree.obo.report.service;
+package com.qfree.bo.report.service;
 
 import java.io.IOException;
 import java.io.Serializable;
@@ -20,23 +20,23 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.qfree.obo.report.db.ParameterGroupRepository;
-import com.qfree.obo.report.db.ReportParameterRepository;
-import com.qfree.obo.report.db.ReportVersionRepository;
-import com.qfree.obo.report.db.SelectionListValueRepository;
-import com.qfree.obo.report.domain.ParameterGroup;
-import com.qfree.obo.report.domain.ReportParameter;
-import com.qfree.obo.report.domain.ReportVersion;
-import com.qfree.obo.report.domain.SelectionListValue;
-import com.qfree.obo.report.dto.ParameterGroupResource;
-import com.qfree.obo.report.dto.ReportParameterResource;
-import com.qfree.obo.report.dto.ReportVersionResource;
-import com.qfree.obo.report.dto.RestErrorResource.RestError;
-import com.qfree.obo.report.exceptions.DynamicSelectionListKeyException;
-import com.qfree.obo.report.exceptions.RestApiException;
-import com.qfree.obo.report.exceptions.RptdesignOpenFromStreamException;
-import com.qfree.obo.report.util.RestUtils;
-import com.qfree.obo.report.util.RestUtils.RestApiVersion;
+import com.qfree.bo.report.db.ParameterGroupRepository;
+import com.qfree.bo.report.db.ReportParameterRepository;
+import com.qfree.bo.report.db.ReportVersionRepository;
+import com.qfree.bo.report.db.SelectionListValueRepository;
+import com.qfree.bo.report.domain.ParameterGroup;
+import com.qfree.bo.report.domain.ReportParameter;
+import com.qfree.bo.report.domain.ReportVersion;
+import com.qfree.bo.report.domain.SelectionListValue;
+import com.qfree.bo.report.dto.ParameterGroupResource;
+import com.qfree.bo.report.dto.ReportParameterResource;
+import com.qfree.bo.report.dto.ReportVersionResource;
+import com.qfree.bo.report.dto.RestErrorResource.RestError;
+import com.qfree.bo.report.exceptions.DynamicSelectionListKeyException;
+import com.qfree.bo.report.exceptions.RestApiException;
+import com.qfree.bo.report.exceptions.RptdesignOpenFromStreamException;
+import com.qfree.bo.report.util.RestUtils;
+import com.qfree.bo.report.util.RestUtils.RestApiVersion;
 
 @Component
 @Transactional

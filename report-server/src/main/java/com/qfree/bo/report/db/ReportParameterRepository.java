@@ -1,4 +1,4 @@
-package com.qfree.obo.report.db;
+package com.qfree.bo.report.db;
 
 import java.util.UUID;
 
@@ -6,8 +6,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import com.qfree.obo.report.domain.ReportParameter;
-import com.qfree.obo.report.domain.ReportVersion;
+import com.qfree.bo.report.domain.ReportParameter;
+import com.qfree.bo.report.domain.ReportVersion;
 
 public interface ReportParameterRepository extends JpaRepository<ReportParameter, UUID> {
 

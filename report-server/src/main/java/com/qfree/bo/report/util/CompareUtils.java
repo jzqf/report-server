@@ -1,4 +1,4 @@
-package com.qfree.obo.report.util;
+package com.qfree.bo.report.util;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

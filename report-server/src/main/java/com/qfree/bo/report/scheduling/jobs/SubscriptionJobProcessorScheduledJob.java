@@ -1,4 +1,4 @@
-package com.qfree.obo.report.scheduling.jobs;
+package com.qfree.bo.report.scheduling.jobs;
 
 import java.util.List;
 
@@ -7,12 +7,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.qfree.obo.report.db.JobRepository;
-import com.qfree.obo.report.db.JobStatusRepository;
-import com.qfree.obo.report.domain.Job;
-import com.qfree.obo.report.domain.JobStatus;
-import com.qfree.obo.report.exceptions.ReportingException;
-import com.qfree.obo.report.service.JobService;
+import com.qfree.bo.report.db.JobRepository;
+import com.qfree.bo.report.db.JobStatusRepository;
+import com.qfree.bo.report.domain.Job;
+import com.qfree.bo.report.domain.JobStatus;
+import com.qfree.bo.report.exceptions.ReportingException;
+import com.qfree.bo.report.service.JobService;
 
 @Component
 public class SubscriptionJobProcessorScheduledJob {

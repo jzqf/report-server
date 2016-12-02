@@ -1,4 +1,4 @@
-package com.qfree.obo.report.security.filter;
+package com.qfree.bo.report.security.filter;
 
 import java.io.IOException;
 

@@ -1,4 +1,4 @@
-package com.qfree.obo.report.service;
+package com.qfree.bo.report.service;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -47,12 +47,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
-import com.qfree.obo.report.exceptions.DynamicSelectionListKeyException;
-import com.qfree.obo.report.exceptions.NoValueForReportParameterException;
-import com.qfree.obo.report.exceptions.ReportingException;
-import com.qfree.obo.report.exceptions.RptdesignOpenFromStreamException;
-import com.qfree.obo.report.exceptions.UntreatedCaseException;
-import com.qfree.obo.report.util.DateUtils;
+import com.qfree.bo.report.exceptions.DynamicSelectionListKeyException;
+import com.qfree.bo.report.exceptions.NoValueForReportParameterException;
+import com.qfree.bo.report.exceptions.ReportingException;
+import com.qfree.bo.report.exceptions.RptdesignOpenFromStreamException;
+import com.qfree.bo.report.exceptions.UntreatedCaseException;
+import com.qfree.bo.report.util.DateUtils;
 
 @Component
 public class BirtService {
@@ -136,7 +136,7 @@ public class BirtService {
 		 * used for testing.
 		 */
 		//runnableReportDesign = engine.openReportDesign(
-		//	"/home/jeffreyz/git/obo-birt-reports/birt-reports/tests/400-TestReport04_v1.1.rptdesign");
+		//	"/home/jeffreyz/git/birt-report-tests/birt-report-tests/tests/400-TestReport04_v1.1.rptdesign");
 		//runnableReportDesign = engine.openReportDesign("/home/jeffreyz/Desktop/cascade_v3.2.23.rptdesign");
 
 		/*
@@ -433,7 +433,7 @@ public class BirtService {
 		 * used for testing.
 		 */
 		//runnableReportDesign = engine.openReportDesign(
-		//	"/home/jeffreyz/git/obo-birt-reports/birt-reports/tests/400-TestReport04_v1.1.rptdesign");
+		//	"/home/jeffreyz/git/birt-report-tests/birt-report-tests/tests/400-TestReport04_v1.1.rptdesign");
 		//runnableReportDesign = engine.openReportDesign("/home/jeffreyz/Desktop/cascade_v3.2.23.rptdesign");
 
 		/*
@@ -501,7 +501,7 @@ public class BirtService {
 		 * used for testing.
 		 */
 		//runnableReportDesign = engine.openReportDesign(
-		//	"/home/jeffreyz/git/obo-birt-reports/birt-reports/tests/400-TestReport04_v1.1.rptdesign");
+		//	"/home/jeffreyz/git/birt-report-tests/birt-report-tests/tests/400-TestReport04_v1.1.rptdesign");
 		//runnableReportDesign = engine.openReportDesign("/home/jeffreyz/Desktop/cascade_v3.2.23.rptdesign");
 
 		/*

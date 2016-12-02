@@ -1,4 +1,4 @@
-package com.qfree.obo.report.dto;
+package com.qfree.bo.report.dto;
 
 import java.util.List;
 import java.util.Map;
@@ -10,9 +10,9 @@ import javax.xml.bind.annotation.XmlRootElement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.qfree.obo.report.domain.ReportParameter;
-import com.qfree.obo.report.domain.ReportVersion;
-import com.qfree.obo.report.util.RestUtils.RestApiVersion;
+import com.qfree.bo.report.domain.ReportParameter;
+import com.qfree.bo.report.domain.ReportVersion;
+import com.qfree.bo.report.util.RestUtils.RestApiVersion;
 
 @XmlRootElement
 public class ReportParameterCollectionResource

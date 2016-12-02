@@ -1,10 +1,10 @@
-package com.qfree.obo.report.apps;
+package com.qfree.bo.report.apps;
 
 import java.util.List;
 import java.util.Map;
 
-import com.qfree.obo.report.exceptions.ReportingException;
-import com.qfree.obo.report.util.RestUtils;
+import com.qfree.bo.report.exceptions.ReportingException;
+import com.qfree.bo.report.util.RestUtils;
 
 public class TestParseFilterQueryParam {
 

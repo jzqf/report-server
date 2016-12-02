@@ -1,4 +1,4 @@
-package com.qfree.obo.report.dto;
+package com.qfree.bo.report.dto;
 
 import java.util.Date;
 
@@ -9,7 +9,7 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.qfree.obo.report.domain.Subscription;
+import com.qfree.bo.report.domain.Subscription;
 
 @XmlRootElement
 //public class SchedulingStatusResource extends AbstractBaseResource {

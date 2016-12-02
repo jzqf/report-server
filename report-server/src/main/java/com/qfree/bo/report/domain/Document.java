@@ -1,4 +1,4 @@
-package com.qfree.obo.report.domain;
+package com.qfree.bo.report.domain;
 
 import java.io.Serializable;
 import java.util.Base64;
@@ -20,8 +20,8 @@ import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;
 
-import com.qfree.obo.report.dto.DocumentResource;
-import com.qfree.obo.report.util.DateUtils;
+import com.qfree.bo.report.dto.DocumentResource;
+import com.qfree.bo.report.util.DateUtils;
 
 /**
  * The persistent class for the "document" database table.
@@ -67,9 +67,9 @@ public class Document implements Serializable {
 	 * org.springframework.orm.jpa.JpaSystemException will be thrown that will
 	 * report something like:
 	 * 
-	 *   Javassist Enhancement failed: com.qfree.obo.report.domain.Document; 
+	 *   Javassist Enhancement failed: com.qfree.bo.report.domain.Document; 
 	 *   nested exception is org.hibernate.HibernateException: Javassist 
-	 *   Enhancement failed: com.qfree.obo.report.domain.Document
+	 *   Enhancement failed: com.qfree.bo.report.domain.Document
 	 * 
 	 * Must have non-private visibility:
 	 */

@@ -1,4 +1,4 @@
-package com.qfree.obo.report.service;
+package com.qfree.bo.report.service;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -12,9 +12,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
 
-import com.qfree.obo.report.dto.AssetSyncResource;
-import com.qfree.obo.report.dto.ReportSyncResource;
-import com.qfree.obo.report.util.ReportUtils;
+import com.qfree.bo.report.dto.AssetSyncResource;
+import com.qfree.bo.report.dto.ReportSyncResource;
+import com.qfree.bo.report.util.ReportUtils;
 
 //@Component  <- not needed because bean is explicitly created in ApplicationConfig.java
 @PropertySource("classpath:config.properties")

@@ -1,4 +1,4 @@
-package com.qfree.obo.report.apps;
+package com.qfree.bo.report.apps;
 
 import java.io.File;
 import java.io.IOException;
@@ -9,7 +9,7 @@ import java.nio.file.Path;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.qfree.obo.report.exceptions.ReportingException;
+import com.qfree.bo.report.exceptions.ReportingException;
 
 public class LoadFileFromClasspath {
 

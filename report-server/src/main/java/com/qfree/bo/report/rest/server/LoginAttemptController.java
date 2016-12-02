@@ -1,4 +1,4 @@
-package com.qfree.obo.report.rest.server;
+package com.qfree.bo.report.rest.server;
 
 import java.util.HashMap;
 import java.util.List;
@@ -19,16 +19,16 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.qfree.obo.report.db.RoleRepository;
-import com.qfree.obo.report.domain.Role;
-import com.qfree.obo.report.dto.ResourcePath;
-import com.qfree.obo.report.dto.RestErrorResource.RestError;
-import com.qfree.obo.report.dto.RoleResource;
-import com.qfree.obo.report.exceptions.RestApiException;
-import com.qfree.obo.report.service.AuthorityService;
-import com.qfree.obo.report.service.RoleService;
-import com.qfree.obo.report.util.RestUtils;
-import com.qfree.obo.report.util.RestUtils.RestApiVersion;
+import com.qfree.bo.report.db.RoleRepository;
+import com.qfree.bo.report.domain.Role;
+import com.qfree.bo.report.dto.ResourcePath;
+import com.qfree.bo.report.dto.RoleResource;
+import com.qfree.bo.report.dto.RestErrorResource.RestError;
+import com.qfree.bo.report.exceptions.RestApiException;
+import com.qfree.bo.report.service.AuthorityService;
+import com.qfree.bo.report.service.RoleService;
+import com.qfree.bo.report.util.RestUtils;
+import com.qfree.bo.report.util.RestUtils.RestApiVersion;
 
 @Component
 @Path(ResourcePath.LOGINATTEMPTS_PATH)

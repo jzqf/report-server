@@ -1,4 +1,4 @@
-package com.qfree.obo.report.scheduling.schedulers;
+package com.qfree.bo.report.scheduling.schedulers;
 
 import java.text.ParseException;
 import java.time.DateTimeException;
@@ -30,12 +30,12 @@ import org.springframework.scheduling.quartz.SchedulerFactoryBean;
 import org.springframework.scheduling.quartz.SimpleTriggerFactoryBean;
 import org.springframework.stereotype.Component;
 
-import com.qfree.obo.report.db.SubscriptionRepository;
-import com.qfree.obo.report.domain.Subscription;
-import com.qfree.obo.report.dto.SchedulingStatusResource;
-import com.qfree.obo.report.exceptions.NoScheduleForSubscriptionException;
-import com.qfree.obo.report.scheduling.jobs.SubscriptionScheduledJob;
-import com.qfree.obo.report.util.DateUtils;
+import com.qfree.bo.report.db.SubscriptionRepository;
+import com.qfree.bo.report.domain.Subscription;
+import com.qfree.bo.report.dto.SchedulingStatusResource;
+import com.qfree.bo.report.exceptions.NoScheduleForSubscriptionException;
+import com.qfree.bo.report.scheduling.jobs.SubscriptionScheduledJob;
+import com.qfree.bo.report.util.DateUtils;
 
 /**
  * This bean manages the scheduling of SubscriptionScheduledJob instances.

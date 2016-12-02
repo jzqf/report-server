@@ -1,4 +1,4 @@
-package com.qfree.obo.report.scheduling.schedulers;
+package com.qfree.bo.report.scheduling.schedulers;
 
 /**
  * This interface exists only for marking its containing package for recursive

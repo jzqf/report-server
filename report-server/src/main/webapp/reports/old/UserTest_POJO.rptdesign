@@ -100,7 +100,7 @@
                 </structure>
             </list-property>
             <xml-property name="queryText"><![CDATA[<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<PojoQuery appContextKey="APP_CONTEXT_KEY_USERTEST_POJO DATA SET" dataSetClass="com.qfree.obo.report.rest.client.UserTestRestDataSource" version="1.0">
+<PojoQuery appContextKey="APP_CONTEXT_KEY_USERTEST_POJO DATA SET" dataSetClass="com.qfree.bo.report.rest.client.UserTestRestDataSource" version="1.0">
     <ColumnMapping index="1" name="Id" odaDataType="Double">
         <Method name="getId"/>
     </ColumnMapping>
@@ -197,7 +197,7 @@
                 </ex-property>
                 <ex-property>
                     <name>pojoClass</name>
-                    <value>com.qfree.obo.report.rest.client.UserTest</value>
+                    <value>com.qfree.bo.report.rest.client.UserTest</value>
                 </ex-property>
             </list-property>
         </oda-data-set>

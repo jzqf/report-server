@@ -1,4 +1,4 @@
-package com.qfree.obo.report.rest.server;
+package com.qfree.bo.report.rest.server;
 
 import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.hasSize;
@@ -38,19 +38,20 @@ import org.springframework.test.annotation.DirtiesContext.ClassMode;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.qfree.obo.report.ApplicationConfig;
-import com.qfree.obo.report.db.RoleRepository;
-import com.qfree.obo.report.domain.Report;
-import com.qfree.obo.report.domain.Role;
-import com.qfree.obo.report.domain.UuidCustomType;
-import com.qfree.obo.report.dto.ReportCollectionResource;
-import com.qfree.obo.report.dto.ReportResource;
-import com.qfree.obo.report.dto.ResourcePath;
-import com.qfree.obo.report.dto.RestErrorResource;
-import com.qfree.obo.report.dto.RestErrorResource.RestError;
-import com.qfree.obo.report.dto.RoleResource;
-import com.qfree.obo.report.util.DateUtils;
-import com.qfree.obo.report.util.RestUtils;
+import com.qfree.bo.report.ApplicationConfig;
+import com.qfree.bo.report.db.RoleRepository;
+import com.qfree.bo.report.domain.Report;
+import com.qfree.bo.report.domain.Role;
+import com.qfree.bo.report.domain.UuidCustomType;
+import com.qfree.bo.report.dto.ReportCollectionResource;
+import com.qfree.bo.report.dto.ReportResource;
+import com.qfree.bo.report.dto.ResourcePath;
+import com.qfree.bo.report.dto.RestErrorResource;
+import com.qfree.bo.report.dto.RoleResource;
+import com.qfree.bo.report.dto.RestErrorResource.RestError;
+import com.qfree.bo.report.rest.server.RoleController;
+import com.qfree.bo.report.util.DateUtils;
+import com.qfree.bo.report.util.RestUtils;
 
 /**
  * 

@@ -1,4 +1,4 @@
-package com.qfree.obo.report.rest.server;
+package com.qfree.bo.report.rest.server;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -27,21 +27,21 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.qfree.obo.report.db.RoleParameterRepository;
-import com.qfree.obo.report.db.SubscriptionParameterRepository;
-import com.qfree.obo.report.domain.Authority;
-import com.qfree.obo.report.domain.RoleParameter;
-import com.qfree.obo.report.domain.RoleParameterValue;
-import com.qfree.obo.report.domain.SubscriptionParameter;
-import com.qfree.obo.report.domain.SubscriptionParameterValue;
-import com.qfree.obo.report.dto.ResourcePath;
-import com.qfree.obo.report.dto.RestErrorResource.RestError;
-import com.qfree.obo.report.dto.SubscriptionParameterResource;
-import com.qfree.obo.report.dto.SubscriptionParameterValueCollectionResource;
-import com.qfree.obo.report.dto.SubscriptionParameterValueResource;
-import com.qfree.obo.report.exceptions.RestApiException;
-import com.qfree.obo.report.util.RestUtils;
-import com.qfree.obo.report.util.RestUtils.RestApiVersion;
+import com.qfree.bo.report.db.RoleParameterRepository;
+import com.qfree.bo.report.db.SubscriptionParameterRepository;
+import com.qfree.bo.report.domain.Authority;
+import com.qfree.bo.report.domain.RoleParameter;
+import com.qfree.bo.report.domain.RoleParameterValue;
+import com.qfree.bo.report.domain.SubscriptionParameter;
+import com.qfree.bo.report.domain.SubscriptionParameterValue;
+import com.qfree.bo.report.dto.ResourcePath;
+import com.qfree.bo.report.dto.SubscriptionParameterResource;
+import com.qfree.bo.report.dto.SubscriptionParameterValueCollectionResource;
+import com.qfree.bo.report.dto.SubscriptionParameterValueResource;
+import com.qfree.bo.report.dto.RestErrorResource.RestError;
+import com.qfree.bo.report.exceptions.RestApiException;
+import com.qfree.bo.report.util.RestUtils;
+import com.qfree.bo.report.util.RestUtils.RestApiVersion;
 
 @Component
 @Path(ResourcePath.SUBSCRIPTIONPARAMETERS_PATH)

@@ -1,4 +1,4 @@
-package com.qfree.obo.report.service;
+package com.qfree.bo.report.service;
 
 import java.util.UUID;
 
@@ -8,15 +8,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.qfree.obo.report.db.ReportParameterRepository;
-import com.qfree.obo.report.db.SelectionListValueRepository;
-import com.qfree.obo.report.domain.ReportParameter;
-import com.qfree.obo.report.domain.SelectionListValue;
-import com.qfree.obo.report.dto.ReportParameterResource;
-import com.qfree.obo.report.dto.RestErrorResource.RestError;
-import com.qfree.obo.report.dto.SelectionListValueResource;
-import com.qfree.obo.report.exceptions.RestApiException;
-import com.qfree.obo.report.util.RestUtils;
+import com.qfree.bo.report.db.ReportParameterRepository;
+import com.qfree.bo.report.db.SelectionListValueRepository;
+import com.qfree.bo.report.domain.ReportParameter;
+import com.qfree.bo.report.domain.SelectionListValue;
+import com.qfree.bo.report.dto.ReportParameterResource;
+import com.qfree.bo.report.dto.SelectionListValueResource;
+import com.qfree.bo.report.dto.RestErrorResource.RestError;
+import com.qfree.bo.report.exceptions.RestApiException;
+import com.qfree.bo.report.util.RestUtils;
 
 @Component
 @Transactional

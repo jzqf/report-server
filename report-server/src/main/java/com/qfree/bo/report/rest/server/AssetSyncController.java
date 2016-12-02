@@ -1,4 +1,4 @@
-package com.qfree.obo.report.rest.server;
+package com.qfree.bo.report.rest.server;
 
 import java.util.HashMap;
 import java.util.List;
@@ -22,14 +22,14 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.qfree.obo.report.db.AssetRepository;
-import com.qfree.obo.report.domain.Authority;
-import com.qfree.obo.report.dto.AssetSyncResource;
-import com.qfree.obo.report.dto.ResourcePath;
-import com.qfree.obo.report.service.AssetSyncService;
-import com.qfree.obo.report.util.ReportUtils;
-import com.qfree.obo.report.util.RestUtils;
-import com.qfree.obo.report.util.RestUtils.RestApiVersion;
+import com.qfree.bo.report.db.AssetRepository;
+import com.qfree.bo.report.domain.Authority;
+import com.qfree.bo.report.dto.AssetSyncResource;
+import com.qfree.bo.report.dto.ResourcePath;
+import com.qfree.bo.report.service.AssetSyncService;
+import com.qfree.bo.report.util.ReportUtils;
+import com.qfree.bo.report.util.RestUtils;
+import com.qfree.bo.report.util.RestUtils.RestApiVersion;
 
 @Component
 @Path("assetSyncs")

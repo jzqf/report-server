@@ -1,4 +1,4 @@
-package com.qfree.obo.report.db;
+package com.qfree.bo.report.db;
 
 import java.util.List;
 import java.util.UUID;
@@ -7,10 +7,10 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import com.qfree.obo.report.domain.Report;
-import com.qfree.obo.report.domain.ReportVersion;
-import com.qfree.obo.report.domain.Role;
-import com.qfree.obo.report.domain.RoleRole;
+import com.qfree.bo.report.domain.Report;
+import com.qfree.bo.report.domain.ReportVersion;
+import com.qfree.bo.report.domain.Role;
+import com.qfree.bo.report.domain.RoleRole;
 
 /**
  * Repository interface for {@link ReportVersion} persistence.

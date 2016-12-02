@@ -1,4 +1,4 @@
-package com.qfree.obo.report.db;
+package com.qfree.bo.report.db;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
@@ -23,11 +23,14 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.qfree.obo.report.ApplicationConfig;
-import com.qfree.obo.report.domain.Report;
-import com.qfree.obo.report.domain.ReportParameter;
-import com.qfree.obo.report.domain.ReportVersion;
-import com.qfree.obo.report.util.DateUtils;
+import com.qfree.bo.report.ApplicationConfig;
+import com.qfree.bo.report.db.ReportParameterRepository;
+import com.qfree.bo.report.db.ReportRepository;
+import com.qfree.bo.report.db.ReportVersionRepository;
+import com.qfree.bo.report.domain.Report;
+import com.qfree.bo.report.domain.ReportParameter;
+import com.qfree.bo.report.domain.ReportVersion;
+import com.qfree.bo.report.util.DateUtils;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = ApplicationConfig.class)

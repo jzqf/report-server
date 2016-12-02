@@ -1,4 +1,4 @@
-package com.qfree.obo.report.rest.server;
+package com.qfree.bo.report.rest.server;
 
 import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.is;
@@ -34,12 +34,12 @@ import org.springframework.test.annotation.DirtiesContext.ClassMode;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.qfree.obo.report.ApplicationConfig;
-import com.qfree.obo.report.db.ReportCategoryRepository;
-import com.qfree.obo.report.domain.ReportCategory;
-import com.qfree.obo.report.dto.ReportCategoryResource;
-import com.qfree.obo.report.dto.ResourcePath;
-import com.qfree.obo.report.util.DateUtils;
+import com.qfree.bo.report.ApplicationConfig;
+import com.qfree.bo.report.db.ReportCategoryRepository;
+import com.qfree.bo.report.domain.ReportCategory;
+import com.qfree.bo.report.dto.ReportCategoryResource;
+import com.qfree.bo.report.dto.ResourcePath;
+import com.qfree.bo.report.util.DateUtils;
 
 /**
  * 

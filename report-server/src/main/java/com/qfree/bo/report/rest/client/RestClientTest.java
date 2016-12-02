@@ -1,4 +1,4 @@
-package com.qfree.obo.report.rest.client;
+package com.qfree.bo.report.rest.client;
 
 import javax.json.JsonArray;
 import javax.json.stream.JsonGenerator;

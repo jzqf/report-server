@@ -1,4 +1,4 @@
-package com.qfree.obo.report;
+package com.qfree.bo.report;
 
 import java.io.IOException;
 import java.util.Properties;
@@ -23,8 +23,8 @@ import org.springframework.transaction.PlatformTransactionManager;
 @Configuration
 @EnableScheduling
 @ComponentScan(basePackageClasses = {
-		com.qfree.obo.report.scheduling.jobs.ComponentScanPackageMarker.class,
-		com.qfree.obo.report.scheduling.schedulers.ComponentScanPackageMarker.class,
+		com.qfree.bo.report.scheduling.jobs.ComponentScanPackageMarker.class,
+		com.qfree.bo.report.scheduling.schedulers.ComponentScanPackageMarker.class,
 })
 @PropertySource("classpath:config.properties")
 //This is for *multiple* properties files. The @PropertySource elements must be

@@ -1,4 +1,4 @@
-package com.qfree.obo.report.apps;
+package com.qfree.bo.report.apps;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;

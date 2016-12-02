@@ -1,4 +1,4 @@
-package com.qfree.obo.report.util;
+package com.qfree.bo.report.util;
 
 import java.util.LinkedHashMap;
 import java.util.Map;

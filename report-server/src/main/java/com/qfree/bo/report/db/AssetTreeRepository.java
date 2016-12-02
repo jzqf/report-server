@@ -1,11 +1,11 @@
-package com.qfree.obo.report.db;
+package com.qfree.bo.report.db;
 
 import java.util.List;
 import java.util.UUID;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import com.qfree.obo.report.domain.AssetTree;
+import com.qfree.bo.report.domain.AssetTree;
 
 /**
  * Repository interface for {@link AssetTree} persistence.

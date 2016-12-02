@@ -1,4 +1,4 @@
-package com.qfree.obo.report.security;
+package com.qfree.bo.report.security;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -9,7 +9,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.qfree.obo.report.db.RoleRepository;
+import com.qfree.bo.report.db.RoleRepository;
 
 @Component
 public class ReportServerUserDetailsService implements UserDetailsService {

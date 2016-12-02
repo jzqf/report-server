@@ -1,28 +1,28 @@
-package com.qfree.obo.report.dto;
+package com.qfree.bo.report.dto;
 
 import java.util.List;
 
-import com.qfree.obo.report.domain.Asset;
-import com.qfree.obo.report.domain.AssetTree;
-import com.qfree.obo.report.domain.AssetType;
-import com.qfree.obo.report.domain.Authority;
-import com.qfree.obo.report.domain.Configuration;
-import com.qfree.obo.report.domain.Document;
-import com.qfree.obo.report.domain.DocumentFormat;
-import com.qfree.obo.report.domain.Job;
-import com.qfree.obo.report.domain.JobParameter;
-import com.qfree.obo.report.domain.JobParameterValue;
-import com.qfree.obo.report.domain.JobStatus;
-import com.qfree.obo.report.domain.ParameterGroup;
-import com.qfree.obo.report.domain.Report;
-import com.qfree.obo.report.domain.ReportCategory;
-import com.qfree.obo.report.domain.ReportParameter;
-import com.qfree.obo.report.domain.ReportVersion;
-import com.qfree.obo.report.domain.Role;
-import com.qfree.obo.report.domain.SelectionListValue;
-import com.qfree.obo.report.domain.Subscription;
-import com.qfree.obo.report.domain.SubscriptionParameter;
-import com.qfree.obo.report.domain.SubscriptionParameterValue;
+import com.qfree.bo.report.domain.Asset;
+import com.qfree.bo.report.domain.AssetTree;
+import com.qfree.bo.report.domain.AssetType;
+import com.qfree.bo.report.domain.Authority;
+import com.qfree.bo.report.domain.Configuration;
+import com.qfree.bo.report.domain.Document;
+import com.qfree.bo.report.domain.DocumentFormat;
+import com.qfree.bo.report.domain.Job;
+import com.qfree.bo.report.domain.JobParameter;
+import com.qfree.bo.report.domain.JobParameterValue;
+import com.qfree.bo.report.domain.JobStatus;
+import com.qfree.bo.report.domain.ParameterGroup;
+import com.qfree.bo.report.domain.Report;
+import com.qfree.bo.report.domain.ReportCategory;
+import com.qfree.bo.report.domain.ReportParameter;
+import com.qfree.bo.report.domain.ReportVersion;
+import com.qfree.bo.report.domain.Role;
+import com.qfree.bo.report.domain.SelectionListValue;
+import com.qfree.bo.report.domain.Subscription;
+import com.qfree.bo.report.domain.SubscriptionParameter;
+import com.qfree.bo.report.domain.SubscriptionParameterValue;
 
 /**
  * Enum to hold settings related to resource paths so that they are not

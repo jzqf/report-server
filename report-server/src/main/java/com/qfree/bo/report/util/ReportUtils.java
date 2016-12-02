@@ -1,4 +1,4 @@
-package com.qfree.obo.report.util;
+package com.qfree.bo.report.util;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -15,10 +15,10 @@ import javax.naming.NamingException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.qfree.obo.report.domain.Asset;
-import com.qfree.obo.report.domain.AssetTree;
-import com.qfree.obo.report.domain.AssetType;
-import com.qfree.obo.report.domain.ReportVersion;
+import com.qfree.bo.report.domain.Asset;
+import com.qfree.bo.report.domain.AssetTree;
+import com.qfree.bo.report.domain.AssetType;
+import com.qfree.bo.report.domain.ReportVersion;
 
 public class ReportUtils {
 
@@ -308,7 +308,7 @@ public class ReportUtils {
 	 * (Jeffrey Zelt), this will be within:
 	 * 
 	 * <p>
-	 * <code>/home/jeffreyz/git/qfree-report-server/birt-viewer/src/main/webapp</code>
+	 * <code>/home/jeffreyz/git/qfree-report-server/report-server/src/main/webapp</code>
 	 * 
 	 * <p>
 	 * I do not want to write files to this directory tree because any files
@@ -382,7 +382,7 @@ public class ReportUtils {
 	//			 * used for testing.
 	//			 */
 	//			//design = engine.openReportDesign(
-	//			//	"/home/jeffreyz/git/obo-birt-reports/birt-reports/tests/400-TestReport04_v1.1.rptdesign");
+	//			//	"/home/jeffreyz/git/birt-report-tests/birt-report-tests/tests/400-TestReport04_v1.1.rptdesign");
 	//			//design = engine.openReportDesign("/home/jeffreyz/Desktop/cascade_v3.2.23.rptdesign");
 	//
 	//			/*

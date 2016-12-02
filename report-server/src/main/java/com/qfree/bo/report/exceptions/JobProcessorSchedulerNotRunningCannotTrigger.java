@@ -1,4 +1,4 @@
-package com.qfree.obo.report.exceptions;
+package com.qfree.bo.report.exceptions;
 
 /**
  * Exception thrown when an attempt is made to trigger the subscription job

@@ -1,4 +1,4 @@
-package com.qfree.obo.report.rest.server;
+package com.qfree.bo.report.rest.server;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -35,15 +35,15 @@ import org.springframework.scheduling.quartz.SchedulerFactoryBean;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Component;
 
-import com.qfree.obo.report.domain.Authority;
-import com.qfree.obo.report.domain.Configuration.ParamName;
-import com.qfree.obo.report.scheduling.jobs.SubscriptionScheduledJob;
-import com.qfree.obo.report.scheduling.schedulers.SubscriptionJobProcessorScheduler;
-import com.qfree.obo.report.scheduling.schedulers.SubscriptionScheduler;
-import com.qfree.obo.report.service.BirtService;
-import com.qfree.obo.report.service.ConfigurationService;
-import com.qfree.obo.report.util.RestUtils;
-import com.qfree.obo.report.util.RestUtils.RestApiVersion;
+import com.qfree.bo.report.domain.Authority;
+import com.qfree.bo.report.domain.Configuration.ParamName;
+import com.qfree.bo.report.scheduling.jobs.SubscriptionScheduledJob;
+import com.qfree.bo.report.scheduling.schedulers.SubscriptionJobProcessorScheduler;
+import com.qfree.bo.report.scheduling.schedulers.SubscriptionScheduler;
+import com.qfree.bo.report.service.BirtService;
+import com.qfree.bo.report.service.ConfigurationService;
+import com.qfree.bo.report.util.RestUtils;
+import com.qfree.bo.report.util.RestUtils.RestApiVersion;
 
 @Component
 @Path("/test")
@@ -270,7 +270,7 @@ public class TestController extends AbstractBaseController {
 			 * Load rptdesign file into a String.
 			 */
 			//java.nio.file.Path rptdesignPath = Paths
-			//		.get("/home/jeffreyz/git/obo-birt-reports/birt-reports/tests/400-TestReport04_v1.1.rptdesign");
+			//		.get("/home/jeffreyz/git/birt-report-tests/birt-report-tests/tests/400-TestReport04_v1.1.rptdesign");
 			java.nio.file.Path rptdesignPath = Paths.get("/home/jeffreyz/Desktop/cascade_v3.2.23.rptdesign");
 			//java.nio.file.Path rptdesignPath = Paths.get("/home/jeffreyz/Desktop/cascade_v3.2.6.rptdesign");
 			List<String> rptdesignLines = null;

@@ -1,4 +1,4 @@
-package com.qfree.obo.report.rest.client;
+package com.qfree.bo.report.rest.client;
 
 import java.io.Serializable;
 import java.util.List;

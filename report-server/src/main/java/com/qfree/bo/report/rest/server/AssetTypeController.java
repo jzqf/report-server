@@ -1,4 +1,4 @@
-package com.qfree.obo.report.rest.server;
+package com.qfree.bo.report.rest.server;
 
 import java.util.HashMap;
 import java.util.List;
@@ -27,18 +27,18 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.qfree.obo.report.db.AssetTypeRepository;
-import com.qfree.obo.report.domain.AssetType;
-import com.qfree.obo.report.domain.Authority;
-import com.qfree.obo.report.dto.AssetTypeCollectionResource;
-import com.qfree.obo.report.dto.AssetTypeResource;
-import com.qfree.obo.report.dto.ResourcePath;
-import com.qfree.obo.report.dto.RestErrorResource.RestError;
-import com.qfree.obo.report.exceptions.RestApiException;
-import com.qfree.obo.report.service.AssetSyncService;
-import com.qfree.obo.report.service.AssetTypeService;
-import com.qfree.obo.report.util.RestUtils;
-import com.qfree.obo.report.util.RestUtils.RestApiVersion;
+import com.qfree.bo.report.db.AssetTypeRepository;
+import com.qfree.bo.report.domain.AssetType;
+import com.qfree.bo.report.domain.Authority;
+import com.qfree.bo.report.dto.AssetTypeCollectionResource;
+import com.qfree.bo.report.dto.AssetTypeResource;
+import com.qfree.bo.report.dto.ResourcePath;
+import com.qfree.bo.report.dto.RestErrorResource.RestError;
+import com.qfree.bo.report.exceptions.RestApiException;
+import com.qfree.bo.report.service.AssetSyncService;
+import com.qfree.bo.report.service.AssetTypeService;
+import com.qfree.bo.report.util.RestUtils;
+import com.qfree.bo.report.util.RestUtils.RestApiVersion;
 
 @Component
 @Path(ResourcePath.ASSETTYPES_PATH)

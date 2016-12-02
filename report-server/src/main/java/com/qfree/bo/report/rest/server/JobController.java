@@ -1,4 +1,4 @@
-package com.qfree.obo.report.rest.server;
+package com.qfree.bo.report.rest.server;
 
 import java.text.ParseException;
 import java.util.Date;
@@ -30,21 +30,21 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.qfree.obo.report.db.JobRepository;
-import com.qfree.obo.report.db.JobStatusRepository;
-import com.qfree.obo.report.domain.Authority;
-import com.qfree.obo.report.domain.Job;
-import com.qfree.obo.report.domain.JobStatus;
-import com.qfree.obo.report.dto.JobCollectionResource;
-import com.qfree.obo.report.dto.JobParameterCollectionResource;
-import com.qfree.obo.report.dto.JobResource;
-import com.qfree.obo.report.dto.ResourcePath;
-import com.qfree.obo.report.dto.RestErrorResource.RestError;
-import com.qfree.obo.report.exceptions.ResourceFilterExecutionException;
-import com.qfree.obo.report.exceptions.ResourceFilterParseException;
-import com.qfree.obo.report.exceptions.RestApiException;
-import com.qfree.obo.report.util.RestUtils;
-import com.qfree.obo.report.util.RestUtils.RestApiVersion;
+import com.qfree.bo.report.db.JobRepository;
+import com.qfree.bo.report.db.JobStatusRepository;
+import com.qfree.bo.report.domain.Authority;
+import com.qfree.bo.report.domain.Job;
+import com.qfree.bo.report.domain.JobStatus;
+import com.qfree.bo.report.dto.JobCollectionResource;
+import com.qfree.bo.report.dto.JobParameterCollectionResource;
+import com.qfree.bo.report.dto.JobResource;
+import com.qfree.bo.report.dto.ResourcePath;
+import com.qfree.bo.report.dto.RestErrorResource.RestError;
+import com.qfree.bo.report.exceptions.ResourceFilterExecutionException;
+import com.qfree.bo.report.exceptions.ResourceFilterParseException;
+import com.qfree.bo.report.exceptions.RestApiException;
+import com.qfree.bo.report.util.RestUtils;
+import com.qfree.bo.report.util.RestUtils.RestApiVersion;
 
 @Component
 @Path(ResourcePath.JOBS_PATH)

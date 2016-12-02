@@ -1,4 +1,4 @@
-package com.qfree.obo.report.rest.server;
+package com.qfree.bo.report.rest.server;
 
 import java.util.HashMap;
 import java.util.List;
@@ -26,15 +26,15 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.qfree.obo.report.db.ReportCategoryRepository;
-import com.qfree.obo.report.domain.Authority;
-import com.qfree.obo.report.domain.ReportCategory;
-import com.qfree.obo.report.dto.ReportCategoryCollectionResource;
-import com.qfree.obo.report.dto.ReportCategoryResource;
-import com.qfree.obo.report.dto.ResourcePath;
-import com.qfree.obo.report.service.ReportCategoryService;
-import com.qfree.obo.report.util.RestUtils;
-import com.qfree.obo.report.util.RestUtils.RestApiVersion;
+import com.qfree.bo.report.db.ReportCategoryRepository;
+import com.qfree.bo.report.domain.Authority;
+import com.qfree.bo.report.domain.ReportCategory;
+import com.qfree.bo.report.dto.ReportCategoryCollectionResource;
+import com.qfree.bo.report.dto.ReportCategoryResource;
+import com.qfree.bo.report.dto.ResourcePath;
+import com.qfree.bo.report.service.ReportCategoryService;
+import com.qfree.bo.report.util.RestUtils;
+import com.qfree.bo.report.util.RestUtils.RestApiVersion;
 
 @Component
 @Path(ResourcePath.REPORTCATEGORIES_PATH)

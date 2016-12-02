@@ -1,6 +1,6 @@
-package com.qfree.obo.report.exceptions;
+package com.qfree.bo.report.exceptions;
 
-import static com.qfree.obo.report.util.LoggingUtils.toSplunkString;
+import static com.qfree.bo.report.util.LoggingUtils.toSplunkString;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -11,8 +11,8 @@ import javax.ws.rs.core.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.qfree.obo.report.dto.RestErrorResource;
-import com.qfree.obo.report.dto.RestErrorResource.RestError;
+import com.qfree.bo.report.dto.RestErrorResource;
+import com.qfree.bo.report.dto.RestErrorResource.RestError;
 
 public class RestApiException extends WebApplicationException {
 

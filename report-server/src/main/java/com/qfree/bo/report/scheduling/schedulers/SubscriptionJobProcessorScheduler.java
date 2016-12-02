@@ -1,4 +1,4 @@
-package com.qfree.obo.report.scheduling.schedulers;
+package com.qfree.bo.report.scheduling.schedulers;
 
 import java.util.Date;
 import java.util.List;
@@ -22,21 +22,21 @@ import org.springframework.scheduling.quartz.SchedulerFactoryBean;
 import org.springframework.scheduling.quartz.SimpleTriggerFactoryBean;
 import org.springframework.stereotype.Component;
 
-import com.qfree.obo.report.db.JobRepository;
-import com.qfree.obo.report.db.JobStatusRepository;
-import com.qfree.obo.report.domain.Job;
-import com.qfree.obo.report.domain.JobStatus;
-import com.qfree.obo.report.dto.JobProcessorResource;
-import com.qfree.obo.report.exceptions.JobProcessorAlreadyScheduledException;
-import com.qfree.obo.report.exceptions.JobProcessorNotScheduledCannotPause;
-import com.qfree.obo.report.exceptions.JobProcessorNotScheduledCannotResume;
-import com.qfree.obo.report.exceptions.JobProcessorNotScheduledCannotStop;
-import com.qfree.obo.report.exceptions.JobProcessorNotScheduledCannotTrigger;
-import com.qfree.obo.report.exceptions.JobProcessorSchedulerNotRunningCannotPause;
-import com.qfree.obo.report.exceptions.JobProcessorSchedulerNotRunningCannotResume;
-import com.qfree.obo.report.exceptions.JobProcessorSchedulerNotRunningCannotTrigger;
-import com.qfree.obo.report.scheduling.jobs.SubscriptionJobProcessorScheduledJob;
-import com.qfree.obo.report.util.DateUtils;
+import com.qfree.bo.report.db.JobRepository;
+import com.qfree.bo.report.db.JobStatusRepository;
+import com.qfree.bo.report.domain.Job;
+import com.qfree.bo.report.domain.JobStatus;
+import com.qfree.bo.report.dto.JobProcessorResource;
+import com.qfree.bo.report.exceptions.JobProcessorAlreadyScheduledException;
+import com.qfree.bo.report.exceptions.JobProcessorNotScheduledCannotPause;
+import com.qfree.bo.report.exceptions.JobProcessorNotScheduledCannotResume;
+import com.qfree.bo.report.exceptions.JobProcessorNotScheduledCannotStop;
+import com.qfree.bo.report.exceptions.JobProcessorNotScheduledCannotTrigger;
+import com.qfree.bo.report.exceptions.JobProcessorSchedulerNotRunningCannotPause;
+import com.qfree.bo.report.exceptions.JobProcessorSchedulerNotRunningCannotResume;
+import com.qfree.bo.report.exceptions.JobProcessorSchedulerNotRunningCannotTrigger;
+import com.qfree.bo.report.scheduling.jobs.SubscriptionJobProcessorScheduledJob;
+import com.qfree.bo.report.util.DateUtils;
 
 /**
  * This bean manages the scheduling of SubscriptionJobProcessorScheduledJob.

@@ -1,4 +1,4 @@
-package com.qfree.obo.report.util;
+package com.qfree.bo.report.util;
 
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;

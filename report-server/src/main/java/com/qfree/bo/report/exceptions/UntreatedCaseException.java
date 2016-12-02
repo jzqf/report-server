@@ -1,4 +1,4 @@
-package com.qfree.obo.report.exceptions;
+package com.qfree.bo.report.exceptions;
 
 public class UntreatedCaseException extends ReportingException {
 

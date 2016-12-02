@@ -1,4 +1,4 @@
-package com.qfree.obo.report.rest.server;
+package com.qfree.bo.report.rest.server;
 
 import java.net.URI;
 import java.util.ArrayList;
@@ -10,8 +10,8 @@ import javax.ws.rs.core.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.qfree.obo.report.dto.AbstractBaseResource;
-import com.qfree.obo.report.dto.ResourcePath;
+import com.qfree.bo.report.dto.AbstractBaseResource;
+import com.qfree.bo.report.dto.ResourcePath;
 
 public class AbstractBaseController {
 

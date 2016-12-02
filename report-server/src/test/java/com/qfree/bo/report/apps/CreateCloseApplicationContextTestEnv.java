@@ -1,10 +1,10 @@
-package com.qfree.obo.report.apps;
+package com.qfree.bo.report.apps;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
-import com.qfree.obo.report.ApplicationConfig;
+import com.qfree.bo.report.ApplicationConfig;
 
 public class CreateCloseApplicationContextTestEnv {
 

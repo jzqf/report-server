@@ -1,8 +1,8 @@
-package com.qfree.obo.report.db;
+package com.qfree.bo.report.db;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import com.qfree.obo.report.domain.JobParameterValue;
+import com.qfree.bo.report.domain.JobParameterValue;
 
 /**
  * Repository interface for {@link JobParameterValue} persistence.

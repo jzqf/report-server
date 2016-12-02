@@ -1,11 +1,11 @@
-package com.qfree.obo.report.apps;
+package com.qfree.bo.report.apps;
 
 import org.eclipse.birt.core.exception.BirtException;
 import org.eclipse.birt.report.engine.api.IReportEngine;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.qfree.obo.report.service.BirtService;
+import com.qfree.bo.report.service.BirtService;
 
 public class GetBirtSupportedFormats {
 

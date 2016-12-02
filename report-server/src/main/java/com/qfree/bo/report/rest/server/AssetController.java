@@ -1,4 +1,4 @@
-package com.qfree.obo.report.rest.server;
+package com.qfree.bo.report.rest.server;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -35,26 +35,26 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.qfree.obo.report.db.AssetRepository;
-import com.qfree.obo.report.db.AssetTreeRepository;
-import com.qfree.obo.report.db.AssetTypeRepository;
-import com.qfree.obo.report.db.DocumentRepository;
-import com.qfree.obo.report.domain.Asset;
-import com.qfree.obo.report.domain.AssetTree;
-import com.qfree.obo.report.domain.AssetType;
-import com.qfree.obo.report.domain.Authority;
-import com.qfree.obo.report.domain.Document;
-import com.qfree.obo.report.dto.AssetCollectionResource;
-import com.qfree.obo.report.dto.AssetResource;
-import com.qfree.obo.report.dto.DocumentResource;
-import com.qfree.obo.report.dto.ResourcePath;
-import com.qfree.obo.report.dto.RestErrorResource.RestError;
-import com.qfree.obo.report.exceptions.RestApiException;
-import com.qfree.obo.report.exceptions.RptdesignOpenFromStreamException;
-import com.qfree.obo.report.service.AssetService;
-import com.qfree.obo.report.service.AssetSyncService;
-import com.qfree.obo.report.util.RestUtils;
-import com.qfree.obo.report.util.RestUtils.RestApiVersion;
+import com.qfree.bo.report.db.AssetRepository;
+import com.qfree.bo.report.db.AssetTreeRepository;
+import com.qfree.bo.report.db.AssetTypeRepository;
+import com.qfree.bo.report.db.DocumentRepository;
+import com.qfree.bo.report.domain.Asset;
+import com.qfree.bo.report.domain.AssetTree;
+import com.qfree.bo.report.domain.AssetType;
+import com.qfree.bo.report.domain.Authority;
+import com.qfree.bo.report.domain.Document;
+import com.qfree.bo.report.dto.AssetCollectionResource;
+import com.qfree.bo.report.dto.AssetResource;
+import com.qfree.bo.report.dto.DocumentResource;
+import com.qfree.bo.report.dto.ResourcePath;
+import com.qfree.bo.report.dto.RestErrorResource.RestError;
+import com.qfree.bo.report.exceptions.RestApiException;
+import com.qfree.bo.report.exceptions.RptdesignOpenFromStreamException;
+import com.qfree.bo.report.service.AssetService;
+import com.qfree.bo.report.service.AssetSyncService;
+import com.qfree.bo.report.util.RestUtils;
+import com.qfree.bo.report.util.RestUtils.RestApiVersion;
 
 @Component
 @Path(ResourcePath.ASSETS_PATH)

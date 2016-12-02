@@ -1,4 +1,4 @@
-package com.qfree.obo.report.util;
+package com.qfree.bo.report.util;
 
 import java.text.SimpleDateFormat;
 import java.time.Instant;
@@ -16,7 +16,7 @@ import java.util.GregorianCalendar;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.qfree.obo.report.dto.DatetimeAdapter;
+import com.qfree.bo.report.dto.DatetimeAdapter;
 
 public class DateUtils {
 

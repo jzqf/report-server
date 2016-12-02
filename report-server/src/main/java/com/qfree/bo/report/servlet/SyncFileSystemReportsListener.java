@@ -1,4 +1,4 @@
-package com.qfree.obo.report.servlet;
+package com.qfree.bo.report.servlet;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;

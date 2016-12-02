@@ -1,4 +1,4 @@
-package com.qfree.obo.report.rest.server;
+package com.qfree.bo.report.rest.server;
 
 import java.util.HashMap;
 import java.util.List;
@@ -25,19 +25,19 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.qfree.obo.report.db.ConfigurationRepository;
-import com.qfree.obo.report.db.RoleRepository;
-import com.qfree.obo.report.domain.Authority;
-import com.qfree.obo.report.domain.Configuration;
-import com.qfree.obo.report.domain.Configuration.ParamName;
-import com.qfree.obo.report.domain.Role;
-import com.qfree.obo.report.dto.ConfigurationCollectionResource;
-import com.qfree.obo.report.dto.ConfigurationResource;
-import com.qfree.obo.report.dto.ResourcePath;
-import com.qfree.obo.report.dto.RoleResource;
-import com.qfree.obo.report.service.ConfigurationService;
-import com.qfree.obo.report.util.RestUtils;
-import com.qfree.obo.report.util.RestUtils.RestApiVersion;
+import com.qfree.bo.report.db.ConfigurationRepository;
+import com.qfree.bo.report.db.RoleRepository;
+import com.qfree.bo.report.domain.Authority;
+import com.qfree.bo.report.domain.Configuration;
+import com.qfree.bo.report.domain.Role;
+import com.qfree.bo.report.domain.Configuration.ParamName;
+import com.qfree.bo.report.dto.ConfigurationCollectionResource;
+import com.qfree.bo.report.dto.ConfigurationResource;
+import com.qfree.bo.report.dto.ResourcePath;
+import com.qfree.bo.report.dto.RoleResource;
+import com.qfree.bo.report.service.ConfigurationService;
+import com.qfree.bo.report.util.RestUtils;
+import com.qfree.bo.report.util.RestUtils.RestApiVersion;
 
 @Component
 @Path(ResourcePath.CONFIGURATIONS_PATH)

@@ -1,4 +1,4 @@
-package com.qfree.obo.report.service;
+package com.qfree.bo.report.service;
 
 import java.io.File;
 import java.io.IOException;
@@ -18,20 +18,20 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.qfree.obo.report.db.AssetRepository;
-import com.qfree.obo.report.db.AssetTreeRepository;
-import com.qfree.obo.report.db.AssetTypeRepository;
-import com.qfree.obo.report.domain.Asset;
-import com.qfree.obo.report.domain.AssetTree;
-import com.qfree.obo.report.domain.AssetType;
-import com.qfree.obo.report.dto.AssetSyncResource;
-import com.qfree.obo.report.dto.ResourcePath;
-import com.qfree.obo.report.dto.RestErrorResource.RestError;
-import com.qfree.obo.report.exceptions.RestApiException;
-import com.qfree.obo.report.util.AssetFileFilter;
-import com.qfree.obo.report.util.ReportUtils;
-import com.qfree.obo.report.util.RestUtils;
-import com.qfree.obo.report.util.RestUtils.RestApiVersion;
+import com.qfree.bo.report.db.AssetRepository;
+import com.qfree.bo.report.db.AssetTreeRepository;
+import com.qfree.bo.report.db.AssetTypeRepository;
+import com.qfree.bo.report.domain.Asset;
+import com.qfree.bo.report.domain.AssetTree;
+import com.qfree.bo.report.domain.AssetType;
+import com.qfree.bo.report.dto.AssetSyncResource;
+import com.qfree.bo.report.dto.ResourcePath;
+import com.qfree.bo.report.dto.RestErrorResource.RestError;
+import com.qfree.bo.report.exceptions.RestApiException;
+import com.qfree.bo.report.util.AssetFileFilter;
+import com.qfree.bo.report.util.ReportUtils;
+import com.qfree.bo.report.util.RestUtils;
+import com.qfree.bo.report.util.RestUtils.RestApiVersion;
 
 @Component
 @Transactional

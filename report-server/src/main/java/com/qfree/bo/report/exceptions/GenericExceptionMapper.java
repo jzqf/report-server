@@ -1,4 +1,4 @@
-package com.qfree.obo.report.exceptions;
+package com.qfree.bo.report.exceptions;
 
 import javax.validation.ConstraintViolationException;
 import javax.ws.rs.core.MediaType;
@@ -11,8 +11,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.access.AccessDeniedException;
 
-import com.qfree.obo.report.dto.RestErrorResource;
-import com.qfree.obo.report.dto.RestErrorResource.RestError;
+import com.qfree.bo.report.dto.RestErrorResource;
+import com.qfree.bo.report.dto.RestErrorResource.RestError;
 
 @Provider
 public class GenericExceptionMapper implements ExceptionMapper<Throwable> {

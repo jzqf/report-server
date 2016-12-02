@@ -1,4 +1,4 @@
-package com.qfree.obo.report.db;
+package com.qfree.bo.report.db;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
@@ -21,16 +21,23 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.qfree.obo.report.ApplicationConfig;
-import com.qfree.obo.report.domain.DocumentFormat;
-import com.qfree.obo.report.domain.Job;
-import com.qfree.obo.report.domain.JobParameter;
-import com.qfree.obo.report.domain.JobParameterValue;
-import com.qfree.obo.report.domain.JobStatus;
-import com.qfree.obo.report.domain.Report;
-import com.qfree.obo.report.domain.ReportParameter;
-import com.qfree.obo.report.domain.ReportVersion;
-import com.qfree.obo.report.domain.Role;
+import com.qfree.bo.report.ApplicationConfig;
+import com.qfree.bo.report.db.DocumentFormatRepository;
+import com.qfree.bo.report.db.JobParameterRepository;
+import com.qfree.bo.report.db.JobParameterValueRepository;
+import com.qfree.bo.report.db.JobRepository;
+import com.qfree.bo.report.db.JobStatusRepository;
+import com.qfree.bo.report.db.ReportRepository;
+import com.qfree.bo.report.db.RoleRepository;
+import com.qfree.bo.report.domain.DocumentFormat;
+import com.qfree.bo.report.domain.Job;
+import com.qfree.bo.report.domain.JobParameter;
+import com.qfree.bo.report.domain.JobParameterValue;
+import com.qfree.bo.report.domain.JobStatus;
+import com.qfree.bo.report.domain.Report;
+import com.qfree.bo.report.domain.ReportParameter;
+import com.qfree.bo.report.domain.ReportVersion;
+import com.qfree.bo.report.domain.Role;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = ApplicationConfig.class)

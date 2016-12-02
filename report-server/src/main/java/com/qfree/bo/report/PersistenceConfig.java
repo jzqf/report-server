@@ -1,4 +1,4 @@
-package com.qfree.obo.report;
+package com.qfree.bo.report;
 
 import java.util.Properties;
 
@@ -27,7 +27,7 @@ import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 @Configuration
-@EnableJpaRepositories(basePackages = "com.qfree.obo.report.db")
+@EnableJpaRepositories(basePackages = "com.qfree.bo.report.db")
 @PropertySource("classpath:config.properties")
 //This is for *multiple* properties files. The @PropertySource elements must be
 //comma-separated:
@@ -137,7 +137,7 @@ public class PersistenceConfig {
 		emf.setPersistenceUnitName("reportServer");
 		emf.setJpaVendorAdapter(jpaVendorAdapter);
 		emf.setJpaProperties(additionalProperties());
-		emf.setPackagesToScan("com.qfree.obo.report.domain");
+		emf.setPackagesToScan("com.qfree.bo.report.domain");
 		return emf;
 	}
 

@@ -1,4 +1,4 @@
-package com.qfree.obo.report.service;
+package com.qfree.bo.report.service;
 
 import java.util.UUID;
 
@@ -7,12 +7,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.qfree.obo.report.db.JobRepository;
-import com.qfree.obo.report.db.RoleRepository;
-import com.qfree.obo.report.db.SubscriptionRepository;
-import com.qfree.obo.report.domain.Job;
-import com.qfree.obo.report.domain.Role;
-import com.qfree.obo.report.domain.Subscription;
+import com.qfree.bo.report.db.JobRepository;
+import com.qfree.bo.report.db.RoleRepository;
+import com.qfree.bo.report.db.SubscriptionRepository;
+import com.qfree.bo.report.domain.Job;
+import com.qfree.bo.report.domain.Role;
+import com.qfree.bo.report.domain.Subscription;
 
 @Component(value = "dos")
 public class DomainObjectSecurityService {

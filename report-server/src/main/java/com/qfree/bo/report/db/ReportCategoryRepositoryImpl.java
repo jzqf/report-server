@@ -1,9 +1,9 @@
-package com.qfree.obo.report.db;
+package com.qfree.bo.report.db;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
-import com.qfree.obo.report.domain.ReportCategory;
+import com.qfree.bo.report.domain.ReportCategory;
 
 /**
  * Implementation class for "custom" repository query methods for 

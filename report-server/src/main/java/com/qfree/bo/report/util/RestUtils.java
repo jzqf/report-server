@@ -1,4 +1,4 @@
-package com.qfree.obo.report.util;
+package com.qfree.bo.report.util;
 
 import java.io.IOException;
 import java.sql.Timestamp;
@@ -19,11 +19,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
 
-import com.qfree.obo.report.dto.ResourcePath;
-import com.qfree.obo.report.dto.RestErrorResource.RestError;
-import com.qfree.obo.report.exceptions.ResourceFilterExecutionException;
-import com.qfree.obo.report.exceptions.ResourceFilterParseException;
-import com.qfree.obo.report.exceptions.RestApiException;
+import com.qfree.bo.report.dto.ResourcePath;
+import com.qfree.bo.report.dto.RestErrorResource.RestError;
+import com.qfree.bo.report.exceptions.ResourceFilterExecutionException;
+import com.qfree.bo.report.exceptions.ResourceFilterParseException;
+import com.qfree.bo.report.exceptions.RestApiException;
 
 public class RestUtils {
 

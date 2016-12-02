@@ -1,4 +1,4 @@
-package com.qfree.obo.report.security.config;
+package com.qfree.bo.report.security.config;
 
 import org.springframework.security.web.context.AbstractSecurityWebApplicationInitializer;
 import org.springframework.web.WebApplicationInitializer;

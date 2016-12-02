@@ -1,4 +1,4 @@
-package com.qfree.obo.report.service;
+package com.qfree.bo.report.service;
 
 import java.util.UUID;
 
@@ -8,23 +8,23 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.qfree.obo.report.db.DocumentFormatRepository;
-import com.qfree.obo.report.db.ReportVersionRepository;
-import com.qfree.obo.report.db.RoleRepository;
-import com.qfree.obo.report.db.SubscriptionRepository;
-import com.qfree.obo.report.domain.DocumentFormat;
-import com.qfree.obo.report.domain.ReportVersion;
-import com.qfree.obo.report.domain.Role;
-import com.qfree.obo.report.domain.Subscription;
-import com.qfree.obo.report.dto.DocumentFormatResource;
-import com.qfree.obo.report.dto.ReportVersionResource;
-import com.qfree.obo.report.dto.RestErrorResource.RestError;
-import com.qfree.obo.report.dto.RoleResource;
-import com.qfree.obo.report.dto.SchedulingStatusResource;
-import com.qfree.obo.report.dto.SubscriptionResource;
-import com.qfree.obo.report.exceptions.RestApiException;
-import com.qfree.obo.report.scheduling.schedulers.SubscriptionScheduler;
-import com.qfree.obo.report.util.RestUtils;
+import com.qfree.bo.report.db.DocumentFormatRepository;
+import com.qfree.bo.report.db.ReportVersionRepository;
+import com.qfree.bo.report.db.RoleRepository;
+import com.qfree.bo.report.db.SubscriptionRepository;
+import com.qfree.bo.report.domain.DocumentFormat;
+import com.qfree.bo.report.domain.ReportVersion;
+import com.qfree.bo.report.domain.Role;
+import com.qfree.bo.report.domain.Subscription;
+import com.qfree.bo.report.dto.DocumentFormatResource;
+import com.qfree.bo.report.dto.ReportVersionResource;
+import com.qfree.bo.report.dto.RoleResource;
+import com.qfree.bo.report.dto.SchedulingStatusResource;
+import com.qfree.bo.report.dto.SubscriptionResource;
+import com.qfree.bo.report.dto.RestErrorResource.RestError;
+import com.qfree.bo.report.exceptions.RestApiException;
+import com.qfree.bo.report.scheduling.schedulers.SubscriptionScheduler;
+import com.qfree.bo.report.util.RestUtils;
 
 @Component
 @Transactional

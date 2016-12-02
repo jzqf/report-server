@@ -1,4 +1,4 @@
-package com.qfree.obo.report.rest.server;
+package com.qfree.bo.report.rest.server;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -28,23 +28,23 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.qfree.obo.report.db.ReportRepository;
-import com.qfree.obo.report.db.RoleRepository;
-import com.qfree.obo.report.domain.Authority;
-import com.qfree.obo.report.domain.Report;
-import com.qfree.obo.report.domain.Role;
-import com.qfree.obo.report.domain.UuidCustomType;
-import com.qfree.obo.report.dto.ReportCollectionResource;
-import com.qfree.obo.report.dto.ReportResource;
-import com.qfree.obo.report.dto.ReportSyncResource;
-import com.qfree.obo.report.dto.ReportVersionCollectionResource;
-import com.qfree.obo.report.dto.ResourcePath;
-import com.qfree.obo.report.dto.RoleCollectionResource;
-import com.qfree.obo.report.service.AuthorityService;
-import com.qfree.obo.report.service.ReportService;
-import com.qfree.obo.report.service.ReportSyncService;
-import com.qfree.obo.report.util.RestUtils;
-import com.qfree.obo.report.util.RestUtils.RestApiVersion;
+import com.qfree.bo.report.db.ReportRepository;
+import com.qfree.bo.report.db.RoleRepository;
+import com.qfree.bo.report.domain.Authority;
+import com.qfree.bo.report.domain.Report;
+import com.qfree.bo.report.domain.Role;
+import com.qfree.bo.report.domain.UuidCustomType;
+import com.qfree.bo.report.dto.ReportCollectionResource;
+import com.qfree.bo.report.dto.ReportResource;
+import com.qfree.bo.report.dto.ReportSyncResource;
+import com.qfree.bo.report.dto.ReportVersionCollectionResource;
+import com.qfree.bo.report.dto.ResourcePath;
+import com.qfree.bo.report.dto.RoleCollectionResource;
+import com.qfree.bo.report.service.AuthorityService;
+import com.qfree.bo.report.service.ReportService;
+import com.qfree.bo.report.service.ReportSyncService;
+import com.qfree.bo.report.util.RestUtils;
+import com.qfree.bo.report.util.RestUtils.RestApiVersion;
 
 @Component
 @Path(ResourcePath.REPORTS_PATH)

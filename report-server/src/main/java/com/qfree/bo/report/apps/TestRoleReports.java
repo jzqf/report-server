@@ -1,4 +1,4 @@
-package com.qfree.obo.report.apps;
+package com.qfree.bo.report.apps;
 
 import java.util.List;
 import java.util.UUID;
@@ -7,14 +7,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
-import com.qfree.obo.report.ApplicationConfig;
-import com.qfree.obo.report.db.ReportRepository;
-import com.qfree.obo.report.db.ReportVersionRepository;
-import com.qfree.obo.report.db.RoleReportRepository;
-import com.qfree.obo.report.db.RoleRepository;
-import com.qfree.obo.report.domain.Report;
-import com.qfree.obo.report.domain.Role;
-import com.qfree.obo.report.domain.RoleReport;
+import com.qfree.bo.report.ApplicationConfig;
+import com.qfree.bo.report.db.ReportRepository;
+import com.qfree.bo.report.db.ReportVersionRepository;
+import com.qfree.bo.report.db.RoleReportRepository;
+import com.qfree.bo.report.db.RoleRepository;
+import com.qfree.bo.report.domain.Report;
+import com.qfree.bo.report.domain.Role;
+import com.qfree.bo.report.domain.RoleReport;
 
 public class TestRoleReports {
 

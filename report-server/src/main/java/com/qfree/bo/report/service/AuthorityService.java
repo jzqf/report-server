@@ -1,4 +1,4 @@
-package com.qfree.obo.report.service;
+package com.qfree.bo.report.service;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -10,9 +10,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.qfree.obo.report.db.AuthorityRepository;
-import com.qfree.obo.report.domain.Authority;
-import com.qfree.obo.report.domain.UuidCustomType;
+import com.qfree.bo.report.db.AuthorityRepository;
+import com.qfree.bo.report.domain.Authority;
+import com.qfree.bo.report.domain.UuidCustomType;
 
 @Component
 @Transactional

@@ -1,4 +1,4 @@
-package com.qfree.obo.report.apps;
+package com.qfree.bo.report.apps;
 
 import java.io.IOException;
 import java.io.Serializable;
@@ -12,8 +12,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
-import com.qfree.obo.report.ApplicationConfig;
-import com.qfree.obo.report.service.BirtService;
+import com.qfree.bo.report.ApplicationConfig;
+import com.qfree.bo.report.service.BirtService;
 
 public class ParseReportParameters {
 
@@ -32,9 +32,9 @@ public class ParseReportParameters {
 			 */
 
 			Path rptdesignPath = Paths
-					.get("/home/jeffreyz/git/obo-birt-reports/birt-reports/tests/400-TestReport04_v1.1.rptdesign");
+					.get("/home/jeffreyz/git/birt-report-tests/birt-report-tests/tests/400-TestReport04_v1.1.rptdesign");
 			//Path rptdesignPath = Paths
-			//		.get("/home/jeffreyz/git/obo-birt-reports/birt-reports/tests/cascade.rptdesign");
+			//		.get("/home/jeffreyz/git/birt-report-tests/birt-report-tests/tests/cascade.rptdesign");
 			//Path rptdesignPath = Paths.get("/home/jeffreyz/Desktop/cascade_v3.2.23.rptdesign");
 			//Path rptdesignPath = Paths.get("/home/jeffreyz/Desktop/cascade_v3.2.6.rptdesign");
 

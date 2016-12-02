@@ -1,13 +1,13 @@
-package com.qfree.obo.report.apps;
+package com.qfree.bo.report.apps;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
-import com.qfree.obo.report.ApplicationConfig;
-import com.qfree.obo.report.db.ConfigurationRepository;
-import com.qfree.obo.report.domain.Configuration.ParamName;
-import com.qfree.obo.report.service.ConfigurationService;
+import com.qfree.bo.report.ApplicationConfig;
+import com.qfree.bo.report.db.ConfigurationRepository;
+import com.qfree.bo.report.domain.Configuration.ParamName;
+import com.qfree.bo.report.service.ConfigurationService;
 
 public class ConfigurationDataTypes {
 

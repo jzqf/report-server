@@ -1,4 +1,4 @@
-package com.qfree.obo.report.security.filter;
+package com.qfree.bo.report.security.filter;
 
 import java.io.IOException;
 import java.util.List;
@@ -21,16 +21,16 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
-import com.qfree.obo.report.db.ReportVersionRepository;
-import com.qfree.obo.report.db.RoleReportRepository;
-import com.qfree.obo.report.db.RoleRepository;
-import com.qfree.obo.report.domain.ReportVersion;
-import com.qfree.obo.report.domain.Role;
-import com.qfree.obo.report.domain.RoleReport;
-import com.qfree.obo.report.domain.UuidCustomType;
-import com.qfree.obo.report.rest.server.RoleController;
-import com.qfree.obo.report.security.ReportServerUser;
-import com.qfree.obo.report.util.ReportUtils;
+import com.qfree.bo.report.db.ReportVersionRepository;
+import com.qfree.bo.report.db.RoleReportRepository;
+import com.qfree.bo.report.db.RoleRepository;
+import com.qfree.bo.report.domain.ReportVersion;
+import com.qfree.bo.report.domain.Role;
+import com.qfree.bo.report.domain.RoleReport;
+import com.qfree.bo.report.domain.UuidCustomType;
+import com.qfree.bo.report.rest.server.RoleController;
+import com.qfree.bo.report.security.ReportServerUser;
+import com.qfree.bo.report.util.ReportUtils;
 
 public class RoleReportFilter implements Filter {
 

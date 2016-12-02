@@ -1,4 +1,4 @@
-package com.qfree.obo.report.rest.server;
+package com.qfree.bo.report.rest.server;
 
 import java.util.HashMap;
 import java.util.List;
@@ -21,15 +21,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Component;
 
-import com.qfree.obo.report.db.JobStatusRepository;
-import com.qfree.obo.report.domain.Authority;
-import com.qfree.obo.report.domain.JobStatus;
-import com.qfree.obo.report.dto.JobStatusCollectionResource;
-import com.qfree.obo.report.dto.JobStatusResource;
-import com.qfree.obo.report.dto.ResourcePath;
-import com.qfree.obo.report.service.JobStatusService;
-import com.qfree.obo.report.util.RestUtils;
-import com.qfree.obo.report.util.RestUtils.RestApiVersion;
+import com.qfree.bo.report.db.JobStatusRepository;
+import com.qfree.bo.report.domain.Authority;
+import com.qfree.bo.report.domain.JobStatus;
+import com.qfree.bo.report.dto.JobStatusCollectionResource;
+import com.qfree.bo.report.dto.JobStatusResource;
+import com.qfree.bo.report.dto.ResourcePath;
+import com.qfree.bo.report.service.JobStatusService;
+import com.qfree.bo.report.util.RestUtils;
+import com.qfree.bo.report.util.RestUtils.RestApiVersion;
 
 @Component
 @Path(ResourcePath.JOBSTATUSES_PATH)

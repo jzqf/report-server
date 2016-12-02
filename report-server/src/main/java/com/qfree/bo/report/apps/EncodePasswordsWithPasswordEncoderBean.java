@@ -1,11 +1,11 @@
-package com.qfree.obo.report.apps;
+package com.qfree.bo.report.apps;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import com.qfree.obo.report.ApplicationConfig;
+import com.qfree.bo.report.ApplicationConfig;
 
 public class EncodePasswordsWithPasswordEncoderBean {
 

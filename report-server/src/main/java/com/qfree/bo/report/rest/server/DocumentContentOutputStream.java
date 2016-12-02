@@ -1,4 +1,4 @@
-package com.qfree.obo.report.rest.server;
+package com.qfree.bo.report.rest.server;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -9,9 +9,9 @@ import javax.ws.rs.core.StreamingOutput;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.qfree.obo.report.domain.Document;
-import com.qfree.obo.report.dto.RestErrorResource.RestError;
-import com.qfree.obo.report.exceptions.RestApiException;
+import com.qfree.bo.report.domain.Document;
+import com.qfree.bo.report.dto.RestErrorResource.RestError;
+import com.qfree.bo.report.exceptions.RestApiException;
 
 public class DocumentContentOutputStream implements StreamingOutput {
 

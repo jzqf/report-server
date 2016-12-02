@@ -1,4 +1,4 @@
-package com.qfree.obo.report.dto;
+package com.qfree.bo.report.dto;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -15,10 +15,10 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.qfree.obo.report.domain.Subscription;
-import com.qfree.obo.report.service.SubscriptionService;
-import com.qfree.obo.report.util.RestUtils;
-import com.qfree.obo.report.util.RestUtils.RestApiVersion;
+import com.qfree.bo.report.domain.Subscription;
+import com.qfree.bo.report.service.SubscriptionService;
+import com.qfree.bo.report.util.RestUtils;
+import com.qfree.bo.report.util.RestUtils.RestApiVersion;
 
 @XmlRootElement
 public class SubscriptionResource extends AbstractBaseResource {

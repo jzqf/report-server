@@ -1,4 +1,4 @@
-package com.qfree.obo.report.rest.server;
+package com.qfree.bo.report.rest.server;
 
 import java.util.HashMap;
 import java.util.List;
@@ -26,14 +26,14 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.qfree.obo.report.db.ParameterGroupRepository;
-import com.qfree.obo.report.domain.Authority;
-import com.qfree.obo.report.domain.ParameterGroup;
-import com.qfree.obo.report.dto.ParameterGroupResource;
-import com.qfree.obo.report.dto.ResourcePath;
-import com.qfree.obo.report.service.ParameterGroupService;
-import com.qfree.obo.report.util.RestUtils;
-import com.qfree.obo.report.util.RestUtils.RestApiVersion;
+import com.qfree.bo.report.db.ParameterGroupRepository;
+import com.qfree.bo.report.domain.Authority;
+import com.qfree.bo.report.domain.ParameterGroup;
+import com.qfree.bo.report.dto.ParameterGroupResource;
+import com.qfree.bo.report.dto.ResourcePath;
+import com.qfree.bo.report.service.ParameterGroupService;
+import com.qfree.bo.report.util.RestUtils;
+import com.qfree.bo.report.util.RestUtils.RestApiVersion;
 
 @Component
 @Path(ResourcePath.PARAMETERGROUPS_PATH)

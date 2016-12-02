@@ -1,4 +1,4 @@
-package com.qfree.obo.report.domain;
+package com.qfree.bo.report.domain;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -23,8 +23,8 @@ import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;
 import org.hibernate.validator.constraints.NotBlank;
 
-import com.qfree.obo.report.dto.AssetResource;
-import com.qfree.obo.report.util.DateUtils;
+import com.qfree.bo.report.dto.AssetResource;
+import com.qfree.bo.report.util.DateUtils;
 
 /**
  * The persistent class for the "asset" database table.
@@ -95,9 +95,9 @@ public class Asset implements Serializable {
 	 * is private, an org.springframework.orm.jpa.JpaSystemException will be 
 	 * thrown that will report something like:
 	 * 
-	 *   Javassist Enhancement failed: com.qfree.obo.report.domain.Document; 
+	 *   Javassist Enhancement failed: com.qfree.bo.report.domain.Document; 
 	 *   nested exception is org.hibernate.HibernateException: Javassist 
-	 *   Enhancement failed: com.qfree.obo.report.domain.Document
+	 *   Enhancement failed: com.qfree.bo.report.domain.Document
 	 * 
 	 * Should this relation be made @OnetoOne?
 	 */

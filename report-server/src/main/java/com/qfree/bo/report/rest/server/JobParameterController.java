@@ -1,4 +1,4 @@
-package com.qfree.obo.report.rest.server;
+package com.qfree.bo.report.rest.server;
 
 import java.util.HashMap;
 import java.util.List;
@@ -21,14 +21,14 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.qfree.obo.report.db.JobParameterRepository;
-import com.qfree.obo.report.domain.Authority;
-import com.qfree.obo.report.domain.JobParameter;
-import com.qfree.obo.report.dto.JobParameterResource;
-import com.qfree.obo.report.dto.JobParameterValueCollectionResource;
-import com.qfree.obo.report.dto.ResourcePath;
-import com.qfree.obo.report.util.RestUtils;
-import com.qfree.obo.report.util.RestUtils.RestApiVersion;
+import com.qfree.bo.report.db.JobParameterRepository;
+import com.qfree.bo.report.domain.Authority;
+import com.qfree.bo.report.domain.JobParameter;
+import com.qfree.bo.report.dto.JobParameterResource;
+import com.qfree.bo.report.dto.JobParameterValueCollectionResource;
+import com.qfree.bo.report.dto.ResourcePath;
+import com.qfree.bo.report.util.RestUtils;
+import com.qfree.bo.report.util.RestUtils.RestApiVersion;
 
 @Component
 @Path(ResourcePath.JOBPARAMETERS_PATH)

@@ -1,4 +1,4 @@
-package com.qfree.obo.report.rest.server;
+package com.qfree.bo.report.rest.server;
 
 import java.time.ZoneId;
 import java.util.Arrays;
@@ -19,11 +19,11 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
-import com.qfree.obo.report.db.ConfigurationRepository;
-import com.qfree.obo.report.domain.Configuration;
-import com.qfree.obo.report.service.ConfigurationService;
-import com.qfree.obo.report.util.RestUtils;
-import com.qfree.obo.report.util.RestUtils.RestApiVersion;
+import com.qfree.bo.report.db.ConfigurationRepository;
+import com.qfree.bo.report.domain.Configuration;
+import com.qfree.bo.report.service.ConfigurationService;
+import com.qfree.bo.report.util.RestUtils;
+import com.qfree.bo.report.util.RestUtils.RestApiVersion;
 
 @Component
 @Path("/")

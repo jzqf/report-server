@@ -1,4 +1,4 @@
-package com.qfree.obo.report.service;
+package com.qfree.bo.report.service;
 
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
@@ -18,10 +18,11 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.qfree.obo.report.ApplicationConfig;
-import com.qfree.obo.report.domain.Authority;
-import com.qfree.obo.report.domain.Role;
-import com.qfree.obo.report.domain.UuidCustomType;
+import com.qfree.bo.report.ApplicationConfig;
+import com.qfree.bo.report.domain.Authority;
+import com.qfree.bo.report.domain.Role;
+import com.qfree.bo.report.domain.UuidCustomType;
+import com.qfree.bo.report.service.AuthorityService;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = ApplicationConfig.class)

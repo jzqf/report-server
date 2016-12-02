@@ -1,4 +1,4 @@
-package com.qfree.obo.report.domain;
+package com.qfree.bo.report.domain;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -21,8 +21,8 @@ import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;
 import org.hibernate.validator.constraints.NotBlank;
 
-import com.qfree.obo.report.dto.AssetTreeResource;
-import com.qfree.obo.report.util.DateUtils;
+import com.qfree.bo.report.dto.AssetTreeResource;
+import com.qfree.bo.report.util.DateUtils;
 
 /**
  * The persistent class for the "asset_tree" database table.

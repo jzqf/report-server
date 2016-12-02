@@ -1,4 +1,4 @@
-package com.qfree.obo.report.domain;
+package com.qfree.bo.report.domain;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -87,7 +87,7 @@ public class UuidCustomType extends AbstractSingleColumnStandardBasicType<UUID> 
 		 * org.hibernate.dialect.PostgreSQLDialect is deprecated!
 		 */
 		//if (dialect != null && dialect.equals("org.hibernate.dialect.PostgreSQLDialect")) {
-		//if (dialect != null && dialect.equals("com.qfree.obo.report.domain.UuidCustomPostgreSQL9Dialect")) {
+		//if (dialect != null && dialect.equals("com.qfree.bo.report.domain.UuidCustomPostgreSQL9Dialect")) {
 		if (dialect != null && dialect.equals("org.hibernate.dialect.PostgreSQL9Dialect")) {
 			SQL_DESCRIPTOR = PostgresUUIDType.PostgresUUIDSqlTypeDescriptor.INSTANCE;
 		} else if (dialect.equals("org.hibernate.dialect.H2Dialect")) {

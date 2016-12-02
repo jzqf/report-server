@@ -1,4 +1,4 @@
-package com.qfree.obo.report.rest.client;
+package com.qfree.bo.report.rest.client;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -22,7 +22,7 @@ import org.glassfish.jersey.client.ClientConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.qfree.obo.report.exceptions.RestDataSourceException;
+import com.qfree.bo.report.exceptions.RestDataSourceException;
 
 /*
  * Retrieves OBO monitoring data using a ReSTful API. This class implements

@@ -1,4 +1,4 @@
-package com.qfree.obo.report.rest.server;
+package com.qfree.bo.report.rest.server;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -12,7 +12,7 @@ import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.server.spring.scope.RequestContextFilter;
 import org.springframework.stereotype.Component;
 
-import com.qfree.obo.report.exceptions.GenericExceptionMapper;
+import com.qfree.bo.report.exceptions.GenericExceptionMapper;
 
 @Component
 @ApplicationPath("/rest")
@@ -95,7 +95,7 @@ public class JAXRSConfiguration extends ResourceConfig {
 		/*
 		 * TODO Decide whether to register *packages* here (not type-safe) or *classes* (type-safe and refactor-safe, but more tedious).
 		 */
-		//		packages("com.qfree.obo.report.rest.server");
+		//		packages("com.qfree.bo.report.rest.server");
 	}
 
 	public static ContextResolver<MoxyJsonConfig> createMoxyJsonResolver() {

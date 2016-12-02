@@ -1,4 +1,4 @@
-package com.qfree.obo.report.rest.server;
+package com.qfree.bo.report.rest.server;
 
 import java.util.HashMap;
 import java.util.List;
@@ -22,22 +22,22 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Component;
 
-import com.qfree.obo.report.domain.Authority;
-import com.qfree.obo.report.dto.JobProcessorResource;
-import com.qfree.obo.report.dto.ResourcePath;
-import com.qfree.obo.report.dto.RestErrorResource.RestError;
-import com.qfree.obo.report.exceptions.JobProcessorAlreadyScheduledException;
-import com.qfree.obo.report.exceptions.JobProcessorNotScheduledCannotPause;
-import com.qfree.obo.report.exceptions.JobProcessorNotScheduledCannotResume;
-import com.qfree.obo.report.exceptions.JobProcessorNotScheduledCannotStop;
-import com.qfree.obo.report.exceptions.JobProcessorNotScheduledCannotTrigger;
-import com.qfree.obo.report.exceptions.JobProcessorSchedulerNotRunningCannotPause;
-import com.qfree.obo.report.exceptions.JobProcessorSchedulerNotRunningCannotResume;
-import com.qfree.obo.report.exceptions.JobProcessorSchedulerNotRunningCannotTrigger;
-import com.qfree.obo.report.exceptions.RestApiException;
-import com.qfree.obo.report.scheduling.schedulers.SubscriptionJobProcessorScheduler;
-import com.qfree.obo.report.util.RestUtils;
-import com.qfree.obo.report.util.RestUtils.RestApiVersion;
+import com.qfree.bo.report.domain.Authority;
+import com.qfree.bo.report.dto.JobProcessorResource;
+import com.qfree.bo.report.dto.ResourcePath;
+import com.qfree.bo.report.dto.RestErrorResource.RestError;
+import com.qfree.bo.report.exceptions.JobProcessorAlreadyScheduledException;
+import com.qfree.bo.report.exceptions.JobProcessorNotScheduledCannotPause;
+import com.qfree.bo.report.exceptions.JobProcessorNotScheduledCannotResume;
+import com.qfree.bo.report.exceptions.JobProcessorNotScheduledCannotStop;
+import com.qfree.bo.report.exceptions.JobProcessorNotScheduledCannotTrigger;
+import com.qfree.bo.report.exceptions.JobProcessorSchedulerNotRunningCannotPause;
+import com.qfree.bo.report.exceptions.JobProcessorSchedulerNotRunningCannotResume;
+import com.qfree.bo.report.exceptions.JobProcessorSchedulerNotRunningCannotTrigger;
+import com.qfree.bo.report.exceptions.RestApiException;
+import com.qfree.bo.report.scheduling.schedulers.SubscriptionJobProcessorScheduler;
+import com.qfree.bo.report.util.RestUtils;
+import com.qfree.bo.report.util.RestUtils.RestApiVersion;
 
 @Component
 @Path(ResourcePath.JOBPROCESSOR_PATH)

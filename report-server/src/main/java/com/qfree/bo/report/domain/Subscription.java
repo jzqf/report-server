@@ -1,4 +1,4 @@
-package com.qfree.obo.report.domain;
+package com.qfree.bo.report.domain;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -30,10 +30,10 @@ import org.hibernate.annotations.TypeDef;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.qfree.obo.report.dto.SubscriptionResource;
-import com.qfree.obo.report.exceptions.ResourceFilterExecutionException;
-import com.qfree.obo.report.util.DateUtils;
-import com.qfree.obo.report.util.RestUtils;
+import com.qfree.bo.report.dto.SubscriptionResource;
+import com.qfree.bo.report.exceptions.ResourceFilterExecutionException;
+import com.qfree.bo.report.util.DateUtils;
+import com.qfree.bo.report.util.RestUtils;
 
 /**
  * The persistent class for the "subscription" database table.

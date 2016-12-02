@@ -1,4 +1,4 @@
-package com.qfree.obo.report.util;
+package com.qfree.bo.report.util;
 
 import static org.hamcrest.Matchers.hasEntry;
 import static org.hamcrest.Matchers.hasItems;
@@ -19,10 +19,11 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.qfree.obo.report.ApplicationConfig;
-import com.qfree.obo.report.dto.ResourcePath;
-import com.qfree.obo.report.exceptions.ReportingException;
-import com.qfree.obo.report.exceptions.ResourceFilterParseException;
+import com.qfree.bo.report.ApplicationConfig;
+import com.qfree.bo.report.dto.ResourcePath;
+import com.qfree.bo.report.exceptions.ReportingException;
+import com.qfree.bo.report.exceptions.ResourceFilterParseException;
+import com.qfree.bo.report.util.RestUtils;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = ApplicationConfig.class)

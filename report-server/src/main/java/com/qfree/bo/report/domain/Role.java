@@ -1,4 +1,4 @@
-package com.qfree.obo.report.domain;
+package com.qfree.bo.report.domain;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -27,10 +27,10 @@ import org.hibernate.validator.constraints.NotBlank;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import com.qfree.obo.report.SecurityConfig;
-import com.qfree.obo.report.dto.RoleResource;
-import com.qfree.obo.report.exceptions.ResourceFilterExecutionException;
-import com.qfree.obo.report.util.DateUtils;
+import com.qfree.bo.report.SecurityConfig;
+import com.qfree.bo.report.dto.RoleResource;
+import com.qfree.bo.report.exceptions.ResourceFilterExecutionException;
+import com.qfree.bo.report.util.DateUtils;
 
 /**
  * The persistent class for the "role" database table.

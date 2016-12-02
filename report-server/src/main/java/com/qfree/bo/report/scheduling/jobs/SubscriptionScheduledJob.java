@@ -1,4 +1,4 @@
-package com.qfree.obo.report.scheduling.jobs;
+package com.qfree.bo.report.scheduling.jobs;
 
 import java.time.DateTimeException;
 import java.time.DayOfWeek;
@@ -26,25 +26,25 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.qfree.obo.report.db.JobRepository;
-import com.qfree.obo.report.db.JobStatusRepository;
-import com.qfree.obo.report.db.RoleRepository;
-import com.qfree.obo.report.db.SubscriptionRepository;
-import com.qfree.obo.report.domain.Job;
-import com.qfree.obo.report.domain.JobParameter;
-import com.qfree.obo.report.domain.JobParameterValue;
-import com.qfree.obo.report.domain.JobStatus;
-import com.qfree.obo.report.domain.Role;
-import com.qfree.obo.report.domain.Subscription;
-import com.qfree.obo.report.domain.SubscriptionParameter;
-import com.qfree.obo.report.domain.SubscriptionParameterValue;
-import com.qfree.obo.report.exceptions.JobProcessorNotScheduledCannotTrigger;
-import com.qfree.obo.report.exceptions.JobProcessorSchedulerNotRunningCannotTrigger;
-import com.qfree.obo.report.exceptions.UntreatedCaseException;
-import com.qfree.obo.report.scheduling.schedulers.SubscriptionJobProcessorScheduler;
-import com.qfree.obo.report.scheduling.schedulers.SubscriptionScheduler;
-import com.qfree.obo.report.util.DateUtils;
-import com.qfree.obo.report.util.ReportUtils;
+import com.qfree.bo.report.db.JobRepository;
+import com.qfree.bo.report.db.JobStatusRepository;
+import com.qfree.bo.report.db.RoleRepository;
+import com.qfree.bo.report.db.SubscriptionRepository;
+import com.qfree.bo.report.domain.Job;
+import com.qfree.bo.report.domain.JobParameter;
+import com.qfree.bo.report.domain.JobParameterValue;
+import com.qfree.bo.report.domain.JobStatus;
+import com.qfree.bo.report.domain.Role;
+import com.qfree.bo.report.domain.Subscription;
+import com.qfree.bo.report.domain.SubscriptionParameter;
+import com.qfree.bo.report.domain.SubscriptionParameterValue;
+import com.qfree.bo.report.exceptions.JobProcessorNotScheduledCannotTrigger;
+import com.qfree.bo.report.exceptions.JobProcessorSchedulerNotRunningCannotTrigger;
+import com.qfree.bo.report.exceptions.UntreatedCaseException;
+import com.qfree.bo.report.scheduling.schedulers.SubscriptionJobProcessorScheduler;
+import com.qfree.bo.report.scheduling.schedulers.SubscriptionScheduler;
+import com.qfree.bo.report.util.DateUtils;
+import com.qfree.bo.report.util.ReportUtils;
 
 /*
  * This class is instantiated by Quartz and therefore Spring-based dependency

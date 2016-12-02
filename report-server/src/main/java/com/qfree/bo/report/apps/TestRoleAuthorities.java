@@ -1,4 +1,4 @@
-package com.qfree.obo.report.apps;
+package com.qfree.bo.report.apps;
 
 import java.util.List;
 import java.util.UUID;
@@ -8,11 +8,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.qfree.obo.report.ApplicationConfig;
-import com.qfree.obo.report.db.AuthorityRepository;
-import com.qfree.obo.report.domain.Authority;
-import com.qfree.obo.report.domain.Role;
-import com.qfree.obo.report.service.AuthorityService;
+import com.qfree.bo.report.ApplicationConfig;
+import com.qfree.bo.report.db.AuthorityRepository;
+import com.qfree.bo.report.domain.Authority;
+import com.qfree.bo.report.domain.Role;
+import com.qfree.bo.report.service.AuthorityService;
 
 public class TestRoleAuthorities {
 

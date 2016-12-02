@@ -1,4 +1,4 @@
-package com.qfree.obo.report.rest.server;
+package com.qfree.bo.report.rest.server;
 
 import java.util.HashMap;
 import java.util.List;
@@ -21,13 +21,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Component;
 
-import com.qfree.obo.report.db.SubscriptionParameterValueRepository;
-import com.qfree.obo.report.domain.Authority;
-import com.qfree.obo.report.domain.SubscriptionParameterValue;
-import com.qfree.obo.report.dto.ResourcePath;
-import com.qfree.obo.report.dto.SubscriptionParameterValueResource;
-import com.qfree.obo.report.util.RestUtils;
-import com.qfree.obo.report.util.RestUtils.RestApiVersion;
+import com.qfree.bo.report.db.SubscriptionParameterValueRepository;
+import com.qfree.bo.report.domain.Authority;
+import com.qfree.bo.report.domain.SubscriptionParameterValue;
+import com.qfree.bo.report.dto.ResourcePath;
+import com.qfree.bo.report.dto.SubscriptionParameterValueResource;
+import com.qfree.bo.report.util.RestUtils;
+import com.qfree.bo.report.util.RestUtils.RestApiVersion;
 
 @Component
 @Path(ResourcePath.SUBSCRIPTIONPARAMETERVALUES_PATH)

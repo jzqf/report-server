@@ -1,4 +1,4 @@
-package com.qfree.obo.report.rest.server;
+package com.qfree.bo.report.rest.server;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -31,20 +31,20 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.qfree.obo.report.db.DocumentRepository;
-import com.qfree.obo.report.db.ReportRepository;
-import com.qfree.obo.report.domain.Authority;
-import com.qfree.obo.report.domain.Document;
-import com.qfree.obo.report.dto.DocumentCollectionResource;
-import com.qfree.obo.report.dto.DocumentResource;
-import com.qfree.obo.report.dto.ResourcePath;
-import com.qfree.obo.report.dto.RestErrorResource.RestError;
-import com.qfree.obo.report.exceptions.RestApiException;
-import com.qfree.obo.report.exceptions.RptdesignOpenFromStreamException;
-import com.qfree.obo.report.service.ReportParameterService;
-import com.qfree.obo.report.service.ReportSyncService;
-import com.qfree.obo.report.util.RestUtils;
-import com.qfree.obo.report.util.RestUtils.RestApiVersion;
+import com.qfree.bo.report.db.DocumentRepository;
+import com.qfree.bo.report.db.ReportRepository;
+import com.qfree.bo.report.domain.Authority;
+import com.qfree.bo.report.domain.Document;
+import com.qfree.bo.report.dto.DocumentCollectionResource;
+import com.qfree.bo.report.dto.DocumentResource;
+import com.qfree.bo.report.dto.ResourcePath;
+import com.qfree.bo.report.dto.RestErrorResource.RestError;
+import com.qfree.bo.report.exceptions.RestApiException;
+import com.qfree.bo.report.exceptions.RptdesignOpenFromStreamException;
+import com.qfree.bo.report.service.ReportParameterService;
+import com.qfree.bo.report.service.ReportSyncService;
+import com.qfree.bo.report.util.RestUtils;
+import com.qfree.bo.report.util.RestUtils.RestApiVersion;
 
 @Component
 @Path(ResourcePath.DOCUMENTS_PATH)

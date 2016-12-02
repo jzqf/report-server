@@ -1,4 +1,4 @@
-package com.qfree.obo.report.db;
+package com.qfree.bo.report.db;
 
 import java.util.List;
 import java.util.UUID;
@@ -7,8 +7,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import com.qfree.obo.report.domain.Authority;
-import com.qfree.obo.report.domain.Role;
+import com.qfree.bo.report.domain.Authority;
+import com.qfree.bo.report.domain.Role;
 
 /**
  * Repository interface for {@link Authority} persistence.

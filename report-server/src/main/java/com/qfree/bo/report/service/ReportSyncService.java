@@ -1,4 +1,4 @@
-package com.qfree.obo.report.service;
+package com.qfree.bo.report.service;
 
 import java.io.File;
 import java.io.IOException;
@@ -20,18 +20,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.qfree.obo.report.db.ReportRepository;
-import com.qfree.obo.report.domain.Report;
-import com.qfree.obo.report.domain.ReportVersion;
-import com.qfree.obo.report.domain.ReportVersionsSortByVersionCode;
-import com.qfree.obo.report.dto.ReportSyncResource;
-import com.qfree.obo.report.dto.ResourcePath;
-import com.qfree.obo.report.dto.RestErrorResource.RestError;
-import com.qfree.obo.report.exceptions.RestApiException;
-import com.qfree.obo.report.util.ReportUtils;
-import com.qfree.obo.report.util.RestUtils;
-import com.qfree.obo.report.util.RestUtils.RestApiVersion;
-import com.qfree.obo.report.util.RptdesignFileFilter;
+import com.qfree.bo.report.db.ReportRepository;
+import com.qfree.bo.report.domain.Report;
+import com.qfree.bo.report.domain.ReportVersion;
+import com.qfree.bo.report.domain.ReportVersionsSortByVersionCode;
+import com.qfree.bo.report.dto.ReportSyncResource;
+import com.qfree.bo.report.dto.ResourcePath;
+import com.qfree.bo.report.dto.RestErrorResource.RestError;
+import com.qfree.bo.report.exceptions.RestApiException;
+import com.qfree.bo.report.util.ReportUtils;
+import com.qfree.bo.report.util.RestUtils;
+import com.qfree.bo.report.util.RestUtils.RestApiVersion;
+import com.qfree.bo.report.util.RptdesignFileFilter;
 
 @Component
 @Transactional
@@ -70,7 +70,7 @@ public class ReportSyncService {
 		/*
 		 * We only sync the files if we detect that there is an appropriate
 		 * directory tree in which they can be written. This avoids writing to
-		 * the Eclipse project directory /birt-viewer/src/main/webapp/reports/ ,
+		 * the Eclipse project directory /src/main/webapp/reports/ ,
 		 * which we do not want. Among other things, these files will then get
 		 * packaged in the WAR generated from this project. This also avoids 
 		 * writing these files during integration testing, e.g., from

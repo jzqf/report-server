@@ -1,6 +1,6 @@
-package com.qfree.obo.report.db;
+package com.qfree.bo.report.db;
 
-import com.qfree.obo.report.domain.ReportCategory;
+import com.qfree.bo.report.domain.ReportCategory;
 
 /**
  * "Custom" repository interface for {@link ReportCategory} persistence.

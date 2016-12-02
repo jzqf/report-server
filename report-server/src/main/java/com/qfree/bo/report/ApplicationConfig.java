@@ -1,4 +1,4 @@
-package com.qfree.obo.report;
+package com.qfree.bo.report;
 
 //import javax.naming.Context;
 //import javax.naming.InitialContext;
@@ -20,8 +20,8 @@ import org.springframework.context.annotation.ImportResource;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
 
-import com.qfree.obo.report.service.StartupService;
-import com.qfree.obo.report.servlet.RequestHeadersServlet;
+import com.qfree.bo.report.service.StartupService;
+import com.qfree.bo.report.servlet.RequestHeadersServlet;
 
 /**
  * The main/root class for Java-based configuration for the root Spring
@@ -93,8 +93,8 @@ import com.qfree.obo.report.servlet.RequestHeadersServlet;
 		//	//PropertyPlaceholderAutoConfiguration.class,      REQUIRED for "${local.server.port}", ...
 		})
 @ComponentScan(basePackageClasses = {
-		com.qfree.obo.report.rest.server.ComponentScanPackageMarker.class,
-		com.qfree.obo.report.service.ComponentScanPackageMarker.class,
+		com.qfree.bo.report.rest.server.ComponentScanPackageMarker.class,
+		com.qfree.bo.report.service.ComponentScanPackageMarker.class,
 })
 @Import({
 		PersistenceConfig.class,

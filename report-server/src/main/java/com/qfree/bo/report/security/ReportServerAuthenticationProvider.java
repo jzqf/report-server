@@ -1,4 +1,4 @@
-package com.qfree.obo.report.security;
+package com.qfree.bo.report.security;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,12 +26,12 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationToken;
 
-import com.qfree.obo.report.db.RoleRepository;
-import com.qfree.obo.report.domain.Authority;
-import com.qfree.obo.report.domain.Configuration.ParamName;
-import com.qfree.obo.report.domain.Role;
-import com.qfree.obo.report.service.AuthorityService;
-import com.qfree.obo.report.service.ConfigurationService;
+import com.qfree.bo.report.db.RoleRepository;
+import com.qfree.bo.report.domain.Authority;
+import com.qfree.bo.report.domain.Role;
+import com.qfree.bo.report.domain.Configuration.ParamName;
+import com.qfree.bo.report.service.AuthorityService;
+import com.qfree.bo.report.service.ConfigurationService;
 
 @PropertySource("classpath:config.properties")
 public class ReportServerAuthenticationProvider implements AuthenticationProvider {

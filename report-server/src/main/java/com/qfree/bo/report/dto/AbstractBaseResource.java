@@ -1,4 +1,4 @@
-package com.qfree.obo.report.dto;
+package com.qfree.bo.report.dto;
 
 import java.util.List;
 import java.util.Map;
@@ -11,7 +11,7 @@ import javax.xml.bind.annotation.XmlTransient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.qfree.obo.report.util.RestUtils.RestApiVersion;
+import com.qfree.bo.report.util.RestUtils.RestApiVersion;
 
 /*
  * An "xsi:type" JSON attribute normally appears whenever an instance of a 

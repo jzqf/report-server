@@ -1,4 +1,4 @@
-package com.qfree.obo.report.apps;
+package com.qfree.bo.report.apps;
 
 import java.time.DateTimeException;
 import java.time.DayOfWeek;

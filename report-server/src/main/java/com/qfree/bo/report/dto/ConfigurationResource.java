@@ -1,4 +1,4 @@
-package com.qfree.obo.report.dto;
+package com.qfree.bo.report.dto;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -13,11 +13,11 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
-import com.qfree.obo.report.domain.Configuration;
-import com.qfree.obo.report.domain.Configuration.ParamName;
-import com.qfree.obo.report.domain.Configuration.ParamType;
-import com.qfree.obo.report.util.RestUtils;
-import com.qfree.obo.report.util.RestUtils.RestApiVersion;
+import com.qfree.bo.report.domain.Configuration;
+import com.qfree.bo.report.domain.Configuration.ParamName;
+import com.qfree.bo.report.domain.Configuration.ParamType;
+import com.qfree.bo.report.util.RestUtils;
+import com.qfree.bo.report.util.RestUtils.RestApiVersion;
 
 @XmlRootElement
 public class ConfigurationResource extends AbstractBaseResource {

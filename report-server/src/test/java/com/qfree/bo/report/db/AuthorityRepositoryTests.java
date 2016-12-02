@@ -1,4 +1,4 @@
-package com.qfree.obo.report.db;
+package com.qfree.bo.report.db;
 
 //import static org.hamcrest.CoreMatchers.equalTo;
 //import static org.hamcrest.CoreMatchers.is;
@@ -19,8 +19,9 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.qfree.obo.report.ApplicationConfig;
-import com.qfree.obo.report.domain.Authority;
+import com.qfree.bo.report.ApplicationConfig;
+import com.qfree.bo.report.db.AuthorityRepository;
+import com.qfree.bo.report.domain.Authority;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = ApplicationConfig.class)

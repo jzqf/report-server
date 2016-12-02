@@ -1,4 +1,4 @@
-package com.qfree.obo.report.servlet;
+package com.qfree.bo.report.servlet;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -12,7 +12,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.qfree.obo.report.rest.client.RestClientTest;
+import com.qfree.bo.report.rest.client.RestClientTest;
 
 /**
  * Servlet implementation class TestReSTServlet.
