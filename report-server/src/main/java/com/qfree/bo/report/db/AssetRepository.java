@@ -6,6 +6,8 @@ import java.util.UUID;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.qfree.bo.report.domain.Asset;
+import com.qfree.bo.report.domain.AssetTree;
+import com.qfree.bo.report.domain.AssetType;
 
 /**
  * Repository interface for {@link Asset} persistence.
@@ -18,5 +20,32 @@ import com.qfree.bo.report.domain.Asset;
 public interface AssetRepository extends JpaRepository<Asset, UUID> {
 
 	List<Asset> findByActiveTrue();
+
+	/**
+	 * This query locates an {@link Asset} that is associated with a specified
+	 * filename, {@link AssetTree} and {@link AssetType}. The {@link Asset}
+	 * entity class declares a unique constraint on these three fields, so this
+	 * should locate at most one entity.
+	 * 
+	 * @param filename
+	 * @param assetTree
+	 * @param assetType
+	 * @return
+	 */
+	Asset findByFilenameAndAssetTreeAndAssetType(String filename, AssetTree assetTree, AssetType assetType);
+
+	/**
+	 * This query locates an {@link Asset} that is associated with a specified
+	 * filename, {@link AssetTree} Id and {@link AssetType} Id. The
+	 * {@link Asset} entity class declares a unique constraint on these three
+	 * fields, so this should locate at most one entity.
+	 * 
+	 * @param filename
+	 * @param assetTreeId
+	 * @param assetTypeId
+	 * @return
+	 */
+	Asset findByFilenameAndAssetTreeAssetTreeIdAndAssetTypeAssetTypeId(
+			String filename, UUID assetTreeId, UUID assetTypeId);
 
 }

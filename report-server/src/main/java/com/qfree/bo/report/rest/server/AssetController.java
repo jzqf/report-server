@@ -182,6 +182,41 @@ public class AssetController extends AbstractBaseController {
 			throw new RestApiException(RestError.FORBIDDEN_CREATE_ASSET_NO_DOCUMENT_CONTENT);
 		}
 
+
+//		/*
+//		 * Make sure that assetTreeId & assetTypeId correspond to existing
+//		 * AssetTree & AssetType entities.
+//		 */
+//		AssetTree assetTree = assetTreeRepository.findOne(assetTreeId);
+//		RestUtils.ifNullThen404(assetTree, AssetTree.class, "assetTreeId", assetTreeId.toString());
+//		AssetType assetType = assetTypeRepository.findOne(assetTypeId);
+//		RestUtils.ifNullThen404(assetType, AssetType.class, "assetTypeId", assetTypeId.toString());
+//
+//		/*
+//		 * If there is already an existing asset in the report server 
+//		 * database with the same filename, asset tree and asset type, 
+//		 * it must be deleted before we insert the new one because the 
+//		 * Asset entity class declares a unique constraint on the columns:
+//		 * ("filename", "asset_tree_id", "asset_type_id").
+//		 * TODO Instead of deleting existing entity here, rename "filename" field and then delete this entity below if no exception is thrown.
+//		 */
+//		Asset existingAssetToDelete = assetRepository
+//				.findByFilenameAndAssetTreeAndAssetType(filename, assetTree, assetType);
+//		//Asset existingAssetToDelete = assetRepository
+//		//		.findByFilenameAndAssetTreeAssetTreeIdAndAssetTypeAssetTypeId(filename, assetTreeId, assetTypeId);
+//		if (existingAssetToDelete != null) {
+//			assetRepository.delete(existingAssetToDelete);
+//			/*
+//			 * This flush is needed after the deletion because if we do 
+//			 * *not* flush all pending changes to the database, The unique 
+//			 * constraint described above will still be triggered and the 
+//			 * "assetService.saveNewFromResource(assetResource)" command below 
+//			 * will throw an exception.
+//			 */
+//			assetRepository.flush();
+//		}
+
+
 		/*
 		 * Create new Document entity.
 		 */
@@ -340,6 +375,30 @@ public class AssetController extends AbstractBaseController {
 			RestUtils.ifNullThen404(assetTree, AssetTree.class, "assetTreeId", assetTreeId.toString());
 			AssetType assetType = assetTypeRepository.findOne(assetTypeId);
 			RestUtils.ifNullThen404(assetType, AssetType.class, "assetTypeId", assetTypeId.toString());
+
+			//		/*
+			//		 * If there is already an existing asset in the report server 
+			//		 * database with the same filename, asset tree and asset type, 
+			//		 * it must be deleted before we insert the new one because the 
+			//		 * Asset entity class declares a unique constraint on the columns:
+			//		 * ("filename", "asset_tree_id", "asset_type_id").
+			//		 * TODO Instead of deleting existing entity here, rename "filename" field and then delete this entity below if no exception is thrown.
+			//		 */
+			//		Asset existingAssetToDelete = assetRepository
+			//				.findByFilenameAndAssetTreeAndAssetType(filename, assetTree, assetType);
+			//		//Asset existingAssetToDelete = assetRepository
+			//		//		.findByFilenameAndAssetTreeAssetTreeIdAndAssetTypeAssetTypeId(filename, assetTreeId, assetTypeId);
+			//		if (existingAssetToDelete != null) {
+			//			assetRepository.delete(existingAssetToDelete);
+			//			/*
+			//			 * This flush is needed after the deletion because if we do 
+			//			 * *not* flush all pending changes to the database, The unique 
+			//			 * constraint described above will still be triggered and the 
+			//			 * "assetRepository.save(asset)" command below will throw an 
+			//			 * exception.
+			//			 */
+			//			assetRepository.flush();
+			//		}
 
 			Asset asset = new Asset(assetTree, assetType, document, filename, true);
 			asset = assetRepository.save(asset);
