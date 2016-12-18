@@ -136,13 +136,38 @@ public class AssetController extends AbstractBaseController {
 	 * This endpoint can be tested with:
 	 * 
 	 *   $ mvn clean spring-boot:run
-	 *   $ curl -X POST -u reportserver-restadmin:ReportServer*RESTADMIN \
-	 *   -iH "Accept: application/json;v=1" \-H "Content-Type: application/json" -d \
-	 *   '{"filename":"success.gif",\
-	 *   "assetTree":{"assetTreeId":"7f9d0216-48d7-49ba-b043-ec48db03c938"},\
-	 *   "assetType":{"assetTypeId":"1e7ddbbc-8b40-4373-bfc5-6e6d3d5964d8"},\
-	 *   "document":{"content":"R0lGODlhEAAQAKIAAAAA/z9/v3+fv6bK8J+/v////wAAAAAAACH5BAEAAAUALAAAAAAQABAAAAMpWLrc/jASEFkAo6pLdLmZJmDeAAjQgBZmkALYAEbjeWow7NUhvnrAYAIAOw=="}}' \
-	 *   http://localhost:8080/rest/assets
+	 *   $ curl -X POST -u reportserver-restadmin:ReportServer*RESTADMIN -iH "Accept: application/json;v=1" -H "Content-Type: application/json" -d \
+	 *   '{"filename":"success.gif",'\
+	 *   '"assetTree":{"assetTreeId":"7f9d0216-48d7-49ba-b043-ec48db03c938"},'\
+	 *   '"assetType":{"assetTypeId":"1e7ddbbc-8b40-4373-bfc5-6e6d3d5964d8"},'\
+	 *   '"document":{"content":"R0lGODlhEAAQAKIAAAAA/z9/v3+fv6bK8J+/v////wAAAAAAACH5BAEAAAUALAAAAAAQABAAAAMpWLrc/jASEFkAo6pLdLmZJmDeAAjQgBZmkALYAEbjeWow7NUhvnrAYAIAOw=="}}' \
+	 *   http://localhost:8080/report-server/rest/assets
+	 * 
+	 * This example creates an asset that represents a small GIF image of a 
+	 * check mark. The value of the "document" attribute here is the Base64
+	 * encoding of this image. This can be computed from the command line 
+	 * using:
+	 * 
+	 * 		$ base64 success.gif
+	 * 
+	 * The result is:
+	 * 
+	 * R0lGODlhEAAQAKIAAAAA/z9/v3+fv6bK8J+/v////wAAAAAAACH5BAEAAAUALAAAAAAQABAAAAMp
+	 * WLrc/jASEFkAo6pLdLmZJmDeAAjQgBZmkALYAEbjeWow7NUhvnrAYAIAOw==
+	 * 
+	 * Note that the output includes a newline and consists of two lines. The
+	 * default of the "base64" command is to line-wrap after 76 characters. To
+	 * disable line-wrapping, use:
+	 * 
+	 * 		$ base64 -w 0 success.gif
+	 * 
+	 * In this case the result is;
+	 * 
+	 * R0lGODlhEAAQAKIAAAAA/z9/v3+fv6bK8J+/v////wAAAAAAACH5BAEAAAUALAAAAAAQABAAAAMpWLrc/jASEFkAo6pLdLmZJmDeAAjQgBZmkALYAEbjeWow7NUhvnrAYAIAOw==
+	 * 
+	 * which is what appears in the example above. I hope that this will work 
+	 * regardless of whether the value assigned to the "content" attributes is
+	 * line-wrapped or not, but I have not tested this. 
 	 */
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
@@ -161,6 +186,8 @@ public class AssetController extends AbstractBaseController {
 		queryParams.put(ResourcePath.SHOWALL_QP_KEY, showAll);
 		RestApiVersion apiVersion = RestUtils.extractAPIVersion(acceptHeader, RestApiVersion.v1);
 
+		logger.info("So far, so good.");
+
 		RestUtils.ifAttrNullOrBlankThen403(assetResource.getFilename(), Asset.class, "filename");
 		RestUtils.ifAttrNullThen403(assetResource.getAssetTreeResource(), Asset.class, "assetTree");
 		RestUtils.ifAttrNullThen403(assetResource.getAssetTypeResource(), Asset.class, "assetType");
@@ -174,6 +201,7 @@ public class AssetController extends AbstractBaseController {
 		byte[] documentContent = null;
 		if (documentResource != null) {
 			if (documentResource.getContent() != null) {
+				logger.info("documentResource.getContent() = {}", documentResource.getContent());
 				documentContent = Base64.getDecoder().decode(documentResource.getContent());
 			} else {
 				throw new RestApiException(RestError.FORBIDDEN_CREATE_ASSET_NO_DOCUMENT_CONTENT);
@@ -182,40 +210,36 @@ public class AssetController extends AbstractBaseController {
 			throw new RestApiException(RestError.FORBIDDEN_CREATE_ASSET_NO_DOCUMENT_CONTENT);
 		}
 
-
-//		/*
-//		 * Make sure that assetTreeId & assetTypeId correspond to existing
-//		 * AssetTree & AssetType entities.
-//		 */
-//		AssetTree assetTree = assetTreeRepository.findOne(assetTreeId);
-//		RestUtils.ifNullThen404(assetTree, AssetTree.class, "assetTreeId", assetTreeId.toString());
-//		AssetType assetType = assetTypeRepository.findOne(assetTypeId);
-//		RestUtils.ifNullThen404(assetType, AssetType.class, "assetTypeId", assetTypeId.toString());
-//
-//		/*
-//		 * If there is already an existing asset in the report server 
-//		 * database with the same filename, asset tree and asset type, 
-//		 * it must be deleted before we insert the new one because the 
-//		 * Asset entity class declares a unique constraint on the columns:
-//		 * ("filename", "asset_tree_id", "asset_type_id").
-//		 * TODO Instead of deleting existing entity here, rename "filename" field and then delete this entity below if no exception is thrown.
-//		 */
-//		Asset existingAssetToDelete = assetRepository
-//				.findByFilenameAndAssetTreeAndAssetType(filename, assetTree, assetType);
-//		//Asset existingAssetToDelete = assetRepository
-//		//		.findByFilenameAndAssetTreeAssetTreeIdAndAssetTypeAssetTypeId(filename, assetTreeId, assetTypeId);
-//		if (existingAssetToDelete != null) {
-//			assetRepository.delete(existingAssetToDelete);
-//			/*
-//			 * This flush is needed after the deletion because if we do 
-//			 * *not* flush all pending changes to the database, The unique 
-//			 * constraint described above will still be triggered and the 
-//			 * "assetService.saveNewFromResource(assetResource)" command below 
-//			 * will throw an exception.
-//			 */
-//			assetRepository.flush();
-//		}
-
+		/*
+		 * If there is already an existing asset in the report server 
+		 * database with the same filename, asset tree and asset type, 
+		 * it must be deleted before we insert the new one because the 
+		 * Asset entity class declares a unique constraint on the columns:
+		 * ("filename", "asset_tree_id", "asset_type_id").
+		 * TODO Instead of deleting existing entities here, rename "filename" field and then delete this entity below if no exception is thrown.
+		 */
+		UUID assetTreeId = null;
+		if (assetResource.getAssetTreeResource() != null) {
+			assetTreeId = assetResource.getAssetTreeResource().getAssetTreeId();
+		}
+		UUID assetTypeId = null;
+		if (assetResource.getAssetTypeResource() != null) {
+			assetTypeId = assetResource.getAssetTypeResource().getAssetTypeId();
+		}
+		Asset existingAssetToDelete = assetRepository
+				.findByFilenameAndAssetTreeAssetTreeIdAndAssetTypeAssetTypeId(
+						assetResource.getFilename(), assetTreeId, assetTypeId);
+		if (existingAssetToDelete != null) {
+			deleteAsset(existingAssetToDelete, servletContext);
+			/*
+			 * This flush is needed after the deletion because if we do 
+			 * *not* flush all pending changes to the database, The unique 
+			 * constraint described above will still be triggered and the 
+			 * "assetRepository.save(asset)" command below will throw an 
+			 * exception.
+			 */
+			assetRepository.flush();
+		}
 
 		/*
 		 * Create new Document entity.
@@ -376,29 +400,27 @@ public class AssetController extends AbstractBaseController {
 			AssetType assetType = assetTypeRepository.findOne(assetTypeId);
 			RestUtils.ifNullThen404(assetType, AssetType.class, "assetTypeId", assetTypeId.toString());
 
-			//		/*
-			//		 * If there is already an existing asset in the report server 
-			//		 * database with the same filename, asset tree and asset type, 
-			//		 * it must be deleted before we insert the new one because the 
-			//		 * Asset entity class declares a unique constraint on the columns:
-			//		 * ("filename", "asset_tree_id", "asset_type_id").
-			//		 * TODO Instead of deleting existing entity here, rename "filename" field and then delete this entity below if no exception is thrown.
-			//		 */
-			//		Asset existingAssetToDelete = assetRepository
-			//				.findByFilenameAndAssetTreeAndAssetType(filename, assetTree, assetType);
-			//		//Asset existingAssetToDelete = assetRepository
-			//		//		.findByFilenameAndAssetTreeAssetTreeIdAndAssetTypeAssetTypeId(filename, assetTreeId, assetTypeId);
-			//		if (existingAssetToDelete != null) {
-			//			assetRepository.delete(existingAssetToDelete);
-			//			/*
-			//			 * This flush is needed after the deletion because if we do 
-			//			 * *not* flush all pending changes to the database, The unique 
-			//			 * constraint described above will still be triggered and the 
-			//			 * "assetRepository.save(asset)" command below will throw an 
-			//			 * exception.
-			//			 */
-			//			assetRepository.flush();
-			//		}
+			/*
+			 * If there is already an existing asset in the report server 
+			 * database with the same filename, asset tree and asset type, 
+			 * it must be deleted before we insert the new one because the 
+			 * Asset entity class declares a unique constraint on the columns:
+			 * ("filename", "asset_tree_id", "asset_type_id").
+			 * TODO Instead of deleting existing entities here, rename "filename" field and then delete this entity below if no exception is thrown.
+			 */
+			Asset existingAssetToDelete = assetRepository
+					.findByFilenameAndAssetTreeAndAssetType(filename, assetTree, assetType);
+			if (existingAssetToDelete != null) {
+				deleteAsset(existingAssetToDelete, servletContext);
+				/*
+				 * This flush is needed after the deletion because if we do 
+				 * *not* flush all pending changes to the database, The unique 
+				 * constraint described above will still be triggered and the 
+				 * "assetRepository.save(asset)" command below will throw an 
+				 * exception.
+				 */
+				assetRepository.flush();
+			}
 
 			Asset asset = new Asset(assetTree, assetType, document, filename, true);
 			asset = assetRepository.save(asset);
@@ -635,16 +657,10 @@ public class AssetController extends AbstractBaseController {
 		RestUtils.ifNullThen404(asset, Asset.class, "assetId", id.toString());
 
 		/*
-		 * Retrieve Asset entity's Document entity to be deleted.
-		 */
-		Document document = asset.getDocument();
-		logger.debug("document to be deleted = {}", document);
-
-		/*
-		 * If the Asset entity is successfully deleted, it is 
-		 * returned as the entity body so it is clear to the caller precisely
-		 * which entity was deleted. Here, the resource to be returned is 
-		 * created before the entity is deleted.
+		 * If the Asset entity is successfully deleted, it is returned as the 
+		 * entity body so it is clear to the caller precisely which entity was 
+		 * deleted. Here, the resource to be returned is created before the 
+		 * entity is deleted.
 		 */
 		addToExpandList(expand, Asset.class);
 		addToExpandList(expand, AssetTree.class);
@@ -653,24 +669,48 @@ public class AssetController extends AbstractBaseController {
 		AssetResource assetResource = new AssetResource(asset, uriInfo, queryParams, apiVersion);
 		logger.debug("assetResource = {}", assetResource);
 
+		deleteAsset(asset, servletContext);
+
+		//return Response.status(Response.Status.OK).build();
+		return assetResource;
+	}
+
+	/**
+	 * Delete an {@link Asset} entity.
+	 * 
+	 * This method should be used to ensure that its linked {@link Document}
+	 * entity is also deleted, as well as the associated document in the report
+	 * server's file system.
+	 * 
+	 * @param asset
+	 * @param servletContext
+	 */
+	private void deleteAsset(Asset asset, final ServletContext servletContext) {
 		/*
-		 * Delete Asset entity. "document" should always be non-null. It should
-		 * only be null of something went wrong somewhere at some point. But we
-		 * do not want to throw an exception or it will be impossible to delete
-		 * the asset.
+		 * Retrieve Asset entity's Document entity to be deleted.
+		 */
+		Document document = asset.getDocument();
+		logger.debug("document to be deleted = {}", document);
+
+		/*
+		 * Delete Asset entity.
+		 */
+		assetRepository.delete(asset);
+		logger.info("asset (after deletion) = {}", asset);
+
+		/*
+		 * "document" should always be non-null. It should only be null of 
+		 * something went wrong somewhere at some point.
 		 */
 		if (document != null) {
-			assetRepository.delete(asset);
-			logger.info("asset (after deletion) = {}", asset);
+			/*
+			 * Delete Asset entity's Document entity.
+			 */
+			documentRepository.delete(document);
+			logger.info("document (after deletion) = {}", document);
 		} else {
 			logger.warn("document is null. This should not be possible.");
 		}
-
-		/*
-		 * Delete Asset entity's Document entity.
-		 */
-		documentRepository.delete(document);
-		logger.info("document (after deletion) = {}", document);
 
 		/*
 		 * Delete the asset from the file system of the report server. This 
@@ -690,9 +730,6 @@ public class AssetController extends AbstractBaseController {
 		//	 */
 		//	asset = assetRepository.findOne(assetResource.getAssetId());
 		//	logger.info("asset (after find()) = {}", asset); // asset is null here
-
-		//return Response.status(Response.Status.OK).build();
-		return assetResource;
 	}
 
 }
