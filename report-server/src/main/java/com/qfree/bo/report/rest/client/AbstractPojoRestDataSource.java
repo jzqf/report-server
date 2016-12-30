@@ -19,7 +19,12 @@ abstract class AbstractPojoRestDataSource {
 
 	private static final Logger logger = LoggerFactory.getLogger(AbstractPojoRestDataSource.class);
 
-	public static Client setUpJaxRsClient() {
+	/*
+	 * TODO Should this URI be loaded from a properties file or ...?
+	 */
+	protected static final String BASE_REST_URI = "http://localhost:8081/report-server/rest";
+
+	private static Client setUpJaxRsClient() {
 		logger.info("Setting up JAX-RS Client with basic authentication...");
 
 		/*
@@ -27,7 +32,7 @@ abstract class AbstractPojoRestDataSource {
 		 * role is always authenticated locally. The password here must match
 		 * the hashed password stored in Role.encodedPassword.
 		 * 
-		 * TODO The password for the Q-Free admin role should be stored such that it can be retrieved here
+		 * TODO The security credentials used here should be stored somewhere and then retrieved for use here
 		 */
 		HttpAuthenticationFeature basicAuthenticationFeature = HttpAuthenticationFeature.basic(
 				Role.QFREE_ADMIN_ROLE_NAME,
@@ -58,20 +63,11 @@ abstract class AbstractPojoRestDataSource {
 				.build();
 	}
 
-	public static WebTarget setUpWebTarget(Client client, int port) {
-		logger.info("Setting up JAX-RS WebTarget. port = {}", port);
-		/*
-		 * This WebTarget can be used in test methods to derive a target that is
-		 * specific to a particular resource associated with the test. This
-		 * cannot go in @BeforeClass method of the test class because that is a
-		 * static method and "port" will be an instance variable in the test 
-		 * class.
-		 * 
-		 * The string "/report-server" here should match exactly the application
-		 * context that is set by the "server.contextPath" property in the file:
-		 * 
-		 *   /src/main/resources/application.properties
-		 */
-		return client.target("http://localhost:" + port + "/report-server/rest");
+	public static WebTarget getBaseUriWebTarget(String baseUri) {
+		logger.info("Setting up JAX-RS WebTarget. baseUri = {}", baseUri);
+
+		Client client = setUpJaxRsClient();
+
+		return client.target(baseUri);
 	}
 }

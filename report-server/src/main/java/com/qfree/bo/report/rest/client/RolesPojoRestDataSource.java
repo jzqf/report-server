@@ -1,145 +1,66 @@
 package com.qfree.bo.report.rest.client;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import javax.json.JsonArray;
-import javax.json.JsonObject;
-import javax.json.stream.JsonGenerator;
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.client.Invocation;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import org.glassfish.jersey.client.ClientConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class RolesPojoRestDataSource {
+import com.qfree.bo.report.dto.RoleCollectionResource;
+import com.qfree.bo.report.dto.RoleResource;
+
+public class RolesPojoRestDataSource extends AbstractPojoRestDataSource {
 
 	private static final Logger logger = LoggerFactory.getLogger(RolesPojoRestDataSource.class);
 
-	/*
-	 * TODO This URI should be loaded from a properties file or from a database.
-	 */
-	private static final String REST_URI = "http://localhost:8081/report-server/rest/roles?expand=roles";
+	private static final String RESOURCE_PATH = "roles";
+	private static final String API_VERSION = "1";
 
-	private List<UserTest> getUsers(String restURI) {
+	private Iterator<RoleResource> iterator;
 
-		logger.info("restURI=\"{}\"", restURI);
+	private List<RoleResource> getRoles(String baseUri, String resourcePath) {
 
-		List<UserTest> users = new ArrayList<>();
+		logger.info("baseUri = {}", baseUri);
 
-		ClientConfig clientConfig = new ClientConfig()
-				//	.register(JsonProcessingFeature.class)
-				.property(JsonGenerator.PRETTY_PRINTING, true);
-
-		/* JsonProcessingFeature is a feature to register JSON-P providers. This
-		 * enables a binding between JAX-RS and the Java API for JSON Processing,
-		 * which enables JAX-RS return JSON objects. This JSON-Processing media 
-		 * module is one of the modules where you don't need to explicitly 
-		 * register it's feature (JsonProcessingFeature) in your client/server 
-		 * Configurable as this feature is automatically discovered and 
-		 * registered when you add jersey-media-json-processing module to your 
-		 * classpath. This is described here:
+		/*
+		 * Retrieve the RoleResource's as a RoleCollectionResource via HTTP GET.
 		 * 
-		 * https://jersey.java.net/documentation/latest/user-guide.html#deployment.autodiscoverable
+		 * IMPORTANT:
 		 * 
-		 * So the method call ".register(JsonProcessingFeature.class)" can be 
-		 * uncommented here, but it is not necessary to do so. What is necessary
-		 * is that the jersey-media-json-processing Maven artifact is specified
-		 * in pom.xml; otherwise, an exception will be thrown when a JSON object
-		 * is requested from a JAX-RS call.
+		 * This request needs "expand" query parameter "roles"; otherwise, the
+		 * "items" attribute of the RoleCollectionResource will be null.
 		 */
-		Client client = ClientBuilder.newClient(clientConfig);
+		WebTarget baseUriWebTarget = getBaseUriWebTarget(baseUri);
+		Response response = baseUriWebTarget.path(resourcePath)
+				.queryParam("expand", "roles") // TODO This parameter and value should not be harwired here!
+				.request()
+				.header("Accept", MediaType.APPLICATION_JSON + ";v=" + API_VERSION)
+				.get();
 
-		/*
-		 * Alternate technique to build Client object.
-		 */
-		//		Client client = ClientBuilder.newBuilder()
-		//				// .register(JsonProcessingFeature.class)
-		//				.property(JsonGenerator.PRETTY_PRINTING, true)
-		//				.build();
-
-		/*
-		 * Build a JAX-RS resource (instance of WebTarget).
-		 */
-		WebTarget webTarget = client.target(restURI);
-
-		/*
-		 * Set up HTTP request invocation.
-		 */
-		Invocation.Builder invocationBuilder = webTarget
-				.request(MediaType.APPLICATION_JSON_TYPE);
-		//	.header("some-header", "some-value");
-
-		/*
-		 * Retrieve response from remote ReSTful server. The 
-		 * connection remains open until the response entity is read
-		 * below.
-		 */
-		Response response = invocationBuilder.get();
-
-		/*
-		 * Much of the above can be implemented as a single command 
-		 * using chained method calls, although this assumes that a
-		 * ClientConfig object has first been constructed.
-		 */
-		//		Response response = ClientBuilder.newClient(clientConfig)
-		//				.target(restURI)
-		//				.request(MediaType.APPLICATION_JSON_TYPE)
-		//				//	.header("some-header", "some-value")
-		//				.get();
-		/*
-		 * Or all of the above can be combined into a single command
-		 * _without_ first building a ClientConfig object:
-		 */
-		//		Response response = ClientBuilder.newBuilder()
-		//				// .register(JsonProcessingFeature.class)
-		//				.property(JsonGenerator.PRETTY_PRINTING, true)
-		//				.build()
-		//				.target(restURI)
-		//				.request(MediaType.APPLICATION_JSON_TYPE)
-		//				//	.header("some-header", "some-value")
-		//				.get();
+		logger.info("response = {}", response);
 
 		int status = response.getStatus();
 		logger.info("HttpStatus = {}", status);
-		JsonArray jsonArray = response.readEntity(JsonArray.class);	// this closes the connection
 
-		/*
-		 * Alternate technique to get the response entity from 
-		 * webTarget without using an Invocation.Builder or Response 
-		 * object:
-		 */
-		//		JsonArray jsonArray = webTarget.request().get(JsonArray.class);
+		RoleCollectionResource roleCollectionResource = response.readEntity(RoleCollectionResource.class);
+		List<RoleResource> roleResources = roleCollectionResource.getItems();
+		logger.info("roleResources = {}", roleResources);
 
-		for (int i = 0; i < jsonArray.size(); i++) {
-			JsonObject jsonObject = jsonArray.getJsonObject(i);
-			UserTest user = new UserTest();
-			user.setId(jsonObject.getJsonNumber("id").longValue());
-			user.setName(jsonObject.getString("name"));
-
-			logger.info("user = {}", user);
-
-			users.add(user);
-		}
-		return users;
+		return roleResources;
 	}
-	
-	private Iterator<UserTest> iterator;
 
 	/* The "open" method will be called by BIRT engine once when the report 
 	 * is invoked. It is a mandatory method.
 	 */
 	public void open(Object appContext, Map<String, Object> dataSetParamValues) {
-		List<UserTest> users = getUsers(REST_URI);
-		this.iterator = users.iterator();
+		List<RoleResource> roleResources = getRoles(BASE_REST_URI, RESOURCE_PATH);
+		this.iterator = roleResources.iterator();
 	}
 
 	/* The "next" method is called by the BIRT engine once for each row of the
@@ -159,17 +80,22 @@ public class RolesPojoRestDataSource {
 		this.iterator = null;
 	}
 
+	/**
+	 * Run this class in Eclipse as a Java application to test this data source.
+	 * 
+	 * @param args
+	 */
 	public static void main(String[] args) {
 
-		RolesPojoRestDataSource userTestRestDataSource = new RolesPojoRestDataSource();
+		RolesPojoRestDataSource rolesPojoRestDataSource = new RolesPojoRestDataSource();
 
-		userTestRestDataSource.open(null, new HashMap<String, Object>());
-		while (userTestRestDataSource.iterator.hasNext()) {
-			UserTest user = (UserTest) userTestRestDataSource.next();
-			System.out.println("user = " + user);
+		rolesPojoRestDataSource.open(null, new HashMap<String, Object>());
+		while (rolesPojoRestDataSource.iterator.hasNext()) {
+			RoleResource roleResource = (RoleResource) rolesPojoRestDataSource.next();
+			System.out.println("roleResource = " + roleResource);
 		}
 
-		userTestRestDataSource.close();
+		rolesPojoRestDataSource.close();
 
 	}
 } 
