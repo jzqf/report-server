@@ -20,8 +20,6 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.qfree.bo.report.ApplicationConfig;
-import com.qfree.bo.report.db.ReportCategoryRepository;
-import com.qfree.bo.report.db.ReportRepository;
 import com.qfree.bo.report.domain.ReportCategory;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -29,7 +27,7 @@ import com.qfree.bo.report.domain.ReportCategory;
 //@DirtiesContext(classMode = ClassMode.AFTER_CLASS)
 public class ReportCategoryRepositoryTests {
 
-	private static final Logger logger = LoggerFactory.getLogger(ReportParameterRepositoryTests.class);
+	private static final Logger logger = LoggerFactory.getLogger(ReportCategoryRepositoryTests.class);
 
 	@Autowired
 	ReportCategoryRepository reportCategoryRepository;
