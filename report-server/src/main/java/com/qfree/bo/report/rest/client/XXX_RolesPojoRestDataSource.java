@@ -15,9 +15,9 @@ import org.slf4j.LoggerFactory;
 import com.qfree.bo.report.dto.RoleCollectionResource;
 import com.qfree.bo.report.dto.RoleResource;
 
-public class RolesPojoRestDataSource extends AbstractPojoRestDataSource {
+public class XXX_RolesPojoRestDataSource extends XXX_AbstractPojoRestDataSource {
 
-	private static final Logger logger = LoggerFactory.getLogger(RolesPojoRestDataSource.class);
+	private static final Logger logger = LoggerFactory.getLogger(XXX_RolesPojoRestDataSource.class);
 
 	private static final String RESOURCE_PATH = "roles";
 	private static final String API_VERSION = "1";
@@ -87,7 +87,7 @@ public class RolesPojoRestDataSource extends AbstractPojoRestDataSource {
 	 */
 	public static void main(String[] args) {
 
-		RolesPojoRestDataSource rolesPojoRestDataSource = new RolesPojoRestDataSource();
+		XXX_RolesPojoRestDataSource rolesPojoRestDataSource = new XXX_RolesPojoRestDataSource();
 
 		rolesPojoRestDataSource.open(null, new HashMap<String, Object>());
 		while (rolesPojoRestDataSource.iterator.hasNext()) {

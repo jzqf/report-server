@@ -20,20 +20,20 @@ import org.glassfish.jersey.client.ClientConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class UserTestRestDataSource {
+public class XXX_UserTestRestDataSource {
 
-	private static final Logger logger = LoggerFactory.getLogger(UserTestRestDataSource.class);
+	private static final Logger logger = LoggerFactory.getLogger(XXX_UserTestRestDataSource.class);
 
 	/*
 	 * TODO This URI should be loaded from a properties file or from a database.
 	 */
 	private static final String REST_URI = "http://jsonplaceholder.typicode.com/users";
 
-	private List<UserTest> getUsers(String restURI) {
+	private List<XXX_UserTest> getUsers(String restURI) {
 
 		logger.info("restURI=\"{}\"", restURI);
 
-		List<UserTest> users = new ArrayList<>();
+		List<XXX_UserTest> users = new ArrayList<>();
 
 		ClientConfig clientConfig = new ClientConfig()
 				//	.register(JsonProcessingFeature.class)
@@ -121,7 +121,7 @@ public class UserTestRestDataSource {
 
 		for (int i = 0; i < jsonArray.size(); i++) {
 			JsonObject jsonObject = jsonArray.getJsonObject(i);
-			UserTest user = new UserTest();
+			XXX_UserTest user = new XXX_UserTest();
 			user.setId(jsonObject.getJsonNumber("id").longValue());
 			user.setName(jsonObject.getString("name"));
 
@@ -132,13 +132,13 @@ public class UserTestRestDataSource {
 		return users;
 	}
 	
-	private Iterator<UserTest> iterator;
+	private Iterator<XXX_UserTest> iterator;
 
 	/* The "open" method will be called by BIRT engine once when the report 
 	 * is invoked. It is a mandatory method.
 	 */
 	public void open(Object appContext, Map<String, Object> dataSetParamValues) {
-		List<UserTest> users = getUsers(REST_URI);
+		List<XXX_UserTest> users = getUsers(REST_URI);
 		this.iterator = users.iterator();
 	}
 
@@ -161,11 +161,11 @@ public class UserTestRestDataSource {
 
 	public static void main(String[] args) {
 
-		UserTestRestDataSource userTestRestDataSource = new UserTestRestDataSource();
+		XXX_UserTestRestDataSource userTestRestDataSource = new XXX_UserTestRestDataSource();
 
 		userTestRestDataSource.open(null, new HashMap<String, Object>());
 		while (userTestRestDataSource.iterator.hasNext()) {
-			UserTest user = (UserTest) userTestRestDataSource.next();
+			XXX_UserTest user = (XXX_UserTest) userTestRestDataSource.next();
 			System.out.println("user = " + user);
 		}
 

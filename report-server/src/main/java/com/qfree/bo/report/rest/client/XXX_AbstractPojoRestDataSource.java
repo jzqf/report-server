@@ -15,9 +15,9 @@ import com.qfree.bo.report.domain.Role;
  * @author Jeffrey Zelt
  *
  */
-abstract class AbstractPojoRestDataSource {
+abstract class XXX_AbstractPojoRestDataSource {
 
-	private static final Logger logger = LoggerFactory.getLogger(AbstractPojoRestDataSource.class);
+	private static final Logger logger = LoggerFactory.getLogger(XXX_AbstractPojoRestDataSource.class);
 
 	/*
 	 * TODO Should this URI be loaded from a properties file or ...?

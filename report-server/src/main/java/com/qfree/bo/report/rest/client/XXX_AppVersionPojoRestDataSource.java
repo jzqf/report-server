@@ -13,16 +13,16 @@ import javax.ws.rs.core.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class AppVersionPojoRestDataSource extends AbstractPojoRestDataSource {
+public class XXX_AppVersionPojoRestDataSource extends XXX_AbstractPojoRestDataSource {
 
-	private static final Logger logger = LoggerFactory.getLogger(AppVersionPojoRestDataSource.class);
+	private static final Logger logger = LoggerFactory.getLogger(XXX_AppVersionPojoRestDataSource.class);
 
 	private static final String RESOURCE_PATH = "appversion";
 	//private static final String API_VERSION = "1";
 
-	private Iterator<AppVersionResource> iterator;
+	private Iterator<XXX_AppVersionResource> iterator;
 
-	private List<AppVersionResource> getAppVersion(String baseUri, String resourcePath) {
+	private List<XXX_AppVersionResource> getAppVersion(String baseUri, String resourcePath) {
 
 		logger.info("baseUri = {}", baseUri);
 
@@ -42,8 +42,8 @@ public class AppVersionPojoRestDataSource extends AbstractPojoRestDataSource {
 
 		String appVersion = response.readEntity(String.class);
 		logger.info("appVersion = {}", appVersion);
-		List<AppVersionResource> appVersions = new ArrayList<>(1);
-		appVersions.add(new AppVersionResource(appVersion));
+		List<XXX_AppVersionResource> appVersions = new ArrayList<>(1);
+		appVersions.add(new XXX_AppVersionResource(appVersion));
 		logger.info("appVersions = {}", appVersions);
 
 		return appVersions;
@@ -53,7 +53,7 @@ public class AppVersionPojoRestDataSource extends AbstractPojoRestDataSource {
 	 * is invoked. It is a mandatory method.
 	 */
 	public void open(Object appContext, Map<String, Object> dataSetParamValues) {
-		List<AppVersionResource> appVersions = getAppVersion(BASE_REST_URI, RESOURCE_PATH);
+		List<XXX_AppVersionResource> appVersions = getAppVersion(BASE_REST_URI, RESOURCE_PATH);
 		this.iterator = appVersions.iterator();
 	}
 
@@ -81,11 +81,11 @@ public class AppVersionPojoRestDataSource extends AbstractPojoRestDataSource {
 	 */
 	public static void main(String[] args) {
 
-		AppVersionPojoRestDataSource appVersionPojoRestDataSource = new AppVersionPojoRestDataSource();
+		XXX_AppVersionPojoRestDataSource appVersionPojoRestDataSource = new XXX_AppVersionPojoRestDataSource();
 
 		appVersionPojoRestDataSource.open(null, new HashMap<String, Object>());
 		while (appVersionPojoRestDataSource.iterator.hasNext()) {
-			AppVersionResource appVersionResource = (AppVersionResource) appVersionPojoRestDataSource.next();
+			XXX_AppVersionResource appVersionResource = (XXX_AppVersionResource) appVersionPojoRestDataSource.next();
 			System.out.println("appVersionResource = " + appVersionResource);
 		}
 

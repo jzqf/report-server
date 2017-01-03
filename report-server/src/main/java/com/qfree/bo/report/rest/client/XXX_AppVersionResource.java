@@ -9,19 +9,19 @@ import org.slf4j.LoggerFactory;
 import com.qfree.bo.report.domain.Role;
 
 @XmlRootElement
-public class AppVersionResource {
-	//public class AppVersionResource extends AbstractBaseResource {
+public class XXX_AppVersionResource {
+	//public class XXX_AppVersionResource extends AbstractBaseResource {
 
-	private static final Logger logger = LoggerFactory.getLogger(AppVersionResource.class);
+	private static final Logger logger = LoggerFactory.getLogger(XXX_AppVersionResource.class);
 
 	@XmlElement
 	private String appVersion;
 
-	public AppVersionResource() {
+	public XXX_AppVersionResource() {
 	}
 
 	/**
-	 * Create new {@link AppVersionResource} instance from a {@link Role}
+	 * Create new {@link XXX_AppVersionResource} instance from a {@link Role}
 	 * instance.
 	 * 
 	 * @param role
@@ -29,7 +29,7 @@ public class AppVersionResource {
 	 * @param expand
 	 * @param apiVersion
 	 */
-	public AppVersionResource(String appVersion) {
+	public XXX_AppVersionResource(String appVersion) {
 		super();
 		this.appVersion = appVersion;
 		logger.debug("this = {}", this);
@@ -45,7 +45,7 @@ public class AppVersionResource {
 
 	@Override
 	public String toString() {
-		return "AppVersionResource [appVersion=" + appVersion + "]";
+		return "XXX_AppVersionResource [appVersion=" + appVersion + "]";
 	}
 
 }

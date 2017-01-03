@@ -2,7 +2,7 @@ package com.qfree.bo.report.rest.client;
 
 import java.io.Serializable;
 
-public class UserTest implements Serializable {
+public class XXX_UserTest implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
@@ -45,7 +45,7 @@ public class UserTest implements Serializable {
 
 	@Override
 	public String toString() {
-		return "UserTest [id=" + id + ", name=" + name + ", userName=" + userName + ", email=" + email + "]";
+		return "XXX_UserTest [id=" + id + ", name=" + name + ", userName=" + userName + ", email=" + email + "]";
 	}
 
 }
