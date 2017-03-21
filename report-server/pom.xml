@@ -535,17 +535,21 @@
                 <artifactId>maven-war-plugin</artifactId>
                 <version>2.6</version>
                 <configuration>
-                    <!-- When the WAR file report-server-${project.version}.war is 
+                
+                    <!-- 
+                    When the WAR file report-server-${project.version}.war is 
                     generated, this tells this plugin to also create a JAR 
                     artifact named report-server-${project.version}-classes.jar.
                     This enables another Maven project to create a dependency 
                     on the Java code in this project (since it does not work 
-                    to make a dependency on a WAR file). This JAR file is 
-                    currently used as a dependency in the "birt-reports" 
-                    project. This is needed so that BIRT POJO data sources 
-                    will be able to execute code from this project to create 
-                    a data set in that project.  -->
-                    <attachClasses>true</attachClasses>
+                    to make a dependency on a WAR file). This JAR file was 
+                    earlier used as a dependency in my "test-reports" 
+                    project to support BIRT POJO data sources. However, all BIRT 
+                    POJO data sources are now developed in 
+                    my dars-report-datasources project, so this setting 
+                    is no longer needed here.  -->
+                    <!-- <attachClasses>true</attachClasses> -->
+                    
                     <packagingExcludes>
                         <!-- "rptdesign" files are created in the "reports"
                         directory whenever integration tests are run or the

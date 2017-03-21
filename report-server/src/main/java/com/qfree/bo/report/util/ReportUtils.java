@@ -381,7 +381,7 @@ public class ReportUtils {
 	//			 * used for testing.
 	//			 */
 	//			//design = engine.openReportDesign(
-	//			//	"/home/jeffreyz/git/birt-report-tests/birt-report-tests/tests/400-TestReport04_v1.1.rptdesign");
+	//			//	"/home/jeffreyz/git/test-reports/test-reports/tests/400-TestReport04_v1.1.rptdesign");
 	//			//design = engine.openReportDesign("/home/jeffreyz/Desktop/cascade_v3.2.23.rptdesign");
 	//
 	//			/*

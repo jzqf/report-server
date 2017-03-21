@@ -7,6 +7,7 @@ BEGIN TRANSACTION;
 
 -- Update the DB *content* from v8 to v9:
 
+insert into reporting.asset_type (asset_type_id, name, abbreviation, directory, active, created_on) values ('bbeaf653-2c06-4128-a49d-1d42f13cc443', 'JAR file'        , 'JAR'       , 'jars'       , true, current_timestamp AT TIME ZONE 'UTC');
 
 
 -- Update global configuration record for "DB_VERSION" to reflect the new version.
