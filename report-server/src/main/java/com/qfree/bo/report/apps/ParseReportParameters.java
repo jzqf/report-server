@@ -32,9 +32,9 @@ public class ParseReportParameters {
 			 */
 
 			Path rptdesignPath = Paths
-					.get("/home/jeffreyz/git/birt-report-tests/birt-report-tests/tests/400-TestReport04_v1.1.rptdesign");
+					.get("/home/jeffreyz/git/test-reports/test-reports/tests/400-TestReport04_v1.1.rptdesign");
 			//Path rptdesignPath = Paths
-			//		.get("/home/jeffreyz/git/birt-report-tests/birt-report-tests/tests/cascade.rptdesign");
+			//		.get("/home/jeffreyz/git/test-reports/test-reports/tests/cascade.rptdesign");
 			//Path rptdesignPath = Paths.get("/home/jeffreyz/Desktop/cascade_v3.2.23.rptdesign");
 			//Path rptdesignPath = Paths.get("/home/jeffreyz/Desktop/cascade_v3.2.6.rptdesign");
 

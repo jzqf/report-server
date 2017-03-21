@@ -543,10 +543,10 @@
                     This enables another Maven project to create a dependency 
                     on the Java code in this project (since it does not work 
                     to make a dependency on a WAR file). This JAR file was 
-                    earlier used as a dependency in my "birt-report-tests" 
+                    earlier used as a dependency in my "test-reports" 
                     project to support BIRT POJO data sources. However, all BIRT 
-                    POJO data sources are now development in 
-                    my dars-report-server-datasources project, so this setting 
+                    POJO data sources are now developed in 
+                    my dars-report-datasources project, so this setting 
                     is no longer needed here.  -->
                     <!-- <attachClasses>true</attachClasses> -->
                     
