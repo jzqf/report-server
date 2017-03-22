@@ -14,10 +14,11 @@ insert into reporting.document_format (document_format_id, name, file_extension,
 insert into reporting.document_format (document_format_id, name, file_extension, internet_media_type, binary_data, birt_format, active, created_on) values ('c78ac922-2f37-4855-83ae-b708d453b005', 'Office Open XML Workbook'     , 'xlsx', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'        , true , 'xlsx', true , current_timestamp AT TIME ZONE 'UTC');
 
 
-insert into reporting.report_category (report_category_id, description, abbreviation, active, created_on) values ('7a482694-51d2-42d0-b0e2-19dd13bbbc64', 'Accounting'       , 'ACCT' , true, current_timestamp AT TIME ZONE 'UTC');
-insert into reporting.report_category (report_category_id, description, abbreviation, active, created_on) values ('bb2bc482-c19a-4c19-a087-e68ffc62b5a0', 'Q-Free internal'  , 'QFREE', true, current_timestamp AT TIME ZONE 'UTC');
-insert into reporting.report_category (report_category_id, description, abbreviation, active, created_on) values ('5c3cc664-b685-4f6e-8d9a-2927c6bcffdc', 'Manual validation', 'MIR'  , true, current_timestamp AT TIME ZONE 'UTC');
-insert into reporting.report_category (report_category_id, description, abbreviation, active, created_on) values ('72d7cb27-1770-4cc7-b301-44d39ccf1e76', 'Traffic'          , 'TRA'  , true, current_timestamp AT TIME ZONE 'UTC');
+insert into reporting.report_category (report_category_id, description, abbreviation, active, created_on) values ('7a482694-51d2-42d0-b0e2-19dd13bbbc64', 'Accounting'             , 'ACCT' , true, current_timestamp AT TIME ZONE 'UTC');
+insert into reporting.report_category (report_category_id, description, abbreviation, active, created_on) values ('bb2bc482-c19a-4c19-a087-e68ffc62b5a0', 'Q-Free internal'        , 'QFREE', true, current_timestamp AT TIME ZONE 'UTC');
+insert into reporting.report_category (report_category_id, description, abbreviation, active, created_on) values ('5c3cc664-b685-4f6e-8d9a-2927c6bcffdc', 'Manual validation'      , 'MIR'  , true, current_timestamp AT TIME ZONE 'UTC');
+insert into reporting.report_category (report_category_id, description, abbreviation, active, created_on) values ('0a8f19bd-b710-4cd5-b7aa-440f3fe644cf', 'Service Level Agreement', 'SLA'  , true, current_timestamp AT TIME ZONE 'UTC');
+insert into reporting.report_category (report_category_id, description, abbreviation, active, created_on) values ('72d7cb27-1770-4cc7-b301-44d39ccf1e76', 'Traffic'                , 'TRA'  , true, current_timestamp AT TIME ZONE 'UTC');
 
 
 insert into reporting.job_status (job_status_id, description, abbreviation, active, created_on) values ('08de9764-735f-4c82-bbe9-3981b29cc133', 'Queued'    , 'QUEUED'    , true, current_timestamp AT TIME ZONE 'UTC');

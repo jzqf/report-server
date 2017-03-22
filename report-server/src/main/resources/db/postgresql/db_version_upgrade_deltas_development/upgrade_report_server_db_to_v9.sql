@@ -7,6 +7,8 @@ BEGIN TRANSACTION;
 
 -- Update the DB *content* from v8 to v9:
 
+insert into reporting.report_category (report_category_id, description, abbreviation, active, created_on) values ('0a8f19bd-b710-4cd5-b7aa-440f3fe644cf', 'Service Level Agreement', 'SLA'  , true, current_timestamp AT TIME ZONE 'UTC');
+
 insert into reporting.asset_type (asset_type_id, name, abbreviation, directory, active, created_on) values ('bbeaf653-2c06-4128-a49d-1d42f13cc443', 'JAR file'        , 'JAR'       , 'jars'       , true, current_timestamp AT TIME ZONE 'UTC');
 
 
