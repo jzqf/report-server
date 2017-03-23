@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <!--withJansi provides ansi coloring for Windows, but it does not work with surefire-->
+        <!--http://jira.qos.ch/browse/LOGBACK-762-->
+        <!--<withJansi>true</withJansi>-->
+        <encoder>
+<!--             <pattern>%date %-5level [%thread] %logger{35} %message %ex%n</pattern> -->
+            <pattern>%date %highlight(%-5level) [%thread] %cyan(%logger{15}) %green(%M) - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <logger name="com.qfree" level="DEBUG" />
+
+    <root level="WARN">
+        <appender-ref ref="STDOUT" />
+    </root>
+</configuration>

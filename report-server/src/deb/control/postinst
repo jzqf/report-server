@@ -1,0 +1,42 @@
+#!/bin/sh
+
+set -e
+
+# for details, see http://www.debian.org/doc/debian-policy/ or
+# the debian-policy package ch 6.5 http://www.debian.org/doc/debian-policy/ch-maintainerscripts.html#s-mscriptsinstact
+
+
+case "$1" in
+    configure)
+    
+        echo "postinst configure: Configuring report-server-${project.version}..."
+
+        # This ensures that:
+        #
+        #   1. Regardless of which user runs the install or upgrade shell 
+        #      script, a log file can be written to the directory containing the 
+        #      script. For the install script, this user will be "postgres". For 
+        #      the upgrade script, this user will probably be the user that runs 
+        #      the script.
+        #
+        #   2. The user running one of the shell scripts in this package has the
+        #      permission to change directory and read SQL scripts that are 
+        #      stored in a subdirectory beside the shell script being executed.
+        #
+        # For questions, see Jeffrey Zelt.
+        chmod -R 777 /tmp/report-server-${project.version}
+        
+    ;;
+
+    abort-upgrade|abort-remove|abort-deconfigure)
+    ;;
+
+    *)
+        echo "postinst called with unknown argument \`$1'" >&2
+        exit 1
+    ;;
+esac
+
+
+exit 0
+
