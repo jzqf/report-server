@@ -12,10 +12,17 @@
 		${catalina.base} & ${catalina.home} point to different directories.
 		On a default GlassFish 4 installation, ${catalina.base}/logs/ expands to
 		.../glassfish4/glassfish/domains/domain1/logs/.
+		
+		It might be possible to set the log folder using ${report-server.root} 
+		instead of ${catalina.base}. See web.xml for this application for 
+		details.
+		
+		In order to be able to access the values of these properties in 
+		application code, their scope is set to "context".
 	-->
-	<property name="PROJECT_NAME" value="qfree-report-server" />
-	<property name="LOG_FOLDER" value="${catalina.base}/logs/${PROJECT_NAME}" />
-	<property name="ARCHIVE_FOLDER" value="${LOG_FOLDER}/archive" />
+	<property scope="context" name="PROJECT_NAME" value="qfree-report-server" />
+	<property scope="context" name="LOG_FOLDER" value="${catalina.base}/logs/${PROJECT_NAME}" />
+	<property scope="context" name="ARCHIVE_FOLDER" value="${LOG_FOLDER}/archive" />
 
 	<!--
 		Logback ships with a StatusListener implementation called OnConsoleStatusListener

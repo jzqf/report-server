@@ -56,6 +56,8 @@ import com.qfree.bo.report.exceptions.UntreatedCaseException;
 import com.qfree.bo.report.util.DateUtils;
 import com.qfree.bo.report.util.ReportUtils;
 
+import ch.qos.logback.classic.LoggerContext;
+
 @Component
 public class BirtService {
 
@@ -81,13 +83,42 @@ public class BirtService {
 
 		if (engine == null) {
 			EngineConfig config = new EngineConfig();
-			config.setLogConfig(null, Level.FINE);
+
+			/*
+			 * If this code is executed when this application is installed as a
+			 * WAR in Tomcat on my PC, appContextPath.toString() 
+			 * currently evaluates to:
+			 * 
+			 * /home/jeffreyz/Applications/java/apache-tomcat/apache-tomcat-8.0.17/webapps/report-server
+			 */
+			Path appContextPath = ReportUtils.getApplicationContextPath();
+
+			/*
+			 * Customize the logging for the BIRT engine.
+			 * 
+			 * If this code is placed in a standalone Java application, the
+			 * result is currently:
+			 * 
+			 * LOG_FOLDER = "catalina.base_IS_UNDEFINED/logs/qfree-report-server"
+			 * 
+			 * If this code is executed when this application is installed as a
+			 * WAR in Tomcat on my PC, the result is currently:
+			 * 
+			 * LOG_FOLDER = "/home/jeffreyz/Applications/java/apache-tomcat/apache-tomcat-8.0.17/logs/qfree-report-server"
+			 */
+			LoggerContext loggerContext = (LoggerContext) LoggerFactory.getILoggerFactory();
+			String LOG_FOLDER = loggerContext.getProperty("LOG_FOLDER"); // this property is set in logback.xml
+			logger.info("LOG_FOLDER = {}", LOG_FOLDER);
+			config.setLogConfig(LOG_FOLDER, Level.FINE); // if, for some reason, LOG_FOLDER=null, that is OK here
+			config.setLogRollingSize(1000000); // Roll log file over to a backup when this number of bytes are reached
+			config.setLogMaxBackupIndex(10); // keep a maximum of 10 log backup files
 
 			/*
 			 * Set the "resource path" for the BIRT report engine. This is 
-			 * critically important if a report references objects that have 
-			 * been inserted from a BIRT library. In particular, the attributes
-			 * of report parameters will not be parsed correctly by:
+			 * critically important if a report contains objects that have 
+			 * been inserted from a BIRT library (which is one type of 
+			 * "resource". In particular, the attributes of report parameters 
+			 * will not be parsed correctly by:
 			 * 
 			 *     BirtService.parseReportParams(String rptdesignXml)
 			 *
@@ -101,12 +132,7 @@ public class BirtService {
 			 *     Display format
 			 *     Hidden
 			 *     Prompt text
-			 * 
-			 * On my PC, appContextPath.toString() currently evaluates to:
-			 * 
-			 * /home/jeffreyz/Applications/java/apache-tomcat/apache-tomcat-8.0.17/webapps/report-server
 			 */
-			Path appContextPath = ReportUtils.getApplicationContextPath();
 			if (appContextPath != null) {
 				logger.info("appContextPath = {}", appContextPath);
 				String resourcePath = appContextPath.resolve(ReportUtils.RESOURCE_FOLDER).toString();
