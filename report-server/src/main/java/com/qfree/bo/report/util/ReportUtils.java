@@ -92,6 +92,18 @@ public class ReportUtils {
 	public static final String BIRT_VIEWER_WORKING_FOLDER = "reports";
 
 	/*
+	 * Directory path in /webapp where BIRT resources are stored. This 
+	 * directory must contain the ASSET_FILES_PARENT_FOLDER folder.
+	 * 
+	 * A value of "" means that the resource folder is the current Eclipse 
+	 * project folder during report development. This corresponds to the 
+	 * "/webapp" directory in this project, which in turn becomes the root 
+	 * application context directory of this application within Tomcat's 
+	 * "webapps/" directory, which is currently ".../webapps/report-server/".
+	 */
+	public static final String RESOURCE_FOLDER = "";
+
+	/*
 	 * Directory in /webapp where assets (CSS files, image files, ...) are 
 	 * stored. Be careful changing it because the BIRT Viewer servlets expect
 	 * this name. If the BIRT "viewservlets" are eliminated from this 
@@ -338,6 +350,36 @@ public class ReportUtils {
 			 */
 		}
 		return isWar;
+	}
+
+	/**
+	 * 
+	 * @return
+	 */
+	public static Path getApplicationContextPath() {
+		/*
+		 * On my PC, this currently evaluates to:
+		 * 
+		 * /home/jeffreyz/Applications/java/apache-tomcat/apache-tomcat-8.0.17/webapps/report-server/WEB-INF/classes/
+		 */
+		String classesPath = ReportUtils.class.getClassLoader().getResource("").getPath();
+		logger.info("classesPath = {}", classesPath);
+		Path absoluteContextPath = null;
+		try {
+
+			/*
+			 * On my PC, this currently evaluates to:
+			 * 
+			 * /home/jeffreyz/Applications/java/apache-tomcat/apache-tomcat-8.0.17/webapps/report-server
+			 */
+			absoluteContextPath = Paths.get(classesPath).resolve("..").resolve("..").toRealPath();
+			logger.info("absoluteContextPath = {}", absoluteContextPath);
+
+		} catch (IOException e) {
+			logger.error("Exception thrown during startup while obtaining application context directory", e);
+		}
+
+		return absoluteContextPath;
 	}
 
 	//	public static Map<String, Map<String, Serializable>> parseReportParams(String rptdesignXml)

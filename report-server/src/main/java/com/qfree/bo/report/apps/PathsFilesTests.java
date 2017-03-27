@@ -1,6 +1,7 @@
 package com.qfree.bo.report.apps;
 
 import java.io.File;
+import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
@@ -13,13 +14,34 @@ public class PathsFilesTests {
 
 	public static void main(String[] args) {
 
-		Path rootPath = Paths.get("/a/b");
-		logger.info("rootPath = {}", rootPath.toString());
+		String classesPath = PathsFilesTests.class.getClassLoader().getResource("").getPath();
+		logger.info("classesPath = {}", classesPath);
+		Path absoluteContextPath = null;
+		try {
+			/*
+			 * On my PC, this currently evaluates to:
+			 * 
+			 * /home/jeffreyz/git/qfree-report-server/report-server/target/classes/
+			 */
+			absoluteContextPath = Paths.get(classesPath).resolve("..").resolve("..").toRealPath();
+			logger.info("absoluteContextPath = {}", absoluteContextPath);
+		} catch (IOException e) {
+			logger.error("Exception thrown while obtaining application context directory Path", e);
+		}
+
+		//Path rootPath = Paths.get("/");
+		//logger.info("rootPath = {}", rootPath.toString());
+
+		//Path blankPath = Paths.get("/");
+		//logger.info("blankPath = {}", blankPath.toString());
+
+		Path absolutePath = Paths.get("/a/b");
+		logger.info("absolutePath = {}", absolutePath.toString());
 
 		Path directoryPath = Paths.get("webcontent/blah");
 		logger.info("directoryPath = {}", directoryPath.toString());
 
-		File assetDirectory = rootPath.resolve(directoryPath).toFile();
+		File assetDirectory = absolutePath.resolve(directoryPath).toFile();
 		logger.info("assetDirectory = {}", assetDirectory.toString());
 
 

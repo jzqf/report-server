@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.Serializable;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -53,6 +54,7 @@ import com.qfree.bo.report.exceptions.ReportingException;
 import com.qfree.bo.report.exceptions.RptdesignOpenFromStreamException;
 import com.qfree.bo.report.exceptions.UntreatedCaseException;
 import com.qfree.bo.report.util.DateUtils;
+import com.qfree.bo.report.util.ReportUtils;
 
 @Component
 public class BirtService {
@@ -80,6 +82,39 @@ public class BirtService {
 		if (engine == null) {
 			EngineConfig config = new EngineConfig();
 			config.setLogConfig(null, Level.FINE);
+
+			/*
+			 * Set the "resource path" for the BIRT report engine. This is 
+			 * critically important if a report references objects that have 
+			 * been inserted from a BIRT library. In particular, the attributes
+			 * of report parameters will not be parsed correctly by:
+			 * 
+			 *     BirtService.parseReportParams(String rptdesignXml)
+			 *
+			 * unless this resource path is set correctly here. If this is not 
+			 * done, many of the attributes of report parameters will be 
+			 * set to default values that do not reflect the actual values set 
+			 * for the attributes in the BIRT library. This applies to most
+			 * attributes including, but not limited to:
+			 * 
+			 *     Default value
+			 *     Display format
+			 *     Hidden
+			 *     Prompt text
+			 * 
+			 * On my PC, appContextPath.toString() currently evaluates to:
+			 * 
+			 * /home/jeffreyz/Applications/java/apache-tomcat/apache-tomcat-8.0.17/webapps/report-server
+			 */
+			Path appContextPath = ReportUtils.getApplicationContextPath();
+			if (appContextPath != null) {
+				logger.info("appContextPath = {}", appContextPath);
+				String resourcePath = appContextPath.resolve(ReportUtils.RESOURCE_FOLDER).toString();
+				logger.info("resourcePath = {}", resourcePath);
+				config.setResourcePath(resourcePath);
+			} else {
+				logger.error("Resource path 'appContextPath' is null. Uploaded reports will not be parsed correctly!");
+			}
 
 			/*
 			 * Set parent classloader for engine. I am not sure what this buys
