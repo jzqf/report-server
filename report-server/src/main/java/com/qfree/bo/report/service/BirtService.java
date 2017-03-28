@@ -110,8 +110,13 @@ public class BirtService {
 			String LOG_FOLDER = loggerContext.getProperty("LOG_FOLDER"); // this property is set in logback.xml
 			logger.info("LOG_FOLDER = {}", LOG_FOLDER);
 			config.setLogConfig(LOG_FOLDER, Level.FINE); // if, for some reason, LOG_FOLDER=null, that is OK here
+			/*
+			 * TODO These settings could be externalized into config.properties' 
+			 * or somewhere else. If so, then the logging level (currently 
+			 * "Level.FINE") should also be treated the same way. 
+			 */
 			config.setLogRollingSize(1000000); // Roll log file over to a backup when this number of bytes are reached
-			config.setLogMaxBackupIndex(10); // keep a maximum of 10 log backup files
+			config.setLogMaxBackupIndex(10); // keep a maximum of this number of log backup files
 
 			/*
 			 * Set the "resource path" for the BIRT report engine. This is 
