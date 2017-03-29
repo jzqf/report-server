@@ -12,7 +12,7 @@
 
     <!-- <groupId>com.qfree.bo</groupId> -->
     <artifactId>report-server</artifactId>
-    <version>0.16.0-RELEASE</version>
+    <version>0.17.0-SNAPSHOT</version>
     <packaging>war</packaging>
     <name>Q-Free Report Server</name>
     <description>Web project for implementing a report server for BIRT reports that can be deployed in a servlet container such as Tomcat</description>
@@ -555,7 +555,8 @@
                         directory whenever integration tests are run or the
                         file system is synchronized with the report 
                         database. We don't want such files packaged and 
-                        distributed a WAR file -->
+                        distributed a WAR file. I deleted the "old" directory
+                        but it can't hurt to keep the override for it for now. -->
                         reports/*.rptdesign,
                         reports/old/
                     </packagingExcludes>
