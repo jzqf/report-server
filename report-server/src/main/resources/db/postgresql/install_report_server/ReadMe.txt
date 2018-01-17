@@ -166,7 +166,7 @@ order they appear here:
 	configuration settings. With a standard install of PostgreSQL on 
 	Ubuntu/Debian this can be done with:
 	
-		sudo -u postgres /usr/lib/postgresql/9.x/bin/pg_ctl -D /var/lib/postgresql/9.x/main reload
+		sudo -iu postgres /usr/lib/postgresql/9.x/bin/pg_ctl -D /var/lib/postgresql/9.x/main reload
 		
 	where "x" refers to the version of PostgreSQL that is being used. If
 	listen_addresses is modified, then PostgreSQL must be restarted because this
@@ -183,7 +183,7 @@ order they appear here:
 	From a shell on the database host, execute the following:
 
 		cd /tmp/report-server-<version>/install/
-		sudo -u postgres ./create-report_server_db.sh
+		sudo -iu postgres ./create-report_server_db.sh
 
 	To see a list of all options that this script provides, type:
 
