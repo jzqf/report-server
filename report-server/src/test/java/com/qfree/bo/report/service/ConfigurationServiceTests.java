@@ -25,18 +25,30 @@ import org.springframework.transaction.annotation.Transactional;
 import com.qfree.bo.report.ApplicationConfig;
 import com.qfree.bo.report.db.ConfigurationRepository;
 import com.qfree.bo.report.db.RoleRepository;
-import com.qfree.bo.report.domain.Role;
 import com.qfree.bo.report.domain.Configuration.ParamName;
-import com.qfree.bo.report.service.ConfigurationService;
+import com.qfree.bo.report.domain.Role;
 import com.qfree.bo.report.util.DateUtils;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = ApplicationConfig.class)
 /*
  * It is not clear that this test class dirties the Spring application context,
- * but some of the subsequent tests fail in other JUnit test classes UNLESS this
- * @DirtiesContext annotation is placed here. Therefore, it should be left here
- * unless/until this behaviour is investigated thoroughly.
+ * but I have experienced that if this annotation is not used on some test 
+ * classes, then tests in *other* test classes can experience errors, i.e.,
+ * exceptions (not test failures). For example if this annotation was not used 
+ * in test class ReportCategoryRepositoryTests, then exceptions where thrown 
+ * from the tests in ConfigurationServiceTests. In this case the log file 
+ * contained messages that included things like:
+ * 
+ *    SQL Error: 90079, SQLState: 90079
+ *    Schema "REPORTING" not found; SQL statement:
+ *    org.hibernate.exception.GenericJDBCException: could not prepare statement
+ * 
+ * This problem seems to be related in some way to how the H2 RDBMS is used for
+ * testing. Although this problem has been shown to be repeatable as long as 
+ * code and dependencies are not changed, it is *not* repeatable if things do
+ * change. Therefore, I have decided to annotate *all* test classes with the
+ * @DirtiesContext annotation that access the H2 DB in any way.
  */
 @DirtiesContext(classMode = ClassMode.AFTER_CLASS)
 public class ConfigurationServiceTests {
