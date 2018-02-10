@@ -5,8 +5,8 @@
 # report server application to connect to this database.
 #
 # Usage:
-#   sudo -u postgres create-report_server_db.sh [-Dhlv]] [-s server] [-p port]
-#                                               [-d database] [-U user]
+#   sudo -iu postgres create-report_server_db.sh [-Dhlv]] [-s server] [-p port]
+#                                                [-d database] [-U user]
 #
 #   This should be executed from a directory where the OS user "postgres" has 
 #   the permission to write, because the script writes errors and other messages
@@ -298,7 +298,7 @@ if [ -d "$SQL_INIT_DIR" ]; then
 		log_info "Initializing database..."
 		# The password for PostgreSQL role $DBUSER is passed to psql via PGPASSWORD.
 		# 
-		# This script must be run via "sudo -u postgres ...". In order for the 
+		# This script must be run via "sudo -iu postgres ...". In order for the 
 		# psql tool to be able to access the SQL script "init_db.sql", the Linux
 		# user "postgres" must have the permissions to change to the directory  
 		# where "init_db.sql" is stored; otherwise, this command will fail with
