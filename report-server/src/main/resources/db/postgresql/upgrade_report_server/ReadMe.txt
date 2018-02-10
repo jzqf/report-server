@@ -49,9 +49,9 @@ I.	==== Upgrading the report server database ====
 3.	Log into the PostgreSQL host machine, either directly or via the ssh 
 	command.
 
-4.	Execute the following in a bash shell from the 
-	upgrade_report_server-<version> directory on the PostgreSQL host machine:
+4.	Execute the following in a bash shell:
 
+		cd /tmp/report-server-<version>/upgrade/
 		./upgrade_report_server_db.sh
 
 	Unless a different PostgreSQL role (user) is specified with the -U option, 
