@@ -58,7 +58,7 @@
 
           http://central.maven.org/maven2/org/springframework/boot/spring-boot-dependencies/1.3.1.RELEASE/spring-boot-dependencies-1.3.1.RELEASE.pom
 
-          where "1.3.1.RELEASE" should be replaced with whatever version of 
+          where "1.3.1.RELEASE" should be replaced with whatever version of
           Spring Boot you are using. This version of Spring Boot is defined by
           the property "spring-boot.version" in reporting-master/pom.xml. Links
           to all of POM files for all versions of "spring-boot-dependencies" can
@@ -67,7 +67,7 @@
           http://mvnrepository.com/artifact/org.springframework.boot/spring-boot-dependencies
 
           The reason why we must define the "jersey.version" property here, and
-          give it the correct value, is because Spring Boot specifies the 
+          give it the correct value, is because Spring Boot specifies the
           version of the Jersey framework that should be used for some Jersey
           components, e.g., jersey-container-servlet and others. It is not
           necessary to specify the version for those Jersey components for which
@@ -81,17 +81,17 @@
           end up using one version number for some Jersey components and another
           version number for other Jersey components. This will almost certainly
           lead to problems. For example, strange exceptions will be thrown with
-          no useful explanation to debug the problem. 
+          no useful explanation to debug the problem.
 
-          The procedure for updating the version of Spring Boot used by this 
+          The procedure for updating the version of Spring Boot used by this
           application is:
 
                 1. Update "spring-boot.version" in reporting-master/pom.xml.
 
                 2. Browse through the URL above, but for the new Spring Boot version
                    number. Ensure that all version numbers defined by properties in
-                   that POM file agree with the corresponding version numbers used 
-                   in both this POM file as well as in reporting-master/pom.xml 
+                   that POM file agree with the corresponding version numbers used
+                   in both this POM file as well as in reporting-master/pom.xml
                    ("hamcrest.version", ...).
 
                 3. Browse through the POM file for the "spring-boot-starter-parent"
@@ -99,8 +99,8 @@
 
                    http://central.maven.org/maven2/org/springframework/boot/spring-boot-starter-parent/1.3.1.RELEASE/spring-boot-starter-parent-1.3.1.RELEASE.pom
 
-           Copy the two blocks of content to replace the corresponding 
-           blocks in reporting-master/pom.xml that I have marked with 
+           Copy the two blocks of content to replace the corresponding
+           blocks in reporting-master/pom.xml that I have marked with
            comments that explain they were copied from that POM file.
         -->
         <jersey.version>2.22.1</jersey.version>
@@ -108,7 +108,7 @@
         <!-- The main class to start by executing java -jar -->
         <start-class>com.qfree.bo.report.ApplicationConfig</start-class>
     </properties>
-	
+
     <dependencies>
         <dependency>
             <groupId>org.eclipse.birt.runtime</groupId>
@@ -210,7 +210,7 @@
 
         <!-- JAX-RS - Spring integration.
                  The jersey-spring3.jar has its own dependencies on Spring libraries
-                 (see: 
+                 (see:
                  https://jersey.java.net/project-info/2.16/jersey/project/jersey-spring3/dependencies.html),
                  so in order to specify a different version here, ${spring.version},
                  it is necessary to exclude those libraries manually here.
@@ -223,7 +223,7 @@
                 <exclusion>
                     <groupId>org.springframework</groupId>
                     <artifactId>spring-core</artifactId>
-                </exclusion>			
+                </exclusion>
                 <exclusion>
                     <groupId>org.springframework</groupId>
                     <artifactId>spring-web</artifactId>
@@ -339,16 +339,16 @@
         </dependency>
         <!--
           Without this dependency on Spring MVC, it is not possible to run or
-          test this application. Various exceptions are thrown, depending on 
+          test this application. Various exceptions are thrown, depending on
           what you try to do. These include:
 
-                 "java.lang.IllegalStateException: Could not evaluate condition on 
-                  org.springframework.boot.autoconfigure.jdbc.XADataSourceAutoConfiguration 
+                 "java.lang.IllegalStateException: Could not evaluate condition on
+                  org.springframework.boot.autoconfigure.jdbc.XADataSourceAutoConfiguration
                   due to internal class not found. This can happen if you are @ComponentScanning a
                   springframework package (e.g. if you put a @ComponentScan in the default package by mistake)"
 
-                 "java.lang.IllegalStateException: Could not evaluate condition on 
-                  org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration$JdbcTemplateConfiguration 
+                 "java.lang.IllegalStateException: Could not evaluate condition on
+                  org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration$JdbcTemplateConfiguration
                   due to internal class not found. This can happen if you are @ComponentScanning a
                   springframework package (e.g. if you put a @ComponentScan in the default package by mistake)"
 
@@ -365,7 +365,7 @@
 
                 ManagementSecurityAutoConfiguration.class
 
-          to the "exclude" list of auto-configuration modules in the 
+          to the "exclude" list of auto-configuration modules in the
           @EnableAutoConfiguration annotation in ApplicationConfig.java, but
           this had the side effect that the following URL then no longer worked:
 
@@ -383,10 +383,10 @@
           the safest treatment is to just add the dependency for "spring-webmvc"
           here.
 
-        I added this fix while using Spring Boot 1.2.3.RELEASE. After I 
-        upgrade to a newer version, I should try removing this dependency on 
-        "spring-webmvc" to see if it is still required. To test if it is 
-        required, just execute "mvn clean test" and 
+        I added this fix while using Spring Boot 1.2.3.RELEASE. After I
+        upgrade to a newer version, I should try removing this dependency on
+        "spring-webmvc" to see if it is still required. To test if it is
+        required, just execute "mvn clean test" and
         "mvn clean spring-boot:run".
       -->
         <dependency>
@@ -402,7 +402,7 @@
             <groupId>org.springframework</groupId>
             <artifactId>spring-context-support</artifactId>
         </dependency>
-		
+
         <!-- Quartz framework -->
         <dependency>
             <groupId>org.quartz-scheduler</groupId>
@@ -443,7 +443,7 @@
 <!-- 			<artifactId>spring-ldap-core</artifactId> -->
 <!-- 			<version>2.2.0.RELEASE</version> -->
 <!-- 		</dependency> -->
-	
+
         <!-- Testing -->
         <dependency>
             <groupId>org.springframework</groupId>
@@ -459,7 +459,7 @@
             <artifactId>hibernate-entitymanager</artifactId>
             <!-- <version>${hibernate.version}</version> -->
         </dependency>
-		
+
         <!-- Apache Commons DBCP 2.x -->
         <dependency>
             <groupId>org.apache.commons</groupId>
@@ -473,22 +473,22 @@
                 </exclusion>
             </exclusions>
         </dependency>
-		
+
         <!-- PostgreSQL JDBC driver -->
         <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
             <!-- <version>9.4-1201-jdbc41</version> -->
         </dependency>
-		
+
         <!-- H2 JDBC driver. Used for testing with embedded DB. -->
         <dependency>
             <groupId>com.h2database</groupId>
             <artifactId>h2</artifactId>
             <!-- <version>1.4.186</version> -->
         </dependency>
-		
-        <!-- Replace with LocalDate, LocalTime, ... when we move to Java 8 
+
+        <!-- Replace with LocalDate, LocalTime, ... when we move to Java 8
         <dependency>
                 <groupId>joda-time</groupId>
                 <artifactId>joda-time</artifactId>
@@ -498,11 +498,11 @@
     </dependencies>
 
     <build>
-	
+
         <!-- "finalName" sets the context root of the deployed web application.
         Otherwise, the web app will be deployed at /<artifactId>-<version> -->
         <finalName>report-server</finalName>
-		
+
         <plugins>
 
             <!-- The Maven Compiler Plugin is used to compile the sources of your
@@ -514,7 +514,7 @@
                 <artifactId>maven-compiler-plugin</artifactId>
             </plugin>
 
-            <!-- The Tomcat7 Maven Plugin provides goals so that we can deploy the app 
+            <!-- The Tomcat7 Maven Plugin provides goals so that we can deploy the app
     to my local private Tomcat7 instance using "mvn tomcat7:[re]deploy.
     The <url> element *must* be ".../manager/text", *not* .../manager/html
     The name "myTomcat" in the <server> element must match the same name in:
@@ -529,32 +529,32 @@
                     <path>/${project.build.finalName}</path>
                 </configuration>
             </plugin>
-			
+
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-war-plugin</artifactId>
                 <version>2.6</version>
                 <configuration>
-                
-                    <!-- 
-                    When the WAR file report-server-${project.version}.war is 
-                    generated, this tells this plugin to also create a JAR 
+
+                    <!--
+                    When the WAR file report-server-${project.version}.war is
+                    generated, this tells this plugin to also create a JAR
                     artifact named report-server-${project.version}-classes.jar.
-                    This enables another Maven project to create a dependency 
-                    on the Java code in this project (since it does not work 
-                    to make a dependency on a WAR file). This JAR file was 
-                    earlier used as a dependency in my "test-reports" 
-                    project to support BIRT POJO data sources. However, all BIRT 
-                    POJO data sources are now developed in 
-                    my dars-report-datasources project, so this setting 
+                    This enables another Maven project to create a dependency
+                    on the Java code in this project (since it does not work
+                    to make a dependency on a WAR file). This JAR file was
+                    earlier used as a dependency in my "test-reports"
+                    project to support BIRT POJO data sources. However, all BIRT
+                    POJO data sources are now developed in
+                    my dars-report-datasources project, so this setting
                     is no longer needed here.  -->
                     <!-- <attachClasses>true</attachClasses> -->
-                    
+
                     <packagingExcludes>
                         <!-- "rptdesign" files are created in the "reports"
                         directory whenever integration tests are run or the
-                        file system is synchronized with the report 
-                        database. We don't want such files packaged and 
+                        file system is synchronized with the report
+                        database. We don't want such files packaged and
                         distributed a WAR file. I deleted the "old" directory
                         but it can't hurt to keep the override for it for now. -->
                         reports/*.rptdesign,
@@ -567,6 +567,7 @@
                             <directory>src/main/resources</directory>
                             <includes>
                                 <include>config.properties</include>
+                                <include>build.properties</include>
                             </includes>
                             <targetPath>WEB-INF/classes</targetPath>
                             <filtering>true</filtering>
@@ -605,8 +606,8 @@
                             </execution>
                     </executions>
             </plugin> -->
-			
-            <!-- 
+
+            <!--
             <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-shade-plugin</artifactId>
@@ -621,7 +622,7 @@
                                             <exclude>javax.servlet</exclude>
                                             <exclude>junit</exclude>
                                     </excludes>
-                            </artifactSet>				
+                            </artifactSet>
                     </configuration>
                     <executions>
                             <execution>
@@ -633,7 +634,7 @@
                     </executions>
             </plugin>
             -->
-		
+
             <plugin>
                 <artifactId>maven-resources-plugin</artifactId>
                 <executions>
@@ -649,7 +650,7 @@
                                 <resource>
                                     <directory>src/deb/control</directory>
                                     <filtering>true</filtering>
-                                </resource>                             
+                                </resource>
                             </resources>
                         </configuration>
                     </execution>
@@ -696,12 +697,12 @@
                                         <prefix>/tmp/report-server-${project.version}/upgrade</prefix>
                                         <!-- <dirmode>777</dirmode>  <- Has no effect. "postinst" used instead -->
                                     </mapper>
-                                </data>                                
+                                </data>
                             </dataSet>
                         </configuration>
-                    </execution>                   
+                    </execution>
                 </executions>
-            </plugin>                                   	
+            </plugin>
         </plugins>
     </build>
 </project>
