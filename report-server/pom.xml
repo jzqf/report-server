@@ -45,6 +45,8 @@
     </issueManagement>
 
     <properties>
+        <app.user>tomcat8</app.user>
+        <app.group>qfree</app.group>
         <birt-runtime.version>4.4.2</birt-runtime.version>
         <birt-runtime.viewservlets.version>4.4.1</birt-runtime.viewservlets.version>
         <!-- <servlet-api.version>3.1.0</servlet-api.version> -->
@@ -674,9 +676,10 @@
                                     <type>file</type>
                                     <mapper>
                                         <type>perm</type>
-                                        <prefix>/tmp/report-server-${project.version}</prefix>
-                                        <filemode>777</filemode>
-                                        <!-- <dirmode>777</dirmode>  <- Has no effect. "postinst" used instead -->
+                                        <prefix>/var/lib/tomcat8/webapps/</prefix>
+                                        <user>${app.user}</user>
+                                        <group>${app.group}</group>
+                                        <filemode>644</filemode>
                                     </mapper>
                                 </data>
                                 <data>
