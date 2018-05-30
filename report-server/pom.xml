@@ -48,7 +48,7 @@
         <app.user>tomcat8</app.user>
         <app.group>qfree</app.group>
         <birt-runtime.version>4.4.2</birt-runtime.version>
-        <birt-runtime.viewservlets.version>4.4.2</birt-runtime.viewservlets.version>
+        <birt-runtime.viewservlets.version>4.4.1</birt-runtime.viewservlets.version>
         <!-- <servlet-api.version>3.1.0</servlet-api.version> -->
         <!-- <hibernate.version>4.3.11.Final</hibernate.version> -->
         <quartz.version>2.2.1</quartz.version>
