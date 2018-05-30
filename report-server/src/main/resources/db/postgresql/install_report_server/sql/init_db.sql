@@ -3,6 +3,7 @@ BEGIN TRANSACTION;
 -- PostgreSQL:
 
 CREATE SCHEMA IF NOT EXISTS reporting;
+SET search_path TO reporting,public;
 
 DROP TABLE IF EXISTS configuration CASCADE;
 DROP TABLE IF EXISTS role_report CASCADE;

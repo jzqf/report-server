@@ -3,7 +3,6 @@ package com.qfree.bo.report.rest.server;
 import java.time.ZoneId;
 import java.util.Arrays;
 import java.util.Set;
-
 import javax.ws.rs.GET;
 import javax.ws.rs.HeaderParam;
 import javax.ws.rs.Path;
@@ -11,7 +10,6 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.UriInfo;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,13 +25,13 @@ import com.qfree.bo.report.util.RestUtils.RestApiVersion;
 
 @Component
 @Path("/")
-@PropertySource("classpath:config.properties")
+@PropertySource("classpath:build.properties")
 public class RootController extends AbstractBaseController {
 
 	private static final Logger logger = LoggerFactory.getLogger(RootController.class);
 
 	/*
-	 * The injected "env" object here will contain key/value pairs for each 
+	 * The injected "env" object here will contain key/value pairs for each
 	 * property in the properties files specified above in the @PropertySource
 	 * annotation above.
 	 */
@@ -68,7 +66,7 @@ public class RootController extends AbstractBaseController {
 			@HeaderParam("Accept") final String acceptHeader,
 			@Context final UriInfo uriInfo) {
 		RestApiVersion apiVersion = RestUtils.extractAPIVersion(acceptHeader, RestApiVersion.v1);
-		
+
 		Configuration configuration = configurationRepository.dbversion();
 		logger.debug("configuration (dbversion) = ", configuration);
 		Integer dbversion = -1;  // -1: undefined version number

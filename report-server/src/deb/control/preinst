@@ -3,17 +3,22 @@
 set -e
 
 case "$1" in
-    install|upgrade)
-    ;;
 
     abort-upgrade)
+        echo "### preinst abort-upgrade ###"
+        ;;
+
+    install|upgrade)
+        echo "### preinst install|upgrade ###"
     ;;
 
     *)
+        echo "### preinst default ###"
         echo "preinst called with unknown argument \`$1'" >&2
         exit 1
-    ;;
+        ;;
+
 esac
 
-
+echo "### preinst done ###"
 exit 0
