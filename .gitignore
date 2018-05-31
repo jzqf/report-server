@@ -18,3 +18,8 @@ nbactions.xml
 
 #local.properties
 #.gitignore  Do *not* ignore
+
+# From child .gitignore 
+catalina.base/
+catalina.base_IS_UNDEFINED/
+derby.log
