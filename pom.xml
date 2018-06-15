@@ -12,7 +12,7 @@
 
     <!-- <groupId>com.qfree.bo</groupId> -->
     <artifactId>report-server</artifactId>
-    <version>0.18.2</version>
+    <version>0.18.3</version>
     <packaging>war</packaging>
     <name>Q-Free Report Server</name>
     <description>Web project for implementing a report server for BIRT reports that can be deployed in a servlet container such as Tomcat</description>
@@ -47,6 +47,7 @@
     <properties>
         <app.user>tomcat8</app.user>
         <app.group>qfree</app.group>
+	<app.rootDir>/opt/qfree</app.rootDir>
         <birt-runtime.version>4.4.2</birt-runtime.version>
         <birt-runtime.viewservlets.version>4.4.1</birt-runtime.viewservlets.version>
         <!-- <servlet-api.version>3.1.0</servlet-api.version> -->
