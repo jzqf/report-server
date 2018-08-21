@@ -1,9 +1,11 @@
+SET search_path TO reporting,public;
+
 --
 -- Name: asset; Type: TABLE; Schema: reporting; Owner: report_server_app
 --
 
 CREATE TABLE asset (
-    asset_id uuid DEFAULT reporting.uuid_generate_v4() NOT NULL,
+    asset_id uuid DEFAULT uuid_generate_v4() NOT NULL,
     active boolean NOT NULL,
     created_on timestamp without time zone NOT NULL,
     filename character varying(256) NOT NULL,
@@ -20,7 +22,7 @@ CREATE TABLE asset (
 --
 
 CREATE TABLE asset_tree (
-    asset_tree_id uuid DEFAULT reporting.uuid_generate_v4() NOT NULL,
+    asset_tree_id uuid DEFAULT uuid_generate_v4() NOT NULL,
     abbreviation character varying(32) NOT NULL,
     active boolean NOT NULL,
     created_on timestamp without time zone NOT NULL,
@@ -36,7 +38,7 @@ CREATE TABLE asset_tree (
 --
 
 CREATE TABLE asset_type (
-    asset_type_id uuid DEFAULT reporting.uuid_generate_v4() NOT NULL,
+    asset_type_id uuid DEFAULT uuid_generate_v4() NOT NULL,
     abbreviation character varying(32) NOT NULL,
     active boolean NOT NULL,
     created_on timestamp without time zone NOT NULL,
@@ -52,7 +54,7 @@ CREATE TABLE asset_type (
 --
 
 CREATE TABLE authority (
-    authority_id uuid DEFAULT reporting.uuid_generate_v4() NOT NULL,
+    authority_id uuid DEFAULT uuid_generate_v4() NOT NULL,
     active boolean NOT NULL,
     created_on timestamp without time zone NOT NULL,
     name character varying(50) NOT NULL
@@ -66,7 +68,7 @@ CREATE TABLE authority (
 --
 
 CREATE TABLE configuration (
-    configuration_id uuid DEFAULT reporting.uuid_generate_v4() NOT NULL,
+    configuration_id uuid DEFAULT uuid_generate_v4() NOT NULL,
     boolean_value boolean,
     bytea_value bytea,
     created_on timestamp without time zone NOT NULL,
@@ -92,7 +94,7 @@ CREATE TABLE configuration (
 --
 
 CREATE TABLE document (
-    document_id uuid DEFAULT reporting.uuid_generate_v4() NOT NULL,
+    document_id uuid DEFAULT uuid_generate_v4() NOT NULL,
     content bytea,
     created_on timestamp without time zone NOT NULL
 );
@@ -105,7 +107,7 @@ CREATE TABLE document (
 --
 
 CREATE TABLE document_format (
-    document_format_id uuid DEFAULT reporting.uuid_generate_v4() NOT NULL,
+    document_format_id uuid DEFAULT uuid_generate_v4() NOT NULL,
     active boolean NOT NULL,
     binary_data boolean NOT NULL,
     birt_format character varying(12) NOT NULL,
@@ -246,7 +248,7 @@ ALTER SEQUENCE job_parameter_value_job_parameter_value_id_seq OWNED BY job_param
 --
 
 CREATE TABLE job_status (
-    job_status_id uuid DEFAULT reporting.uuid_generate_v4() NOT NULL,
+    job_status_id uuid DEFAULT uuid_generate_v4() NOT NULL,
     abbreviation character varying(32) NOT NULL,
     active boolean NOT NULL,
     created_on timestamp without time zone NOT NULL,
@@ -261,7 +263,7 @@ CREATE TABLE job_status (
 --
 
 CREATE TABLE parameter_group (
-    parameter_group_id uuid DEFAULT reporting.uuid_generate_v4() NOT NULL,
+    parameter_group_id uuid DEFAULT uuid_generate_v4() NOT NULL,
     created_on timestamp without time zone NOT NULL,
     group_type integer NOT NULL,
     name character varying(80) NOT NULL,
@@ -276,7 +278,7 @@ CREATE TABLE parameter_group (
 --
 
 CREATE TABLE report (
-    report_id uuid DEFAULT reporting.uuid_generate_v4() NOT NULL,
+    report_id uuid DEFAULT uuid_generate_v4() NOT NULL,
     active boolean NOT NULL,
     created_on timestamp without time zone NOT NULL,
     name character varying(80) NOT NULL,
@@ -293,7 +295,7 @@ CREATE TABLE report (
 --
 
 CREATE TABLE report_category (
-    report_category_id uuid DEFAULT reporting.uuid_generate_v4() NOT NULL,
+    report_category_id uuid DEFAULT uuid_generate_v4() NOT NULL,
     abbreviation character varying(32) NOT NULL,
     active boolean NOT NULL,
     created_on timestamp without time zone NOT NULL,
@@ -308,7 +310,7 @@ CREATE TABLE report_category (
 --
 
 CREATE TABLE report_parameter (
-    report_parameter_id uuid DEFAULT reporting.uuid_generate_v4() NOT NULL,
+    report_parameter_id uuid DEFAULT uuid_generate_v4() NOT NULL,
     alignment integer NOT NULL,
     allow_new_values boolean NOT NULL,
     auto_suggest_threshold integer NOT NULL,
@@ -342,7 +344,7 @@ CREATE TABLE report_parameter (
 --
 
 CREATE TABLE report_version (
-    report_version_id uuid DEFAULT reporting.uuid_generate_v4() NOT NULL,
+    report_version_id uuid DEFAULT uuid_generate_v4() NOT NULL,
     active boolean NOT NULL,
     created_on timestamp without time zone NOT NULL,
     file_name character varying(80) NOT NULL,
@@ -360,7 +362,7 @@ CREATE TABLE report_version (
 --
 
 CREATE TABLE role (
-    role_id uuid DEFAULT reporting.uuid_generate_v4() NOT NULL,
+    role_id uuid DEFAULT uuid_generate_v4() NOT NULL,
     active boolean NOT NULL,
     created_on timestamp without time zone NOT NULL,
     email_address character varying(160),
@@ -380,7 +382,7 @@ CREATE TABLE role (
 --
 
 CREATE TABLE role_authority (
-    role_authority_id uuid DEFAULT reporting.uuid_generate_v4() NOT NULL,
+    role_authority_id uuid DEFAULT uuid_generate_v4() NOT NULL,
     created_on timestamp without time zone NOT NULL,
     authority_id uuid NOT NULL,
     role_id uuid NOT NULL
@@ -394,7 +396,7 @@ CREATE TABLE role_authority (
 --
 
 CREATE TABLE role_parameter (
-    role_parameter_id uuid DEFAULT reporting.uuid_generate_v4() NOT NULL,
+    role_parameter_id uuid DEFAULT uuid_generate_v4() NOT NULL,
     created_on timestamp without time zone NOT NULL,
     report_parameter_id uuid NOT NULL,
     role_id uuid NOT NULL
@@ -408,7 +410,7 @@ CREATE TABLE role_parameter (
 --
 
 CREATE TABLE role_parameter_value (
-    role_parameter_value_id uuid DEFAULT reporting.uuid_generate_v4() NOT NULL,
+    role_parameter_value_id uuid DEFAULT uuid_generate_v4() NOT NULL,
     boolean_value boolean,
     created_on timestamp without time zone NOT NULL,
     date_value date,
@@ -428,7 +430,7 @@ CREATE TABLE role_parameter_value (
 --
 
 CREATE TABLE role_report (
-    role_report_id uuid DEFAULT reporting.uuid_generate_v4() NOT NULL,
+    role_report_id uuid DEFAULT uuid_generate_v4() NOT NULL,
     created_on timestamp without time zone NOT NULL,
     report_id uuid NOT NULL,
     role_id uuid NOT NULL
@@ -442,7 +444,7 @@ CREATE TABLE role_report (
 --
 
 CREATE TABLE role_role (
-    role_role_id uuid DEFAULT reporting.uuid_generate_v4() NOT NULL,
+    role_role_id uuid DEFAULT uuid_generate_v4() NOT NULL,
     created_on timestamp without time zone NOT NULL,
     child_role_id uuid NOT NULL,
     parent_role_id uuid NOT NULL
@@ -456,7 +458,7 @@ CREATE TABLE role_role (
 --
 
 CREATE TABLE selection_list_value (
-    selection_list_value_id uuid DEFAULT reporting.uuid_generate_v4() NOT NULL,
+    selection_list_value_id uuid DEFAULT uuid_generate_v4() NOT NULL,
     created_on timestamp without time zone NOT NULL,
     order_index integer NOT NULL,
     value_assigned character varying(132) NOT NULL,
@@ -472,7 +474,7 @@ CREATE TABLE selection_list_value (
 --
 
 CREATE TABLE subscription (
-    subscription_id uuid DEFAULT reporting.uuid_generate_v4() NOT NULL,
+    subscription_id uuid DEFAULT uuid_generate_v4() NOT NULL,
     active boolean NOT NULL,
     created_on timestamp without time zone NOT NULL,
     custom_report_parameter_1_name character varying(64),
@@ -510,7 +512,7 @@ CREATE TABLE subscription (
 --
 
 CREATE TABLE subscription_parameter (
-    subscription_parameter_id uuid DEFAULT reporting.uuid_generate_v4() NOT NULL,
+    subscription_parameter_id uuid DEFAULT uuid_generate_v4() NOT NULL,
     created_on timestamp without time zone NOT NULL,
     report_parameter_id uuid NOT NULL,
     subscription_id uuid NOT NULL
@@ -524,7 +526,7 @@ CREATE TABLE subscription_parameter (
 --
 
 CREATE TABLE subscription_parameter_value (
-    subscription_parameter_value_id uuid DEFAULT reporting.uuid_generate_v4() NOT NULL,
+    subscription_parameter_value_id uuid DEFAULT uuid_generate_v4() NOT NULL,
     boolean_value boolean,
     created_on timestamp without time zone NOT NULL,
     date_value date,
