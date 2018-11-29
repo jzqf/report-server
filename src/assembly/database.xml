@@ -18,10 +18,10 @@
       </includes>
     </fileSet>
     <fileSet>
-      <directory>${project.basedir}/database/report_server/dbms/postgresql/</directory>
+      <directory>${project.basedir}/src/main/resources/database/report_server/dbms/postgresql/</directory>
       <outputDirectory>combined</outputDirectory>
       <includes>
-        <include>create-schema-report_server-postgresql</include>
+        <include>create-schema-report_server-postgresql.sql</include>
       </includes>
     </fileSet>
   </fileSets>
