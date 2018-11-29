@@ -517,6 +517,26 @@
                 <artifactId>maven-compiler-plugin</artifactId>
             </plugin>
 
+
+            <plugin>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>make-db-zip</id>	<!-- this is used for inheritance merges -->
+                        <phase>package</phase>	<!-- bind to the packaging phase -->
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                        <configuration>
+                            <descriptors>
+                                <descriptor>src/assembly/database.xml</descriptor>
+                            </descriptors>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+
             <!-- The Tomcat7 Maven Plugin provides goals so that we can deploy the app
     to my local private Tomcat7 instance using "mvn tomcat7:[re]deploy.
     The <url> element *must* be ".../manager/text", *not* .../manager/html

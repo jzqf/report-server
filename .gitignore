@@ -23,3 +23,6 @@ nbactions.xml
 catalina.base/
 catalina.base_IS_UNDEFINED/
 derby.log
+
+# VS Code
+.vscode/
