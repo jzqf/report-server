@@ -21,7 +21,7 @@
       <directory>${project.basedir}/src/main/resources/database/report_server/dbms/postgresql/</directory>
       <outputDirectory>combined</outputDirectory>
       <includes>
-        <include>create-schema-report_server-postgresql.sql</include>
+        <include>create-schema-obo-report_server-postgresql.sql</include>
       </includes>
     </fileSet>
   </fileSets>
